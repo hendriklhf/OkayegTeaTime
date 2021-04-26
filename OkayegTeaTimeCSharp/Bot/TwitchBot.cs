@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -17,9 +18,15 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public WebSocketClient WebSocketClient { get; private set; }
 
+        public List<string> Channels = new() { "strbhlfe" };
+
+        public const string Username = "okayegteatime";
+
+        private const string token = "oauth:h9kaxuxtjj9r58vcmz1kaerf1zp6kd";
+
         public TwitchBot()
         {
-            ConnectionCredentials = new("OkayegTeaTime", "oauth:h9kaxuxtjj9r58vcmz1kaerf1zp6kd");
+            ConnectionCredentials = new(Username, token);
             ClientOptions = new()
             {
                 MessagesAllowedInPeriod = 10000,
@@ -28,7 +35,7 @@ namespace OkayegTeaTimeCSharp.Bot
             };
             WebSocketClient = new();
             TwitchClient = new(WebSocketClient);
-            TwitchClient.Initialize(ConnectionCredentials, "okayegteatime");
+            TwitchClient.Initialize(ConnectionCredentials, Channels);
 
             TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
@@ -41,7 +48,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private void Client_OnLog(object sender, OnLogArgs e)
         {
-            Console.WriteLine("LOG");
+            //Console.WriteLine("LOG: " + e.Data);
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
@@ -51,17 +58,17 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine("JOINED");
+            Console.WriteLine("JOINED CHANNEL: " + e.Channel);
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            Console.WriteLine("MESSAGE RECEIVED");
+            Console.WriteLine("MESSAGE: " + e.ChatMessage.Message);
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            Console.WriteLine("WHISPER RECEIVED");
+            Console.WriteLine("WHISPER: " + e.WhisperMessage.Username + ": " + e.WhisperMessage.Message);
         }
     }
 }

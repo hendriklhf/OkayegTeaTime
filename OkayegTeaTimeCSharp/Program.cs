@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Bot;
+﻿using System;
+using OkayegTeaTimeCSharp.Bot;
 
 namespace OkayegTeaTimeCSharp
 {
@@ -7,6 +8,7 @@ namespace OkayegTeaTimeCSharp
         private static void Main(string[] args)
         {
             TwitchBot OkayegTeaTime = new();
+            Console.ReadLine();
         }
     }
 }
