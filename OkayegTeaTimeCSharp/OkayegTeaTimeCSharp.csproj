@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="Commands\" />
+    <Folder Include="Database\Models\" />
   </ItemGroup>
 
 </Project>

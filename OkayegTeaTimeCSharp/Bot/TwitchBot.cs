@@ -64,7 +64,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            Console.WriteLine("MESSAGE: " + e.ChatMessage.Message);
+            Console.WriteLine("MESSAGE: " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
             MessageHandler.Handle(e.ChatMessage);
         }
 
