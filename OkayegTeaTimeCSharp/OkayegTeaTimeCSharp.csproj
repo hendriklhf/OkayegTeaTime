@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\app.config.transform" />
+    <Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\web.config.transform" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.5" />
@@ -27,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Database\Models\" />
   </ItemGroup>
 
 </Project>
