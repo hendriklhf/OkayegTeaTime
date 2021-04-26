@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OkayegTeaTimeCSharp.Time;
-using OkayegTeaTimeCSharp.Utils;
+﻿using OkayegTeaTimeCSharp.Utils;
+using System;
 
 namespace OkayegTeaTimeCSharp.Time
 {
@@ -61,197 +56,197 @@ namespace OkayegTeaTimeCSharp.Time
                         if (Math.Truncate((double)(time / 60000)) > 0)
                         {
                             result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
-                            time = time - (Math.Truncate(time / (60000)) * (60000));
-                            if (Math.Truncate(time / 1000) > 0)
+                            time = time - (Math.Truncate((double)(time / (60000))) * (60000)).ToLong();
+                            if (Math.Truncate((double)(time / 1000)) > 0)
                             {
-                                result += (Math.Truncate(time / 1000)).ToString() + "s";
+                                result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate(time / 1000) > 0)
+                        else if (Math.Truncate((double)(time / 1000)) > 0)
                         {
-                            result += (Math.Truncate(time / 1000)).ToString() + "s";
+                            result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate(time / 60000) > 0)
+                    else if (Math.Truncate((double)(time / 60000)) > 0)
                     {
-                        result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                        time = time - (Math.Truncate(time / (60000)) * (60000));
-                        if (Math.Truncate(time / 1000) > 0)
+                        result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                        time = time - (Math.Truncate((double)(time / (60000))) * (60000)).ToLong();
+                        if (Math.Truncate((double)(time / 1000)) > 0)
                         {
-                            result += (Math.Truncate(time / 1000)).ToString() + "s";
+                            result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate(time / 1000) > 0)
+                    else if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
                 else if (Math.Truncate(time / (8.64 * Math.Pow(10, 7))) > 0)
                 {
                     result += (Math.Truncate(time / (8.64 * Math.Pow(10, 7)))).ToString() + "d, ";
-                    time = time - (Math.Truncate(time / (8.64 * Math.Pow(10, 7))) * (8.64 * Math.Pow(10, 7)));
+                    time = time - (Math.Truncate(time / (8.64 * Math.Pow(10, 7))) * (8.64 * Math.Pow(10, 7))).ToLong();
                     if (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) > 0)
                     {
                         result += (Math.Truncate(time / (3.6 * Math.Pow(10, 6)))).ToString() + "h, ";
-                        time = time - (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)));
-                        if (Math.Truncate(time / 60000) > 0)
+                        time = time - (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6))).ToLong();
+                        if (Math.Truncate((double)(time / 60000)) > 0)
                         {
-                            result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                            time = time - (Math.Truncate(time / (60000)) * (60000));
-                            if (Math.Truncate(time / 1000) > 0)
+                            result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                            time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                            if (Math.Truncate((double)(time / 1000)) > 0)
                             {
-                                result += (Math.Truncate(time / 1000)).ToString() + "s";
+                                result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate(time / 60000) > 0)
+                        else if (Math.Truncate((double)(time / 60000)) > 0)
                         {
-                            result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                            time = time - (Math.Truncate(time / (60000)) * (60000));
-                            if (Math.Truncate(time / 1000) > 0)
+                            result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                            time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                            if (Math.Truncate((double)(time / 1000)) > 0)
                             {
-                                result += (Math.Truncate(time / 1000)).ToString() + "s";
+                                result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                             }
                         }
                         else if (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) > 0)
                         {
                             result += (Math.Truncate(time / (3.6 * Math.Pow(10, 6)))).ToString() + "h, ";
-                            time = time - (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)));
-                            if (Math.Truncate(time / 60000) > 0)
+                            time = time - (Math.Truncate((double)(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)))).ToLong();
+                            if (Math.Truncate((double)(time / 60000)) > 0)
                             {
-                                result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                                time = time - (Math.Truncate(time / (60000)) * (60000));
-                                if (Math.Truncate(time / 1000) > 0)
+                                result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                                time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                                if (Math.Truncate((double)(time / 1000)) > 0)
                                 {
-                                    result += (Math.Truncate(time / 1000)).ToString() + "s";
+                                    result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                                 }
                             }
-                            else if (Math.Truncate(time / 60000) > 0)
+                            else if (Math.Truncate((double)(time / 60000)) > 0)
                             {
-                                result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                                time = time - (Math.Truncate(time / (60000)) * (60000));
-                                if (Math.Truncate(time / 1000) > 0)
+                                result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                                time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                                if (Math.Truncate((double)(time / 1000)) > 0)
                                 {
-                                    result += (Math.Truncate(time / 1000)).ToString() + "s";
+                                    result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                                 }
                             }
-                            else if (Math.Truncate(time / 1000) > 0)
+                            else if (Math.Truncate((double)(time / 1000)) > 0)
                             {
-                                result += (Math.Truncate(time / 1000)).ToString() + "s";
+                                result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                             }
                         }
                     }
-                    else if (Math.Truncate(time / 60000) > 0)
+                    else if (Math.Truncate((double)(time / 60000)) > 0)
                     {
-                        result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                        time = time - (Math.Truncate(time / (60000)) * (60000));
-                        if (Math.Truncate(time / 1000) > 0)
+                        result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                        time = time - (Math.Truncate((double)(time / (60000))) * (60000)).ToLong();
+                        if (Math.Truncate((double)(time / 1000)) > 0)
                         {
-                            result += (Math.Truncate(time / 1000)).ToString() + "s";
+                            result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate(time / 1000) > 0)
+                    else if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
                 else if (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) > 0)
                 {
                     result += (Math.Truncate(time / (3.6 * Math.Pow(10, 6)))).ToString() + "h, ";
-                    time = time - (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)));
-                    if (Math.Truncate(time / 60000) > 0)
+                    time = time - (Math.Truncate((double)(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)))).ToLong();
+                    if (Math.Truncate((double)(time / 60000)) > 0)
                     {
-                        result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                        time = time - (Math.Truncate(time / (60000)) * (60000));
-                        if (Math.Truncate(time / 1000) > 0)
+                        result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                        time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                        if (Math.Truncate((double)(time / 1000)) > 0)
                         {
-                            result += (Math.Truncate(time / 1000)).ToString() + "s";
+                            result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate(time / 1000) > 0)
+                    else if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate(time / 60000) > 0)
+                else if (Math.Truncate((double)(time / 60000)) > 0)
                 {
-                    result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                    time = time - (Math.Truncate(time / (60000)) * (60000));
-                    if (Math.Truncate(time / 1000) > 0)
+                    result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                    time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                    if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate(time / 1000) > 0)
+                else if (Math.Truncate((double)(time / 1000)) > 0)
                 {
-                    result += (Math.Truncate(time / 1000)).ToString() + "s";
+                    result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                 }
             }
             else if (Math.Truncate(time / (8.64 * Math.Pow(10, 7))) > 0)
             {
                 result += (Math.Truncate(time / (8.64 * Math.Pow(10, 7)))).ToString() + "d, ";
-                time = time - (Math.Truncate(time / (8.64 * Math.Pow(10, 7))) * (8.64 * Math.Pow(10, 7)));
+                time = time - (Math.Truncate((double)(time / (8.64 * Math.Pow(10, 7))) * (8.64 * Math.Pow(10, 7)))).ToLong();
                 if (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) > 0)
                 {
                     result += (Math.Truncate(time / (3.6 * Math.Pow(10, 6)))).ToString() + "h, ";
-                    time = time - (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)));
-                    if (Math.Truncate(time / 60000) > 0)
+                    time = time - (Math.Truncate((double)(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)))).ToLong();
+                    if (Math.Truncate((double)(time / 60000)) > 0)
                     {
-                        result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                        time = time - (Math.Truncate(time / (60000)) * (60000));
-                        if (Math.Truncate(time / 1000) > 0)
+                        result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                        time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                        if (Math.Truncate((double)(time / 1000)) > 0)
                         {
-                            result += (Math.Truncate(time / 1000)).ToString() + "s";
+                            result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate(time / 1000) > 0)
+                    else if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate(time / 60000) > 0)
+                else if (Math.Truncate((double)(time / 60000)) > 0)
                 {
-                    result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                    time = time - (Math.Truncate(time / (60000)) * (60000));
-                    if (Math.Truncate(time / 1000) > 0)
+                    result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                    time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                    if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate(time / 1000) > 0)
+                else if (Math.Truncate((double)(time / 1000)) > 0)
                 {
-                    result += (Math.Truncate(time / 1000)).ToString() + "s";
+                    result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                 }
             }
             else if (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) > 0)
             {
                 result += (Math.Truncate(time / (3.6 * Math.Pow(10, 6)))).ToString() + "h, ";
-                time = time - (Math.Truncate(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)));
-                if (Math.Truncate(time / 60000) > 0)
+                time = time - (Math.Truncate((double)(time / (3.6 * Math.Pow(10, 6))) * (3.6 * Math.Pow(10, 6)))).ToLong();
+                if (Math.Truncate((double)(time / 60000)) > 0)
                 {
-                    result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                    time = time - (Math.Truncate(time / (60000)) * (60000));
-                    if (Math.Truncate(time / 1000) > 0)
+                    result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                    time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                    if (Math.Truncate((double)(time / 1000)) > 0)
                     {
-                        result += (Math.Truncate(time / 1000)).ToString() + "s";
+                        result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate(time / 1000) > 0)
+                else if (Math.Truncate((double)(time / 1000)) > 0)
                 {
-                    result += (Math.Truncate(time / 1000)).ToString() + "s";
+                    result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                 }
             }
-            else if (Math.Truncate(time / 60000) > 0)
+            else if (Math.Truncate((double)(time / 60000)) > 0)
             {
-                result += (Math.Truncate(time / 60000)).ToString() + "min, ";
-                time = time - (Math.Truncate(time / (60000)) * (60000));
-                if (Math.Truncate(time / 1000) > 0)
+                result += (Math.Truncate((double)(time / 60000))).ToString() + "min, ";
+                time = time - (Math.Truncate((double)(time / (60000)) * (60000))).ToLong();
+                if (Math.Truncate((double)(time / 1000)) > 0)
                 {
-                    result += (Math.Truncate(time / 1000)).ToString() + "s";
+                    result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
                 }
             }
-            else if (Math.Truncate(time / 1000) > 0)
+            else if (Math.Truncate((double)(time / 1000)) > 0)
             {
-                result += (Math.Truncate(time / 1000)).ToString() + "s";
+                result += (Math.Truncate((double)(time / 1000))).ToString() + "s";
             }
 
             result = result.Trim();

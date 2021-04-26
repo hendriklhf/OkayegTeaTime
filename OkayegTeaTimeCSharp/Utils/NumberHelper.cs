@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OkayegTeaTimeCSharp.Utils
+﻿namespace OkayegTeaTimeCSharp.Utils
 {
     public static class NumberHelper
     {
@@ -15,7 +9,7 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static double ToDouble(this int i)
         {
-            return (double)i;
+            return i;
         }
     }
 }

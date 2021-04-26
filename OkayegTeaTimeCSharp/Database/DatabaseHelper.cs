@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OkayegTeaTimeCSharp.Database.Models;
-using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Utils;
+﻿using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Time;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Database
 {

@@ -1,5 +1,5 @@
-﻿using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Database;
+﻿using OkayegTeaTimeCSharp.Database;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
