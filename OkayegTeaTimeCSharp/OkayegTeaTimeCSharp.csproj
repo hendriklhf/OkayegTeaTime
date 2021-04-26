@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -12,7 +12,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Windows.Forms" Version="4.0.0" />
 		<PackageReference Include="EntityFramework" Version="6.4.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.5" />
@@ -27,6 +26,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.JSInterop" Version="5.0.5" />
 		<PackageReference Include="MySql.Data.EntityFramework" Version="8.0.24" />
 		<PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3" />
 		<PackageReference Include="TwitchLib" Version="3.2.0" />

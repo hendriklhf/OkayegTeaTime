@@ -76,18 +76,18 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine("JOINED CHANNEL: " + e.Channel);
+            Console.WriteLine("JOINED CHANNEL>" + e.Channel);
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            Console.WriteLine("MESSAGE: " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
+            Console.WriteLine("#" + e.ChatMessage.Channel + "> " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
             MessageHandler.Handle(e.ChatMessage);
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            Console.WriteLine("WHISPER: " + e.WhisperMessage.Username + ": " + e.WhisperMessage.Message);
+            Console.WriteLine("WHISPER>" + e.WhisperMessage.Username + ": " + e.WhisperMessage.Message);
         }
     }
 }
