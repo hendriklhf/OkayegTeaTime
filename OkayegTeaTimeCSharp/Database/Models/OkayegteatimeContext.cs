@@ -4,29 +4,29 @@
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class OkayegteatimeContext : DbContext
+    public partial class OkayegTeaTimeContext : DbContext
     {
-        public OkayegteatimeContext()
+        public OkayegTeaTimeContext()
         {
         }
 
-        public OkayegteatimeContext(DbContextOptions<OkayegteatimeContext> options)
+        public OkayegTeaTimeContext(DbContextOptions<OkayegTeaTimeContext> options)
             : base(options)
         {
         }
 
         public virtual DbSet<Bot> Bots { get; set; }
-        public virtual DbSet<Gachi> Gachis { get; set; }
+        public virtual DbSet<Gachi> Gachi { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Nuke> Nukes { get; set; }
-        public virtual DbSet<Pechkekse> Pechkekses { get; set; }
+        public virtual DbSet<Pechkekse> Pechkekse { get; set; }
         public virtual DbSet<Prefix> Prefixes { get; set; }
         public virtual DbSet<Quote> Quotes { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
-        public virtual DbSet<Spotify> Spotifies { get; set; }
+        public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<Yourmom> Yourmoms { get; set; }
+        public virtual DbSet<Yourmom> Yourmom { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -40,7 +40,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             modelBuilder.Entity<Bot>(entity =>
             {
-                entity.ToTable("bot");
+                entity.ToTable("bots");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
@@ -79,7 +79,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
             modelBuilder.Entity<Nuke>(entity =>
             {
-                entity.ToTable("nuke");
+                entity.ToTable("nukes");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
