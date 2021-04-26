@@ -6,7 +6,7 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static void Handle(ChatMessage chatMessage)
         {
-
+            
         }
     }
 }

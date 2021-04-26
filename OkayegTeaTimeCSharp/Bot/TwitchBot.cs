@@ -19,7 +19,24 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public WebSocketClient WebSocketClient { get; private set; }
 
-        public List<string> Channels = new() { "strbhlfe" };
+        public List<string> Channels = new()
+        {
+            "okayegteatime",
+            "strbhlfe",
+            "xxdirkthecrafterxx",
+            "derpalt",
+            "moondye7",
+            "ronic76",
+            "odin_eu",
+            "winnie_po",
+            "benastro",
+            "jonas5477",
+            "enno_of",
+            "jann_amh_",
+            "timix2g",
+            "jonasenbluten",
+            "w201diesel"
+        };
 
         public const string Username = "okayegteatime";
 
