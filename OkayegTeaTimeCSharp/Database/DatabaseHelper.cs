@@ -5,16 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using OkayegTeaTimeCSharp.Database.Models;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.JavaScript;
 using OkayegTeaTimeCSharp.Utils;
+using OkayegTeaTimeCSharp.Time;
 
 namespace OkayegTeaTimeCSharp.Database
 {
     public static class DatabaseHelper
     {
-        public static void LogMessage(this OkayegTeaTimeContext database, ChatMessage chatMessage)
+        public static void LogMessage(ChatMessage chatMessage)
         {
-            database.Add(new Message(chatMessage.Username, chatMessage.Message.ToByteArray(), chatMessage.Channel, JavaScriptHelper.Now()));
+            OkayegTeaTimeContext database = new();
+            database.Add(new Message(chatMessage.Username, chatMessage.Message, chatMessage.Channel, TimeHelper.Now()));
             database.SaveChanges();
         }
     }
