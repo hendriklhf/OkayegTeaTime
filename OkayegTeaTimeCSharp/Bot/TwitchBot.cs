@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OkayegTeaTimeCSharp.Commands;
+using System;
 using System.Collections.Generic;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -64,6 +65,7 @@ namespace OkayegTeaTimeCSharp.Bot
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             Console.WriteLine("MESSAGE: " + e.ChatMessage.Message);
+            MessageHandler.Handle(e.ChatMessage);
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
