@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
 using System.Timers;
+using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -13,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void LogMessage(ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message, chatMessage.Channel, TimeHelper.Now()));
+            database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.EscapeChars().ToByteArray(), chatMessage.Channel, TimeHelper.Now()));
             database.SaveChanges();
         }
 

@@ -45,6 +45,8 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
+                entity.Property(e => e.Channels).HasColumnType("varchar(10000)");
+
                 entity.Property(e => e.Oauth)
                     .HasMaxLength(100)
                     .HasColumnName("OAuth");

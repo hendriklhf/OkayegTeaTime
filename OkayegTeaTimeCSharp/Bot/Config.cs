@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 namespace OkayegTeaTimeCSharp.Bot
 {
     public static class Config
-    {
+    {        
+        private static Database.Models.OkayegTeaTimeContext database = new();
+
         public static string Username { get; set; } = "";
 
         public static string Token { get; set; } = "";
+
+        public static List<string> Channels { get; private set; } = new();
 
         public static void GetUsername()
         {
@@ -22,25 +26,9 @@ namespace OkayegTeaTimeCSharp.Bot
             Token = database.Bots.Where(bot => bot.Id == 1).FirstOrDefault().Oauth;
         }
 
-        public static List<string> Channels { get; private set; } = new()
+        public static void GetChannels()
         {
-            "okayegteatime",
-            "strbhlfe",
-            "xxdirkthecrafterxx",
-            "derpalt",
-            "moondye7",
-            "ronic76",
-            "odin_eu",
-            "winnie_po",
-            "benastro",
-            "jonas5477",
-            "enno_of",
-            "jann_amh_",
-            "timix2g",
-            "jonasenbluten",
-            "w201diesel"
-        };
 
-        private static Database.Models.OkayegTeaTimeContext database = new();
+        }
     }
 }
