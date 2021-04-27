@@ -8,7 +8,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public string Username { get; set; }
         public byte[] MessageText { get; set; }
         public string Channel { get; set; }
-        public long? Time { get; set; }
 
         public Message(string username, byte[] messageText, string channel, long? time)
         {
@@ -17,5 +16,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
             Channel = channel;
             Time = time;
         }
+        public long Time { get; set; }
     }
 }

@@ -44,13 +44,18 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channels).HasColumnType("varchar(10000)");
+                entity.Property(e => e.Channels)
+                    .IsRequired()
+                    .HasColumnType("varchar(10000)");
 
                 entity.Property(e => e.Oauth)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .HasColumnName("OAuth");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Gachi>(entity =>
@@ -59,9 +64,13 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Link).HasMaxLength(500);
+                entity.Property(e => e.Link)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.Title).HasMaxLength(100);
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<Message>(entity =>
@@ -70,13 +79,19 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channel).HasMaxLength(50);
+                entity.Property(e => e.Channel)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.MessageText).HasMaxLength(500);
+                entity.Property(e => e.MessageText)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Nuke>(entity =>
@@ -85,15 +100,21 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channel).HasMaxLength(50);
+                entity.Property(e => e.Channel)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.ForTime).HasColumnType("bigint(20)");
 
                 entity.Property(e => e.TimeoutTime).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.Word).HasMaxLength(250);
+                entity.Property(e => e.Word)
+                    .IsRequired()
+                    .HasMaxLength(250);
             });
 
             modelBuilder.Entity<Pechkekse>(entity =>
@@ -102,7 +123,9 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Message).HasMaxLength(500);
+                entity.Property(e => e.Message)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<Prefix>(entity =>
@@ -111,7 +134,9 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channel).HasMaxLength(50);
+                entity.Property(e => e.Channel)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Prefix1)
                     .HasMaxLength(10)
@@ -124,13 +149,21 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channel).HasMaxLength(50);
+                entity.Property(e => e.Channel)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.QuoteMessage).HasMaxLength(500);
+                entity.Property(e => e.QuoteMessage)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.Submitter).HasMaxLength(50);
+                entity.Property(e => e.Submitter)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.TargetUser).HasMaxLength(50);
+                entity.Property(e => e.TargetUser)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Reminder>(entity =>
@@ -139,21 +172,25 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channel).HasMaxLength(50);
+                entity.Property(e => e.Channel)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.FromUser).HasMaxLength(50);
+                entity.Property(e => e.FromUser)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.Message).HasMaxLength(500);
+                entity.Property(e => e.Message)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
-                entity.Property(e => e.Time)
-                    .HasColumnType("bigint(20)")
-                    .HasDefaultValueSql("'0'");
+                entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.ToTime)
-                    .HasColumnType("bigint(20)")
-                    .HasDefaultValueSql("'0'");
+                entity.Property(e => e.ToTime).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.ToUser).HasMaxLength(50);
+                entity.Property(e => e.ToUser)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Spotify>(entity =>
@@ -162,13 +199,19 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.AccessToken).HasMaxLength(300);
+                entity.Property(e => e.AccessToken)
+                    .IsRequired()
+                    .HasMaxLength(300);
 
-                entity.Property(e => e.RefreshToken).HasMaxLength(300);
+                entity.Property(e => e.RefreshToken)
+                    .IsRequired()
+                    .HasMaxLength(300);
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Suggestion>(entity =>
@@ -177,17 +220,25 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Channel).HasMaxLength(50);
+                entity.Property(e => e.Channel)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.Done).HasColumnType("bit(1)");
+                entity.Property(e => e.Done)
+                    .IsRequired()
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
 
                 entity.Property(e => e.Suggestion1)
+                    .IsRequired()
                     .HasMaxLength(500)
                     .HasColumnName("Suggestion");
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -196,11 +247,10 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Egs)
-                    .HasColumnType("bigint(20)")
-                    .HasDefaultValueSql("'0'");
+                entity.Property(e => e.Egs).HasColumnType("bigint(20)");
 
                 entity.Property(e => e.IsAfk)
+                    .IsRequired()
                     .HasMaxLength(5)
                     .HasColumnName("IsAFK")
                     .HasDefaultValueSql("'false'");
@@ -211,7 +261,9 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Type).HasMaxLength(10);
 
-                entity.Property(e => e.Username).HasMaxLength(50);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Yourmom>(entity =>
@@ -220,7 +272,9 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.MessageText).HasMaxLength(500);
+                entity.Property(e => e.MessageText)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             OnModelCreatingPartial(modelBuilder);

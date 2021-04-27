@@ -9,7 +9,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public string ToUser { get; set; }
         public byte[] Message { get; set; }
         public string Channel { get; set; }
-        public long? Time { get; set; }
-        public long? ToTime { get; set; }
+        public long Time { get; set; }
+        public long ToTime { get; set; }
     }
 }

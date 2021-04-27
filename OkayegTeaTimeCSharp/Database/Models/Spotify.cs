@@ -8,6 +8,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public string Username { get; set; }
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
-        public long? Time { get; set; }
+        public long Time { get; set; }
     }
 }
