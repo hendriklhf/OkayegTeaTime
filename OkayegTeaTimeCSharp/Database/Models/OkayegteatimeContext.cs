@@ -32,7 +32,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL("Data Source=localhost;Database=okayegteatime;User ID=root; Password=;");
+                optionsBuilder.UseMySQL("Data Source=localhost;DataBase=okayegteatime;User ID=root; Password=;");
             }
         }
 

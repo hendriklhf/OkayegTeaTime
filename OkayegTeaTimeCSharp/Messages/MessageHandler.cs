@@ -1,5 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Database;
-using TwitchLib.Client.Models;
+﻿using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
@@ -7,7 +6,7 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static void Handle(ChatMessage chatMessage)
         {
-            Database.Database.LogMessage(chatMessage);
+            Database.DataBase.LogMessage(chatMessage);
         }
     }
 }

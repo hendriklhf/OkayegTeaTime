@@ -2,13 +2,12 @@
 using OkayegTeaTimeCSharp.Time;
 using System;
 using System.Collections.Generic;
+using System.Timers;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using System.Timers;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Bot
 {
@@ -72,7 +71,6 @@ namespace OkayegTeaTimeCSharp.Bot
             TwitchClient.Connect();
 
             _runtime = TimeHelper.Now();
-            this.InitializeTimers();
         }
 
         private void Client_OnLog(object sender, OnLogArgs e)

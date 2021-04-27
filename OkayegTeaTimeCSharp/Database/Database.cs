@@ -1,15 +1,13 @@
-﻿using OkayegTeaTimeCSharp.Database.Models;
+﻿using OkayegTeaTimeCSharp.Bot;
+using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Time;
-using TwitchLib.Client.Models;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Collections.Generic;
-using OkayegTeaTimeCSharp.Bot;
+using System.Linq;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Database
 {
-#warning Namen ändern
-    public static class Database
+    public static class DataBase
     {
         public static void LogMessage(ChatMessage chatMessage)
         {
