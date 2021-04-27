@@ -1,12 +1,19 @@
-﻿using TwitchLib.Client.Models;
+﻿using OkayegTeaTimeCSharp.Bot;
+using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.Database;
+using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Commands
+namespace OkayegTeaTimeCSharp.Messages
 {
     public static class MessageHandler
     {
-        public static void Handle(ChatMessage chatMessage)
+        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            Database.DataBase.LogMessage(chatMessage);
+            DataBase.LogMessage(chatMessage);
+
+            DataBase.CheckForTimedReminder(twitchBot);
+
+            CommandHandler.Handle(chatMessage);
         }
     }
 }

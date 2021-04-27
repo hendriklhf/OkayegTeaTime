@@ -1,11 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.Bot;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using System.Timers;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Database
 {

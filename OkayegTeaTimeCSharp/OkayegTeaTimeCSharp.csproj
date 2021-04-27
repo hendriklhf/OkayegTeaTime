@@ -31,8 +31,4 @@
 		<PackageReference Include="TwitchLib" Version="3.2.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Commands\" />
-	</ItemGroup>
-
 </Project>

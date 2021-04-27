@@ -8,6 +8,7 @@ namespace OkayegTeaTimeCSharp
         private static void Main(string[] args)
         {
             TwitchBot OkayegTeaTime = new();
+            OkayegTeaTime.SetBot();
             Console.ReadLine();
         }
     }

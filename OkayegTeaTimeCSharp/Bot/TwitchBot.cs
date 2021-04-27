@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Commands;
+﻿using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace OkayegTeaTimeCSharp.Bot
 {
     public class TwitchBot
     {
+        private static TwitchBot OkayegTeaTime { get; set; }
+
         public TwitchClient TwitchClient { get; private set; }
 
         public ConnectionCredentials ConnectionCredentials { get; private set; }
@@ -31,6 +34,7 @@ namespace OkayegTeaTimeCSharp.Bot
         {
             Config.GetUsername();
             Config.GetToken();
+            Config.GetChannels();
 
             ConnectionCredentials = new(Config.Username, Config.Token);
             ClientOptions = new()
@@ -51,8 +55,16 @@ namespace OkayegTeaTimeCSharp.Bot
             TwitchClient.Connect();
 
             _runtime = TimeHelper.Now();
+            Timers.InitializeTimers();
+            AddTimerFunction();
         }
 
+        public void SetBot()
+        {
+            OkayegTeaTime = this;
+        }
+
+        #region Bot_On
         private void Client_OnLog(object sender, OnLogArgs e)
         {
             //Console.WriteLine("LOG: " + e.Data);
@@ -70,8 +82,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            //MessageHandler.Handle(e.ChatMessage);
-#warning remove comment
+            MessageHandler.Handle(OkayegTeaTime, e.ChatMessage);
 
             Console.WriteLine("#" + e.ChatMessage.Channel + "> " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
         }
@@ -79,6 +90,17 @@ namespace OkayegTeaTimeCSharp.Bot
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
             Console.WriteLine("WHISPER>" + e.WhisperMessage.Username + ": " + e.WhisperMessage.Message);
+        }
+        #endregion
+
+        private static void AddTimerFunction()
+        {
+            Timers.GetTimer(1000).Elapsed += OnTimer1000;
+        }
+
+        private static void OnTimer1000(object sender, ElapsedEventArgs e)
+        {
+            DataBase.CheckForTimedReminder(OkayegTeaTime);
         }
     }
 }

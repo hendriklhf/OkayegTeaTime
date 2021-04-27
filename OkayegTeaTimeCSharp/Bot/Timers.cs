@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Timers;
-using OkayegTeaTimeCSharp.Database;
 
 namespace OkayegTeaTimeCSharp.Bot
 {
@@ -12,13 +7,23 @@ namespace OkayegTeaTimeCSharp.Bot
     {
         public static void InitializeTimers()
         {
-            Timer timerCheckForTimedReminders = new()
+            CreateTimer(1000);
+        }
+
+        private static void CreateTimer(int interval)
+        {
+            Timer timer = new()
             {
                 Enabled = false,
                 Interval = 1000,
                 AutoReset = true,
             };
-            TwitchBot.ListTimer.Add(timerCheckForTimedReminders);
+            TwitchBot.ListTimer.Add(timer);
+        }
+
+        public static Timer GetTimer(int interval)
+        {
+            return TwitchBot.ListTimer.Where(timer => timer.Interval == interval).FirstOrDefault();
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Utils;
-
-#nullable disable
+﻿#nullable disable
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {

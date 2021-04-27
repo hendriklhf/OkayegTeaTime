@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OkayegTeaTimeCSharp.Bot
 {
     public static class Config
-    {        
-        private static Database.Models.OkayegTeaTimeContext database = new();
+    {
+        private static readonly Database.Models.OkayegTeaTimeContext database = new();
 
         public static string Username { get; set; } = "";
 
@@ -28,7 +25,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public static void GetChannels()
         {
-
+            Channels = database.Bots.Where(bot => bot.Id == 1).FirstOrDefault().Channels.Split(" ").ToList();
         }
     }
 }
