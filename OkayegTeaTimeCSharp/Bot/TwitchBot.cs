@@ -20,7 +20,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public WebSocketClient WebSocketClient { get; private set; }
 
-        public List<string> Channels = new()
+        public List<string> Channels { get; private set; } = new()
         {
             "okayegteatime",
             "strbhlfe",
