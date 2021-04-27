@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
         {
-            twitchBot.Send(reminder.Channel, reminder.ToUser + ", reminder from " + reminder.FromUser + " (" + TimeHelper.ConvertMillisecondsToPassedTime((long)reminder.Time, " ago") + "): " + reminder.Message.ToString());
+            twitchBot.Send(reminder.Channel, reminder.ToUser + ", reminder from " + reminder.FromUser + " (" + TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago") + "): " + reminder.Message.ToString());
         }
     }
 }
