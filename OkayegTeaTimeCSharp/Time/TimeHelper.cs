@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Time
 
         public static string ConvertMillisecondsToPassedTime(long time, string addition = "")
         {
-            #warning alle zahlenwerte austauschen
+#warning alle zahlenwerte austauschen
             string result = "";
             time = Now() - time;
             if (Math.Truncate(time / (3.154 * Math.Pow(10, 10))) > 0)

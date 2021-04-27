@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.Time;
 using System;
 using System.Collections.Generic;
 using TwitchLib.Client;
@@ -42,6 +43,14 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private const string token = "oauth:h9kaxuxtjj9r58vcmz1kaerf1zp6kd";
 
+        public string Runtime
+        {
+            get => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
+            private set => _runtime = TimeHelper.Now();
+        }
+
+        private long _runtime = 0;
+
         public TwitchBot()
         {
             ConnectionCredentials = new(Username, token);
@@ -62,6 +71,7 @@ namespace OkayegTeaTimeCSharp.Bot
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
 
             TwitchClient.Connect();
+            _runtime = TimeHelper.Now();
         }
 
         private void Client_OnLog(object sender, OnLogArgs e)
