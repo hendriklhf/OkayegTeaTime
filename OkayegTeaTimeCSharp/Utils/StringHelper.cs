@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OkayegTeaTimeCSharp.Utils
 {
@@ -12,6 +13,23 @@ namespace OkayegTeaTimeCSharp.Utils
         public static string EscapeChars(this string str)
         {
             return str.Replace("\\", "\\\\").Replace("'", "\\'");
+        }
+
+        public static string Match(this string input, string pattern)
+        {
+            Regex regex = new(pattern);
+            return regex.Match(input).Value;
+        }
+
+        public static bool IsMatch(this string input, string pattern)
+        {
+            Regex regex = new(pattern);
+            return regex.IsMatch(input);
+        }
+
+        public static string Replace(this string input, string pattern, string replacement)
+        {
+            return Regex.Replace(input, pattern, replacement);
         }
     }
 }

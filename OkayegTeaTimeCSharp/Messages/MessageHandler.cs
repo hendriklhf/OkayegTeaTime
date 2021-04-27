@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static void Handle(ChatMessage chatMessage)
         {
-            DatabaseHelper.LogMessage(chatMessage);
+            Database.Database.LogMessage(chatMessage);
         }
     }
 }

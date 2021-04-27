@@ -7,6 +7,8 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
+using System.Timers;
+using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Bot
 {
@@ -18,7 +20,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public ClientOptions ClientOptions { get; private set; }
 
-        public WebSocketClient WebSocketClient { get; private set; }
+        public WebSocketClient WebSocketClient { get; private set; } = new();
 
         public List<string> Channels { get; private set; } = new()
         {
@@ -39,6 +41,8 @@ namespace OkayegTeaTimeCSharp.Bot
             "w201diesel"
         };
 
+        public List<Timer> ListTimer { get; private set; } = new();
+
         public const string Username = "okayegteatime";
 
         private const string token = "oauth:h9kaxuxtjj9r58vcmz1kaerf1zp6kd";
@@ -56,7 +60,6 @@ namespace OkayegTeaTimeCSharp.Bot
                 SendDelay = 250,
                 ReconnectionPolicy = new(3000)
             };
-            WebSocketClient = new();
             TwitchClient = new(WebSocketClient);
             TwitchClient.Initialize(ConnectionCredentials, Channels);
 
@@ -67,7 +70,9 @@ namespace OkayegTeaTimeCSharp.Bot
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
 
             TwitchClient.Connect();
+
             _runtime = TimeHelper.Now();
+            this.InitializeTimers();
         }
 
         private void Client_OnLog(object sender, OnLogArgs e)
