@@ -43,13 +43,9 @@ namespace OkayegTeaTimeCSharp.Bot
 
         private const string token = "oauth:h9kaxuxtjj9r58vcmz1kaerf1zp6kd";
 
-        public string Runtime
-        {
-            get => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
-            private set => _runtime = TimeHelper.Now();
-        }
+        public string Runtime => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
 
-        private long _runtime = 0;
+        private readonly long _runtime = 0;
 
         public TwitchBot()
         {
