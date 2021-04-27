@@ -9,7 +9,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void LogMessage(ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            database.Add(new Message(chatMessage.Username, chatMessage.Message, chatMessage.Channel, TimeHelper.Now()));
+            database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message, chatMessage.Channel, TimeHelper.Now()));
             database.SaveChanges();
         }
     }
