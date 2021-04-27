@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using System;
 
 namespace OkayegTeaTimeCSharp.Utils
 {
@@ -8,6 +9,11 @@ namespace OkayegTeaTimeCSharp.Utils
         public static byte[] ToByteArray(this string str)
         {
             return Encoding.UTF8.GetBytes(str);
+        }
+
+        public static string ToString(this byte[] bytes)
+        {
+            return Encoding.UTF8.GetString(bytes);
         }
 
         public static string EscapeChars(this string str)

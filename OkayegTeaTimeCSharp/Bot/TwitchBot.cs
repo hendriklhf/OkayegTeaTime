@@ -21,30 +21,7 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public WebSocketClient WebSocketClient { get; private set; } = new();
 
-        public List<string> Channels { get; private set; } = new()
-        {
-            "okayegteatime",
-            "strbhlfe",
-            "xxdirkthecrafterxx",
-            "derpalt",
-            "moondye7",
-            "ronic76",
-            "odin_eu",
-            "winnie_po",
-            "benastro",
-            "jonas5477",
-            "enno_of",
-            "jann_amh_",
-            "timix2g",
-            "jonasenbluten",
-            "w201diesel"
-        };
-
-        public List<Timer> ListTimer { get; private set; } = new();
-
-        public const string Username = "okayegteatime";
-
-        private const string token = "oauth:h9kaxuxtjj9r58vcmz1kaerf1zp6kd";
+        public static List<Timer> ListTimer { get; private set; } = new();
 
         public string Runtime => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
 
@@ -52,7 +29,10 @@ namespace OkayegTeaTimeCSharp.Bot
 
         public TwitchBot()
         {
-            ConnectionCredentials = new(Username, token);
+            Config.GetUsername();
+            Config.GetToken();
+
+            ConnectionCredentials = new(Config.Username, Config.Token);
             ClientOptions = new()
             {
                 MessagesAllowedInPeriod = 10000,
@@ -60,7 +40,7 @@ namespace OkayegTeaTimeCSharp.Bot
                 ReconnectionPolicy = new(3000)
             };
             TwitchClient = new(WebSocketClient);
-            TwitchClient.Initialize(ConnectionCredentials, Channels);
+            TwitchClient.Initialize(ConnectionCredentials, Config.Channels);
 
             TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
@@ -91,7 +71,7 @@ namespace OkayegTeaTimeCSharp.Bot
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             Console.WriteLine("#" + e.ChatMessage.Channel + "> " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
-            MessageHandler.Handle(e.ChatMessage);
+            //MessageHandler.Handle(e.ChatMessage);
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
