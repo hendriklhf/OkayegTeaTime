@@ -1,7 +1,12 @@
 ﻿namespace OkayegTeaTimeCSharp.Time
 {
-    public class Hour
+    public static class Hour
     {
-        public const long ToMilliseconds = 3600000;
+        private const long InMilliseconds = 3600000;
+
+        public static long ToMilliseconds(int hours = 1)
+        {
+            return InMilliseconds * hours;
+        }
     }
 }
