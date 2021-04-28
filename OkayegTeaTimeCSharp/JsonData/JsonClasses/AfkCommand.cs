@@ -5,7 +5,7 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class AfkCommand
     {
-        [JsonProperty("Command")]
+        [JsonProperty("CommandName")]
         public string CommandName { get; set; }
 
         [JsonProperty("Alias")]
