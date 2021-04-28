@@ -55,8 +55,7 @@ namespace OkayegTeaTimeCSharp.Bot
             TwitchClient.Connect();
 
             _runtime = TimeHelper.Now();
-            Timers.InitializeTimers();
-            AddTimerFunction();
+            InitializeTimers();
         }
 
         public void SetBot()
@@ -93,6 +92,24 @@ namespace OkayegTeaTimeCSharp.Bot
         }
         #endregion
 
+        #region Timer
+        private static void InitializeTimers()
+        {
+            Timers.CreateTimers();
+            AddTimerFunction();
+            StartTimers();
+        }
+
+        private static void StartTimers()
+        {
+            ListTimer.ForEach(timer => timer.Enabled = true);
+        }
+
+        private static void StopTimers()
+        {
+            ListTimer.ForEach(timer => timer.Enabled = false);
+        }
+
         private static void AddTimerFunction()
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
@@ -102,5 +119,6 @@ namespace OkayegTeaTimeCSharp.Bot
         {
             DataBase.CheckForTimedReminder(OkayegTeaTime);
         }
+        #endregion
     }
 }

@@ -246,7 +246,7 @@ namespace OkayegTeaTimeCSharp.Time
                 result = result[0..^1];
             }
 
-            return result.ToString() + addition;
+            return result + addition;
         }
     }
 }

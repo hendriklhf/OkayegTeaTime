@@ -17,6 +17,17 @@ namespace OkayegTeaTimeCSharp.Database
             database.SaveChanges();
         }
 
+        public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            OkayegTeaTimeContext database = new();
+            User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
+            if (user.IsAfk == "true")
+            {
+                twitchBot.SendComingBack(chatMessage, user);
+                DatabaseHelper.SetAfk(user, "false");
+            }
+        }
+
         public static void CheckForTimedReminder(TwitchBot twitchBot)
         {
             OkayegTeaTimeContext database = new();

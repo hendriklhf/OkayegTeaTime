@@ -5,7 +5,7 @@ namespace OkayegTeaTimeCSharp.Bot
 {
     public static class Timers
     {
-        public static void InitializeTimers()
+        public static void CreateTimers()
         {
             CreateTimer(1000);
         }
@@ -15,7 +15,7 @@ namespace OkayegTeaTimeCSharp.Bot
             Timer timer = new()
             {
                 Enabled = false,
-                Interval = 1000,
+                Interval = interval,
                 AutoReset = true,
             };
             TwitchBot.ListTimer.Add(timer);

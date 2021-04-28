@@ -11,7 +11,7 @@ namespace OkayegTeaTimeCSharp.Messages
         {
             DataBase.LogMessage(chatMessage);
 
-            DataBase.CheckForTimedReminder(twitchBot);
+            DataBase.CheckIfAFK(twitchBot, chatMessage);
 
             CommandHandler.Handle(chatMessage);
         }
