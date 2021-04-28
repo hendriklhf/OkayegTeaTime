@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
-    public class Root
+    public class Data
     {
         [JsonProperty("commandLists")]
         public CommandLists CommandLists { get; set; }
