@@ -5,7 +5,7 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class UserList
     {
-        [JsonProperty("Nname")]
+        [JsonProperty("Name")]
         public string Name { get; set; }
 
         [JsonProperty("Id")]
