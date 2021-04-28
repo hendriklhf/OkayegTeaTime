@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Timers;
 
-namespace OkayegTeaTimeCSharp.Bot
+namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class Timers
     {

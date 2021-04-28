@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Bot;
-using OkayegTeaTimeCSharp.Database.Models;
+﻿using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;

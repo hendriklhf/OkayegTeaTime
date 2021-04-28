@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Bot;
+﻿using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 
 namespace OkayegTeaTimeCSharp

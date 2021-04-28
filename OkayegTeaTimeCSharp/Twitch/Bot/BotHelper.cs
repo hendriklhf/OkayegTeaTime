@@ -3,7 +3,7 @@ using OkayegTeaTimeCSharp.Time;
 using System;
 using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Bot
+namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class BotHelper
     {

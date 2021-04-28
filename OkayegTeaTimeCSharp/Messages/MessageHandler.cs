@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Bot;
-using OkayegTeaTimeCSharp.Commands;
+﻿using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Messages

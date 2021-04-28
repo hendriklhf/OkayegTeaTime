@@ -10,7 +10,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 
-namespace OkayegTeaTimeCSharp.Bot
+namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public class TwitchBot
     {

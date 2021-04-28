@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace OkayegTeaTimeCSharp.Bot
+namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class Config
     {
