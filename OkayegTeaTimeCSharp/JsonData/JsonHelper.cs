@@ -1,5 +1,8 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses;
+using OkayegTeaTimeCSharp.Properties;
+using System.IO;
+using System.Text.Json;
 
 namespace OkayegTeaTimeCSharp.JsonData
 {
@@ -11,12 +14,22 @@ namespace OkayegTeaTimeCSharp.JsonData
             {
                 WriteIndented = true
             };
-            return JsonSerializer.Serialize(data, options);
+            return System.Text.Json.JsonSerializer.Serialize(data, options);
         }
 
         public static Data Deserialize(string json)
         {
-            return JsonSerializer.Deserialize<Data>(json);
+            return System.Text.Json.JsonSerializer.Deserialize<Data>(json);
+        }
+
+        public static Data JsonToObject()
+        {
+            return JsonConvert.DeserializeObject<Data>(Resources.Data.ToString());
+        }
+
+        public static void StringToJson(Data data)
+        {
+            File.WriteAllText(@"..\Resources\Data.json", Serialize(data));
         }
     }
 }
