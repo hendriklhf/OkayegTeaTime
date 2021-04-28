@@ -24,12 +24,17 @@ namespace OkayegTeaTimeCSharp.JsonData
 
         public static Data JsonToObject()
         {
-            return JsonConvert.DeserializeObject<Data>(Resources.Data.ToString());
+            return JsonConvert.DeserializeObject<Data>(JsonToString());
         }
 
         public static void StringToJson(Data data)
         {
             File.WriteAllText(@"..\Resources\Data.json", ObjectToString(data));
+        }
+
+        public static string JsonToString()
+        {
+            return File.ReadAllText(Resources.JsonPath);
         }
     }
 }
