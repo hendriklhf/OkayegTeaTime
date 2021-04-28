@@ -7,9 +7,9 @@ namespace OkayegTeaTimeCSharp.Bot
     {
         private static readonly Database.Models.OkayegTeaTimeContext database = new();
 
-        public static string Username { get; set; } = "";
+        public static string Username { get; private set; }
 
-        public static string Token { get; set; } = "";
+        public static string Token { get; private set; }
 
         public static List<string> Channels { get; private set; } = new();
 
