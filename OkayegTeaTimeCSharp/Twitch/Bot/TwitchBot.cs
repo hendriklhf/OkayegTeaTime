@@ -9,6 +9,7 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
+using OkayegTeaTimeCSharp.Whisper;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -90,6 +91,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
+            WhisperHandler.Handle(OkayegTeaTime, e.WhisperMessage);
+
             Console.WriteLine("WHISPER>" + e.WhisperMessage.Username + ": " + e.WhisperMessage.Message);
         }
         #endregion
