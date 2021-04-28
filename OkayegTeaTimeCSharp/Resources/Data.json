@@ -388,7 +388,7 @@
     ],
     "AfkCommands": [
       {
-        "CommandName": null,
+        "CommandName": "gn",
         "Alias": [
           "gn",
           "sleep"
@@ -401,7 +401,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "afk",
         "Alias": [
           "afk"
         ],
@@ -413,7 +413,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "brb",
         "Alias": [
           "brb"
         ],
@@ -425,7 +425,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "fat",
         "Alias": [
           "fat",
           "food"
@@ -438,7 +438,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "lurk",
         "Alias": [
           "lurk"
         ],
@@ -450,7 +450,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "shower",
         "Alias": [
           "shower"
         ],
@@ -462,7 +462,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "nap",
         "Alias": [
           "nap"
         ],
@@ -474,7 +474,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "study",
         "Alias": [
           "study"
         ],
@@ -486,7 +486,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "work",
         "Alias": [
           "work"
         ],
@@ -498,7 +498,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "school",
         "Alias": [
           "school"
         ],
@@ -510,7 +510,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "poof",
         "Alias": [
           "poof"
         ],
@@ -522,7 +522,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "game",
         "Alias": [
           "game",
           "gaming"
@@ -535,7 +535,7 @@
         ]
       },
       {
-        "CommandName": null,
+        "CommandName": "movie",
         "Alias": [
           "movie",
           "film"
