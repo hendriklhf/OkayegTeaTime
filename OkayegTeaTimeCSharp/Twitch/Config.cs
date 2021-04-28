@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static string GetToken()
         {
-            return Resources.Token;
+            return Resources.OAuthToken;
         }
 
         public static List<string> GetChannels()
@@ -23,12 +23,12 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static string GetClientID()
         {
-            return Resources.ClientID;
+            return Resources.TwitchApiClientID;
         }
 
         public static string GetAccessToken()
         {
-            return Resources.AccesToken;
+            return Resources.TwitchApiAccessToken;
         }
     }
 }
