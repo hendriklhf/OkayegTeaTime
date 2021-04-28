@@ -13,6 +13,7 @@ namespace OkayegTeaTimeCSharp.Database
     {
         public static void LogMessage(ChatMessage chatMessage)
         {
+            #warning keine nachrichten von bots etc. loggen
             OkayegTeaTimeContext database = new();
             database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.Transform(), chatMessage.Channel, TimeHelper.Now()));
             database.SaveChanges();
