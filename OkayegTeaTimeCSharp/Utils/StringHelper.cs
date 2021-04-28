@@ -32,9 +32,14 @@ namespace OkayegTeaTimeCSharp.Utils
             return regex.IsMatch(input);
         }
 
-        public static string Replace(this string input, string pattern, string replacement)
+        public static string ReplacePattern(this string input, string pattern, string replacement)
         {
             return Regex.Replace(input, pattern, replacement);
+        }
+        
+        public static string ReplaceSpaces(this string input)
+        {
+            return input.ReplacePattern(@"\s+", " ");
         }
     }
 }

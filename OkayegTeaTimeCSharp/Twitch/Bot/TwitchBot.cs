@@ -53,10 +53,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
 
             TwitchClient.Connect();
-            SetBot();
 
             _runtime = TimeHelper.Now();
             InitializeTimers();
+
+            SetBot();
         }
 
         public void SetBot()
