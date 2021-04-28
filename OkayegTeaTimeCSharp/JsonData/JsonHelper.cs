@@ -8,7 +8,7 @@ namespace OkayegTeaTimeCSharp.JsonData
 {
     public static class JsonHelper
     {
-        public static string Serialize(Data data)
+        public static string ObjectToString(Data data)
         {
             JsonSerializerOptions options = new()
             {
@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.JsonData
             return System.Text.Json.JsonSerializer.Serialize(data, options);
         }
 
-        public static Data Deserialize(string json)
+        public static Data StringToObject(string json)
         {
             return System.Text.Json.JsonSerializer.Deserialize<Data>(json);
         }
@@ -29,7 +29,7 @@ namespace OkayegTeaTimeCSharp.JsonData
 
         public static void StringToJson(Data data)
         {
-            File.WriteAllText(@"..\Resources\Data.json", Serialize(data));
+            File.WriteAllText(@"..\Resources\Data.json", ObjectToString(data));
         }
     }
 }
