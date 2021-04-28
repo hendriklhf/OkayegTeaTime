@@ -4,13 +4,16 @@
     {
         public static TwitchAPI TwitchApi;
 
-        public TwitchLib.Api.TwitchAPI twitchAPI { get; private set; }
+        public TwitchLib.Api.TwitchAPI API { get; private set; }
 
         public TwitchAPI()
         {
-            twitchAPI = new();
-            twitchAPI.Settings.ClientId = "";
-            twitchAPI.Settings.AccessToken = "";
+            Config.GetClientID();
+            Config.GetAccessToken();
+
+            API = new();
+            API.Settings.ClientId = Config.ClientID;
+            API.Settings.AccessToken = Config.AccessToken;
 
             SetApi();
         }
