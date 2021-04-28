@@ -388,7 +388,7 @@
     ],
     "AfkCommands": [
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "gn",
           "sleep"
@@ -401,7 +401,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "afk"
         ],
@@ -413,7 +413,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "brb"
         ],
@@ -425,7 +425,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "fat",
           "food"
@@ -438,7 +438,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "lurk"
         ],
@@ -450,7 +450,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "shower"
         ],
@@ -462,7 +462,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "nap"
         ],
@@ -474,7 +474,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "study"
         ],
@@ -486,7 +486,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "work"
         ],
@@ -498,7 +498,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "school"
         ],
@@ -510,7 +510,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "poof"
         ],
@@ -522,7 +522,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "game",
           "gaming"
@@ -535,7 +535,7 @@
         ]
       },
       {
-        "Command": null,
+        "CommandName": null,
         "Alias": [
           "movie",
           "film"

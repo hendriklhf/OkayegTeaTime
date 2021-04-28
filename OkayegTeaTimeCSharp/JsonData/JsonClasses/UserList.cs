@@ -5,13 +5,13 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class UserList
     {
-        [JsonProperty("name")]
+        [JsonProperty("Nname")]
         public string Name { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("Id")]
         public string Id { get; set; }
 
-        [JsonProperty("matches")]
+        [JsonProperty("Matches")]
         public List<string> Matches { get; set; }
     }
 }

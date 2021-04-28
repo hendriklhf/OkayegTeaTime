@@ -5,7 +5,7 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class Discord
     {
-        [JsonProperty("userList")]
+        [JsonProperty("UserList")]
         public List<UserList> UserList { get; set; }
     }
 }

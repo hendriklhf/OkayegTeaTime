@@ -5,16 +5,16 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class Data
     {
-        [JsonProperty("commandLists")]
+        [JsonProperty("CommandLists")]
         public CommandLists CommandLists { get; set; }
 
-        [JsonProperty("userLists")]
+        [JsonProperty("UserLists")]
         public UserLists UserLists { get; set; }
 
-        [JsonProperty("channels")]
+        [JsonProperty("Channels")]
         public List<Channel> Channels { get; set; }
 
-        [JsonProperty("discord")]
+        [JsonProperty("Discord")]
         public Discord Discord { get; set; }
     }
 }

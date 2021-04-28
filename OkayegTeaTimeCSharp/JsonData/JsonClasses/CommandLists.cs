@@ -5,10 +5,10 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class CommandLists
     {
-        [JsonProperty("commands")]
+        [JsonProperty("Commands")]
         public List<Command> Commands { get; set; }
 
-        [JsonProperty("afkCommands")]
+        [JsonProperty("AfkCommands")]
         public List<AfkCommand> AfkCommands { get; set; }
     }
 }

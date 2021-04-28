@@ -4,13 +4,13 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class Channel
     {
-        [JsonProperty("name")]
+        [JsonProperty("Nname")]
         public string Name { get; set; }
 
-        [JsonProperty("cytube")]
+        [JsonProperty("Cytube")]
         public string Cytube { get; set; }
 
-        [JsonProperty("beatsense")]
+        [JsonProperty("Beatsense")]
         public string Beatsense { get; set; }
     }
 }

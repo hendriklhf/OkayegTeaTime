@@ -5,10 +5,10 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
     public class UserLists
     {
-        [JsonProperty("specialUsers")]
+        [JsonProperty("SpecialUsers")]
         public List<string> SpecialUsers { get; set; }
 
-        [JsonProperty("secretUsers")]
+        [JsonProperty("SecretUsers")]
         public List<string> SecretUsers { get; set; }
     }
 }
