@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OkayegTeaTimeCSharp.Commands;
-using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+using System;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Whisper

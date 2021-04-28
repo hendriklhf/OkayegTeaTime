@@ -36,7 +36,7 @@ namespace OkayegTeaTimeCSharp.Utils
         {
             return Regex.Replace(input, pattern, replacement);
         }
-        
+
         public static string ReplaceSpaces(this string input)
         {
             return input.ReplacePattern(@"\s+", " ");

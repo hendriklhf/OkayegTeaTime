@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
 using System.Timers;
@@ -9,7 +10,6 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using OkayegTeaTimeCSharp.Whisper;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {

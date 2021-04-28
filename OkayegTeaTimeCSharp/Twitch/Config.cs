@@ -1,7 +1,6 @@
-﻿using System;
+﻿using OkayegTeaTimeCSharp.Properties;
 using System.Collections.Generic;
 using System.Linq;
-using OkayegTeaTimeCSharp.Properties;
 
 namespace OkayegTeaTimeCSharp.Twitch
 {

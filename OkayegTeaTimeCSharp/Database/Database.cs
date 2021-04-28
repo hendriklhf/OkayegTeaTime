@@ -1,11 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Messages;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -13,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Database
     {
         public static void LogMessage(ChatMessage chatMessage)
         {
-            #warning keine nachrichten von bots etc. loggen
+#warning keine nachrichten von bots etc. loggen
             OkayegTeaTimeContext database = new();
             database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.Transform(), chatMessage.Channel, TimeHelper.Now()));
             database.SaveChanges();
@@ -27,7 +26,7 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 twitchBot.SendComingBack(chatMessage, user);
                 DatabaseHelper.SetAfk(user, "false");
-                #warning nicht false setzen, wenn wieder ein afk command ausgeführt wird
+#warning nicht false setzen, wenn wieder ein afk command ausgeführt wird
             }
         }
 
