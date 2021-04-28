@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTimeCSharp.Twitch.API
+﻿using OkayegTeaTimeCSharp.Properties;
+
+namespace OkayegTeaTimeCSharp.Twitch.API
 {
     public class TwitchAPI
     {
@@ -8,12 +10,9 @@
 
         public TwitchAPI()
         {
-            Config.GetClientID();
-            Config.GetAccessToken();
-
             API = new();
-            API.Settings.ClientId = Config.GetClientID();
-            API.Settings.AccessToken = Config.GetAccessToken();
+            API.Settings.ClientId = Resources.TwitchApiClientID;
+            API.Settings.AccessToken = Resources.TwitchApiAccessToken;
 
             SetApi();
         }

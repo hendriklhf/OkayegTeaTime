@@ -10,6 +10,7 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
+using OkayegTeaTimeCSharp.Properties;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -33,11 +34,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TwitchBot()
         {
-            Config.GetUsername();
-            Config.GetToken();
-            Config.GetChannels();
-
-            ConnectionCredentials = new(Config.GetUsername(), Config.GetToken());
+            ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
                 MessagesAllowedInPeriod = 10000,
