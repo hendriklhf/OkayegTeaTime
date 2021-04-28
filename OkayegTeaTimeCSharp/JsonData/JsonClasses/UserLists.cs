@@ -1,11 +1,14 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class UserLists
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
-    [JsonProperty("specialUsers")]
-    public List<string> SpecialUsers { get; set; }
+    public class UserLists
+    {
+        [JsonProperty("specialUsers")]
+        public List<string> SpecialUsers { get; set; }
 
-    [JsonProperty("secretUsers")]
-    public List<string> SecretUsers { get; set; }
+        [JsonProperty("secretUsers")]
+        public List<string> SecretUsers { get; set; }
+    }
 }

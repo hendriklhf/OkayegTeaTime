@@ -1,8 +1,11 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class Discord
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
-    [JsonProperty("userList")]
-    public List<UserList> UserList { get; set; }
+    public class Discord
+    {
+        [JsonProperty("userList")]
+        public List<UserList> UserList { get; set; }
+    }
 }

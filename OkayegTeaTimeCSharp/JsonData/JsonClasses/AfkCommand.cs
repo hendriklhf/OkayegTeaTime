@@ -1,17 +1,20 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class AfkCommand
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 {
-    [JsonProperty("command")]
-    public string Command { get; set; }
+    public class AfkCommand
+    {
+        [JsonProperty("command")]
+        public string Command { get; set; }
 
-    [JsonProperty("alias")]
-    public List<string> Alias { get; set; }
+        [JsonProperty("alias")]
+        public List<string> Alias { get; set; }
 
-    [JsonProperty("parameter")]
-    public List<string> Parameter { get; set; }
+        [JsonProperty("parameter")]
+        public List<string> Parameter { get; set; }
 
-    [JsonProperty("description")]
-    public List<string> Description { get; set; }
+        [JsonProperty("description")]
+        public List<string> Description { get; set; }
+    }
 }
