@@ -27,9 +27,9 @@ namespace OkayegTeaTimeCSharp.JsonData
             return JsonConvert.DeserializeObject<Data>(JsonToString());
         }
 
-        public static void StringToJson(Data data)
+        public static void ObjectToJson(Data data)
         {
-            File.WriteAllText(@"..\Resources\Data.json", ObjectToString(data));
+            File.WriteAllText(Resources.JsonPath, ObjectToString(data));
         }
 
         public static string JsonToString()

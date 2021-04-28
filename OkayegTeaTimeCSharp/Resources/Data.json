@@ -1,120 +1,120 @@
 {
-  "commandLists": {
-    "commands": [
+  "CommandLists": {
+    "Commands": [
       {
-        "commandName": "help",
-        "alias": [
+        "CommandName": "help",
+        "Alias": [
           "help",
           "commands"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Posts a link to this page"
         ]
       },
       {
-        "commandName": "ping",
-        "alias": [
+        "CommandName": "ping",
+        "Alias": [
           "ping",
           "pong"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Sends a ping message, if the bot is online"
         ]
       },
       {
-        "commandName": "rand",
-        "alias": [
+        "CommandName": "rand",
+        "Alias": [
           "rand",
           "rl",
           "randomline"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)",
           "[username]",
           "[username] #[channel]"
         ],
-        "description": [
+        "Description": [
           "Sends a random message of any user in the current channel",
           "Sends a random message sent across all channels of the given user",
           "Sends a random message sent in the given channel of the given user"
         ]
       },
       {
-        "commandName": "first",
-        "alias": [
+        "CommandName": "first",
+        "Alias": [
           "first",
           "fl",
           "firstline"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)",
           "[username]"
         ],
-        "description": [
+        "Description": [
           "Sends the first logged message of yourself",
           "Sends the first logged message of the given user"
         ]
       },
       {
-        "commandName": "last",
-        "alias": [
+        "CommandName": "last",
+        "Alias": [
           "last",
           "lastline",
           "ll",
           "stalk"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Sends the last logged message of the given user"
         ]
       },
       {
-        "commandName": "search",
-        "alias": [
+        "CommandName": "search",
+        "Alias": [
           "search",
           "find"
         ],
-        "parameter": [
+        "Parameter": [
           "[text]"
         ],
-        "description": [
+        "Description": [
           "Sends a message that includes the given text"
         ]
       },
       {
-        "commandName": "cookie",
-        "alias": [
+        "CommandName": "cookie",
+        "Alias": [
           "cookie",
           "keks"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Sends a friendly fortune cookie message :)"
         ]
       },
       {
-        "commandName": "count",
-        "alias": [
+        "CommandName": "count",
+        "Alias": [
           "count"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)",
           "[username]",
           "#[channel]",
           "e [emote]",
           "-users"
         ],
-        "description": [
+        "Description": [
           "Sends the amount of logged messages sent by the given user",
           "Sends the amount of logged messages in the given channel",
           "Sends the amount of usages of the given emote",
@@ -122,72 +122,72 @@
         ]
       },
       {
-        "commandName": "suggest",
-        "alias": [
+        "CommandName": "suggest",
+        "Alias": [
           "suggest",
           "bug"
         ],
-        "parameter": [
+        "Parameter": [
           "[text]"
         ],
-        "description": [
+        "Description": [
           "Suggest a new feature"
         ]
       },
       {
-        "commandName": "fuck",
-        "alias": [
+        "CommandName": "fuck",
+        "Alias": [
           "fuck"
         ],
-        "parameter": [
+        "Parameter": [
           "[username]",
           "[username] [emote]"
         ],
-        "description": [
+        "Description": [
           "Fucks the given user",
           "Fucks the given user and adds a given emote"
         ]
       },
       {
-        "commandName": "remind",
-        "alias": [
+        "CommandName": "remind",
+        "Alias": [
           "remind",
           "notify"
         ],
-        "parameter": [
+        "Parameter": [
           "[username] [text]",
           "[username] in [time] [text]"
         ],
-        "description": [
+        "Description": [
           "Sets a reminder for the given user",
           "Sets a reminder for the given user, that will be triggered after the given time"
         ]
       },
       {
-        "commandName": "rafk",
-        "alias": [
+        "CommandName": "rafk",
+        "Alias": [
           "rafk",
           "cafk"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
+        "Description": [
           "Resumes your last status"
         ]
       },
       {
-        "commandName": "emote",
-        "alias": [
+        "CommandName": "emote",
+        "Alias": [
           "emote"
         ],
-        "parameter": [
+        "Parameter": [
           "ffz",
           "ffz [number]",
           "bttv",
           "bttv [number]"
         ],
-        "description": [
+        "Description": [
           "Sends three of the recently added ffz emotes",
           "Sends a given amount of recently added ffz emotes",
           "Sends three of the recently added ffz emotes",
@@ -195,179 +195,179 @@
         ]
       },
       {
-        "commandName": "check",
-        "alias": [
+        "CommandName": "check",
+        "Alias": [
           "check"
         ],
-        "parameter": [
+        "Parameter": [
           "afk [username]",
           "egs",
           "egs [username]"
         ],
-        "description": [
+        "Description": [
           "Checks the afk status of the given user",
           "Checks how many egs you possess",
           "Checks how many egs the given user possesses"
         ]
       },
       {
-        "commandName": "yourmom",
-        "alias": [
+        "CommandName": "yourmom",
+        "Alias": [
           "yourmom"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)",
           "[username]"
         ],
-        "description": [
-          "Sends a \"your mom\" joke",
-          "Sends a \"your mom\" joke to the given user"
+        "Description": [
+          "Sends a \u0022your mom\u0022 joke",
+          "Sends a \u0022your mom\u0022 joke to the given user"
         ]
       },
       {
-        "commandName": "tuck",
-        "alias": [
+        "CommandName": "tuck",
+        "Alias": [
           "tuck"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Tucks the given user to bed"
         ]
       },
       {
-        "commandName": "gachi",
-        "alias": [
+        "CommandName": "gachi",
+        "Alias": [
           "gachi"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Sends a random gachi song"
         ]
       },
       {
-        "commandName": "quote",
-        "alias": [
+        "CommandName": "quote",
+        "Alias": [
           "quote"
         ],
-        "parameter": [
+        "Parameter": [
           ""
         ],
-        "description": [
+        "Description": [
           ""
         ]
       },
       {
-        "commandName": "massping",
-        "alias": [
+        "CommandName": "massping",
+        "Alias": [
           "massping"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Pings all users in the current channel"
         ]
       },
       {
-        "commandName": "cytube",
-        "alias": [
+        "CommandName": "cytube",
+        "Alias": [
           "cytube"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
-          "Sends the current song playing in the channel's cytube room, if it is set"
+        "Description": [
+          "Sends the current song playing in the channel\u0027s cytube room, if it is set"
         ]
       },
       {
-        "commandName": "nuke",
-        "alias": [
+        "CommandName": "nuke",
+        "Alias": [
           "nuke"
         ],
-        "parameter": [
+        "Parameter": [
           "[word] [timeout time] [duration]"
         ],
-        "description": [
+        "Description": [
           "Will timeout every user for the given timeout time for the given time"
         ]
       },
       {
-        "commandName": "set",
-        "alias": [
+        "CommandName": "set",
+        "Alias": [
           "set"
         ],
-        "parameter": [
+        "Parameter": [
           "prefix"
         ],
-        "description": [
-          "Will set the channel's command prefix to the given prefix. A prefix can be as long as 10 chars"
+        "Description": [
+          "Will set the channel\u0027s command prefix to the given prefix. A prefix can be as long as 10 chars"
         ]
       },
       {
-        "commandName": "unset",
-        "alias": [
+        "CommandName": "unset",
+        "Alias": [
           "unset"
         ],
-        "parameter": [
+        "Parameter": [
           "prefix"
         ],
-        "description": [
+        "Description": [
           "Unsets the command prefix in the current channel"
         ]
       },
       {
-        "commandName": "math",
-        "alias": [
+        "CommandName": "math",
+        "Alias": [
           "math",
           "calc"
         ],
-        "parameter": [
+        "Parameter": [
           "[Mathematical expression]"
         ],
-        "description": [
+        "Description": [
           "Will calculate the solution of the given mathematical expression"
         ]
       },
       {
-        "commandName": "coinflip",
-        "alias": [
+        "CommandName": "coinflip",
+        "Alias": [
           "coinflip",
           "cf",
           "coin",
           "8ball"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)"
         ],
-        "description": [
+        "Description": [
           "Sends the result of a coinflip"
         ]
       },
       {
-        "commandName": "spotify",
-        "alias": [
+        "CommandName": "spotify",
+        "Alias": [
           "spotify",
           "song"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)",
           "me",
           "[username]"
         ],
-        "description": [
+        "Description": [
           "Sends the current playing spotify song of the broadcaster, if registered",
           "Sends your current playing spotify song, if registered",
           "Sends the current playing spotify song of the given user, if registered"
         ]
       },
       {
-        "commandName": "chatters",
-        "alias": [
+        "CommandName": "chatters",
+        "Alias": [
           "chatters",
           "chattercount",
           "cc",
@@ -376,181 +376,181 @@
           "offlineviewer",
           "ov"
         ],
-        "parameter": [
+        "Parameter": [
           "(none)",
           "#[channel]"
         ],
-        "description": [
+        "Description": [
           "Sends the amount of chatters in the current channel",
           "Sends the amount of chatters in the given channel"
         ]
       }
     ],
-    "afkCommands": [
+    "AfkCommands": [
       {
-        "commandName": "gn",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "gn",
           "sleep"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"sleeping\""
+        "Description": [
+          "Sets your status to \u0022sleeping\u0022"
         ]
       },
       {
-        "commandName": "afk",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "afk"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"afk\""
+        "Description": [
+          "Sets your status to \u0022afk\u0022"
         ]
       },
       {
-        "commandName": "brb",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "brb"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"brb\""
+        "Description": [
+          "Sets your status to \u0022brb\u0022"
         ]
       },
       {
-        "commandName": "fat",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "fat",
           "food"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"eating\""
+        "Description": [
+          "Sets your status to \u0022eating\u0022"
         ]
       },
       {
-        "commandName": "lurk",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "lurk"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"lurking\""
+        "Description": [
+          "Sets your status to \u0022lurking\u0022"
         ]
       },
       {
-        "commandName": "shower",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "shower"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"showering\""
+        "Description": [
+          "Sets your status to \u0022showering\u0022"
         ]
       },
       {
-        "commandName": "nap",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "nap"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"napping\""
+        "Description": [
+          "Sets your status to \u0022napping\u0022"
         ]
       },
       {
-        "commandName": "study",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "study"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"studying\""
+        "Description": [
+          "Sets your status to \u0022studying\u0022"
         ]
       },
       {
-        "commandName": "work",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "work"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"working\""
+        "Description": [
+          "Sets your status to \u0022working\u0022"
         ]
       },
       {
-        "commandName": "school",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "school"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"at school\""
+        "Description": [
+          "Sets your status to \u0022at school\u0022"
         ]
       },
       {
-        "commandName": "poof",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "poof"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"poofed away\""
+        "Description": [
+          "Sets your status to \u0022poofed away\u0022"
         ]
       },
       {
-        "commandName": "game",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "game",
           "gaming"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"gaming\""
+        "Description": [
+          "Sets your status to \u0022gaming\u0022"
         ]
       },
       {
-        "commandName": "movie",
-        "alias": [
+        "Command": null,
+        "Alias": [
           "movie",
           "film"
         ],
-        "parameter": [
+        "Parameter": [
           "[message]"
         ],
-        "description": [
-          "Sets your status to \"watching a movie\""
+        "Description": [
+          "Sets your status to \u0022watching a movie\u0022"
         ]
       }
     ]
   },
-  "userLists": {
-    "specialUsers": [
+  "UserLists": {
+    "SpecialUsers": [
       "okayegteatime",
       "streamelements",
       "supibot",
@@ -566,7 +566,7 @@
       "thepositivebot",
       "huwobot"
     ],
-    "secretUsers": [
+    "SecretUsers": [
       "okayegteatime",
       "strbhlfe",
       "winnie_po",
@@ -580,27 +580,29 @@
       "roaringiron"
     ]
   },
-  "channels": [
+  "Channels": [
     {
-      "name": "ronic76",
-      "cytube": "ronic"
+      "Name": "ronic76",
+      "Cytube": "ronic",
+      "Beatsense": null
     },
     {
-      "name": "derpalt",
-      "cytube": "benastro",
-      "beatsense": "secretdanceparty"
+      "Name": "derpalt",
+      "Cytube": "benastro",
+      "Beatsense": "secretdanceparty"
     },
     {
-      "name": "moondye7",
-      "cytube": "moondye7"
+      "Name": "moondye7",
+      "Cytube": "moondye7",
+      "Beatsense": null
     }
   ],
-  "discord": {
-    "userList": [
+  "Discord": {
+    "UserList": [
       {
-        "name": "strbhlfe",
-        "id": "220879168663977984",
-        "matches": [
+        "Name": "strbhlfe",
+        "Id": "220879168663977984",
+        "Matches": [
           "hendrik",
           "hendri",
           "strbhlfe",
@@ -608,67 +610,67 @@
         ]
       },
       {
-        "name": "winnie_po",
-        "id": "237548565906325506",
-        "matches": [
+        "Name": "winnie_po",
+        "Id": "237548565906325506",
+        "Matches": [
           "lisa",
           "winnie_po"
         ]
       },
       {
-        "name": "jann_amh_",
-        "id": "348774200015847424",
-        "matches": [
+        "Name": "jann_amh_",
+        "Id": "348774200015847424",
+        "Matches": [
           "jann",
           "jann_amh_"
         ]
       },
       {
-        "name": "jonas5477",
-        "id": "620896362497835018",
-        "matches": [
+        "Name": "jonas5477",
+        "Id": "620896362497835018",
+        "Matches": [
           "jonas",
           "jonas5477",
           "joans"
         ]
       },
       {
-        "name": "odin_eu",
-        "id": "468102310044762120",
-        "matches": [
+        "Name": "odin_eu",
+        "Id": "468102310044762120",
+        "Matches": [
           "odin",
           "odin_eu"
         ]
       },
       {
-        "name": "benastro",
-        "id": "529307272359444490",
-        "matches": [
+        "Name": "benastro",
+        "Id": "529307272359444490",
+        "Matches": [
           "ben",
           "benastro"
         ]
       },
       {
-        "name": "emirem",
-        "id": "274996202423058432",
-        "matches": [
+        "Name": "emirem",
+        "Id": "274996202423058432",
+        "Matches": [
           "julius",
           "emirem"
         ]
       },
       {
-        "name": "timix2g",
-        "id": "164631277922811904",
-        "matches": [
+        "Name": "timix2g",
+        "Id": "164631277922811904",
+        "Matches": [
           "timi",
           "timix",
           "timix2g"
         ]
       },
       {
-        "name": "w201diesel",
-        "id": "775807708305555457",
-        "matches": [
+        "Name": "w201diesel",
+        "Id": "775807708305555457",
+        "Matches": [
           "marc",
           "w201diesel"
         ]
