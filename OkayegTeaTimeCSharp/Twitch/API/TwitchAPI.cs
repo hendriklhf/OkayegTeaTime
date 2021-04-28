@@ -12,8 +12,8 @@
             Config.GetAccessToken();
 
             API = new();
-            API.Settings.ClientId = Config.ClientID;
-            API.Settings.AccessToken = Config.AccessToken;
+            API.Settings.ClientId = Config.GetClientID();
+            API.Settings.AccessToken = Config.GetAccessToken();
 
             SetApi();
         }

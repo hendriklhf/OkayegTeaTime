@@ -36,7 +36,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Config.GetToken();
             Config.GetChannels();
 
-            ConnectionCredentials = new(Config.Username, Config.Token);
+            ConnectionCredentials = new(Config.GetUsername(), Config.GetToken());
             ClientOptions = new()
             {
                 MessagesAllowedInPeriod = 10000,
@@ -44,7 +44,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 ReconnectionPolicy = new(3000)
             };
             TwitchClient = new(WebSocketClient);
-            TwitchClient.Initialize(ConnectionCredentials, Config.Channels);
+            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
 
             TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;

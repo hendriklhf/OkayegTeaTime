@@ -1,46 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OkayegTeaTimeCSharp.Properties;
 
 namespace OkayegTeaTimeCSharp.Twitch
 {
     public static class Config
     {
-        private static readonly Database.Models.OkayegTeaTimeContext database = new();
-
-        public static string Username { get; private set; }
-
-        public static string Token { get; private set; }
-
-        public static List<string> Channels { get; private set; } = new();
-
-        public static string ClientID { get; private set; }
-
-        public static string AccessToken { get; private set; }
-
-        public static void GetUsername()
+        public static string GetUsername()
         {
-            Username = database.Bots.Where(bot => bot.Id == 1).FirstOrDefault().Username;
+            return Resources.Username;
         }
 
-        public static void GetToken()
+        public static string GetToken()
         {
-            Token = database.Bots.Where(bot => bot.Id == 1).FirstOrDefault().Oauth;
+            return Resources.Token;
         }
 
-        public static void GetChannels()
+        public static List<string> GetChannels()
         {
-            Channels = database.Bots.Where(bot => bot.Id == 1).FirstOrDefault().Channels.Split(" ").ToList();
+            return Resources.Channels.Split(" ").ToList();
         }
 
-        public static void GetClientID()
+        public static string GetClientID()
         {
-            throw new NotImplementedException();
+            return Resources.ClientID;
         }
 
-        public static void GetAccessToken()
+        public static string GetAccessToken()
         {
-            throw new NotImplementedException();
+            return Resources.AccesToken;
         }
     }
 }
