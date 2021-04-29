@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Messages
 
             DataBase.InsertNewUser(chatMessage.Username);
 
-            CommandHandler.Handle(chatMessage);
+            CommandHandler.Handle(twitchBot, chatMessage);
         }
     }
 }

@@ -12,14 +12,7 @@ namespace OkayegTeaTimeCSharp.Database
             if (state.IsMatch(@"^(t(rue)?)|(f(alse)?)$"))
             {
                 User userE = database.Users.Where(userD => userD.Username == user.Username).FirstOrDefault();
-                if (state.IsMatch(@"^t(rue)?$"))
-                {
-                    userE.IsAfk = "true";
-                }
-                else
-                {
-                    userE.IsAfk = "false";
-                }
+                userE.IsAfk = state.IsMatch(@"^t(rue)?$") ? "true" : "false";
                 database.SaveChanges();
             }
             else

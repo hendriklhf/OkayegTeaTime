@@ -6,6 +6,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
     {
         public int Id { get; set; }
         public string Channel { get; set; }
-        public string Prefix1 { get; set; }
+        public string PrefixString { get; set; }
     }
 }

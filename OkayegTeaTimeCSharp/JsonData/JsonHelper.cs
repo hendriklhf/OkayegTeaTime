@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses;
+﻿using OkayegTeaTimeCSharp.JsonData.JsonClasses;
 using OkayegTeaTimeCSharp.Properties;
 using System.IO;
-using System.Text.Json;
+using NewtonJson = Newtonsoft.Json;
+using SystemJson = System.Text.Json;
 
 namespace OkayegTeaTimeCSharp.JsonData
 {
@@ -10,21 +10,21 @@ namespace OkayegTeaTimeCSharp.JsonData
     {
         public static string ObjectToString(Data data)
         {
-            JsonSerializerOptions options = new()
+            SystemJson::JsonSerializerOptions options = new()
             {
                 WriteIndented = true
             };
-            return System.Text.Json.JsonSerializer.Serialize(data, options);
+            return SystemJson::JsonSerializer.Serialize(data, options);
         }
 
         public static Data StringToObject(string json)
         {
-            return System.Text.Json.JsonSerializer.Deserialize<Data>(json);
+            return SystemJson::JsonSerializer.Deserialize<Data>(json);
         }
 
         public static Data JsonToObject()
         {
-            return JsonConvert.DeserializeObject<Data>(JsonToString());
+            return NewtonJson::JsonConvert.DeserializeObject<Data>(JsonToString());
         }
 
         public static void ObjectToJson(Data data)
