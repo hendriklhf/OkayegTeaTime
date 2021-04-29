@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.JsonData;
+﻿using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Messages
@@ -13,6 +14,45 @@ namespace OkayegTeaTimeCSharp.Messages
         public static bool IsSpecialUser(string username)
         {
             return JsonHelper.JsonToObject().UserLists.SpecialUsers.Contains(username);
+        }
+
+        public static bool IsAnyCommand(string message)
+        {
+            bool result = false;
+            CommandHelper.GetAllAliases().ForEach(alias =>
+            {
+                if (message.IsMatch(@"^\S{1,10}" + alias + @"(\s|$)") || message.IsMatch(@"^" + alias + @"eg(\s|$)"))
+                {
+                    result = true;
+                }
+            });
+            return result;
+        }
+
+        public static bool IsCommand(string message)
+        {
+            bool result = false;
+            CommandHelper.GetCommandAliases().ForEach(alias =>
+            {
+                if (message.IsMatch(@"^\S{1,10}" + alias + @"(\s|$)") || message.IsMatch(@"^" + alias + @"eg(\s|$)"))
+                {
+                    result = true;
+                }
+            });
+            return result;
+        }
+
+        public static bool IsAfkCommand(string message)
+        {
+            bool result = false;
+            CommandHelper.GetAfkCommandAliases().ForEach(alias =>
+            {
+                if (message.IsMatch(@"^\S{1,10}" + alias + @"(\s|$)") || message.IsMatch(@"^" + alias + @"eg(\s|$)"))
+                {
+                    result = true;
+                }
+            });
+            return result;
         }
     }
 }
