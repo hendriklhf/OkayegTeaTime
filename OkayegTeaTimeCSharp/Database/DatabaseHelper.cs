@@ -7,11 +7,10 @@ namespace OkayegTeaTimeCSharp.Database
 {
     public static class DatabaseHelper
     {
-        public static void SetAfk(User user, string state)
+        public static void SetAfk(this OkayegTeaTimeContext database, User user, string state)
         {
             if (state.IsMatch(@"^(t(rue)?)|(f(alse)?)$"))
             {
-                OkayegTeaTimeContext database = new();
                 User userE = database.Users.Where(userD => userD.Username == user.Username).FirstOrDefault();
                 if (state.IsMatch(@"^t(rue)?$"))
                 {
@@ -27,6 +26,12 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 throw new Exception("state doesn't match the required pattern");
             }
+        }
+
+        public static void AddUser(this OkayegTeaTimeContext database, string username)
+        {
+            database.Users.Add(new User(username));
+            database.SaveChanges();
         }
     }
 }

@@ -25,7 +25,7 @@ namespace OkayegTeaTimeCSharp.Database
             if (user.IsAfk == "true")
             {
                 twitchBot.SendComingBack(chatMessage, user);
-                DatabaseHelper.SetAfk(user, "false");
+                database.SetAfk(user, "false");
 #warning nicht false setzen, wenn wieder ein afk command ausgeführt wird
             }
         }
@@ -55,6 +55,15 @@ namespace OkayegTeaTimeCSharp.Database
                         database.SaveChanges();
                     }
                 });
+            }
+        }
+
+        public static void InsertNewUser(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            if (!database.Users.Any(user => user.Username == username))
+            {
+                database.AddUser(username);
             }
         }
     }
