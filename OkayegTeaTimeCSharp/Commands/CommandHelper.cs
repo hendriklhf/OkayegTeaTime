@@ -9,18 +9,18 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static Command GetCommand(string name)
         {
-            return JsonHelper.JsonToObject().CommandLists.Commands.Where(cmd => cmd.Alias.Any(alias => alias == name.ToLower())).FirstOrDefault();
+            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.Alias.Any(alias => alias == name.ToLower())).FirstOrDefault();
         }
 
         public static AfkCommand GetAfkCommand(string name)
         {
-            return JsonHelper.JsonToObject().CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == name.ToLower())).FirstOrDefault();
+            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == name.ToLower())).FirstOrDefault();
         }
 
         public static List<string> GetCommandAliases()
         {
             List<string> listAlias = new();
-            JsonHelper.JsonToObject().CommandLists.Commands.ForEach(cmd =>
+            JsonHelper.BotData.CommandLists.Commands.ForEach(cmd =>
             {
                 cmd.Alias.ForEach(alias =>
                 {
@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Commands
         public static List<string> GetAfkCommandAliases()
         {
             List<string> listAlias = new();
-            JsonHelper.JsonToObject().CommandLists.AfkCommands.ForEach(cmd =>
+            JsonHelper.BotData.CommandLists.AfkCommands.ForEach(cmd =>
             {
                 cmd.Alias.ForEach(alias =>
                 {

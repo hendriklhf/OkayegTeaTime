@@ -1,7 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
-using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Database
     {
         public static void LogMessage(ChatMessage chatMessage)
         {
-            if (!JsonHelper.JsonToObject().UserLists.SpecialUsers.Contains(chatMessage.Username))
+            if (!Config.GetNotLoggedChannels().Contains(chatMessage.Channel))
             {
                 OkayegTeaTimeContext database = new();
                 database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
@@ -42,6 +42,7 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime == 0 && reminder.ToUser == username).ToList();
                 twitchBot.SendReminder(username, listReminder);
+                database.RemoveReminder(listReminder);
             }
         }
 
