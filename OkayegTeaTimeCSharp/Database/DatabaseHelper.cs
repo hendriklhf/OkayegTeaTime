@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Database
@@ -24,6 +25,15 @@ namespace OkayegTeaTimeCSharp.Database
         public static void AddUser(this OkayegTeaTimeContext database, string username)
         {
             database.Users.Add(new User(username));
+            database.SaveChanges();
+        }
+
+        public static void RemoveReminder(this OkayegTeaTimeContext database, List<Reminder> listReminder)
+        {
+            listReminder.ForEach(reminder =>
+            {
+                database.Reminders.Remove(reminder);
+            });
             database.SaveChanges();
         }
     }
