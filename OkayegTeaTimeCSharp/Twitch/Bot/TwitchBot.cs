@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
@@ -10,7 +11,6 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using OkayegTeaTimeCSharp.Properties;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -81,7 +81,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            MessageHandler.Handle(OkayegTeaTime, e.ChatMessage);
+            if (!MessageHelper.IsSpecialUser(e.ChatMessage.Username))
+            {
+                MessageHandler.Handle(OkayegTeaTime, e.ChatMessage);
+            }
 
             Console.WriteLine("#" + e.ChatMessage.Channel + "> " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
         }

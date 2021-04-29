@@ -1,12 +1,18 @@
-﻿using OkayegTeaTimeCSharp.Utils;
+﻿using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Messages
 {
     public static class MessageHelper
     {
-        public static byte[] Transform(this string input)
+        public static byte[] MakeInsertable(this string input)
         {
-            return input.ReplaceSpaces().EscapeChars().ToByteArray();
+            return input.Trim().ReplaceSpaces().EscapeChars().ToByteArray();
+        }
+
+        public static bool IsSpecialUser(string username)
+        {
+            return JsonHelper.JsonToObject().UserLists.SpecialUsers.Contains(username);
         }
     }
 }
