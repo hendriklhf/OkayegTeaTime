@@ -1,21 +1,25 @@
-﻿namespace OkayegTeaTimeCSharp.Commands.AfkCommands
+﻿using OkayegTeaTimeCSharp.Database.Models;
+
+namespace OkayegTeaTimeCSharp.Commands.AfkCommands
 {
     public class AfkMessage
     {
-        public string ComingBack { get; private set; }
+        public string Name { get; private set; }
 
-        public string GoingAway { get; private set; }
+        public string ComingBack { get; set; }
 
-        private AfkMessage(string comingBack, string goingAway)
+        public string GoingAway { get; set; }
+
+        private AfkMessage(string name, string comingBack, string goingAway)
         {
+            Name = name;
             ComingBack = comingBack;
             GoingAway = goingAway;
         }
 
-#warning maybe username as parameter
-        public static AfkMessage Create(string afkCommandName)
+        public static AfkMessage Create(User user)
         {
-            return new AfkMessage(CommandHelper.GetAfkCommand(afkCommandName).ComingBack, CommandHelper.GetAfkCommand(afkCommandName).GoingAway);
+            return new AfkMessage(user.Type, CommandHelper.GetAfkCommand(user.Type).ComingBack, CommandHelper.GetAfkCommand(user.Type).GoingAway).ReplaceSpaceHolder(user);
         }
     }
 }
