@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OkayegTeaTimeCSharp.Properties;
 
 #nullable disable
 
@@ -32,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL("Data Source=localhost;DataBase=okayegteatime;User ID=root; Password=;");
+                optionsBuilder.UseMySQL(Resources.MySqlConnectionString);
             }
         }
 
