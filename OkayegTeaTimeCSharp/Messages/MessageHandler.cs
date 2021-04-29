@@ -13,6 +13,8 @@ namespace OkayegTeaTimeCSharp.Messages
 
             DataBase.CheckIfAFK(twitchBot, chatMessage);
 
+            DataBase.CheckForReminder(twitchBot, chatMessage.Username);
+
             CommandHandler.Handle(chatMessage);
         }
     }

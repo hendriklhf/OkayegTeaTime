@@ -14,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
 #warning keine nachrichten von bots etc. loggen
             OkayegTeaTimeContext database = new();
-            database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.Transform(), chatMessage.Channel, TimeHelper.Now()));
+            database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel, TimeHelper.Now()));
             database.SaveChanges();
         }
 
@@ -27,6 +27,16 @@ namespace OkayegTeaTimeCSharp.Database
                 twitchBot.SendComingBack(chatMessage, user);
                 DatabaseHelper.SetAfk(user, "false");
 #warning nicht false setzen, wenn wieder ein afk command ausgeführt wird
+            }
+        }
+
+        public static void CheckForReminder(TwitchBot twitchBot, string username)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Reminders.Any(reminder => reminder.ToTime == 0 && reminder.ToUser == username))
+            {
+                List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime == 0 && reminder.ToUser == username).ToList();
+                twitchBot.SendReminder(username, listReminder);
             }
         }
 
