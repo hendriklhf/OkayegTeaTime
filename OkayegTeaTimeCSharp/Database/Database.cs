@@ -5,6 +5,7 @@ using OkayegTeaTimeCSharp.Twitch.Bot;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
+using OkayegTeaTimeCSharp.JsonData;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -12,19 +13,21 @@ namespace OkayegTeaTimeCSharp.Database
     {
         public static void LogMessage(ChatMessage chatMessage)
         {
-#warning keine nachrichten von bots etc. loggen
-            OkayegTeaTimeContext database = new();
-            database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel, TimeHelper.Now()));
-            database.SaveChanges();
+            if (!JsonHelper.JsonToObject().UserLists.SpecialUsers.Contains(chatMessage.Username))
+            {
+                OkayegTeaTimeContext database = new();
+                database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
+                database.SaveChanges();
+            }
         }
 
-        public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void CheckIfAFK(TwitchBot twitchBot, string username)
         {
             OkayegTeaTimeContext database = new();
-            User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
+            User user = database.Users.Where(user => user.Username == username).FirstOrDefault();
             if (user.IsAfk == "true")
             {
-                twitchBot.SendComingBack(chatMessage, user);
+                twitchBot.SendComingBack(user);
                 database.SetAfk(user, "false");
 #warning nicht false setzen, wenn wieder ein afk command ausgeführt wird
             }
