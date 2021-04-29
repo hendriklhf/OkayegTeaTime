@@ -66,7 +66,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         #region Bot_On
         private void Client_OnLog(object sender, OnLogArgs e)
         {
-            //Console.WriteLine("LOG: " + e.Data);
+            //Console.WriteLine($"LOG: {e.Data}");
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
@@ -76,7 +76,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine("JOINED CHANNEL>" + e.Channel);
+            Console.WriteLine($"JOINED CHANNEL>{e.Channel}");
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -86,14 +86,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 MessageHandler.Handle(OkayegTeaTime, e.ChatMessage);
             }
 
-            Console.WriteLine("#" + e.ChatMessage.Channel + "> " + e.ChatMessage.Username + ": " + e.ChatMessage.Message);
+            Console.WriteLine($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.Message}");
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
             WhisperHandler.Handle(OkayegTeaTime, e.WhisperMessage);
 
-            Console.WriteLine("WHISPER>" + e.WhisperMessage.Username + ": " + e.WhisperMessage.Message);
+            Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
         #endregion
 

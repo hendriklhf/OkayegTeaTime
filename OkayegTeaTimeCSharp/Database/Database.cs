@@ -58,9 +58,9 @@ namespace OkayegTeaTimeCSharp.Database
                     {
                         twitchBot.SendTimedReminder(reminder);
                         database.Reminders.Remove(reminder);
-                        database.SaveChanges();
                     }
                 });
+                database.SaveChanges();
             }
         }
 

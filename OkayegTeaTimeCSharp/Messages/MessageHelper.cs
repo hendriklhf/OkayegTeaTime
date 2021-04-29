@@ -12,6 +12,16 @@ namespace OkayegTeaTimeCSharp.Messages
             return input.Trim().ReplaceSpaces().EscapeChars().ToByteArray();
         }
 
+        public static string[] SplitToLowerCase(this string input)
+        {
+            return input.Trim().ReplaceSpaces().ToLower().Split(" ");
+        }
+
+        public static string[] Split(this string input)
+        {
+            return input.Trim().ReplaceSpaces().Split(" ");
+        }
+
         public static bool IsSpecialUser(string username)
         {
             return JsonHelper.BotData.UserLists.SpecialUsers.Contains(username);
