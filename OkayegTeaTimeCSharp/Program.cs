@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Prefixes;
+﻿using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Prefixes;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 
@@ -8,6 +9,7 @@ namespace OkayegTeaTimeCSharp
     {
         private static void Main(string[] args)
         {
+            JsonHelper.SetData();
             PrefixHelper.FillDictionary();
             TwitchBot OkayegTeaTime = new();
             //TwitchAPI twitchAPI = new();
