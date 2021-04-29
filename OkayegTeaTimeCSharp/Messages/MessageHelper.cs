@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Messages
@@ -13,7 +14,12 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static bool IsSpecialUser(string username)
         {
-            return JsonHelper.JsonToObject().UserLists.SpecialUsers.Contains(username);
+            return JsonHelper.BotData.UserLists.SpecialUsers.Contains(username);
+        }
+
+        public static bool IsNotLoggedChannel(string channel)
+        {
+            return Config.GetNotLoggedChannels().Contains(channel);
         }
 
         public static bool IsAnyCommand(string message)

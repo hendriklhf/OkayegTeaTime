@@ -10,5 +10,10 @@ namespace OkayegTeaTimeCSharp.Twitch
         {
             return Resources.Channels.Split(" ").ToList();
         }
+
+        public static List<string> GetNotLoggedChannels()
+        {
+            return Resources.NotLoggedChannels.Split(" ").ToList();
+        }
     }
 }
