@@ -1,6 +1,6 @@
 ﻿namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class Ping
+    public class PingCommand
     {
     }
 }
