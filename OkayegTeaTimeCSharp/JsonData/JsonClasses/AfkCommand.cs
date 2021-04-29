@@ -8,6 +8,12 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
         [JsonProperty("CommandName")]
         public string CommandName { get; set; }
 
+        [JsonProperty("ComingBack")]
+        public string ComingBack { get; set; }
+
+        [JsonProperty("GoingAway")]
+        public string GoingAway { get; set; }
+
         [JsonProperty("Alias")]
         public List<string> Alias { get; set; }
 

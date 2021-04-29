@@ -389,6 +389,8 @@
     "AfkCommands": [
       {
         "CommandName": "gn",
+        "ComingBack": "{username} just woke up: {message} ({time})",
+        "GoingAway": "{username} is now sleeping: {message} ({time})",
         "Alias": [
           "gn",
           "sleep"
@@ -402,6 +404,8 @@
       },
       {
         "CommandName": "afk",
+        "ComingBack": "{username} just came back: {message} ({time})",
+        "GoingAway": "{username} is now afk: {message} ({time})",
         "Alias": [
           "afk"
         ],
@@ -414,6 +418,8 @@
       },
       {
         "CommandName": "brb",
+        "ComingBack": "{username} came right back: {message} ({time})",
+        "GoingAway": "{username} will be right back: {message} ({time})",
         "Alias": [
           "brb"
         ],
@@ -426,6 +432,8 @@
       },
       {
         "CommandName": "fat",
+        "ComingBack": "{username} came back from eating: {message} ({time})",
+        "GoingAway": "{username} went eating: {message} ({time})",
         "Alias": [
           "fat",
           "food"
@@ -439,6 +447,8 @@
       },
       {
         "CommandName": "lurk",
+        "ComingBack": "{username} stopped lurking: {message} ({time})",
+        "GoingAway": "{username} is now lurking: {message} ({time})",
         "Alias": [
           "lurk"
         ],
@@ -451,6 +461,8 @@
       },
       {
         "CommandName": "shower",
+        "ComingBack": "{username} is now clean: {message} ({time})",
+        "GoingAway": "{username} went for a shower: {message} ({time})",
         "Alias": [
           "shower"
         ],
@@ -463,6 +475,8 @@
       },
       {
         "CommandName": "nap",
+        "ComingBack": "{username} woke up from their nap: {message} ({time})",
+        "GoingAway": "{username} is taking a nap: {message} ({time})",
         "Alias": [
           "nap"
         ],
@@ -475,6 +489,8 @@
       },
       {
         "CommandName": "study",
+        "ComingBack": "{username} stopped studying: {message} ({time})",
+        "GoingAway": "{username} is now studying: {message} ({time})",
         "Alias": [
           "study"
         ],
@@ -487,6 +503,8 @@
       },
       {
         "CommandName": "work",
+        "ComingBack": "{username} came back from work: {message} ({time})",
+        "GoingAway": "{username} went to work: {message} ({time})",
         "Alias": [
           "work"
         ],
@@ -499,6 +517,8 @@
       },
       {
         "CommandName": "school",
+        "ComingBack": "{username} came back from school: {message} ({time})",
+        "GoingAway": "{username} went to school: {message} ({time})",
         "Alias": [
           "school"
         ],
@@ -511,6 +531,8 @@
       },
       {
         "CommandName": "poof",
+        "ComingBack": "{username} fooped back: {message} ({time})",
+        "GoingAway": "{username} poofed away: {message} ({time})",
         "Alias": [
           "poof"
         ],
@@ -523,6 +545,8 @@
       },
       {
         "CommandName": "game",
+        "ComingBack": "{username} stopped gaming: {message} ({time})",
+        "GoingAway": "{username} is now gaming: {message} ({time})",
         "Alias": [
           "game",
           "gaming"
@@ -536,6 +560,8 @@
       },
       {
         "CommandName": "movie",
+        "ComingBack": "{username} finished a movie: {message} ({time})",
+        "GoingAway": "{username} is now watching a movie: {message} ({time})",
         "Alias": [
           "movie",
           "film"
