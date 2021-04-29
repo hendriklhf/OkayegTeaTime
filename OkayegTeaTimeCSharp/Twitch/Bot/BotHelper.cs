@@ -3,7 +3,6 @@ using OkayegTeaTimeCSharp.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
