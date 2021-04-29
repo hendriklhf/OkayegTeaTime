@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using OkayegTeaTimeCSharp.Properties;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OkayegTeaTimeCSharp.Utils
@@ -18,6 +19,11 @@ namespace OkayegTeaTimeCSharp.Utils
         public static string EscapeChars(this string str)
         {
             return str.Replace("\\", "\\\\").Replace("'", "\\'");
+        }
+
+        public static string ReplaceChatterinoChar(this string str)
+        {
+            return str.Replace(Resources.ChatterinoChar, "");
         }
 
         public static string Match(this string input, string pattern)
