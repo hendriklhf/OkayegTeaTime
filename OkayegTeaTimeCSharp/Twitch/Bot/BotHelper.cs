@@ -14,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
         }
 
-        public static void SendComingBack(this TwitchBot twitchBot, ChatMessage chatMessage, User user)
+        public static void SendComingBack(this TwitchBot twitchBot, User user)
         {
             throw new NotImplementedException("SendComingBack: Identify which text to send");
         }
