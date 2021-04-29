@@ -9,17 +9,17 @@ namespace OkayegTeaTimeCSharp.Messages
     {
         public static byte[] MakeInsertable(this string input)
         {
-            return input.Trim().ReplaceSpaces().EscapeChars().ToByteArray();
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars().ToByteArray();
         }
 
         public static string[] SplitToLowerCase(this string input)
         {
-            return input.Trim().ReplaceSpaces().ToLower().Split(" ");
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().ToLower().Split(" ");
         }
 
         public static string[] Split(this string input)
         {
-            return input.Trim().ReplaceSpaces().Split(" ");
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Split(" ");
         }
 
         public static bool IsSpecialUser(string username)
