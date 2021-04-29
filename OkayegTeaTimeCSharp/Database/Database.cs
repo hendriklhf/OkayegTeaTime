@@ -1,11 +1,11 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.JsonData;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -21,15 +21,17 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void CheckIfAFK(TwitchBot twitchBot, string username)
+        public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            User user = database.Users.Where(user => user.Username == username).FirstOrDefault();
+            User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
             if (user.IsAfk == "true")
             {
                 twitchBot.SendComingBack(user);
-                database.SetAfk(user, "false");
-#warning nicht false setzen, wenn wieder ein afk command ausgeführt wird
+                if (!MessageHelper.IsAfkCommand(chatMessage.Message))
+                {
+                    database.SetAfk(user, "false");
+                }
             }
         }
 
