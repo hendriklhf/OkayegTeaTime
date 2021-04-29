@@ -1,8 +1,9 @@
-﻿using OkayegTeaTimeCSharp.Database.Models;
+﻿using OkayegTeaTimeCSharp.Commands.AfkCommands;
+using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Time;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -13,9 +14,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
         }
 
-        public static void SendComingBack(this TwitchBot twitchBot, User user)
+        public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)
         {
-            throw new NotImplementedException("SendComingBack: Identify which text to send");
+            twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
         }
 
         public static void SendReminder(this TwitchBot twitchBot, string username, List<Reminder> listReminder)
