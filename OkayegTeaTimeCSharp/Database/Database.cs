@@ -71,5 +71,17 @@ namespace OkayegTeaTimeCSharp.Database
                 database.AddUser(username);
             }
         }
+
+        public static Dictionary<string, string> GetPrefixes()
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Prefixes.ToDictionary(prefix => prefix.Channel, prefix => prefix.PrefixString);
+        }
+
+        public static string GetPrefix(string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Prefixes.Where(prefix => prefix.Channel == $"#{channel}").FirstOrDefault().PrefixString;
+        }
     }
 }
