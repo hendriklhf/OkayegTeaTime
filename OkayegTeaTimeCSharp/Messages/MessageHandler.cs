@@ -9,15 +9,18 @@ namespace OkayegTeaTimeCSharp.Messages
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            DataBase.LogMessage(chatMessage);
+            if (!MessageHelper.IsSpecialUser(chatMessage.Username))
+            {
+                DataBase.LogMessage(chatMessage);
 
-            DataBase.CheckIfAFK(twitchBot, chatMessage);
+                DataBase.CheckIfAFK(twitchBot, chatMessage);
 
-            DataBase.CheckForReminder(twitchBot, chatMessage.Username);
+                DataBase.CheckForReminder(twitchBot, chatMessage.Username);
 
-            DataBase.InsertNewUser(chatMessage.Username);
+                DataBase.InsertNewUser(chatMessage.Username);
 
-            CommandHandler.Handle(twitchBot, chatMessage);
+                CommandHandler.Handle(twitchBot, chatMessage);
+            }
         }
     }
 }
