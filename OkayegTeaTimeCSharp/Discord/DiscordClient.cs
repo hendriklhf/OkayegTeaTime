@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Twitch.Bot;
-using System;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Discord
@@ -8,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Discord
     {
         public static void SendDiscordMessageIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            throw new NotImplementedException();
+#warning not implemented
         }
     }
 }
