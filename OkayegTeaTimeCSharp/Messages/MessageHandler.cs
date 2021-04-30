@@ -12,13 +12,13 @@ namespace OkayegTeaTimeCSharp.Messages
         {
             if (!MessageHelper.IsSpecialUser(chatMessage.Username))
             {
+                DataBase.InsertNewUser(chatMessage.Username);
+
                 DataBase.LogMessage(chatMessage);
 
                 DataBase.CheckIfAFK(twitchBot, chatMessage);
 
                 DataBase.CheckForReminder(twitchBot, chatMessage);
-
-                DataBase.InsertNewUser(chatMessage.Username);
 
                 CommandHandler.Handle(twitchBot, chatMessage);
 
