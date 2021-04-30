@@ -36,5 +36,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {reminder.FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message}");
         }
+
+        public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
+        {
+            twitchBot.Send(channel, $"/timeout {username} {time} {reason}".Trim());
+        }
     }
 }
