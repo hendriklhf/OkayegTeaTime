@@ -2,6 +2,7 @@
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Messages
 {
@@ -30,6 +31,11 @@ namespace OkayegTeaTimeCSharp.Messages
         public static bool IsSpecialUser(string username)
         {
             return JsonHelper.BotData.UserLists.SpecialUsers.Contains(username);
+        }
+
+        public static bool IsModOrBroadcaster(ChatMessage chatMessage)
+        {
+            return chatMessage.IsModerator || chatMessage.IsBroadcaster;
         }
 
         public static bool IsNotLoggedChannel(string channel)
