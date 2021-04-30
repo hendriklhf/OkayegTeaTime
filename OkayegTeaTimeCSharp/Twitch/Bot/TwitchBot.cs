@@ -86,7 +86,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 MessageHandler.Handle(OkayegTeaTime, e.ChatMessage);
             }
 
-            Console.WriteLine($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.Message}");
+            Console.WriteLine($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)

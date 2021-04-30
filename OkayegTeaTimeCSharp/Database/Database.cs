@@ -28,7 +28,7 @@ namespace OkayegTeaTimeCSharp.Database
             if (user.IsAfk == "true")
             {
                 twitchBot.SendComingBack(user, chatMessage);
-                if (!MessageHelper.IsAfkCommand(chatMessage.Message))
+                if (!MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
                 {
                     database.SetAfk(user, "false");
                 }
