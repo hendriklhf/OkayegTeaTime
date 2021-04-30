@@ -117,7 +117,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private static void AddTimerFunction()
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
-
             Timers.GetTimer(30000).Elapsed += OnTimer30000;
         }
 
