@@ -7,6 +7,11 @@ namespace OkayegTeaTimeCSharp.Messages
 {
     public static class MessageHelper
     {
+        public static string MakeUsable(this string input)
+        {
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces();
+        }
+
         public static byte[] MakeInsertable(this string input)
         {
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars().ToByteArray();
