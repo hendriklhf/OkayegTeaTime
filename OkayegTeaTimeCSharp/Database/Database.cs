@@ -3,6 +3,7 @@ using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
+using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
@@ -66,7 +67,26 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            throw new System.NotImplementedException();
+            OkayegTeaTimeContext database = new();
+            if (database.Nukes.Any(nuke => nuke.Channel == $"#{chatMessage.Channel}"))
+            {
+                List<Nuke> listNukes = database.Nukes.Where(nuke => nuke.Channel == $"#{chatMessage.Channel}").ToList();
+                listNukes.ForEach(nuke =>
+                {
+                    if (nuke.ForTime > TimeHelper.Now())
+                    {
+                        if (chatMessage.GetMessage().IsMatch(nuke.Word.ToString()))
+                        {
+                            twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, nuke.TimeoutTime, Nuke.Reason);
+                        }
+                    }
+                    else
+                    {
+                        database.Nukes.Remove(nuke);
+                        database.SaveChanges();
+                    }
+                });
+            }
         }
 
         public static void InsertNewUser(string username)

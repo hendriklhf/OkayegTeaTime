@@ -10,5 +10,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public byte[] Word { get; set; }
         public long TimeoutTime { get; set; }
         public long ForTime { get; set; }
+
+        public const string Reason = "Okayeg nuked word";
     }
 }
