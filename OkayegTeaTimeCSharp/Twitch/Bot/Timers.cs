@@ -8,6 +8,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void CreateTimers()
         {
             CreateTimer(1000);
+            CreateTimer(30000);
         }
 
         private static void CreateTimer(int interval)

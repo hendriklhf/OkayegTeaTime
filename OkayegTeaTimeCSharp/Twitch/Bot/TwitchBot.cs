@@ -1,5 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Messages;
+﻿using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Whisper;
@@ -118,11 +117,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private static void AddTimerFunction()
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
+
+            Timers.GetTimer(30000).Elapsed += OnTimer30000;
         }
 
         private static void OnTimer1000(object sender, ElapsedEventArgs e)
         {
-            DataBase.CheckForTimedReminder(OkayegTeaTime);
+            TimerFunctions.CheckForTimedReminders(OkayegTeaTime);
+        }
+
+        private static void OnTimer30000(object sender, ElapsedEventArgs e)
+        {
+            TimerFunctions.BanSecretChatUsers(OkayegTeaTime);
         }
         #endregion
     }
