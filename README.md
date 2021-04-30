@@ -65,7 +65,7 @@ Text in "[ ]" is a variable parameter
             <table>
                 <tr>
                     <td>(none)</td>
-                    <td>Sends a random message of any user in the current channel
+                    <td>Sends a random message of any user in the current channel</td>
                 </tr>
                 <tr>
                     <td>[username]</td>
