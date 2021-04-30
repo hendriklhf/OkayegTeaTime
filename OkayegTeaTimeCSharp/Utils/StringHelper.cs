@@ -28,19 +28,19 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string Match(this string input, string pattern)
         {
-            Regex regex = new(pattern);
+            Regex regex = new(pattern, RegexOptions.IgnoreCase);
             return regex.Match(input).Value;
         }
 
         public static bool IsMatch(this string input, string pattern)
         {
-            Regex regex = new(pattern);
+            Regex regex = new(pattern, RegexOptions.IgnoreCase);
             return regex.IsMatch(input);
         }
 
         public static string ReplacePattern(this string input, string pattern, string replacement)
         {
-            return Regex.Replace(input, pattern, replacement);
+            return Regex.Replace(input, pattern, replacement, RegexOptions.IgnoreCase);
         }
 
         public static string ReplaceSpaces(this string input)
