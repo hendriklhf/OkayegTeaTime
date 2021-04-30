@@ -19,9 +19,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
         }
 
-        public static void SendReminder(this TwitchBot twitchBot, string username, List<Reminder> listReminder)
+        public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> listReminder)
         {
-            string message = $"{username}, reminder from {listReminder[0].FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message}";
+            string message = $"{chatMessage.Username}, reminder from {listReminder[0].FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message}";
             if (listReminder.Count > 1)
             {
                 listReminder.Skip(1).ToList().ForEach(reminder =>
@@ -29,6 +29,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     message += $" || {reminder.FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message}";
                 });
             }
+            twitchBot.Send(chatMessage.Channel, message);
         }
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)

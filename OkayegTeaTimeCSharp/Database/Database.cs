@@ -35,13 +35,13 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void CheckForReminder(TwitchBot twitchBot, string username)
+        public static void CheckForReminder(TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Reminders.Any(reminder => reminder.ToTime == 0 && reminder.ToUser == username))
+            if (database.Reminders.Any(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username))
             {
-                List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime == 0 && reminder.ToUser == username).ToList();
-                twitchBot.SendReminder(username, listReminder);
+                List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username).ToList();
+                twitchBot.SendReminder(chatMessage, listReminder);
                 database.RemoveReminder(listReminder);
             }
         }
@@ -62,6 +62,11 @@ namespace OkayegTeaTimeCSharp.Database
                 });
                 database.SaveChanges();
             }
+        }
+
+        public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            throw new System.NotImplementedException();
         }
 
         public static void InsertNewUser(string username)
