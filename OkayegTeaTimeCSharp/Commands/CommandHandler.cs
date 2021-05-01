@@ -15,8 +15,7 @@ namespace OkayegTeaTimeCSharp.Commands
             {
                 if (CommandHelper.MatchesAlias(chatMessage, type))
                 {
-                    Type.GetType("Class").GetMethod("Handle").Invoke(null, null);
-#warning unfinished
+                    Type.GetType(CommandHelper.GetClassName(type)).GetMethod("Handle").Invoke(null, null);
                 }
             });
         }
