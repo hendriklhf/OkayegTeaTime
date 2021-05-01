@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Commands.AfkCommands;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses;
@@ -8,7 +9,6 @@ using OkayegTeaTimeCSharp.Twitch;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
@@ -35,6 +35,11 @@ namespace OkayegTeaTimeCSharp.Commands
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
             return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == type.ToString().ToLower())).FirstOrDefault();
+        }
+
+        public static AfkCommand GetAfkCommand(string name)
+        {
+            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == name)).FirstOrDefault();
         }
 
         public static List<string> GetCommandAliases()
