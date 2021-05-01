@@ -2,22 +2,39 @@
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses;
+using OkayegTeaTimeCSharp.Prefixes;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Twitch;
 using System.Collections.Generic;
 using System.Linq;
+using TwitchLib.Client.Models;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
     public static class CommandHelper
     {
-        public static Command GetCommand(string name)
+        public const string Suffix = "eg";
+
+        public static bool MatchesAlias(this ChatMessage chatMessage, CommandType type)
         {
-            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.Alias.Any(alias => alias == name.ToLower())).FirstOrDefault();
+            return GetCommand(type).Alias.Any(alias => chatMessage.GetLowerSplit()[0].Remove(0, PrefixHelper.GetPrefix(chatMessage.Channel).Length - 1) == alias || chatMessage.GetLowerSplit()[0].Remove(alias.Length - 1, chatMessage.GetLowerSplit()[0].Length - 1) == alias);
         }
 
-        public static AfkCommand GetAfkCommand(string name)
+        public static string GetClassName(CommandType type)
         {
-            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == name.ToLower())).FirstOrDefault();
+            return $"{type}";
+#warning unfinished
+        }
+
+        public static Command GetCommand(CommandType type)
+        {
+            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.Alias.Any(alias => alias == type.ToString().ToLower())).FirstOrDefault();
+        }
+
+        public static AfkCommand GetAfkCommand(AfkCommandType type)
+        {
+            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == type.ToString().ToLower())).FirstOrDefault();
         }
 
         public static List<string> GetCommandAliases()
