@@ -4,7 +4,7 @@
     {
         private const long InMilliseconds = 60000;
 
-        public static long ToMilliseconds(int minutes = 1)
+        public static long ToMilliseconds(uint minutes = 1)
         {
             return InMilliseconds * minutes;
         }

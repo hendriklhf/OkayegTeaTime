@@ -4,7 +4,7 @@
     {
         private const long InMilliseconds = 86400000;
 
-        public static long ToMilliseconds(int days = 1)
+        public static long ToMilliseconds(uint days = 1)
         {
             return InMilliseconds * days;
         }
