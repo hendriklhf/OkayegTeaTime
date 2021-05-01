@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OkayegTeaTimeCSharp.Commands.CommandEnums
+﻿namespace OkayegTeaTimeCSharp.Commands.CommandEnums
 {
     public enum CommandType
     {
