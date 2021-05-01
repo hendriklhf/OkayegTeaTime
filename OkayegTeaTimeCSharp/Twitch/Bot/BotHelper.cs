@@ -22,7 +22,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void Send(this TwitchBot twitchBot, string channel, string message)
         {
-            message = LastMessages[$"#{channel}"] == message ? message : message + Resources.ChatterinoChar;
+            message = LastMessages[$"#{channel}"] == message ? message : $"{message} {Resources.ChatterinoChar}";
             twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
             LastMessages[$"#{channel}"] = message;
         }
