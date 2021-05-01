@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Commands.AfkCommands;
+﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.JsonData;
@@ -18,13 +18,12 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static bool MatchesAlias(this ChatMessage chatMessage, CommandType type)
         {
-#warning System.ArgumentOutOfRangeException: "Count cannot be less than zero. Arg_ParamName_Name"
-            return GetCommand(type).Alias.Any(alias => chatMessage.GetLowerSplit()[0].Remove(0, PrefixHelper.GetPrefix(chatMessage.Channel).Length - 1) == alias || chatMessage.GetLowerSplit()[0].Remove(alias.Length - 1, chatMessage.GetLowerSplit()[0].Length - 1) == alias);
+            return GetCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Suffix == chatMessage.GetLowerSplit()[0]);
         }
 
-        public static string GetClassName(CommandType type)
+        public static string GetCommandClassName(CommandType type)
         {
-            return $"{type}Command";
+            return $"OkayegTeaTime.Commands.CommandClasses.{type}Command";
         }
 
         public static Command GetCommand(CommandType type)
