@@ -18,28 +18,28 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static bool MatchesAlias(this ChatMessage chatMessage, CommandType type)
         {
+#warning GetPrefix() returned null
             return GetCommand(type).Alias.Any(alias => chatMessage.GetLowerSplit()[0].Remove(0, PrefixHelper.GetPrefix(chatMessage.Channel).Length - 1) == alias || chatMessage.GetLowerSplit()[0].Remove(alias.Length - 1, chatMessage.GetLowerSplit()[0].Length - 1) == alias);
         }
 
         public static string GetClassName(CommandType type)
         {
-            return $"{type}";
-#warning unfinished
+            return $"{type}Command";
         }
 
         public static Command GetCommand(CommandType type)
         {
-            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.Alias.Any(alias => alias == type.ToString().ToLower())).FirstOrDefault();
+            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
         }
 
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
-            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == type.ToString().ToLower())).FirstOrDefault();
+            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
         }
 
         public static AfkCommand GetAfkCommand(string name)
         {
-            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.Alias.Any(alias => alias == name)).FirstOrDefault();
+            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
         }
 
         public static List<string> GetCommandAliases()
