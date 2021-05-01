@@ -11,7 +11,7 @@ namespace OkayegTeaTimeCSharp.Utils
             return Encoding.UTF8.GetBytes(str);
         }
 
-        public static string ToString(this byte[] bytes)
+        public static string ToString(this byte[] bytes, int i)
         {
             return Encoding.UTF8.GetString(bytes);
         }
@@ -26,26 +26,26 @@ namespace OkayegTeaTimeCSharp.Utils
             return str.Replace(Resources.ChatterinoChar, "");
         }
 
-        public static string Match(this string input, string pattern)
+        public static string Match(this string str, string pattern)
         {
             Regex regex = new(pattern, RegexOptions.IgnoreCase);
-            return regex.Match(input).Value;
+            return regex.Match(str).Value;
         }
 
-        public static bool IsMatch(this string input, string pattern)
+        public static bool IsMatch(this string str, string pattern)
         {
             Regex regex = new(pattern, RegexOptions.IgnoreCase);
-            return regex.IsMatch(input);
+            return regex.IsMatch(str);
         }
 
-        public static string ReplacePattern(this string input, string pattern, string replacement)
+        public static string ReplacePattern(this string str, string pattern, string replacement)
         {
-            return Regex.Replace(input, pattern, replacement, RegexOptions.IgnoreCase);
+            return Regex.Replace(str, pattern, replacement, RegexOptions.IgnoreCase);
         }
 
-        public static string ReplaceSpaces(this string input)
+        public static string ReplaceSpaces(this string str)
         {
-            return input.ReplacePattern(@"\s+", " ");
+            return str.ReplacePattern(@"\s+", " ");
         }
     }
 }
