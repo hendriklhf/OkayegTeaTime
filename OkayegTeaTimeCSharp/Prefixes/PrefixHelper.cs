@@ -21,7 +21,7 @@ namespace OkayegTeaTimeCSharp.Prefixes
         {
             try
             {
-                return Prefixes[$"#{channel}"];
+                return Prefixes[$"#{channel}"] ?? "";
             }
             catch (KeyNotFoundException)
             {
