@@ -5,7 +5,7 @@ using System;
 
 namespace OkayegTeaTimeCSharp
 {
-    public class Program
+    public abstract class Program
     {
         private static void Main(string[] args)
         {
