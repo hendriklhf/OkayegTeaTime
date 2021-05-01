@@ -75,7 +75,7 @@ namespace OkayegTeaTimeCSharp.Database
                 {
                     if (nuke.ForTime > TimeHelper.Now())
                     {
-                        if (chatMessage.GetMessage().IsMatch(nuke.Word.ToString()))
+                        if (chatMessage.GetMessage().IsMatch(nuke.Word.ToString(1)))
                         {
                             twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, nuke.TimeoutTime, Nuke.Reason);
                         }
