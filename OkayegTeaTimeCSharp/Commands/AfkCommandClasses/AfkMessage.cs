@@ -1,6 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
 
-namespace OkayegTeaTimeCSharp.Commands.AfkCommands
+namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 {
     public class AfkMessage
     {
