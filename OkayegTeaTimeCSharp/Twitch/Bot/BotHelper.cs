@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Commands.AfkCommands;
+﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
