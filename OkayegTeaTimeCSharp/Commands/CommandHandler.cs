@@ -1,9 +1,8 @@
-﻿using OkayegTeaTimeCSharp.Twitch.Bot;
-using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
@@ -11,6 +10,7 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
+#warning not sure if this is the best method to do it
             ((CommandType[])Enum.GetValues(typeof(CommandType))).ToList().ForEach(type =>
             {
                 if (CommandHelper.MatchesAlias(chatMessage, type))
