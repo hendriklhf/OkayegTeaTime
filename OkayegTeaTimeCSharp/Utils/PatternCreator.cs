@@ -6,14 +6,7 @@ namespace OkayegTeaTimeCSharp.Utils
     {
         public static string Create(string alias, PrefixType prefixType, string addition = "")
         {
-            if (prefixType.Equals(PrefixType.None))
-            {
-                return @"^" + alias + @"eg" + addition;
-            }
-            else //if (prefixType.Equals(PrefixType.Active))
-            {
-                return @"^\S{1,10}" + alias + addition;
-            }
+            return prefixType.Equals(PrefixType.Active) ? @"^\S{1,10}" + alias + addition : @"^" + alias + @"eg" + addition;
         }
     }
 }
