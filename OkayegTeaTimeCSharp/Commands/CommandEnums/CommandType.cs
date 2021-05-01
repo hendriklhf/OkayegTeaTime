@@ -2,7 +2,6 @@
 {
     public enum CommandType
     {
-        Afk,
         Chatters,
         Check,
         Coinflip,
