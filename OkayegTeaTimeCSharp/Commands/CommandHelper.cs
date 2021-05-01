@@ -23,7 +23,7 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static string GetCommandClassName(CommandType type)
         {
-            return $"OkayegTeaTime.Commands.CommandClasses.{type}Command";
+            return $"OkayegTeaTimeCSharp.Commands.CommandClasses.{type}Command";
         }
 
         public static Command GetCommand(CommandType type)
