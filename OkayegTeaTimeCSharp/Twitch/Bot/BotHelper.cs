@@ -4,14 +4,28 @@ using OkayegTeaTimeCSharp.Time;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
+using OkayegTeaTimeCSharp.Twitch;
+using OkayegTeaTimeCSharp.Properties;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class BotHelper
     {
+        public static Dictionary<string, string> LastMessages { get; private set; } = new();
+
+        public static void FillDictionary()
+        {
+            Config.GetChannels().ForEach(channel =>
+            {
+                LastMessages.Add($"#{channel}", "");
+            });
+        }
+
         public static void Send(this TwitchBot twitchBot, string channel, string message)
         {
+            message = LastMessages[$"#{channel}"] == message ? message : message + Resources.ChatterinoChar;
             twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
+            LastMessages[$"#{channel}"] = message;
         }
 
         public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)
