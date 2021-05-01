@@ -18,7 +18,7 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static bool MatchesAlias(this ChatMessage chatMessage, CommandType type)
         {
-#warning GetPrefix() returned null
+#warning System.ArgumentOutOfRangeException: "Count cannot be less than zero. Arg_ParamName_Name"
             return GetCommand(type).Alias.Any(alias => chatMessage.GetLowerSplit()[0].Remove(0, PrefixHelper.GetPrefix(chatMessage.Channel).Length - 1) == alias || chatMessage.GetLowerSplit()[0].Remove(alias.Length - 1, chatMessage.GetLowerSplit()[0].Length - 1) == alias);
         }
 
