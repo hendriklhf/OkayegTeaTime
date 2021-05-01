@@ -1,12 +1,12 @@
 ﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Prefixes;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
+using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Prefixes;
-using OkayegTeaTimeCSharp.Twitch;
-using OkayegTeaTimeCSharp.Utils;
-using OkayegTeaTimeCSharp.Messages;
 
 namespace OkayegTeaTimeCSharp.Commands
 {

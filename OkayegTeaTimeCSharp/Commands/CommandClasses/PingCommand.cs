@@ -1,9 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Twitch.Bot;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Prefixes;
-using OkayegTeaTimeCSharp.Twitch;
-using OkayegTeaTimeCSharp.Utils;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
