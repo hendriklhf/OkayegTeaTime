@@ -11,6 +11,7 @@ namespace OkayegTeaTimeCSharp
         {
             JsonHelper.SetData();
             PrefixHelper.FillDictionary();
+            BotHelper.FillDictionary();
             TwitchBot OkayegTeaTime = new();
             //TwitchAPI twitchAPI = new();
 
