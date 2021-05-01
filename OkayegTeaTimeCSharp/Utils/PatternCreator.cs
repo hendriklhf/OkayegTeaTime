@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Utils
             }
             else //if (prefixType.Equals(PrefixType.Active))
             {
-                return @"^\S+" + alias + addition;
+                return @"^\S{1,10}" + alias + addition;
             }
         }
     }
