@@ -1,10 +1,7 @@
-﻿using System.ComponentModel;
-
-namespace OkayegTeaTimeCSharp.Utils
+﻿namespace OkayegTeaTimeCSharp.Utils
 {
-    public enum Emoji
+    public class Emoji
     {
-        [Description("👉")]
-        PointRight
+        public const string PointRight = "👉";
     }
 }
