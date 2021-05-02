@@ -1,7 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using System.Collections.Generic;
 
-namespace OkayegTeaTimeCSharp.Prefixes
+namespace OkayegTeaTimeCSharp.Utils
 {
     public static class PrefixHelper
     {
