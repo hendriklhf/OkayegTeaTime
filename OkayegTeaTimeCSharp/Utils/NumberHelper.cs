@@ -19,5 +19,10 @@ namespace OkayegTeaTimeCSharp.Utils
         {
             return i;
         }
+
+        public static double ToDouble(this long l)
+        {
+            return l;
+        }
     }
 }
