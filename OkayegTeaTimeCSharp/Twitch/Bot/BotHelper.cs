@@ -67,5 +67,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Pechkekse keks = DataBase.GetRandomCookie();
             twitchBot.Send(chatMessage.Channel, $"{Emoji.PointRight} {chatMessage.Username}, {keks.Message}");
         }
+
+        public static void SendRandomYourmom(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            Yourmom yourmom = DataBase.GetRandomYourmom();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {yourmom.MessageText} YOURMOM");
+        }
     }
 }

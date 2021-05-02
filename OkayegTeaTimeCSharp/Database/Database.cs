@@ -115,7 +115,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Random rand = new();
-            int skip = rand.Next(1, database.Gachi.Count());
+            int skip = rand.Next(0, database.Gachi.Count() - 1);
             return database.Gachi.Skip(skip).Take(1).FirstOrDefault();
         }
 
@@ -123,8 +123,16 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Random rand = new();
-            int skip = rand.Next(1, database.Pechkekse.Count());
+            int skip = rand.Next(0, database.Pechkekse.Count() - 1);
             return database.Pechkekse.Skip(skip).Take(1).FirstOrDefault();
+        }
+
+        public static Yourmom GetRandomYourmom()
+        {
+            OkayegTeaTimeContext database = new();
+            Random rand = new();
+            int skip = rand.Next(0, database.Yourmom.Count() - 1);
+            return database.Yourmom.Skip(skip).Take(1).FirstOrDefault();
         }
     }
 }

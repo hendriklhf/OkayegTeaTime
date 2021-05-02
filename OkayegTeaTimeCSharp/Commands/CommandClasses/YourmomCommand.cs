@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
@@ -15,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-
+            twitchBot.SendRandomYourmom(chatMessage);
         }
     }
 }
