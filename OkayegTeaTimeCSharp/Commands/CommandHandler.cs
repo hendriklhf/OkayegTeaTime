@@ -26,7 +26,7 @@ namespace OkayegTeaTimeCSharp.Commands
                             {
                                 if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None)))
                                 {
-                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod("Handle").Invoke(null, new object[] { twitchBot, chatMessage, alias, type });
+                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod("Handle").Invoke(null, new object[] { twitchBot, chatMessage, alias});
                                 }
                             });
                         }
@@ -36,7 +36,7 @@ namespace OkayegTeaTimeCSharp.Commands
                             {
                                 if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active)))
                                 {
-                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod("Handle").Invoke(null, new object[] { twitchBot, chatMessage, alias, type });
+                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod("Handle").Invoke(null, new object[] { twitchBot, chatMessage, alias});
                                 }
                             });
                         }
