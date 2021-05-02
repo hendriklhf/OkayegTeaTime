@@ -20,3 +20,5 @@ namespace OkayegTeaTimeCSharp
         }
     }
 }
+
+#warning needs a list of channels in which the bot is not allowed to send masseges
