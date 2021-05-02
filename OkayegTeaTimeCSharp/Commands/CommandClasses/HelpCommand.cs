@@ -1,14 +1,14 @@
-﻿using OkayegTeaTimeCSharp.Properties;
+﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public class HelpCommand
     {
-        public const CommandType Type = CommandType.Help; 
+        public const CommandType Type = CommandType.Help;
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {

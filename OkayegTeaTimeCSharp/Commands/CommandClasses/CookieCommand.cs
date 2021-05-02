@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using TwitchLib.Client.Models;
 
