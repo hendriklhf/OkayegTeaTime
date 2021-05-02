@@ -6,7 +6,9 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public static class GachiCommand
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias, CommandType type)
+        public const CommandType Type = CommandType.Gachi;
+
+        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             twitchBot.SendRandomGachi(chatMessage);
         }

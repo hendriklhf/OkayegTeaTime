@@ -6,7 +6,9 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public static class PingCommand
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias, CommandType type)
+        public const CommandType Type = CommandType.Ping;
+
+        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             twitchBot.Send(chatMessage.Channel, $"Pongeg, I'm here! Uptime: {twitchBot.Runtime}");
         }
