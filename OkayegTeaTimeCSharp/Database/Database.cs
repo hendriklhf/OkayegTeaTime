@@ -4,6 +4,7 @@ using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
@@ -108,6 +109,14 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             return database.Prefixes.Where(prefix => prefix.Channel == $"#{channel}").FirstOrDefault().PrefixString;
+        }
+
+        public static Gachi GetRandomGachi()
+        {
+            OkayegTeaTimeContext database = new();
+            Random rand = new();
+            int skip = rand.Next(1, database.Gachi.Count());
+            return database.Gachi.Skip(skip).Take(1).First();
         }
     }
 }

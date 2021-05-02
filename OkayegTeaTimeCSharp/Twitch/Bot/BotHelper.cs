@@ -1,7 +1,9 @@
 ﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
+using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
@@ -53,6 +55,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.Send(channel, $"/timeout {username} {time} {reason}".Trim());
+        }
+
+        public static void SendRandomGachi(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            Gachi gachi = DataBase.GetRandomGachi();
+            twitchBot.Send(chatMessage.Channel, $"{Emoji.PointRight} {gachi.Title} || {gachi.Link} gachiBASS");
         }
     }
 }
