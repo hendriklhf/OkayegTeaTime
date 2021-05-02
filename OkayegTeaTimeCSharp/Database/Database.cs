@@ -116,7 +116,15 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             Random rand = new();
             int skip = rand.Next(1, database.Gachi.Count());
-            return database.Gachi.Skip(skip).Take(1).First();
+            return database.Gachi.Skip(skip).Take(1).FirstOrDefault();
+        }
+
+        public static Pechkekse GetRandomCookie()
+        {
+            OkayegTeaTimeContext database = new();
+            Random rand = new();
+            int skip = rand.Next(1, database.Pechkekse.Count());
+            return database.Pechkekse.Skip(skip).Take(1).FirstOrDefault();
         }
     }
 }
