@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Database;
-using System;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -12,7 +11,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void BanSecretChatUsers(TwitchBot twitchBot)
         {
-            throw new NotImplementedException();
+#warning not implemented
         }
     }
 }
