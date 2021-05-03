@@ -46,7 +46,6 @@ namespace OkayegTeaTimeCSharp.Messages
         }
 
         public static bool IsAnyCommand(string message)
-#warning patterncreator nutzen in every method from here
         {
             return CommandHelper.GetAllAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.ActivePrefixEnding)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.NonePrefixEnding)));
         }
