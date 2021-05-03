@@ -8,8 +8,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# Properties
+# Properties and Resources
 Properties/
+Resources/
 
 # User-specific files
 *.rsuser

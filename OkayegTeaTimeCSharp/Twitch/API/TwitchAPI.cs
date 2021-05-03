@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
 
         private void SetApi()
         {
-            _twitchApi = this;
+            _twitchApi ??= this;
         }
     }
 }
