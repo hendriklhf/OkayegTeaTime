@@ -4,6 +4,7 @@ using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
 using TwitchLib.Client.Models;
 using System.Linq;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 
 namespace OkayegTeaTimeCSharp.Messages
 {
@@ -45,18 +46,19 @@ namespace OkayegTeaTimeCSharp.Messages
         }
 
         public static bool IsAnyCommand(string message)
+#warning patterncreator nutzen in every method from here
         {
-            return CommandHelper.GetAllAliases().Any(alias => message.IsMatch(@"^\S{1,10}" + alias + @"(\s|$)") || message.IsMatch(@"^" + alias + @"eg(\s|$)"));
+            return CommandHelper.GetAllAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.ActivePrefixEnding)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.NonePrefixEnding)));
         }
 
         public static bool IsCommand(string message)
         {
-            return CommandHelper.GetCommandAliases().Any(alias => message.IsMatch(@"^\S{1,10}" + alias + @"(\s|$)") || message.IsMatch(@"^" + alias + @"eg(\s|$)"));
+            return CommandHelper.GetCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.ActivePrefixEnding)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.NonePrefixEnding)));
         }
 
         public static bool IsAfkCommand(string message)
         {
-            return CommandHelper.GetAfkCommandAliases().Any(alias => message.IsMatch(@"^\S{1,10}" + alias + @"(\s|$)") || message.IsMatch(@"^" + alias + @"eg(\s|$)"));
+            return CommandHelper.GetAfkCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.ActivePrefixEnding)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.NonePrefixEnding)));
         }
     }
 }
