@@ -4,9 +4,9 @@ namespace OkayegTeaTimeCSharp.Twitch.API
 {
     public class TwitchAPI
     {
-        public static TwitchAPI TwitchApi;
-
         public TwitchLib.Api.TwitchAPI API { get; private set; }
+
+        private static TwitchAPI _twitchApi;
 
         public TwitchAPI()
         {
@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
 
         private void SetApi()
         {
-            TwitchApi = this;
+            _twitchApi = this;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
-using TwitchLib.Client.Models;
 using System.Linq;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Messages
 {

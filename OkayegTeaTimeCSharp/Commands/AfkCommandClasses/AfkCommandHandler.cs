@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-
+#warning not implemented
         }
     }
 }

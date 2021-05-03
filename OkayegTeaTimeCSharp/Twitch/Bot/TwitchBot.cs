@@ -15,8 +15,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public class TwitchBot
     {
-        private static TwitchBot OkayegTeaTime { get; set; }
-
         public TwitchClient TwitchClient { get; private set; }
 
         public ConnectionCredentials ConnectionCredentials { get; private set; }
@@ -30,6 +28,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public string Runtime => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
 
         private readonly long _runtime = 0;
+
+        private static TwitchBot _okayegTeaTime;
 
         public TwitchBot()
         {
@@ -59,7 +59,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void SetBot()
         {
-            OkayegTeaTime = this;
+            _okayegTeaTime ??= this;
         }
 
         #region Bot_On
@@ -82,7 +82,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (!MessageHelper.IsSpecialUser(e.ChatMessage.Username))
             {
-                MessageHandler.Handle(OkayegTeaTime, e.ChatMessage);
+                MessageHandler.Handle(_okayegTeaTime, e.ChatMessage);
             }
 
             Console.WriteLine($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
@@ -90,7 +90,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            WhisperHandler.Handle(OkayegTeaTime, e.WhisperMessage);
+            WhisperHandler.Handle(_okayegTeaTime, e.WhisperMessage);
 
             Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
@@ -122,12 +122,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private static void OnTimer1000(object sender, ElapsedEventArgs e)
         {
-            TimerFunctions.CheckForTimedReminders(OkayegTeaTime);
+            TimerFunctions.CheckForTimedReminders(_okayegTeaTime);
         }
 
         private static void OnTimer30000(object sender, ElapsedEventArgs e)
         {
-            TimerFunctions.BanSecretChatUsers(OkayegTeaTime);
+            TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
         }
         #endregion
     }
