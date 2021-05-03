@@ -6,12 +6,12 @@ namespace OkayegTeaTimeCSharp.Utils
 {
     public static class StringHelper
     {
-        public static byte[] ToByteArray(this string str)
+        public static byte[] Encode(this string str)
         {
             return Encoding.UTF8.GetBytes(str);
         }
 
-        public static string ToString(this byte[] bytes, int i)
+        public static string Decode(this byte[] bytes)
         {
             return Encoding.UTF8.GetString(bytes);
         }

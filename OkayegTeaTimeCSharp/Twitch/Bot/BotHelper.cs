@@ -36,12 +36,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> listReminder)
         {
-            string message = $"{chatMessage.Username}, reminder from {listReminder[0].FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message}";
+            string message = $"{chatMessage.Username}, reminder from {listReminder[0].FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message.Decode()}";
             if (listReminder.Count > 1)
             {
                 listReminder.Skip(1).ToList().ForEach(reminder =>
                 {
-                    message += $" || {reminder.FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message}";
+                    message += $" || {reminder.FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}";
                 });
             }
             twitchBot.Send(chatMessage.Channel, message);
@@ -49,7 +49,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
         {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {reminder.FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message}");
+            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {reminder.FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}");
         }
 
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
@@ -60,7 +60,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendRandomGachi(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             Gachi gachi = DataBase.GetRandomGachi();
-            twitchBot.Send(chatMessage.Channel, $"{Emoji.PointRight} {gachi.Title} || {gachi.Link} gachiBASS");
+            twitchBot.Send(chatMessage.Channel, $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS");
         }
         public static void SendRandomCookie(this TwitchBot twitchBot, ChatMessage chatMessage)
         {

@@ -15,7 +15,7 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static byte[] MakeInsertable(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars().ToByteArray();
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars().Encode();
         }
 
         public static string[] SplitToLowerCase(this string input)
