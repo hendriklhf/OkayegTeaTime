@@ -78,9 +78,9 @@ namespace OkayegTeaTimeCSharp.Commands
                 .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, " ago"))
                 .Replace("{message}", user.MessageText.ToString());
 
-            afkMessage.GoingAway = afkMessage.ComingBack.Replace("{username}", user.Username)
-                .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, " ago"))
-                .Replace("{message}", user.MessageText.ToString());
+            afkMessage.GoingAway = afkMessage.ComingBack.Replace("{username}", user.Username);
+
+            afkMessage.Resuming = afkMessage.Resuming.Replace("{username}", user.Username);
 
             return afkMessage;
         }

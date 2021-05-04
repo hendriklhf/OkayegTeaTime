@@ -53,8 +53,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             _runtime = TimeHelper.Now();
             InitializeTimers();
-
-            SetBot();
         }
 
         public void SetBot()

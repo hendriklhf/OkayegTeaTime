@@ -10,7 +10,9 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 
         public string GoingAway { get; set; }
 
-        private AfkMessage(string name, string comingBack, string goingAway)
+        public string Resuming { get; set; }
+
+        private AfkMessage(string name, string comingBack, string goingAway, string resume)
         {
             Name = name;
             ComingBack = comingBack;
@@ -19,7 +21,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 
         public static AfkMessage Create(User user)
         {
-            return new AfkMessage(user.Type, CommandHelper.GetAfkCommand(user.Type).ComingBack, CommandHelper.GetAfkCommand(user.Type).GoingAway).ReplaceSpaceHolder(user);
+            return new AfkMessage(user.Type, CommandHelper.GetAfkCommand(user.Type).ComingBack, CommandHelper.GetAfkCommand(user.Type).GoingAway, CommandHelper.GetAfkCommand(user.Type).Resuming).ReplaceSpaceHolder(user);
         }
     }
 }
