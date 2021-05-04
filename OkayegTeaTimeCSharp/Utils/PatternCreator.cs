@@ -4,7 +4,7 @@ namespace OkayegTeaTimeCSharp.Utils
 {
     public static class PatternCreator
     {
-        public const string ZeroParameterEnding = @"(\s|$)";
+        public const string Seperator = @"(\s|$)";
 
         public static string Create(string alias, PrefixType prefixType, string addition = "")
         {
