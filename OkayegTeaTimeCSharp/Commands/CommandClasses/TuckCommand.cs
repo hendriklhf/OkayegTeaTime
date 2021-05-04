@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public const CommandType Type = CommandType.Tuck;
 
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             if (chatMessage.GetSplit().Length >= 3)
             {
