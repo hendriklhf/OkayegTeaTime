@@ -4,8 +4,7 @@ namespace OkayegTeaTimeCSharp.Utils
 {
     public static class PatternCreator
     {
-        public const string ActivePrefixEnding = @"(\s|$)";
-        public const string NonePrefixEnding = @"eg(\s|$)";
+        public const string ZeroParameterEnding = @"(\s|$)";
 
         public static string Create(string alias, PrefixType prefixType, string addition = "")
         {
