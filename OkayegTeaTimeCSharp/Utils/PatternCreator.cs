@@ -4,8 +4,6 @@ namespace OkayegTeaTimeCSharp.Utils
 {
     public static class PatternCreator
     {
-        public const string Seperator = @"(\s|$)";
-
         public static string Create(string alias, PrefixType prefixType, string addition = "")
         {
             return prefixType.Equals(PrefixType.Active) ? @"^\S{1,10}" + alias + addition : @"^" + alias + @"eg" + addition;
@@ -13,7 +11,7 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string CreateBoth(string alias, string addition = "")
         {
-            return @"(^\S{1,10}" + alias + addition + @")|(^" + alias + @"eg" + addition + @")";
+            return @"((^\S{1,10}" + alias + addition + @")|(^" + alias + @"eg" + addition + @"))";
         }
     }
 }

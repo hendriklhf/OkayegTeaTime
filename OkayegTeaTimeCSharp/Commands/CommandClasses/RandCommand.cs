@@ -12,15 +12,15 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+\s#?\w+$")))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+\s#?\w+")))
             {
                 twitchBot.SendRandomMessage(chatMessage, chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].Replace("#", ""));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+$")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+")))
             {
                 twitchBot.SendRandomMessage(chatMessage, chatMessage.GetLowerSplit()[1]);
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"$")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias)))
             {
                 twitchBot.SendRandomMessage(chatMessage);
             }

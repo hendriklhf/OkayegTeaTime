@@ -47,17 +47,17 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static bool IsAnyCommand(string message)
         {
-            return CommandHelper.GetAllAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.Seperator)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.Seperator)));
+            return CommandHelper.GetAllAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None)));
         }
 
         public static bool IsCommand(string message)
         {
-            return CommandHelper.GetCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.Seperator)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.Seperator)));
+            return CommandHelper.GetCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None)));
         }
 
         public static bool IsAfkCommand(string message)
         {
-            return CommandHelper.GetAfkCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active, PatternCreator.Seperator)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None, PatternCreator.Seperator)));
+            return CommandHelper.GetAfkCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None)));
         }
     }
 }
