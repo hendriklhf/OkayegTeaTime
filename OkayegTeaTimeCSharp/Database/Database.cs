@@ -133,5 +133,23 @@ namespace OkayegTeaTimeCSharp.Database
             int skip = NumberHelper.Random(1, database.Yourmom.Count() - 1);
             return database.Yourmom.Skip(skip).Take(1).FirstOrDefault();
         }
+
+        public static Message GetRandomMessage(ChatMessage chatMessage)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
+
+        public static Message GetRandomMessage(ChatMessage chatMessage, string user)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}" && m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
+
+        public static Message GetRandomMessage(string user, string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Channel == $"#{channel}" && m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
     }
 }
