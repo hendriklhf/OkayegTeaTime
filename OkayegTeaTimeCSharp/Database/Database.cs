@@ -137,13 +137,13 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetRandomMessage(ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
-        public static Message GetRandomMessage(ChatMessage chatMessage, string user)
+        public static Message GetRandomMessage(string user)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}" && m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.Where(m => m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
         public static Message GetRandomMessage(string user, string channel)
