@@ -83,13 +83,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
         {
             Message randomMessage = DataBase.GetRandomMessage(givenUsername);
-            twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+            twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
         }
 
         public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername, string givenChannel)
         {
             Message randomMessage = DataBase.GetRandomMessage(givenUsername, givenChannel);
-            twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+            twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
         }
     }
 }
