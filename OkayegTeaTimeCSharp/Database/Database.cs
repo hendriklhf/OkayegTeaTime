@@ -144,7 +144,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetRandomMessage(string user, string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Channel == $"#{channel}" && m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.Where(m => m.Channel == $"#{channel.Replace("#", "")}" && m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
     }
 }
