@@ -10,5 +10,10 @@ namespace OkayegTeaTimeCSharp.Utils
         {
             return prefixType.Equals(PrefixType.Active) ? @"^\S{1,10}" + alias + addition : @"^" + alias + @"eg" + addition;
         }
+
+        public static string CreateBoth(string alias, string addition = "")
+        {
+            return @"(^\S{1,10}" + alias + addition + @")|(^" + alias + @"eg" + addition + @")";
+        }
     }
 }
