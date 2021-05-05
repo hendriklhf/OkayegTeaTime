@@ -97,5 +97,34 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Message randomMessage = DataBase.GetRandomMessage(givenUsername, givenChannel);
             twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
         }
+
+        public static void SendLoggedMessagesCount(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            OkayegTeaTimeContext database = new();
+            int count = database.Messages.Count();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {count} messages across all channels");
+        }
+
+        public static void SendLoggedMessagesUserCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
+        {
+            OkayegTeaTimeContext database = new();
+            int count = database.Messages.Where(m => m.Username == givenUsername).Count();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {count} message of {givenUsername}");
+        }
+
+        public static void SendLoggedMessagesChannelCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenChannel)
+        {
+#warning not finished
+        }
+
+        public static void SendLoggedEmoteCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenEmote)
+        {
+#warning not finished
+        }
+
+        public static void SendLoggedDistinctUsersCount(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+#warning not finished
+        }
     }
 }
