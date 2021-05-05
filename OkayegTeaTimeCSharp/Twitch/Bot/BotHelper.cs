@@ -74,6 +74,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {yourmom.MessageText} YOURMOM");
         }
 
+        public static void SendRandomYourmom(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
+        {
+            Yourmom yourmom = DataBase.GetRandomYourmom();
+            twitchBot.Send(chatMessage.Channel, $"{givenUsername}, {yourmom.MessageText} YOURMOM");
+        }
+
         public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             Message randomMessage = DataBase.GetRandomMessage(chatMessage);
