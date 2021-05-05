@@ -73,5 +73,23 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Yourmom yourmom = DataBase.GetRandomYourmom();
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {yourmom.MessageText} YOURMOM");
         }
+
+        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            Message randomMessage = DataBase.GetRandomMessage(chatMessage);
+            twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+        }
+        
+        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
+        {
+            Message randomMessage = DataBase.GetRandomMessage(chatMessage, givenUsername);
+            twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+        }
+
+        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername, string givenChannel)
+        {
+            Message randomMessage = DataBase.GetRandomMessage(givenUsername, givenChannel);
+            twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+        }
     }
 }
