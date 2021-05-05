@@ -114,24 +114,19 @@ namespace OkayegTeaTimeCSharp.Database
         public static Gachi GetRandomGachi()
         {
             OkayegTeaTimeContext database = new();
-            Random rand = new();
-            int skip = NumberHelper.Random(1, database.Gachi.Count() - 1);
-            return database.Gachi.Skip(skip).Take(1).FirstOrDefault();
+            return database.Gachi.OrderBy(g => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
         public static Pechkekse GetRandomCookie()
         {
             OkayegTeaTimeContext database = new();
-            int skip = NumberHelper.Random(1, database.Pechkekse.Count() - 1);
-            return database.Pechkekse.Skip(skip).Take(1).FirstOrDefault();
+            return database.Pechkekse.OrderBy(p => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
         public static Yourmom GetRandomYourmom()
         {
             OkayegTeaTimeContext database = new();
-            Random rand = new();
-            int skip = NumberHelper.Random(1, database.Yourmom.Count() - 1);
-            return database.Yourmom.Skip(skip).Take(1).FirstOrDefault();
+            return database.Yourmom.OrderBy(y => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
         public static Message GetRandomMessage(ChatMessage chatMessage)
