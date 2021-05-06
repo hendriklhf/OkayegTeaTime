@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Database.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,42 @@ namespace OkayegTeaTimeCSharp.Database
                 database.Reminders.Remove(reminder);
             });
             database.SaveChanges();
+        }
+
+        public static int CountMessages(this OkayegTeaTimeContext database)
+        {
+            return database.Messages.Count();
+        }
+
+        public static int CountUserMessages(this OkayegTeaTimeContext databse, string givenUsername)
+        {
+            return databse.Messages.Where(m => m.Username == givenUsername).Count();
+        }
+
+        public static int CountChannelMessages(this OkayegTeaTimeContext database, string givenChannel)
+        {
+            return database.Messages.Where(m => m.Channel == givenChannel).Count();
+        }
+
+        public static int CountEmote(this OkayegTeaTimeContext database, string givenEmote)
+        {
+            int counter = 0;
+            database.Messages.ToList().ForEach(message =>
+            {
+                message.MessageText.Decode().Split(" ").ToList().ForEach(str =>
+                {
+                    if (str == givenEmote)
+                    {
+                        counter++;
+                    }
+                });
+            });
+            return counter;
+        }
+
+        public static int CountDistinctUsers(this OkayegTeaTimeContext database)
+        {
+            //database.Messages.FromSqlRaw("SELECT COUNT(DISTINCT USERNAME) AS 'userCount' FROM users").ToList()[0].cou;
         }
     }
 }

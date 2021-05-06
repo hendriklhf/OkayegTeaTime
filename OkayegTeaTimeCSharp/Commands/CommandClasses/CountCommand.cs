@@ -14,23 +14,23 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\se(mote)?\s\S+")))
             {
-#warning not finished
+                twitchBot.SendLoggedEmoteCount(chatMessage, chatMessage.GetSplit()[2]);
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s#\w+")))
             {
-#warning not finished
+                twitchBot.SendLoggedMessagesChannelCount(chatMessage, chatMessage.GetLowerSplit()[1]);
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+")))
             {
-#warning not finished
+                twitchBot.SendLoggedMessagesUserCount(chatMessage, chatMessage.GetLowerSplit()[1]);
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s-users")))
             {
-#warning not finished
+                twitchBot.SendLoggedDistinctUsersCount(chatMessage);
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"$")))
             {
-#warning not finished
+                twitchBot.SendLoggedMessagesCount(chatMessage);
             }
         }
     }

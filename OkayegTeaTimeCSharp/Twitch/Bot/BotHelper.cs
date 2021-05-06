@@ -101,30 +101,31 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendLoggedMessagesCount(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            int count = database.Messages.Count();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {count} messages across all channels");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountMessages()} messages across all channels");
         }
 
         public static void SendLoggedMessagesUserCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
         {
             OkayegTeaTimeContext database = new();
-            int count = database.Messages.Where(m => m.Username == givenUsername).Count();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {count} message of {givenUsername}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountUserMessages(givenUsername)} messages of {givenUsername}");
         }
 
         public static void SendLoggedMessagesChannelCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenChannel)
         {
-#warning not finished
+            OkayegTeaTimeContext database = new();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountChannelMessages(givenChannel)} messages of the channel {givenChannel}");
         }
 
         public static void SendLoggedEmoteCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenEmote)
         {
-#warning not finished
+            OkayegTeaTimeContext database = new();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the emote {givenEmote} was used {database.CountEmote(givenEmote)} times");
         }
 
         public static void SendLoggedDistinctUsersCount(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-#warning not finished
+            OkayegTeaTimeContext database = new();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging messages of {database.CountDistinctUsers()} different users");
         }
     }
 }
