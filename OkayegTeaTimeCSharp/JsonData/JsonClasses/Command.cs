@@ -16,5 +16,8 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
 
         [JsonProperty("Description")]
         public List<string> Description { get; set; }
+
+        [JsonProperty("Cooldown")]
+        public int Cooldown { get; set; }
     }
 }

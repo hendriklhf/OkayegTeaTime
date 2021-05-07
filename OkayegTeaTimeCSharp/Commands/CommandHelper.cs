@@ -87,8 +87,7 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static long GetCoolDown(CommandType type)
         {
-#warning not implemented
-            throw new System.NotImplementedException();
+            return GetCommand(type).Cooldown;
         }
     }
 }

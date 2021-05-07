@@ -52,7 +52,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 TwitchBot.Cooldowns.Remove(
                     TwitchBot.Cooldowns.Where(c => c.username == username && c.type == type).FirstOrDefault()
                     );
-#warning missing method
                 AddUserToCooldownDictionary(username, type, TimeHelper.Now() + CommandHelper.GetCoolDown(type));
             }
         }
