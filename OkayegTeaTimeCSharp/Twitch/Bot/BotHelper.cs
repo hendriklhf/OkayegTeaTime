@@ -1,5 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Commands;
-using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
+﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
@@ -22,22 +21,29 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             });
         }
 
-        public static void AddUserToCooldownDictionary(string username, CommandType type, long time = 0)
+        public static void AddUserToCooldownDictionary(string username, CommandType type)
         {
-            if (username != Config.Owner)
+            //if (username != Config.Owner)
+            //{
+            if (!TwitchBot.ListCooldowns.Any(c => c.Username == username))
             {
-                if (!TwitchBot.Cooldowns.Any(c => c.username == username))
-                {
-                    TwitchBot.Cooldowns.Add((username, type, time));
-                }
+                TwitchBot.ListCooldowns.Add(new Cooldown(username, type));
             }
+            //}
         }
 
         public static bool IsOnCooldown(string username, CommandType type)
         {
-            if (TwitchBot.Cooldowns.Any(c => c.username == username && c.type == type))
+            if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
             {
-                return TwitchBot.Cooldowns.Any(c => c.username == username && c.type == type) && TwitchBot.Cooldowns.Where(c => c.username == username && c.type == type).FirstOrDefault().time > TimeHelper.Now();
+                if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now()))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -47,12 +53,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddCooldown(string username, CommandType type)
         {
-            if (TwitchBot.Cooldowns.Any(c => c.username == username && c.type == type))
+            if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
             {
-                TwitchBot.Cooldowns.Remove(
-                    TwitchBot.Cooldowns.Where(c => c.username == username && c.type == type).FirstOrDefault()
+                TwitchBot.ListCooldowns.Remove(
+                    TwitchBot.ListCooldowns.Where(c => c.Username == username && c.Type == type).FirstOrDefault()
                     );
-                AddUserToCooldownDictionary(username, type, TimeHelper.Now() + CommandHelper.GetCoolDown(type));
+                AddUserToCooldownDictionary(username, type);
             }
         }
 
