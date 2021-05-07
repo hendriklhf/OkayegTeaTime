@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Messages;
+﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Whisper;
@@ -28,7 +29,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string Runtime => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
 
-        private readonly long _runtime = 0;
+        private readonly long _runtime;
+
+        public static readonly Dictionary<string, string> LastMessages = new();
+
+        public static readonly List<(string username, CommandType type, long time)> Cooldowns = new();
 
         private static TwitchBot _okayegTeaTime;
 

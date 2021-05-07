@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
@@ -11,6 +12,8 @@ namespace OkayegTeaTimeCSharp.Commands
 {
     public static class CommandHandler
     {
+        private static readonly string _handleName = "Handle";
+
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
             if (MessageHelper.IsCommand(chatMessage.GetMessage()))
@@ -19,25 +22,32 @@ namespace OkayegTeaTimeCSharp.Commands
                 {
                     if (CommandHelper.MatchesAlias(chatMessage, type))
                     {
-                        if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
+                        if (!BotHelper.IsOnCooldown(chatMessage.Username, type))
                         {
-                            CommandHelper.GetCommand(type).Alias.ForEach(alias =>
+                            if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
                             {
-                                if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None)))
+                                CommandHelper.GetCommand(type).Alias.ForEach(alias =>
                                 {
-                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod("Handle").Invoke(null, new object[] { twitchBot, chatMessage, alias });
-                                }
-                            });
-                        }
-                        else
-                        {
-                            CommandHelper.GetCommand(type).Alias.ForEach(alias =>
+                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None)))
+                                    {
+                                        BotHelper.AddUserToCooldownDictionary(chatMessage.UserId, type, TimeHelper.Now());
+                                        Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
+                                        BotHelper.AddCooldown(chatMessage.Username, type);
+                                    }
+                                });
+                            }
+                            else
                             {
-                                if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active)))
+                                CommandHelper.GetCommand(type).Alias.ForEach(alias =>
                                 {
-                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod("Handle").Invoke(null, new object[] { twitchBot, chatMessage, alias });
-                                }
-                            });
+                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active)))
+                                    {
+                                        BotHelper.AddUserToCooldownDictionary(chatMessage.UserId, type, TimeHelper.Now());
+                                        Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
+                                        BotHelper.AddCooldown(chatMessage.Username, type);
+                                    }
+                                });
+                            }
                         }
                     }
                 });

@@ -1,4 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
+﻿using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Properties;
@@ -12,21 +14,54 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class BotHelper
     {
-        private static readonly Dictionary<string, string> _lastMessages = new();
-
-        public static void FillDictionary()
+        public static void FillLastMessagesDictionary()
         {
             Config.GetChannels().ForEach(channel =>
             {
-                _lastMessages.Add($"#{channel}", "");
+                TwitchBot.LastMessages.Add($"#{channel}", "");
             });
+        }
+
+        public static void AddUserToCooldownDictionary(string username, CommandType type, long time = 0)
+        {
+            if (username != Config.Owner)
+            {
+                if (!TwitchBot.Cooldowns.Any(c => c.username == username))
+                {
+                    TwitchBot.Cooldowns.Add((username, type, time));
+                }
+            }
+        }
+
+        public static bool IsOnCooldown(string username, CommandType type)
+        {
+            if (TwitchBot.Cooldowns.Any(c => c.username == username && c.type == type))
+            {
+                return TwitchBot.Cooldowns.Any(c => c.username == username && c.type == type) && TwitchBot.Cooldowns.Where(c => c.username == username && c.type == type).FirstOrDefault().time > TimeHelper.Now();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static void AddCooldown(string username, CommandType type)
+        {
+            if (TwitchBot.Cooldowns.Any(c => c.username == username && c.type == type))
+            {
+                TwitchBot.Cooldowns.Remove(
+                    TwitchBot.Cooldowns.Where(c => c.username == username && c.type == type).FirstOrDefault()
+                    );
+#warning missing method
+                AddUserToCooldownDictionary(username, type, TimeHelper.Now() + CommandHelper.GetCoolDown(type));
+            }
         }
 
         public static void Send(this TwitchBot twitchBot, string channel, string message)
         {
-            message = _lastMessages[$"#{channel}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+            message = TwitchBot.LastMessages[$"#{channel}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
             twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
-            _lastMessages[$"#{channel}"] = message;
+            TwitchBot.LastMessages[$"#{channel}"] = message;
         }
 
         public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)

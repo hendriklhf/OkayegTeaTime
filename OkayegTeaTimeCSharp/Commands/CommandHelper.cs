@@ -84,5 +84,11 @@ namespace OkayegTeaTimeCSharp.Commands
 
             return afkMessage;
         }
+
+        public static long GetCoolDown(CommandType type)
+        {
+#warning not implemented
+            throw new System.NotImplementedException();
+        }
     }
 }
