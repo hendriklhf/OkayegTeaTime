@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public CommandType Type { get; set; }
 
-        public long Time { get; set; }
+        public long Time { get; private set; }
 
         public Cooldown(string username, CommandType type)
         {

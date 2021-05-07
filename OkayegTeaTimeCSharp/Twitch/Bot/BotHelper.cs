@@ -25,7 +25,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             //if (username != Config.Owner)
             //{
-            if (!TwitchBot.ListCooldowns.Any(c => c.Username == username))
+            if (!TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
             {
                 TwitchBot.ListCooldowns.Add(new Cooldown(username, type));
             }
@@ -34,21 +34,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static bool IsOnCooldown(string username, CommandType type)
         {
-            if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
-            {
-                if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now()))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+            return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
 
         public static void AddCooldown(string username, CommandType type)
