@@ -5,12 +5,12 @@ using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Time = System.Timers;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
+using Time = System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
