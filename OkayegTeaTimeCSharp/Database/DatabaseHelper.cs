@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OkayegTeaTimeCSharp.Database.Models;
+﻿using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
@@ -69,9 +68,18 @@ namespace OkayegTeaTimeCSharp.Database
             return counter;
         }
 
+        //"SELECT COUNT(DISTINCT USERNAME) AS 'userCount' FROM users"
         public static int CountDistinctUsers(this OkayegTeaTimeContext database)
         {
-            //database.Messages.FromSqlRaw("SELECT COUNT(DISTINCT USERNAME) AS 'userCount' FROM users").ToList()[0].cou;
+            List<string> listUsers = new();
+            database.Messages.ToList().ForEach(m =>
+            {
+                if (!listUsers.Contains(m.Username))
+                {
+                    listUsers.Add(m.Username);
+                }
+            });
+            return listUsers.Count;
         }
     }
 }
