@@ -12,21 +12,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class BotHelper
     {
-        public static Dictionary<string, string> LastMessages { get; private set; } = new();
+        private static readonly Dictionary<string, string> _lastMessages = new();
 
         public static void FillDictionary()
         {
             Config.GetChannels().ForEach(channel =>
             {
-                LastMessages.Add($"#{channel}", "");
+                _lastMessages.Add($"#{channel}", "");
             });
         }
 
         public static void Send(this TwitchBot twitchBot, string channel, string message)
         {
-            message = LastMessages[$"#{channel}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+            message = _lastMessages[$"#{channel}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
             twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
-            LastMessages[$"#{channel}"] = message;
+            _lastMessages[$"#{channel}"] = message;
         }
 
         public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)
