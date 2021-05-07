@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Time
     {
         public static long Now()
         {
-            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            return DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
 
         public static string ConvertMillisecondsToPassedTime(long time, string addition = "")
