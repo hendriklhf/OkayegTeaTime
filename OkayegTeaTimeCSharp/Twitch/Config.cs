@@ -6,6 +6,8 @@ namespace OkayegTeaTimeCSharp.Twitch
 {
     public static class Config
     {
+        public const string Owner = "strbhlfe";
+
         public static List<string> GetChannels()
         {
             return Resources.Channels.Split(" ").ToList();
