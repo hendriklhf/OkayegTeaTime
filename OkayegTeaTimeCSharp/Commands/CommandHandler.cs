@@ -44,7 +44,7 @@ namespace OkayegTeaTimeCSharp.Commands
             }
             else if (MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
             {
-
+#warning not implemented
             }
         }
     }
