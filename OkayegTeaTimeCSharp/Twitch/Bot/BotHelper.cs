@@ -23,13 +23,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddUserToCooldownDictionary(string username, CommandType type)
         {
-            //if (username != Config.Owner)
-            //{
-            if (!TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
+            if (username != Config.Owner)
             {
-                TwitchBot.ListCooldowns.Add(new Cooldown(username, type));
+                if (!TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
+                {
+                    TwitchBot.ListCooldowns.Add(new Cooldown(username, type));
+                }
             }
-            //}
         }
 
         public static bool IsOnCooldown(string username, CommandType type)
