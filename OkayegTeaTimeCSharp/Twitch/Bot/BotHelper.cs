@@ -100,10 +100,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {yourmom.MessageText} YOURMOM");
         }
 
-        public static void SendRandomYourmom(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
+        public static void SendRandomYourmom(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
             Yourmom yourmom = DataBase.GetRandomYourmom();
-            twitchBot.Send(chatMessage.Channel, $"{givenUsername}, {yourmom.MessageText} YOURMOM");
+            twitchBot.Send(chatMessage.Channel, $"{username}, {yourmom.MessageText} YOURMOM");
         }
 
         public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage)
@@ -112,15 +112,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
         }
 
-        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
+        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
-            Message randomMessage = DataBase.GetRandomMessage(givenUsername);
+            Message randomMessage = DataBase.GetRandomMessage(username);
             twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
         }
 
-        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername, string givenChannel)
+        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username, string channel)
         {
-            Message randomMessage = DataBase.GetRandomMessage(givenUsername, givenChannel);
+            Message randomMessage = DataBase.GetRandomMessage(username, channel);
             twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
         }
 
@@ -130,28 +130,38 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountMessages()} messages across all channels");
         }
 
-        public static void SendLoggedMessagesUserCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenUsername)
+        public static void SendLoggedMessagesUserCount(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
             OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountUserMessages(givenUsername)} messages of {givenUsername}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountUserMessages(username)} messages of {username}");
         }
 
-        public static void SendLoggedMessagesChannelCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenChannel)
+        public static void SendLoggedMessagesChannelCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
             OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountChannelMessages(givenChannel)} messages of the channel {givenChannel}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountChannelMessages(channel)} messages of the channel {channel}");
         }
 
-        public static void SendLoggedEmoteCount(this TwitchBot twitchBot, ChatMessage chatMessage, string givenEmote)
+        public static void SendFirstUserChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string username, string channel)
         {
-            OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the emote {givenEmote} was used {database.CountEmote(givenEmote)} times");
+            Message message = DataBase.GetFirstMessageUserChannel(username, channel);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
         }
 
-        public static void SendLoggedDistinctUsersCount(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void SendFirstChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
-            OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging messages of {database.CountDistinctUsers()} different users");
+            Message message = DataBase.GetFirstChannel(chatMessage, channel);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
+
+        public static void SendFirstUser(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        {
+#warning not implemented
+        }
+
+        public static void SendFirst(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+#warning not implemented
         }
     }
 }

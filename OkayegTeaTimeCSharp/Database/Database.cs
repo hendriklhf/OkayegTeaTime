@@ -69,21 +69,21 @@ namespace OkayegTeaTimeCSharp.Database
         public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Nukes.Any(nuke => nuke.Channel == $"#{chatMessage.Channel}"))
+            if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
             {
-                List<Nuke> listNukes = database.Nukes.Where(nuke => nuke.Channel == $"#{chatMessage.Channel}").ToList();
-                listNukes.ForEach(nuke =>
+                List<Nuke> listNukes = database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList();
+                listNukes.ForEach(n =>
                 {
-                    if (nuke.ForTime > TimeHelper.Now())
+                    if (n.ForTime > TimeHelper.Now())
                     {
-                        if (chatMessage.GetMessage().IsMatch(nuke.Word.Decode()))
+                        if (chatMessage.GetMessage().IsMatch(n.Word.Decode()))
                         {
-                            twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, nuke.TimeoutTime, Nuke.Reason);
+                            twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
                         }
                     }
                     else
                     {
-                        database.Nukes.Remove(nuke);
+                        database.Nukes.Remove(n);
                         database.SaveChanges();
                     }
                 });
@@ -93,7 +93,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void InsertNewUser(string username)
         {
             OkayegTeaTimeContext database = new();
-            if (!database.Users.Any(user => user.Username == username))
+            if (!database.Users.Any(u => u.Username == username))
             {
                 database.AddUser(username);
             }
@@ -102,13 +102,13 @@ namespace OkayegTeaTimeCSharp.Database
         public static Dictionary<string, string> GetPrefixes()
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.ToDictionary(prefix => prefix.Channel, prefix => prefix.PrefixString);
+            return database.Prefixes.ToDictionary(p => p.Channel, prefix => prefix.PrefixString);
         }
 
         public static string GetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.Where(prefix => prefix.Channel == $"#{channel}").FirstOrDefault().PrefixString;
+            return database.Prefixes.Where(p => p.Channel == $"#{channel}").FirstOrDefault().PrefixString;
         }
 
         public static Gachi GetRandomGachi()
@@ -135,16 +135,28 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
-        public static Message GetRandomMessage(string user)
+        public static Message GetRandomMessage(string username)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.Where(m => m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
-        public static Message GetRandomMessage(string user, string channel)
+        public static Message GetRandomMessage(string username, string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Channel == $"#{channel.Replace("#", "")}" && m.Username == user).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.Where(m => m.Channel == $"#{channel.Replace("#", "")}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
+
+        public static Message GetFirstMessageUserChannel(string username, string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Username == username && channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
+        }
+
+        public static Message GetFirstChannel(ChatMessage chatMessage, string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
         }
     }
 }

@@ -24,4 +24,4 @@ namespace OkayegTeaTimeCSharp
 }
 
 #warning needs a list of channels in which the bot is not allowed to send massages
-#warning remove emote and user count from counteg
+#warning remove emote and user count from counteg doc

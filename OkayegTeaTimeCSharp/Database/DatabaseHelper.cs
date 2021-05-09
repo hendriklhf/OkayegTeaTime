@@ -51,35 +51,5 @@ namespace OkayegTeaTimeCSharp.Database
         {
             return database.Messages.Where(m => m.Channel == givenChannel).Count();
         }
-
-        public static int CountEmote(this OkayegTeaTimeContext database, string givenEmote)
-        {
-            int counter = 0;
-            database.Messages.ToList().ForEach(message =>
-            {
-                message.MessageText.Decode().Split(" ").ToList().ForEach(str =>
-                {
-                    if (str == givenEmote)
-                    {
-                        counter++;
-                    }
-                });
-            });
-            return counter;
-        }
-
-        //"SELECT COUNT(DISTINCT USERNAME) AS 'userCount' FROM users"
-        public static int CountDistinctUsers(this OkayegTeaTimeContext database)
-        {
-            List<string> listUsers = new();
-            database.Messages.ToList().ForEach(m =>
-            {
-                if (!listUsers.Contains(m.Username))
-                {
-                    listUsers.Add(m.Username);
-                }
-            });
-            return listUsers.Count;
-        }
     }
 }
