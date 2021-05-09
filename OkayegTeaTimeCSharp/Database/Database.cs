@@ -158,5 +158,17 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
         }
+
+        public static Message GetFirstUser(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Username == username).FirstOrDefault();
+        }
+
+        public static Message GetFirst(ChatMessage chatMessage)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Username == chatMessage.Username).FirstOrDefault();
+        }
     }
 }

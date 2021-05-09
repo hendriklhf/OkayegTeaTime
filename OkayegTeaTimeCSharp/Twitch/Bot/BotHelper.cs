@@ -156,12 +156,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendFirstUser(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
-#warning not implemented
+            Message message = DataBase.GetFirstUser(username);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
         }
 
         public static void SendFirst(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-#warning not implemented
+            Message message = DataBase.GetFirst(chatMessage);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
         }
     }
 }
