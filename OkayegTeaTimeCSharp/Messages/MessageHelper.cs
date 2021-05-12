@@ -20,6 +20,11 @@ namespace OkayegTeaTimeCSharp.Messages
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars().Encode();
         }
 
+        public static string MakeQueryable(this string input)
+        {
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars();
+        }
+
         public static string[] SplitToLowerCase(this string input)
         {
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().ToLower().Split(" ");
