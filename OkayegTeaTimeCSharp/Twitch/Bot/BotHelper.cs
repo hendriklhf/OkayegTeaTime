@@ -165,5 +165,29 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Message message = DataBase.GetFirst(chatMessage);
             twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
         }
+
+        public static void SendSearchUserChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword, string username, string channel)
+        {
+            Message message = DataBase.GetSearchUserChannel(keyword, username, channel);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
+
+        public static void SendSearchUser(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword, string username)
+        {
+            Message message = DataBase.GetSearchUser(keyword, username);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
+
+        public static void SendSearchChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword, string channel)
+        {
+            Message message = DataBase.GetSearchChannel(keyword, channel);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
+
+        public static void SendSearch(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword)
+        {
+            Message message = DataBase.GetSearch(keyword);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
     }
 }

@@ -170,5 +170,29 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             return database.Messages.Where(m => m.Username == chatMessage.Username).FirstOrDefault();
         }
+
+        public static Message GetSearchUserChannel(string keyword, string username, string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword) && m.Username == username && m.Channel == $"#{channel.Replace("#", "")}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
+
+        public static Message GetSearchUser(string keyword, string username)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword) && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
+
+        public static Message GetSearchChannel(string keyword, string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword) && m.Channel == $"#{channel.Replace("#", "")}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
+
+        public static Message GetSearch(string keyword)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword)).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+        }
     }
 }
