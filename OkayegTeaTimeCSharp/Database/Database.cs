@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Database.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
@@ -174,25 +175,25 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetSearchUserChannel(string keyword, string username, string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword) && m.Username == username && m.Channel == $"#{channel.Replace("#", "")}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
         public static Message GetSearchUser(string keyword, string username)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword) && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
         public static Message GetSearchChannel(string keyword, string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword) && m.Channel == $"#{channel.Replace("#", "")}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
         public static Message GetSearch(string keyword)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.MessageText.Decode().IsMatch(keyword)).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
     }
 }
