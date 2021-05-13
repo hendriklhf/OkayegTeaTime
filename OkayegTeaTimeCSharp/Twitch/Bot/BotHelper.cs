@@ -5,7 +5,6 @@ using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;

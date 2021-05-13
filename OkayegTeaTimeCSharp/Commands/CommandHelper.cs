@@ -1,9 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
-using OkayegTeaTimeCSharp.Database.Models;
+﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses;
-using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
@@ -70,19 +67,6 @@ namespace OkayegTeaTimeCSharp.Commands
         public static List<string> GetAllAliases()
         {
             return GetCommandAliases().Concat(GetAfkCommandAliases()).ToList();
-        }
-
-        public static AfkMessage ReplaceSpaceHolder(this AfkMessage afkMessage, User user)
-        {
-            afkMessage.ComingBack = afkMessage.ComingBack.Replace("{username}", user.Username)
-                .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, " ago"))
-                .Replace("{message}", user.MessageText.Decode());
-
-            afkMessage.GoingAway = afkMessage.ComingBack.Replace("{username}", user.Username);
-
-            afkMessage.Resuming = afkMessage.Resuming.Replace("{username}", user.Username);
-
-            return afkMessage;
         }
 
         public static long GetCoolDown(CommandType type)
