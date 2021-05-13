@@ -4,13 +4,13 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 {
     public class AfkMessage
     {
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public string ComingBack { get; set; }
+        public string ComingBack { get; }
 
-        public string GoingAway { get; set; }
+        public string GoingAway { get; }
 
-        public string Resuming { get; set; }
+        public string Resuming { get; }
 
         private AfkMessage(string name, string comingBack, string goingAway, string resume)
         {
