@@ -199,8 +199,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendCoinFlip(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            Random rand = new();
-            string result = rand.Next(0, 1) == 0 ? $"yes/heads {Emoji.Coin}" : $"no/tails {Emoji.Coin}";
+            string result = NumberHelper.Random(0, 1) == 0 ? $"yes/heads {Emoji.Coin}" : $"no/tails {Emoji.Coin}";
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result}");
         }
 
