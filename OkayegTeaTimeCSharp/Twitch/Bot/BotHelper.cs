@@ -203,5 +203,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             string result = rand.Next(0, 1) == 0 ? $"yes/heads {Emoji.Coin}" : $"no/tails {Emoji.Coin}";
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result}");
         }
+
+        public static void SendResumingAfkStatus(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            DataBase.ResumeAfkStatus(chatMessage.Username);
+            User user = DataBase.GetUser(chatMessage.Username);
+            twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).Resuming);
+        }
     }
 }

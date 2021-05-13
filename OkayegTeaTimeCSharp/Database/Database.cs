@@ -91,6 +91,13 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
+        public static void ResumeAfkStatus(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = "true";
+            database.SaveChanges();
+        }
+
         public static void InsertNewUser(string username)
         {
             OkayegTeaTimeContext database = new();
@@ -98,6 +105,12 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 database.AddUser(username);
             }
+        }
+
+        public static User GetUser(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Users.Where(u => u.Username == username).FirstOrDefault();
         }
 
         public static Dictionary<string, string> GetPrefixes()
