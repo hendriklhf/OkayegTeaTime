@@ -8,7 +8,6 @@ namespace OkayegTeaTimeCSharp.Git
 {
     public static class ReadMeGenerator
     {
-        private static readonly string _htmlPath = Resources.ReadMePath;
         private static readonly string _title = "OkayegTeaTime";
         private static readonly string _header1 = "Commands";
         private static readonly string _header2 = "AFK-Commands";
@@ -34,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Git
 
         public static void GenerateReadMe()
         {
-            File.WriteAllText(_htmlPath, GenerateString());
+            File.WriteAllText(Resources.ReadMePath, GenerateString());
         }
 
         private static string GenerateString()
@@ -72,7 +71,7 @@ namespace OkayegTeaTimeCSharp.Git
             result += "<table><tr>";
             _afkCmdTableHeader.ForEach(str =>
             {
-                result += $"<th>{str}</th>";
+                result += TableHeader(str);
             });
             result += "</tr>";
             JsonHelper.BotData.CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
