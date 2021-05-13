@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.JsonData;
+﻿using OkayegTeaTimeCSharp.Git;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System;
@@ -10,6 +11,7 @@ namespace OkayegTeaTimeCSharp
         private static void Main(string[] args)
         {
             JsonHelper.SetData();
+            ReadMeGenerator.GenerateReadMe();
             PrefixHelper.FillDictionary();
             BotHelper.FillLastMessagesDictionary();
 
