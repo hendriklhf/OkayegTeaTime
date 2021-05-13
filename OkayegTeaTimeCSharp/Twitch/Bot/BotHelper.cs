@@ -214,5 +214,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             DataBase.AddSugestion(chatMessage, chatMessage.GetMessage()[chatMessage.GetLowerSplit()[0].Length..]);
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, your suggestion has been noted");
         }
+
+        public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        {
+            User user = DataBase.GetUser(username);
+            if (user.IsAfk == "true")
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {AfkMessage.Create(user).GoingAway}: {user.MessageText.Decode()}");
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {username} is not afk");
+            }
+        }
     }
 }
