@@ -12,5 +12,14 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public long ForTime { get; set; }
 
         public const string Reason = "Okayeg nuked word";
+
+        public Nuke(string username, string channel, byte[] word, long timeoutTime, long forTime)
+        {
+            Username = username;
+            Channel = channel;
+            Word = word;
+            TimeoutTime = timeoutTime;
+            ForTime = forTime;
+        }
     }
 }
