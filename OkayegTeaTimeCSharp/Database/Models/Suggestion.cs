@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             Username = username;
             Suggestion1 = suggestion;
-            Channel = channel;
+            Channel = $"#{channel.Replace("#", "")}";
         }
     }
 }
