@@ -5,6 +5,7 @@ using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
@@ -194,6 +195,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             Message message = DataBase.GetLastMessage(username);
             twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
+
+        public static void SendCoinFlip(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            Random rand = new();
+            string result = rand.Next(0, 1) == 0 ? $"yes/heads {Emoji.Coin}" : $"no/tails {Emoji.Coin}";
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result}");
         }
     }
 }
