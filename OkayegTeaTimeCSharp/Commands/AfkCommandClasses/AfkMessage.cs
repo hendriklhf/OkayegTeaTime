@@ -17,6 +17,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
             Name = name;
             ComingBack = comingBack;
             GoingAway = goingAway;
+            Resuming = resume;
         }
 
         public static AfkMessage Create(User user)
