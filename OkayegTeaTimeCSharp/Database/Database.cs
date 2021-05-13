@@ -195,5 +195,11 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
+
+        public static Message GetLastMessage(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
+        }
     }
 }

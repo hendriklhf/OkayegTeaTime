@@ -189,5 +189,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Message message = DataBase.GetSearch(keyword);
             twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
         }
+
+        public static void SendLastMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        {
+            Message message = DataBase.GetLastMessage(username);
+            twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+        }
     }
 }
