@@ -214,5 +214,12 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             return database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
         }
+
+        public static void AddSugestion(ChatMessage chatMessage, string suggestion)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Suggestions.Add(new Suggestion(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
+            database.SaveChanges();
+        }
     }
 }

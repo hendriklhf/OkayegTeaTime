@@ -208,5 +208,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             User user = DataBase.GetUser(chatMessage.Username);
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).Resuming);
         }
+
+        public static void SendSuggestionNoted(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            DataBase.AddSugestion(chatMessage, chatMessage.GetMessage()[chatMessage.GetLowerSplit()[0].Length..]);
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, your suggestion has been noted");
+        }
     }
 }
