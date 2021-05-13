@@ -7,5 +7,6 @@
         public const string Books = "📚";
         public const string Shower = "🚿";
         public const string Bed = "🛏";
+        public const string Coin = "🪙";
     }
 }
