@@ -231,7 +231,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendSetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage, string prefix)
         {
             DataBase.SetPrefix(chatMessage.Channel, prefix);
-            twitchBot.Send(chatMessage.Channel, $"");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, prefix set to \"{prefix}\"");
         }
     }
 }

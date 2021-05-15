@@ -227,12 +227,12 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.Replace("#", "")}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault().PrefixString = prefix;
+                database.Prefixes.Where(p => p.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault().PrefixString = prefix.MakeQueryable();
                 database.SaveChanges();
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, prefix));
+                database.Prefixes.Add(new Prefix(channel, prefix.MakeQueryable()));
                 database.SaveChanges();
             }
         }
