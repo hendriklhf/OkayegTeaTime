@@ -227,5 +227,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {username} is not afk");
             }
         }
+
+        public static void SendSetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage, string prefix)
+        {
+            DataBase.SetPrefix(chatMessage.Channel, prefix);
+            twitchBot.Send(chatMessage.Channel, $"");
+        }
     }
 }

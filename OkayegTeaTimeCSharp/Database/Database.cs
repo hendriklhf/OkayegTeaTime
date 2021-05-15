@@ -221,5 +221,20 @@ namespace OkayegTeaTimeCSharp.Database
             database.Suggestions.Add(new Suggestion(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
             database.SaveChanges();
         }
+
+        public static void SetPrefix(string channel, string prefix)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Prefixes.Any(p => p.Channel == $"#{channel.Replace("#", "")}"))
+            {
+                database.Prefixes.Where(p => p.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault().PrefixString = prefix;
+                database.SaveChanges();
+            }
+            else
+            {
+                database.Prefixes.Add(new Prefix(channel, prefix));
+                database.SaveChanges();
+            }
+        }
     }
 }
