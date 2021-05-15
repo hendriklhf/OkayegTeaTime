@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Properties;
 using System.Collections.Generic;
 using System.Linq;
+using OkayegTeaTimeCSharp.Database.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch
 {
@@ -10,7 +11,8 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static List<string> GetChannels()
         {
-            return Resources.Channels.Split(" ").ToList();
+            OkayegTeaTimeContext database = new();
+            return database.Bots.Where(b => b.Id == 1).FirstOrDefault().Channels.Split(" ").ToList();
         }
 
         public static List<string> GetNotLoggedChannels()
