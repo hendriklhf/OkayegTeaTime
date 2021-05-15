@@ -13,6 +13,7 @@
         Fuck,
         Gachi,
         Help,
+        Join,
         Last,
         Massping,
         Math,
@@ -30,6 +31,7 @@
         Unset,
         Yourmom
     }
+
     public enum AfkCommandType
     {
         Afk,
