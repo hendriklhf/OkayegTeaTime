@@ -236,5 +236,20 @@ namespace OkayegTeaTimeCSharp.Database
                 database.SaveChanges();
             }
         }
+
+        public static void UnsetPrefix(string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Prefixes.Any(p => p.Channel == $"#{channel.Replace("#", "")}"))
+            {
+                database.Prefixes.Where(p => p.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault().PrefixString = null;
+                database.SaveChanges();
+            }
+            else
+            {
+                database.Prefixes.Add(new Prefix(channel, null));
+                database.SaveChanges();
+            }
+        }
     }
 }
