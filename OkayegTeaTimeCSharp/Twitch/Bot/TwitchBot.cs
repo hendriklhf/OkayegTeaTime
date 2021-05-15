@@ -11,6 +11,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 using Time = System.Timers;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -63,6 +64,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public void SetBot()
         {
             _okayegTeaTime ??= this;
+        }
+
+        public void JoinChannel(string channel)
+        {
+            TwitchClient.JoinChannel(channel.Replace("#", ""));
+            this.Send(channel, $"{Resources.Username} is now online");
         }
 
         #region Bot_On
