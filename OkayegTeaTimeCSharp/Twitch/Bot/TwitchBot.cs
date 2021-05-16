@@ -65,10 +65,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             _okayegTeaTime ??= this;
         }
 
+        public void Send(string channel, string message)
+        {
+            message = LastMessages[$"#{channel}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+            TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
+            LastMessages[$"#{channel}"] = message;
+        }
+
         public void JoinChannel(string channel)
         {
             TwitchClient.JoinChannel(channel.Replace("#", ""));
-            this.Send(channel, $"{Resources.Username} is now online");
+            Send(channel, $"{Resources.Username} I'm now online");
         }
 
         #region Bot_On
