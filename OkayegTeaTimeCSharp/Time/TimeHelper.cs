@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Time
 {
@@ -247,6 +248,35 @@ namespace OkayegTeaTimeCSharp.Time
             }
 
             return result + addition;
+        }
+
+        public static long ConvertStringToMilliseconds(List<string> input)
+        {
+            long result = 0;
+            input.ForEach(str =>
+            {
+                if (str.IsMatch(Year.Pattern))
+                {
+                    result += Year.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                }
+                else if (str.IsMatch(Day.Pattern))
+                {
+                    result += Day.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                }
+                else if (str.IsMatch(Hour.Pattern))
+                {
+                    result += Hour.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                }
+                else if (str.IsMatch(Minute.Pattern))
+                {
+                    result += Minute.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                }
+                else if (str.IsMatch(Second.Pattern))
+                {
+                    result += Second.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                }
+            });
+            return result;
         }
     }
 }
