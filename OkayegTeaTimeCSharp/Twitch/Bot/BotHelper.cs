@@ -239,5 +239,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             DataBase.UnsetPrefix(chatMessage.Channel);
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the prefix has been unset");
         }
+
+        public static void SendSetReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message)
+        {
+            string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
+            DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {target}");
+        }
+
+        public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
+        {
+            string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
+            DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime));
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {target}");
+        }
     }
 }

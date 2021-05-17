@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
             Channel = channel;
         }
 
-        public Reminder(string fromUser, string toUser, byte[] message, string channel, long time, long toTime) : this(fromUser, toUser, message, channel)
+        public Reminder(string fromUser, string toUser, byte[] message, string channel, long toTime) : this(fromUser, toUser, message, channel)
         {
             ToTime = toTime;
         }

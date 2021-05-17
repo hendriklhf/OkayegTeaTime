@@ -16,16 +16,17 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         private const string TimeSplitPattern = @"(\d+(y(ear)?|d(ay)?|h(our)?|m(in(ute)?)?|s(ecs(ond)?)?)s?)";
         private static readonly int _startIndex = 4;
 
+#warning methods need to be tested!!!
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             _chatMessage = chatMessage;
             if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, ReminderInTimePattern)))
             {
-#warning dont now if these methods work right
+                twitchBot.SendSetTimedReminder(chatMessage, GetTimedRemindMessage(), GetToTime());
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+\s\S+")))
             {
-
+                twitchBot.SendSetReminder(chatMessage, GetRemindMessage());
             }
         }
 
@@ -46,12 +47,22 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             return TimeHelper.ConvertStringToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList());
         }
 
-        private static byte[] GetRemindMessage()
+        private static byte[] GetTimedRemindMessage()
         {
             string message = "";
             _chatMessage.GetSplit()[(_startIndex + _chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList().Count)..].ToList().ForEach(str =>
             {
-                message += str;
+                message += $"{str} ";
+            });
+            return message.MakeInsertable();
+        }
+
+        private static byte[] GetRemindMessage()
+        {
+            string message = "";
+            _chatMessage.GetSplit()[2..].ToList().ForEach(str =>
+            {
+                message += $"{str} ";
             });
             return message.MakeInsertable();
         }

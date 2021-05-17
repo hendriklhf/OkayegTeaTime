@@ -251,5 +251,12 @@ namespace OkayegTeaTimeCSharp.Database
                 database.SaveChanges();
             }
         }
+
+        public static void AddReminder(Reminder reminder)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Reminders.Add(reminder);
+            database.SaveChanges();
+        }
     }
 }
