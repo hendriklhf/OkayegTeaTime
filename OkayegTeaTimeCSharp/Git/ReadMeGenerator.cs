@@ -12,21 +12,21 @@ namespace OkayegTeaTimeCSharp.Git
         private const string _header1 = "Commands";
         private const string _header2 = "AFK-Commands";
         
-        private const List<string> _header1Text = new()
+        private static readonly List<string> _header1Text = new()
         {
             "If your channel has a custom prefix set, commands will have to start with the prefix.",
             "If your channel has no prefix set, commands will have to end with \"eg\", for example: \"pingeg\".",
             "Text in \"[ ]\" is a variable parameter"
         };
         
-        private const List<string> _cmdTableHeader = new()
+        private static readonly List<string> _cmdTableHeader = new()
         {
             "Command",
             "Alias",
             "Description [Parameter | Output]"
         };
         
-        private const List<string> _afkCmdTableHeader = new()
+        private static readonly List<string> _afkCmdTableHeader = new()
         {
             "Command",
             "Alias",
