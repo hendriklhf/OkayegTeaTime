@@ -72,8 +72,7 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
             {
-                List<Nuke> listNukes = database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList();
-                listNukes.ForEach(n =>
+                database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList().ForEach(n =>
                 {
                     if (n.ForTime > TimeHelper.Now())
                     {
