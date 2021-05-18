@@ -62,7 +62,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> listReminder)
         {
-            string message = $"{chatMessage.Username}, reminder from {listReminder[0].FromUser} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message.Decode()}";
+            string message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message.Decode()}";
             if (listReminder.Count > 1)
             {
                 listReminder.Skip(1).ToList().ForEach(reminder =>
@@ -71,6 +71,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 });
             }
             twitchBot.Send(chatMessage.Channel, message);
+        }
+        
+        public static string GetReminderAuthor(ChatMessage chatMessage, string fromUser)
+        {
+            return chatMessage.Username == fromUser ? "yourself" : fromUser;
         }
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
