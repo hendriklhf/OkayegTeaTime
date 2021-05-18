@@ -92,6 +92,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void ResumeAfkStatus(string username)
         {
+            #warning check if DatabaseHelper.SetAfk(...) can be used here
             OkayegTeaTimeContext database = new();
             database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = "true";
             database.SaveChanges();
