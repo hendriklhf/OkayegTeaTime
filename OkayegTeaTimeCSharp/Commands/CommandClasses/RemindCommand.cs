@@ -14,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private const string ReminderInTimePattern = @"\s\w+\sin\s(" + TimeSplitPattern + @"\s)+(\S|\s)+";
         private const string TimeSplitPattern = @"(\d+(y(ear)?|d(ay)?|h(our)?|m(in(ute)?)?|s(ecs(ond)?)?)s?)";
-        private static readonly int _startIndex = 4;
+        private static readonly int _startIndex = 3;
 
 #warning methods need to be tested!!!
 
@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private static int GetMessageStartIdx()
         {
-            for (int i = _startIndex - 1; i <= _chatMessage.GetLowerSplit().Length - 1; i++)
+            for (int i = _startIndex; i <= _chatMessage.GetLowerSplit().Length - 1; i++)
             {
                 if (!_chatMessage.GetLowerSplit()[i].IsMatch(TimeSplitPattern))
                 {
