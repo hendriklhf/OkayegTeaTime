@@ -16,8 +16,6 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         private const string TimeSplitPattern = @"(\d+(y(ear)?|d(ay)?|h(our)?|m(in(ute)?)?|s(ecs(ond)?)?)s?)";
         private static readonly int _startIndex = 3;
 
-#warning methods need to be tested!!!
-
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             _chatMessage = chatMessage;
