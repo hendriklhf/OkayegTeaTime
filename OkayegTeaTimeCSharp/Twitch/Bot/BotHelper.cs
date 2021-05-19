@@ -72,7 +72,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             twitchBot.Send(chatMessage.Channel, message);
         }
-        
+
         public static string GetReminderAuthor(ChatMessage chatMessage, string fromUser)
         {
             return chatMessage.Username == fromUser ? "yourself" : fromUser;
