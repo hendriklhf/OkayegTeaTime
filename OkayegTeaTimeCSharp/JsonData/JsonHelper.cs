@@ -21,6 +21,21 @@ namespace OkayegTeaTimeCSharp.JsonData
             SetData();
         }
 
+        private static Data JsonToObject()
+        {
+            return NewtonJson::JsonConvert.DeserializeObject<Data>(JsonToString());
+        }
+
+        private static string JsonToString()
+        {
+            return File.ReadAllText(Resources.JsonPath);
+        }
+
+        private static void ObjectToJson(Data data)
+        {
+            File.WriteAllText(Resources.JsonPath, ObjectToString(data));
+        }
+
         private static string ObjectToString(Data data)
         {
             SystemJson::JsonSerializerOptions options = new()
@@ -33,21 +48,6 @@ namespace OkayegTeaTimeCSharp.JsonData
         private static Data StringToObject(string json)
         {
             return SystemJson::JsonSerializer.Deserialize<Data>(json);
-        }
-
-        private static Data JsonToObject()
-        {
-            return NewtonJson::JsonConvert.DeserializeObject<Data>(JsonToString());
-        }
-
-        private static void ObjectToJson(Data data)
-        {
-            File.WriteAllText(Resources.JsonPath, ObjectToString(data));
-        }
-
-        private static string JsonToString()
-        {
-            return File.ReadAllText(Resources.JsonPath);
         }
     }
 }

@@ -14,27 +14,40 @@ namespace OkayegTeaTimeCSharp.Database
 {
     public static class DataBase
     {
-        public static void LogMessage(ChatMessage chatMessage)
-        {
-            if (!Config.GetNotLoggedChannels().Contains(chatMessage.Channel))
-            {
-                OkayegTeaTimeContext database = new();
-                database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
-                database.SaveChanges();
-            }
-        }
-
-        public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void AddReminder(Reminder reminder)
         {
             OkayegTeaTimeContext database = new();
-            User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
-            if (user.IsAfk == "true")
+            database.Reminders.Add(reminder);
+            database.SaveChanges();
+        }
+
+        public static void AddSugestion(ChatMessage chatMessage, string suggestion)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Suggestions.Add(new Suggestion(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
+            database.SaveChanges();
+        }
+
+        public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
             {
-                twitchBot.SendComingBack(user, chatMessage);
-                if (!MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
+                database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList().ForEach(n =>
                 {
-                    database.SetAfk(user, "false");
-                }
+                    if (n.ForTime > TimeHelper.Now())
+                    {
+                        if (chatMessage.GetMessage().IsMatch(n.Word.Decode()))
+                        {
+                            twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
+                        }
+                    }
+                    else
+                    {
+                        database.Nukes.Remove(n);
+                        database.SaveChanges();
+                    }
+                });
             }
         }
 
@@ -67,56 +80,48 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
+            User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
+            if (user.IsAfk == "true")
             {
-                database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList().ForEach(n =>
+                twitchBot.SendComingBack(user, chatMessage);
+                if (!MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
                 {
-                    if (n.ForTime > TimeHelper.Now())
-                    {
-                        if (chatMessage.GetMessage().IsMatch(n.Word.Decode()))
-                        {
-                            twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
-                        }
-                    }
-                    else
-                    {
-                        database.Nukes.Remove(n);
-                        database.SaveChanges();
-                    }
-                });
+                    database.SetAfk(user, "false");
+                }
             }
         }
 
-        public static void ResumeAfkStatus(string username)
+        public static Message GetFirst(ChatMessage chatMessage)
         {
-#warning check if DatabaseHelper.SetAfk(...) can be used here
             OkayegTeaTimeContext database = new();
-            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = "true";
-            database.SaveChanges();
+            return database.Messages.Where(m => m.Username == chatMessage.Username).FirstOrDefault();
         }
 
-        public static void InsertNewUser(string username)
+        public static Message GetFirstChannel(ChatMessage chatMessage, string channel)
         {
             OkayegTeaTimeContext database = new();
-            if (!database.Users.Any(u => u.Username == username))
-            {
-                database.AddUser(username);
-            }
+            return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
         }
 
-        public static User GetUser(string username)
+        public static Message GetFirstMessageUserChannel(string username, string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Users.Where(u => u.Username == username).FirstOrDefault();
+            return database.Messages.Where(m => m.Username == username && channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
         }
 
-        public static Dictionary<string, string> GetPrefixes()
+        public static Message GetFirstUser(string username)
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.ToDictionary(p => p.Channel, prefix => prefix.PrefixString);
+            return database.Messages.Where(m => m.Username == username).FirstOrDefault();
+        }
+
+        public static Message GetLastMessage(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
         }
 
         public static string GetPrefix(string channel)
@@ -125,10 +130,10 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Prefixes.Where(p => p.Channel == $"#{channel}").FirstOrDefault().PrefixString;
         }
 
-        public static Gachi GetRandomGachi()
+        public static Dictionary<string, string> GetPrefixes()
         {
             OkayegTeaTimeContext database = new();
-            return database.Gachi.OrderBy(g => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Prefixes.ToDictionary(p => p.Channel, prefix => prefix.PrefixString);
         }
 
         public static Pechkekse GetRandomCookie()
@@ -137,10 +142,10 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Pechkekse.OrderBy(p => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
-        public static Yourmom GetRandomYourmom()
+        public static Gachi GetRandomGachi()
         {
             OkayegTeaTimeContext database = new();
-            return database.Yourmom.OrderBy(y => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Gachi.OrderBy(g => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
         public static Message GetRandomMessage(ChatMessage chatMessage)
@@ -161,46 +166,10 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Messages.Where(m => m.Channel == $"#{channel.Replace("#", "")}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
-        public static Message GetFirstMessageUserChannel(string username, string channel)
+        public static Yourmom GetRandomYourmom()
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Username == username && channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
-        }
-
-        public static Message GetFirstChannel(ChatMessage chatMessage, string channel)
-        {
-            OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
-        }
-
-        public static Message GetFirstUser(string username)
-        {
-            OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Username == username).FirstOrDefault();
-        }
-
-        public static Message GetFirst(ChatMessage chatMessage)
-        {
-            OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Username == chatMessage.Username).FirstOrDefault();
-        }
-
-        public static Message GetSearchUserChannel(string keyword, string username, string channel)
-        {
-            OkayegTeaTimeContext database = new();
-            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        }
-
-        public static Message GetSearchUser(string keyword, string username)
-        {
-            OkayegTeaTimeContext database = new();
-            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        }
-
-        public static Message GetSearchChannel(string keyword, string channel)
-        {
-            OkayegTeaTimeContext database = new();
-            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            return database.Yourmom.OrderBy(y => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
         public static Message GetSearch(string keyword)
@@ -209,19 +178,55 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
-        public static Message GetLastMessage(string username)
+        public static Message GetSearchChannel(string keyword, string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
-        public static void AddSugestion(ChatMessage chatMessage, string suggestion)
+        public static Message GetSearchUser(string keyword, string username)
         {
             OkayegTeaTimeContext database = new();
-            database.Suggestions.Add(new Suggestion(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        }
+
+        public static Message GetSearchUserChannel(string keyword, string username, string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        }
+
+        public static User GetUser(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            return database.Users.Where(u => u.Username == username).FirstOrDefault();
+        }
+
+        public static void InsertNewUser(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            if (!database.Users.Any(u => u.Username == username))
+            {
+                database.AddUser(username);
+            }
+        }
+
+        public static void LogMessage(ChatMessage chatMessage)
+        {
+            if (!Config.GetNotLoggedChannels().Contains(chatMessage.Channel))
+            {
+                OkayegTeaTimeContext database = new();
+                database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
+                database.SaveChanges();
+            }
+        }
+        public static void ResumeAfkStatus(string username)
+        {
+#warning check if DatabaseHelper.SetAfk(...) can be used here
+            OkayegTeaTimeContext database = new();
+            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = "true";
             database.SaveChanges();
         }
-
         public static void SetPrefix(string channel, string prefix)
         {
             OkayegTeaTimeContext database = new();
@@ -250,13 +255,6 @@ namespace OkayegTeaTimeCSharp.Database
                 database.Prefixes.Add(new Prefix(channel, null));
                 database.SaveChanges();
             }
-        }
-
-        public static void AddReminder(Reminder reminder)
-        {
-            OkayegTeaTimeContext database = new();
-            database.Reminders.Add(reminder);
-            database.SaveChanges();
         }
     }
 }

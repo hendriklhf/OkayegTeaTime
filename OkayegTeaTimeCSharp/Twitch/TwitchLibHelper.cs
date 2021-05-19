@@ -5,6 +5,11 @@ namespace OkayegTeaTimeCSharp.Twitch
 {
     public static class TwitchLibHelper
     {
+        public static string[] GetLowerSplit(this ChatMessage chatMessage)
+        {
+            return chatMessage.Message.SplitToLowerCase();
+        }
+
         public static string GetMessage(this ChatMessage chatMessage)
         {
             return chatMessage.Message.MakeUsable();
@@ -13,11 +18,6 @@ namespace OkayegTeaTimeCSharp.Twitch
         public static string[] GetSplit(this ChatMessage chatMessage)
         {
             return chatMessage.Message.Split();
-        }
-
-        public static string[] GetLowerSplit(this ChatMessage chatMessage)
-        {
-            return chatMessage.Message.SplitToLowerCase();
         }
     }
 }

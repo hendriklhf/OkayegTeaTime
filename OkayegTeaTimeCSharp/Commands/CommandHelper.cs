@@ -13,21 +13,6 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public const string Suffix = "eg";
 
-        public static bool MatchesAlias(this ChatMessage chatMessage, CommandType type)
-        {
-            return GetCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Suffix == chatMessage.GetLowerSplit()[0]);
-        }
-
-        public static string GetCommandClassName(CommandType type)
-        {
-            return $"OkayegTeaTimeCSharp.Commands.CommandClasses.{type}Command";
-        }
-
-        public static Command GetCommand(CommandType type)
-        {
-            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
-        }
-
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
             return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
@@ -36,19 +21,6 @@ namespace OkayegTeaTimeCSharp.Commands
         public static AfkCommand GetAfkCommand(string name)
         {
             return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
-        }
-
-        public static List<string> GetCommandAliases()
-        {
-            List<string> listAlias = new();
-            JsonHelper.BotData.CommandLists.Commands.ForEach(cmd =>
-            {
-                cmd.Alias.ForEach(alias =>
-                {
-                    listAlias.Add(alias);
-                });
-            });
-            return listAlias;
         }
 
         public static List<string> GetAfkCommandAliases()
@@ -69,9 +41,37 @@ namespace OkayegTeaTimeCSharp.Commands
             return GetCommandAliases().Concat(GetAfkCommandAliases()).ToList();
         }
 
+        public static Command GetCommand(CommandType type)
+        {
+            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+        }
+
+        public static List<string> GetCommandAliases()
+        {
+            List<string> listAlias = new();
+            JsonHelper.BotData.CommandLists.Commands.ForEach(cmd =>
+            {
+                cmd.Alias.ForEach(alias =>
+                {
+                    listAlias.Add(alias);
+                });
+            });
+            return listAlias;
+        }
+
+        public static string GetCommandClassName(CommandType type)
+        {
+            return $"OkayegTeaTimeCSharp.Commands.CommandClasses.{type}Command";
+        }
+
         public static long GetCoolDown(CommandType type)
         {
             return GetCommand(type).Cooldown;
+        }
+
+        public static bool MatchesAlias(this ChatMessage chatMessage, CommandType type)
+        {
+            return GetCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Suffix == chatMessage.GetLowerSplit()[0]);
         }
     }
 }

@@ -8,33 +8,15 @@ namespace OkayegTeaTimeCSharp.Database
 {
     public static class DatabaseHelper
     {
-        public static void SetAfk(this OkayegTeaTimeContext database, User user, string state)
-        {
-            if (state.IsMatch(@"^(t(rue)?)|(f(alse)?)$"))
-            {
-                User userE = database.Users.Where(userD => userD.Username == user.Username).FirstOrDefault();
-                userE.IsAfk = state.IsMatch(@"^t(rue)?$") ? "true" : "false";
-                database.SaveChanges();
-            }
-            else
-            {
-                throw new Exception("state doesn't match the required pattern");
-            }
-        }
-
         public static void AddUser(this OkayegTeaTimeContext database, string username)
         {
             database.Users.Add(new User(username));
             database.SaveChanges();
         }
 
-        public static void RemoveReminder(this OkayegTeaTimeContext database, List<Reminder> listReminder)
+        public static int CountChannelMessages(this OkayegTeaTimeContext database, string givenChannel)
         {
-            listReminder.ForEach(reminder =>
-            {
-                database.Reminders.Remove(reminder);
-            });
-            database.SaveChanges();
+            return database.Messages.Where(m => m.Channel == givenChannel).Count();
         }
 
         public static int CountMessages(this OkayegTeaTimeContext database)
@@ -47,9 +29,27 @@ namespace OkayegTeaTimeCSharp.Database
             return databse.Messages.Where(m => m.Username == givenUsername).Count();
         }
 
-        public static int CountChannelMessages(this OkayegTeaTimeContext database, string givenChannel)
+        public static void RemoveReminder(this OkayegTeaTimeContext database, List<Reminder> listReminder)
         {
-            return database.Messages.Where(m => m.Channel == givenChannel).Count();
+            listReminder.ForEach(reminder =>
+            {
+                database.Reminders.Remove(reminder);
+            });
+            database.SaveChanges();
+        }
+
+        public static void SetAfk(this OkayegTeaTimeContext database, User user, string state)
+        {
+            if (state.IsMatch(@"^(t(rue)?)|(f(alse)?)$"))
+            {
+                User userE = database.Users.Where(userD => userD.Username == user.Username).FirstOrDefault();
+                userE.IsAfk = state.IsMatch(@"^t(rue)?$") ? "true" : "false";
+                database.SaveChanges();
+            }
+            else
+            {
+                throw new Exception("state doesn't match the required pattern");
+            }
         }
     }
 }
