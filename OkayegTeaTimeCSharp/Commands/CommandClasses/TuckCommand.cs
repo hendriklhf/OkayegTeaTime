@@ -31,6 +31,4 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             return $"{Emoji.PointRight} {Emoji.Bed} {username} tucked {target} to bed {emote}".Trim();
         }
     }
-
-
 }

@@ -93,6 +93,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Gachi gachi = DataBase.GetRandomGachi();
             twitchBot.Send(chatMessage.Channel, $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS");
         }
+
         public static void SendRandomCookie(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             Pechkekse keks = DataBase.GetRandomCookie();

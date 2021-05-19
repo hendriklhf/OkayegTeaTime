@@ -79,6 +79,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         }
 
         #region Bot_On
+
         private void Client_OnLog(object sender, OnLogArgs e)
         {
             //Console.WriteLine($"LOG: {e.Data}");
@@ -108,9 +109,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
-        #endregion
+
+        #endregion Bot_On
 
         #region Threading
+
         private static void OnMessage(object chatMessage)
         {
             if (!MessageHelper.IsSpecialUser(((ChatMessage)chatMessage).Username))
@@ -118,9 +121,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 MessageHandler.Handle(_okayegTeaTime, ((ChatMessage)chatMessage));
             }
         }
-        #endregion
+
+        #endregion Threading
 
         #region Timer
+
         private static void InitializeTimers()
         {
             Timers.CreateTimers();
@@ -153,6 +158,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
         }
-        #endregion
+
+        #endregion Timer
     }
 }

@@ -17,6 +17,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         private static readonly int _startIndex = 4;
 
 #warning methods need to be tested!!!
+
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             _chatMessage = chatMessage;
