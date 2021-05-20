@@ -2,6 +2,7 @@
 using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
@@ -11,7 +12,7 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
-    public static class BotHelper
+    public static class BotActions
     {
         public static void AddCooldown(string username, CommandType type)
         {
@@ -217,22 +218,29 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendSetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage, string prefix)
         {
-            DataBase.SetPrefix(chatMessage.Channel, prefix);
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, prefix set to \"{prefix}\"");
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                DataBase.SetPrefix(chatMessage.Channel, prefix);
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, prefix set to \"{prefix}\"");
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+            }
         }
 
         public static void SendSetReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message)
         {
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
-            DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {target}");
+            int id = DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {target} (ID: {id})");
         }
 
         public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
         {
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
-            DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime));
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {target}");
+            int id = DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime));
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {target} (ID: {id})");
         }
 
         public static void SendSuggestionNoted(this TwitchBot twitchBot, ChatMessage chatMessage)
@@ -248,8 +256,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            DataBase.UnsetPrefix(chatMessage.Channel);
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the prefix has been unset");
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                DataBase.UnsetPrefix(chatMessage.Channel);
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the prefix has been unset");
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+            }
+        }
+
+        public static void SendUnsetReminder(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            DataBase.UnsetReminder(chatMessage);
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the reminder has been unset");
         }
 
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
