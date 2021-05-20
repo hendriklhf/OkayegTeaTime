@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Properties;
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -15,6 +16,7 @@ namespace OkayegTeaTimeCSharp.Utils
         {
             return Encoding.UTF8.GetBytes(str);
         }
+
         public static string EscapeChars(this string str)
         {
             return str.Replace("\\", "\\\\").Replace("'", "\\'");
@@ -36,6 +38,7 @@ namespace OkayegTeaTimeCSharp.Utils
         {
             return str.Replace(Resources.ChatterinoChar, "");
         }
+
         public static string ReplacePattern(this string str, string pattern, string replacement)
         {
             return Regex.Replace(str, pattern, replacement, RegexOptions.IgnoreCase);
@@ -44,6 +47,11 @@ namespace OkayegTeaTimeCSharp.Utils
         public static string ReplaceSpaces(this string str)
         {
             return str.ReplacePattern(@"\s+", " ");
+        }
+
+        public static int ToInt(this string input)
+        {
+            return Convert.ToInt32(input);
         }
     }
 }

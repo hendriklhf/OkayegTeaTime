@@ -14,11 +14,12 @@ namespace OkayegTeaTimeCSharp.Database
 {
     public static class DataBase
     {
-        public static void AddReminder(Reminder reminder)
+        public static int AddReminder(Reminder reminder)
         {
             OkayegTeaTimeContext database = new();
             database.Reminders.Add(reminder);
             database.SaveChanges();
+            return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime).FirstOrDefault().Id;
         }
 
         public static void AddSugestion(ChatMessage chatMessage, string suggestion)
@@ -257,6 +258,17 @@ namespace OkayegTeaTimeCSharp.Database
                 database.SaveChanges();
             }
             PrefixHelper.FillDictionary();
+        }
+
+        public static void UnsetReminder(ChatMessage chatMessage)
+        {
+            OkayegTeaTimeContext database = new();
+            Reminder reminder = database.Reminders.Where(r => r.Id == chatMessage.GetSplit()[2].ToInt()).FirstOrDefault();
+            if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
+            {
+                database.Reminders.Remove(reminder);
+                database.SaveChanges();
+            }
         }
     }
 }
