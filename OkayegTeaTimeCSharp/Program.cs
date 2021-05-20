@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp
             JsonHelper.SetData();
             ReadMeGenerator.GenerateReadMe();
             PrefixHelper.FillDictionary();
-            BotHelper.FillLastMessagesDictionary();
+            BotActions.FillLastMessagesDictionary();
 
             TwitchBot OkayegTeaTime = new();
             OkayegTeaTime.SetBot();

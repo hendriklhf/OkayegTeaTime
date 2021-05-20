@@ -21,7 +21,7 @@ namespace OkayegTeaTimeCSharp.Commands
                 {
                     if (CommandHelper.MatchesAlias(chatMessage, type))
                     {
-                        if (!BotHelper.IsOnCooldown(chatMessage.Username, type))
+                        if (!BotActions.IsOnCooldown(chatMessage.Username, type))
                         {
                             if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
                             {
@@ -29,9 +29,9 @@ namespace OkayegTeaTimeCSharp.Commands
                                 {
                                     if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None)))
                                     {
-                                        BotHelper.AddUserToCooldownDictionary(chatMessage.Username, type);
+                                        BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
                                         Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
-                                        BotHelper.AddCooldown(chatMessage.Username, type);
+                                        BotActions.AddCooldown(chatMessage.Username, type);
                                     }
                                 });
                             }
@@ -41,9 +41,9 @@ namespace OkayegTeaTimeCSharp.Commands
                                 {
                                     if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active)))
                                     {
-                                        BotHelper.AddUserToCooldownDictionary(chatMessage.Username, type);
+                                        BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
                                         Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
-                                        BotHelper.AddCooldown(chatMessage.Username, type);
+                                        BotActions.AddCooldown(chatMessage.Username, type);
                                     }
                                 });
                             }
