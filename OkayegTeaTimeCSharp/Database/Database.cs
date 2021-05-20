@@ -240,6 +240,7 @@ namespace OkayegTeaTimeCSharp.Database
                 database.Prefixes.Add(new Prefix(channel, prefix.MakeQueryable()));
                 database.SaveChanges();
             }
+            PrefixHelper.FillDictionary();
         }
 
         public static void UnsetPrefix(string channel)
@@ -255,6 +256,7 @@ namespace OkayegTeaTimeCSharp.Database
                 database.Prefixes.Add(new Prefix(channel, null));
                 database.SaveChanges();
             }
+            PrefixHelper.FillDictionary();
         }
     }
 }
