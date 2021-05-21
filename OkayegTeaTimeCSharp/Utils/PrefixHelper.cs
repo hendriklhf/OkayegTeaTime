@@ -12,9 +12,14 @@ namespace OkayegTeaTimeCSharp.Utils
             Prefixes = DataBase.GetPrefixes();
         }
 
+        public static void Add(string channel)
+        {
+            Prefixes.Add($"#{channel.Replace("#", "")}", DataBase.GetPrefix($"#{channel.Replace("#", "")}"));
+        }
+
         public static void Update(string channel)
         {
-            Prefixes[$"#{channel}"] = DataBase.GetPrefix(channel);
+            Prefixes[$"#{channel.Replace("#", "")}"] = DataBase.GetPrefix($"#{channel.Replace("#", "")}");
         }
 
         public static string GetPrefix(string channel)
