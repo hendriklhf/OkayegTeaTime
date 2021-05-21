@@ -33,3 +33,4 @@ namespace OkayegTeaTimeCSharp
 #warning code needs doc
 #warning move databasehelper methods
 #warning afkmessage: add check message
+#warning join channel cmd
