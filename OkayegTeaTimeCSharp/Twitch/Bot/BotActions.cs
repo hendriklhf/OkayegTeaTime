@@ -52,12 +52,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
-        public static void Send(this TwitchBot twitchBot, string channel, string message)
-        {
-            message = TwitchBot.LastMessages[$"#{channel}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
-            twitchBot.TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
-            TwitchBot.LastMessages[$"#{channel}"] = message;
-        }
 
         public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
