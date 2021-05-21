@@ -30,3 +30,6 @@ namespace OkayegTeaTimeCSharp
 #warning change prefixstring column to varbinary to support emojis
 #warning fill prefix dictionary after set or unset
 #warning poopeg, pisseg
+#warning code needs doc
+#warning move databasehelper methods
+#warning afkmessage: add check message
