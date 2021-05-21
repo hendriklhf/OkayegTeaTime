@@ -54,6 +54,7 @@ namespace OkayegTeaTimeCSharp.Messages
         {
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces();
         }
+
         public static string[] Split(this string input)
         {
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Split(" ");

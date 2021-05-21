@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
@@ -9,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Exceptions;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -313,6 +313,7 @@ namespace OkayegTeaTimeCSharp.Database
                 database.SaveChanges();
             }
         }
+
         public static void ResumeAfkStatus(string username)
         {
 #warning check if DatabaseHelper.SetAfk(...) can be used here
@@ -320,6 +321,7 @@ namespace OkayegTeaTimeCSharp.Database
             database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = "true";
             database.SaveChanges();
         }
+
         public static void SetPrefix(string channel, string prefix)
         {
             OkayegTeaTimeContext database = new();

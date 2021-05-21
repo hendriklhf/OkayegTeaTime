@@ -2,13 +2,13 @@
 using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Exceptions;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -43,6 +43,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 TwitchBot.LastMessages.Add($"#{channel}", "");
             });
         }
+
         public static string GetReminderAuthor(ChatMessage chatMessage, string fromUser)
         {
             return chatMessage.Username == fromUser ? "yourself" : fromUser;
@@ -242,6 +243,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             twitchBot.Send(chatMessage.Channel, message);
         }
+
         public static void SendResumingAfkStatus(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             DataBase.ResumeAfkStatus(chatMessage.Username);
