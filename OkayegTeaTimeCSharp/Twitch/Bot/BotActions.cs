@@ -3,7 +3,6 @@ using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Messages;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
