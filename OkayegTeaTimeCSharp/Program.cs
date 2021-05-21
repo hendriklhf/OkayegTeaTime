@@ -29,3 +29,4 @@ namespace OkayegTeaTimeCSharp
 #warning cmd type const missing in some cmd classes
 #warning change prefixstring column to varbinary to support emojis
 #warning fill prefix dictionary after set or unset
+#warning poopeg, pisseg
