@@ -27,7 +27,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
             return new AfkMessage(user.Type, CommandHelper.GetAfkCommand(user.Type).ComingBack, CommandHelper.GetAfkCommand(user.Type).GoingAway, CommandHelper.GetAfkCommand(user.Type).Resuming).ReplaceSpaceHolder(user);
         }
 
-        public AfkMessage ReplaceSpaceHolder(User user)
+        private AfkMessage ReplaceSpaceHolder(User user)
         {
             ComingBack = ComingBack.Replace("{username}", user.Username)
                 .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, " ago"))
