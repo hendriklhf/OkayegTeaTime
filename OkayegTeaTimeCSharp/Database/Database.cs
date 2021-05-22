@@ -15,6 +15,13 @@ namespace OkayegTeaTimeCSharp.Database
 {
     public static class DataBase
     {
+        public static void AddNuke(Nuke nuke)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Nukes.Add(nuke);
+            database.SaveChanges();
+        }
+
         public static int AddReminder(Reminder reminder)
         {
             OkayegTeaTimeContext database = new();
@@ -378,13 +385,6 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 throw new ReminderNotFoundException();
             }
-        }
-
-        public static void AddNuke(Nuke nuke)
-        {
-            OkayegTeaTimeContext database = new();
-            database.Nukes.Add(nuke);
-            database.SaveChanges();
         }
     }
 }

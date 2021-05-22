@@ -85,6 +85,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
         }
 
+        public static void SendCreatedNuke(this TwitchBot twitchBot, ChatMessage chatMessage, string word, long timeoutTime, long duration)
+        {
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                timeoutTime = timeoutTime > Day.ToSeconds(14) ? Day.ToSeconds(14) : timeoutTime;
+                DataBase.AddNuke(new Nuke(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration));
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]}");
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+            }
+        }
+
         public static void SendFirst(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             try
@@ -370,20 +384,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());
-        }
-
-        public static void SendCreatedNuke(this TwitchBot twitchBot, ChatMessage chatMessage, string word, long timeoutTime, long duration)
-        {
-            if (chatMessage.IsModOrBroadcaster())
-            {
-                timeoutTime = timeoutTime > Day.ToSeconds(14) ? Day.ToSeconds(14) : timeoutTime;
-                DataBase.AddNuke(new Nuke(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration));
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]}");
-            }
-            else
-            {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
-            }
         }
     }
 }
