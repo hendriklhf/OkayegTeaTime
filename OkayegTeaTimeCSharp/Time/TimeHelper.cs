@@ -285,5 +285,10 @@ namespace OkayegTeaTimeCSharp.Time
             });
             return result;
         }
+
+        public static long ConvertStringToSeconds(List<string> input)
+        {
+            return ConvertStringToMilliseconds(input) / 1000;
+        }
     }
 }
