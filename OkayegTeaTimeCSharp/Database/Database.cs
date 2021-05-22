@@ -32,24 +32,30 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            OkayegTeaTimeContext database = new();
-            if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
+            if (!MessageHelper.IsAnyCommand(chatMessage.Message))
             {
-                database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList().ForEach(n =>
+                OkayegTeaTimeContext database = new();
+                if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
                 {
-                    if (n.ForTime > TimeHelper.Now())
+                    database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList().ForEach(n =>
                     {
-                        if (chatMessage.GetMessage().IsMatch(n.Word.Decode()))
+                        if (n.ForTime > TimeHelper.Now())
                         {
-                            twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
+                            if (!chatMessage.IsModOrBroadcaster())
+                            {
+                                if (chatMessage.GetMessage().IsMatch(n.Word.Decode()))
+                                {
+                                    twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
+                                }
+                            }
                         }
-                    }
-                    else
-                    {
-                        database.Nukes.Remove(n);
-                    }
-                });
-                database.SaveChanges();
+                        else
+                        {
+                            database.Nukes.Remove(n);
+                            database.SaveChanges();
+                        }
+                    });
+                }
             }
         }
 
@@ -372,6 +378,13 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 throw new ReminderNotFoundException();
             }
+        }
+
+        public static void AddNuke(Nuke nuke)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Nukes.Add(nuke);
+            database.SaveChanges();
         }
     }
 }

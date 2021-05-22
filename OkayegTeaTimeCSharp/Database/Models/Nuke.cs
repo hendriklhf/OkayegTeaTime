@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using OkayegTeaTimeCSharp.Time;
+
 namespace OkayegTeaTimeCSharp.Database.Models
 {
     public partial class Nuke
@@ -19,7 +21,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
             Channel = channel;
             Word = word;
             TimeoutTime = timeoutTime;
-            ForTime = forTime;
+            ForTime = TimeHelper.Now() + forTime;
         }
     }
 }
