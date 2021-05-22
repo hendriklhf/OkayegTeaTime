@@ -9,5 +9,10 @@
         {
             return InMilliseconds * days;
         }
+
+        public static long ToSeconds(uint days = 1)
+        {
+            return ToMilliseconds(days) / 1000;
+        }
     }
 }
