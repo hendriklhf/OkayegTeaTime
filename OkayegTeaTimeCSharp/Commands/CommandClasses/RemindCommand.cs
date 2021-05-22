@@ -12,14 +12,12 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         private static ChatMessage _chatMessage;
 
-        private const string ReminderInTimePattern = @"\s\w+\sin\s(" + TimeSplitPattern + @"\s)+(\S|\s)+";
-        private const string TimeSplitPattern = @"(\d+(y(ear)?|d(ay)?|h(our)?|m(in(ute)?)?|s(ecs(ond)?)?)s?)";
         private static readonly int _startIndex = 3;
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             _chatMessage = chatMessage;
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, ReminderInTimePattern)))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, Pattern.ReminderInTimePattern)))
             {
                 twitchBot.SendSetTimedReminder(chatMessage, GetTimedRemindMessage(), GetToTime());
             }
@@ -33,7 +31,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             for (int i = _startIndex; i <= _chatMessage.GetLowerSplit().Length - 1; i++)
             {
-                if (!_chatMessage.GetLowerSplit()[i].IsMatch(TimeSplitPattern))
+                if (!_chatMessage.GetLowerSplit()[i].IsMatch(Pattern.TimeSplitPattern))
                 {
                     return i;
                 }
