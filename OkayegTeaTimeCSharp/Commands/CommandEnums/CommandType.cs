@@ -3,33 +3,33 @@
     public enum CommandType
     {
         Chatters,
-        Check,
-        Coinflip,
-        Cookie,
-        Count,
+        Check,//
+        Coinflip,//
+        Cookie,//
+        Count,//
         Cytube,
         Emote,
-        First,
-        Fuck,
-        Gachi,
-        Help,
-        Join,
-        Last,
+        First,//
+        Fuck,//
+        Gachi,//
+        Help,//
+        Join,//
+        Last,//
         Massping,
         Math,
-        Nuke,
-        Ping,
-        Quote,
-        Rafk,
-        Rand,
-        Remind,
-        Search,
-        Set,
+        Nuke,//
+        Ping,//
+        Quote,//
+        Rafk,//
+        Rand,//
+        Remind,//
+        Search,//
+        Set,//
         Spotify,
-        Suggest,
-        Tuck,
-        Unset,
-        Yourmom
+        Suggest,//
+        Tuck,//
+        Unset,//
+        Yourmom//
     }
 
     public enum AfkCommandType
