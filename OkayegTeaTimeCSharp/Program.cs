@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Git;
+﻿using OkayegTeaTimeCSharp.GitHub;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
