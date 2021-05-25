@@ -15,6 +15,13 @@ namespace OkayegTeaTimeCSharp.Database
 {
     public static class DataBase
     {
+        public static void AddChannel(string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Bots.Where(b => b.Id == 1).FirstOrDefault().Channels += $" {channel.Replace("#", "").Trim()}";
+            database.SaveChanges();
+        }
+
         public static void AddNuke(Nuke nuke)
         {
             OkayegTeaTimeContext database = new();
@@ -329,9 +336,8 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void ResumeAfkStatus(string username)
         {
-#warning check if DatabaseHelper.SetAfk(...) can be used here
             OkayegTeaTimeContext database = new();
-            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = "true";
+            database.SetAfk(GetUser(username), "true");
             database.SaveChanges();
         }
 

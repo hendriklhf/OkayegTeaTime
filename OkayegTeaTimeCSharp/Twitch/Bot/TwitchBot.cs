@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Messages;
+﻿using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Whisper;
@@ -74,8 +75,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void JoinChannel(string channel)
         {
-            TwitchClient.JoinChannel(channel.Replace("#", ""));
-            Send(channel, $"/ I'm online");
+            DataBase.AddChannel(channel);
+            try
+            {
+                TwitchClient.JoinChannel(channel.Replace("#", ""));
+                Send(channel, "/ I'm online");
+            }
+            catch (Exception)
+            {
+                Send(Resources.Username, $"{Config.Owner}, unable to join #{channel.Replace("#", "")}");
+            }
         }
 
         #region Bot_On
