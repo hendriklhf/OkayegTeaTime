@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Twitch;
+﻿using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using TwitchLib.Client.Models;
@@ -11,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s#?\w+")))
             {
-                if (chatMessage.Username == Config.Owner)
+                if (chatMessage.Username == Resources.Owner)
                 {
                     twitchBot.JoinChannel(chatMessage.GetLowerSplit()[1]);
                 }

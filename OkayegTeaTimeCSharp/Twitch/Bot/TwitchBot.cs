@@ -83,7 +83,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             catch (Exception)
             {
-                Send(Resources.Username, $"{Config.Owner}, unable to join #{channel.Replace("#", "")}");
+                Send(Resources.Username, $"{Resources.Owner}, unable to join #{channel.Replace("#", "")}");
             }
         }
 

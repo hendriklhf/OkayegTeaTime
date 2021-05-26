@@ -4,6 +4,7 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddUserToCooldownDictionary(string username, CommandType type)
         {
-            if (username != Config.Owner)
+            if (username != Resources.Owner)
             {
                 if (!TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
                 {
