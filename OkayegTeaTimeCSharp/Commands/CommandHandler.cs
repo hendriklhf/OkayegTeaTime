@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+﻿using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
@@ -6,7 +7,6 @@ using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Linq;
 using TwitchLib.Client.Models;
-using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
