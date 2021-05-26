@@ -7,6 +7,8 @@ namespace OkayegTeaTimeCSharp.Twitch
 {
     public static class Config
     {
+        public const int AfkCooldown = 10000;
+
         public static List<string> GetChannels()
         {
             OkayegTeaTimeContext database = new();

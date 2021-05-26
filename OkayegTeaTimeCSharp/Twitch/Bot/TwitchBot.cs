@@ -35,6 +35,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly List<Cooldown> ListCooldowns = new();
 
+        public static readonly List<AfkCooldown> ListAfkCooldowns = new();
+
         private static TwitchBot _okayegTeaTime;
 
         public TwitchBot()

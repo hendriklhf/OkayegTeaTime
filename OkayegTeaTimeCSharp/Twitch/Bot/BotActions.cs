@@ -15,6 +15,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class BotActions
     {
+        public static void AddAfkCooldown(string username)
+        {
+            if (TwitchBot.ListAfkCooldowns.Any(c => c.Username == username))
+            {
+                TwitchBot.ListAfkCooldowns.Remove(
+                    TwitchBot.ListAfkCooldowns.Where(c => c.Username == username).FirstOrDefault()
+                    );
+                AddUserToAfkCooldownDictionary(username);
+            }
+        }
+
         public static void AddCooldown(string username, CommandType type)
         {
             if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
@@ -23,6 +34,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     TwitchBot.ListCooldowns.Where(c => c.Username == username && c.Type == type).FirstOrDefault()
                     );
                 AddUserToCooldownDictionary(username, type);
+            }
+        }
+
+        public static void AddUserToAfkCooldownDictionary(string username)
+        {
+            if (username != Resources.Owner)
+            {
+                if (!TwitchBot.ListAfkCooldowns.Any(c => c.Username == username))
+                {
+                    TwitchBot.ListAfkCooldowns.Add(new AfkCooldown(username));
+                }
             }
         }
 
@@ -36,7 +58,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
             }
         }
-
         public static void FillLastMessagesDictionary()
         {
             Config.GetChannels().ForEach(channel =>
@@ -50,11 +71,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return chatMessage.Username == fromUser ? "yourself" : fromUser;
         }
 
+        public static bool IsOnAfkCooldown(string username)
+        {
+            return TwitchBot.ListAfkCooldowns.Any(c => c.Username == username && c.Time > TimeHelper.Now());
+        }
+
         public static bool IsOnCooldown(string username, CommandType type)
         {
             return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
-
         public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
             try
@@ -150,6 +175,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
             }
+        }
+
+        public static void SendGoingAfk(this TwitchBot twitchBot, ChatMessage chatMessage, AfkCommandType type)
+        {
+            DataBase.SetAfk(chatMessage, type);
+            twitchBot.Send(chatMessage.Channel, AfkMessage.Create(DataBase.GetUser(chatMessage.Username)).GoingAway);
         }
 
         public static void SendLastMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username)

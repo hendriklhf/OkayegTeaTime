@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -338,6 +339,18 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             database.SetAfk(GetUser(username), "true");
+            database.SaveChanges();
+        }
+
+        public static void SetAfk(ChatMessage chatMessage, AfkCommandType type)
+        {
+            OkayegTeaTimeContext database = new();
+            User user = GetUser(chatMessage.Username);
+            string message = chatMessage.GetMessage().Length > 1 ? chatMessage.GetMessage()[1..] : "(no message)";
+            user.MessageText = message.MakeInsertable();
+            user.Type = type.ToString();
+            user.Time = TimeHelper.Now();
+            database.SetAfk(user, "true");
             database.SaveChanges();
         }
 
