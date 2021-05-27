@@ -5,6 +5,7 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<StartupObject>OkayegTeaTimeCSharp.Program</StartupObject>
 		<RepositoryUrl>github.com/Sterbehilfe/OkayegTeaTimeCSharp</RepositoryUrl>
+		<SignAssembly>false</SignAssembly>
 	</PropertyGroup>
 
 	<ItemGroup>
