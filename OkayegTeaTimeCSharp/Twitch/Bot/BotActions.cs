@@ -58,6 +58,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
             }
         }
+
         public static void FillLastMessagesDictionary()
         {
             Config.GetChannels().ForEach(channel =>
