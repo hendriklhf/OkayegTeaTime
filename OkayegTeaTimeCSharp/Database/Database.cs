@@ -112,7 +112,7 @@ namespace OkayegTeaTimeCSharp.Database
                 twitchBot.SendComingBack(user, chatMessage);
                 if (!MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
                 {
-                    database.SetAfk(user, "false");
+                    database.SetAfk(chatMessage.Username, "false");
                 }
             }
         }
@@ -338,20 +338,20 @@ namespace OkayegTeaTimeCSharp.Database
         public static void ResumeAfkStatus(string username)
         {
             OkayegTeaTimeContext database = new();
-            database.SetAfk(GetUser(username), "true");
+            database.SetAfk(username, "true");
             database.SaveChanges();
         }
 
         public static void SetAfk(ChatMessage chatMessage, AfkCommandType type)
         {
             OkayegTeaTimeContext database = new();
-            User user = GetUser(chatMessage.Username);
-            string message = chatMessage.GetMessage().Length > 1 ? chatMessage.GetMessage()[1..] : "(no message)";
+            User user = database.Users.Where(u => u.Username == chatMessage.Username).FirstOrDefault();
+            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ArrayToString() : "(no message)";
             user.MessageText = message.MakeInsertable();
             user.Type = type.ToString();
             user.Time = TimeHelper.Now();
-            database.SetAfk(user, "true");
             database.SaveChanges();
+            database.SetAfk(chatMessage.Username, "true");
         }
 
         public static void SetPrefix(string channel, string prefix)

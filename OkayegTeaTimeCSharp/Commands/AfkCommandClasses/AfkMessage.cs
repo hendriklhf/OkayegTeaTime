@@ -24,7 +24,8 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 
         public static AfkMessage Create(User user)
         {
-            return new AfkMessage(user.Type, CommandHelper.GetAfkCommand(user.Type).ComingBack, CommandHelper.GetAfkCommand(user.Type).GoingAway, CommandHelper.GetAfkCommand(user.Type).Resuming).ReplaceSpaceHolder(user);
+            string type = user.Type.ToLower();
+            return new AfkMessage(type, CommandHelper.GetAfkCommand(type).ComingBack, CommandHelper.GetAfkCommand(type).GoingAway, CommandHelper.GetAfkCommand(type).Resuming).ReplaceSpaceHolder(user);
         }
 
         private AfkMessage ReplaceSpaceHolder(User user)
@@ -33,7 +34,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
                 .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, " ago"))
                 .Replace("{message}", user.MessageText.Decode());
 
-            GoingAway = ComingBack.Replace("{username}", user.Username);
+            GoingAway = GoingAway.Replace("{username}", user.Username);
 
             Resuming = Resuming.Replace("{username}", user.Username);
 

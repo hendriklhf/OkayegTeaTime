@@ -38,12 +38,11 @@ namespace OkayegTeaTimeCSharp.Database
             database.SaveChanges();
         }
 
-        public static void SetAfk(this OkayegTeaTimeContext database, User user, string state)
+        public static void SetAfk(this OkayegTeaTimeContext database, string username, string state)
         {
             if (state.IsMatch(@"^(t(rue)?)|(f(alse)?)$"))
             {
-                User userE = database.Users.Where(userD => userD.Username == user.Username).FirstOrDefault();
-                userE.IsAfk = state.IsMatch(@"^t(rue)?$") ? "true" : "false";
+                database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = state.IsMatch(@"^t(rue)?$") ? "true" : "false";
                 database.SaveChanges();
             }
             else

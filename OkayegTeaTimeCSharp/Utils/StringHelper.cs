@@ -2,11 +2,22 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Utils
 {
     public static class StringHelper
     {
+        public static string ArrayToString(this string[] input)
+        {
+            string result = string.Empty;
+            input.ToList().ForEach(str =>
+            {
+                result += $"{str} ";
+            });
+            return result.Trim();
+        }
+
         public static string Decode(this byte[] bytes)
         {
             return Encoding.UTF8.GetString(bytes);
