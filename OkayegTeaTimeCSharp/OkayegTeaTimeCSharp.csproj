@@ -11,25 +11,27 @@
 	<ItemGroup>
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\app.config.transform" />
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\web.config.transform" />
+		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\app.config.transform" />
+		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\web.config.transform" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="EntityFramework" Version="6.4.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="5.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="5.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.6">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.6">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="MySql.Data.EntityFramework" Version="8.0.24" />
-		<PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3" />
+		<PackageReference Include="MySql.Data.EntityFramework" Version="8.0.25" />
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3.1" />
 		<PackageReference Include="TwitchLib" Version="3.2.0" />
 	</ItemGroup>
 
