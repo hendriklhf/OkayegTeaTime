@@ -49,12 +49,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 ReconnectionPolicy = new(3000)
             };
             TwitchClient = new(WebSocketClient);
-            //TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
+            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
 
-            //testing
-            TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
-            LastMessages.Add("#lbnshlfe", "");
-            //testing-end
+            #region Testing
+            //TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
+            //LastMessages.Add("#lbnshlfe", "");
+            #region Testing
 
 
             TwitchClient.OnLog += Client_OnLog;
