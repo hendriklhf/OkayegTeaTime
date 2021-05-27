@@ -80,6 +80,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
+
         public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
             try
