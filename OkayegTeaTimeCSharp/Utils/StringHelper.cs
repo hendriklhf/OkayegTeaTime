@@ -1,5 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Properties;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -47,7 +47,7 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string ReplaceChatterinoChar(this string str)
         {
-            return str.Replace(Resources.ChatterinoChar, "");
+            return str.Replace(Properties.Resources.ChatterinoChar, "");
         }
 
         public static string ReplacePattern(this string str, string pattern, string replacement)
@@ -63,6 +63,16 @@ namespace OkayegTeaTimeCSharp.Utils
         public static int ToInt(this string input)
         {
             return Convert.ToInt32(input);
+        }
+
+        public static List<string> WordArrayStringToList(this string input)
+        {
+            List<string> result = new();
+            Regex.Matches(input, @"\w+", RegexOptions.IgnoreCase).ToList().ForEach(m =>
+            {
+                result.Add(m.Value);
+            });
+            return result;
         }
     }
 }
