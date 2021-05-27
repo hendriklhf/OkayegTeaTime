@@ -54,7 +54,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             #region Testing
             //TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
             //LastMessages.Add("#lbnshlfe", "");
-            #region Testing
+            #endregion Testing
 
 
             TwitchClient.OnLog += Client_OnLog;
