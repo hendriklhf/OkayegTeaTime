@@ -36,6 +36,7 @@
 		</PackageReference>
 		<PackageReference Include="MySql.Data.EntityFramework" Version="8.0.25" />
 		<PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3.1" />
+		<PackageReference Include="SpotifyAPI.Web" Version="6.2.0" />
 		<PackageReference Include="TwitchLib" Version="3.2.0" />
 	</ItemGroup>
 
