@@ -222,6 +222,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountUserMessages(username)} messages of {username}");
         }
 
+        public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote)
+        {
+            List<string> chatters = HttpRequest.GetChatters(chatMessage.Channel);
+            emote ??= "Okayeg";
+            string message = emote;
+            chatters.ForEach(c =>
+            {
+                message += $" {c} {emote}";
+            });
+            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
+        }
+
         public static void SendRandomCookie(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             Pechkekse keks = DataBase.GetRandomCookie();
