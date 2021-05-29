@@ -8,6 +8,10 @@
 		<SignAssembly>false</SignAssembly>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <Optimize>false</Optimize>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\app.config.transform" />
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\web.config.transform" />
