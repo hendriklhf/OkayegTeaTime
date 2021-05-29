@@ -3,6 +3,7 @@ using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
+using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Time;
@@ -80,6 +81,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static bool IsOnCooldown(string username, CommandType type)
         {
             return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
+        }
+
+        public static void SendChattersCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
+        {
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {HttpRequest.GetChatterCount(channel)} chatter in the channel of {channel}");
         }
 
         public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
