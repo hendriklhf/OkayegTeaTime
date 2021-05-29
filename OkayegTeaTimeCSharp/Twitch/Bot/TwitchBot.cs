@@ -56,7 +56,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             //LastMessages.Add("#lbnshlfe", "");
             #endregion Testing
 
-
             TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
