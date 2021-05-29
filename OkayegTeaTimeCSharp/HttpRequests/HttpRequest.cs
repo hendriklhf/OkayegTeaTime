@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         public static int GetChatterCount(string channel)
         {
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Replace("#", "")}/chatters");
-            return Convert.ToInt32(request.Data.GetProperty("chatter_count"));
+            return request.Data.GetProperty("chatter_count").GetInt32();
         }
 
         public static List<string> GetChatters(string channel)
