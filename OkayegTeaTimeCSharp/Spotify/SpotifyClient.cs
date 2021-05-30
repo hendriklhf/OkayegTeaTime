@@ -1,26 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpotifyAPI;
+﻿using OkayegTeaTimeCSharp.Properties;
 using SpotifyAPI.Web;
-using SpotifyAPI = SpotifyAPI.Web;
-using SpotifyAPI.Web.Http;
-using OkayegTeaTimeCSharp.Properties;
+using System;
+using System.Threading.Tasks;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {
     public class SpotifyRequest
     {
-        public async static Task GetNewAuthToken(string code)
+        public static string GetLoginURL()
         {
-            var response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new Uri("example.com/callback")));
+            LoginRequest login = new(new Uri("https://example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
+            {
+#warning add neeeded scopes
+                Scope = new[] { Scopes.UserReadCurrentlyPlaying, "" }
+            };
+            return login.ToUri().ToString();
         }
 
-        public static void GetCurrentlyPlaying(string accesToken)
+        public static async Task GetNewAuthToken(string username, string code)
         {
-            Console.WriteLine(new SpotifyClient(accesToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest()).Result.Context.Type);
+            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new Uri("example.com/callback")));
+        }
+
+        public static async Task GetNewAccesToken(string username, string refreshToken)
+        {
+            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, refreshToken));
+        }
+
+        public static string GetCurrentlyPlaying(string username, string accesToken)
+        {
+            return new SpotifyClient(accesToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest()).Result.Context.Type;
         }
     }
 }
