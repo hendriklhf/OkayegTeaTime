@@ -6,9 +6,14 @@
 		<StartupObject>OkayegTeaTimeCSharp.Program</StartupObject>
 		<RepositoryUrl>github.com/Sterbehilfe/OkayegTeaTimeCSharp</RepositoryUrl>
 		<SignAssembly>false</SignAssembly>
+		<Platforms>AnyCPU;x86</Platforms>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
 	  <Optimize>false</Optimize>
 	</PropertyGroup>
 
