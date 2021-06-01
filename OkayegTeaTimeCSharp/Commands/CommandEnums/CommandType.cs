@@ -7,8 +7,8 @@
         Coinflip,
         Cookie,
         Count,
-        Cytube,
-        Emote,
+        Cytube,//
+        Emote,//
         First,
         Fuck,
         Gachi,
@@ -16,16 +16,15 @@
         Join,
         Last,
         Massping,
-        Math,
+        Math,//
         Nuke,
         Ping,
-        Quote,
         Rafk,
         Rand,
         Remind,
         Search,
         Set,
-        Spotify,
+        Spotify,//
         Suggest,
         Tuck,
         Unset,
