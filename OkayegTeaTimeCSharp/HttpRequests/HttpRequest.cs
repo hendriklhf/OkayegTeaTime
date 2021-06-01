@@ -26,5 +26,26 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 .Concat(request.Data.GetProperty("chatters").GetProperty("viewers").ToString().WordArrayStringToList())
                 .ToList();
         }
+
+        public static List<Emote> GetFFZEmotes(string channel, int count = 5)
+        {
+            List<Emote> emotes = new();
+            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.Replace("#", "")}");
+            int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
+            int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
+            count = count > emoteCountInChannel ? emoteCountInChannel : count;
+            for (int i = 0; i <= emoteCountInChannel - 1; i++)
+            {
+                emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons")[i].GetProperty("name").GetString()));
+            }
+            return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
+        }
+
+        public static List<Emote> GetBTTVEmotes(string channel, int count = 5)
+        {
+            List<Emote> emotes = new();
+#warning fill list
+            return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
+        }
     }
 }
