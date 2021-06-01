@@ -159,11 +159,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ListTimer.ForEach(timer => timer.Enabled = true);
         }
 
-        private static void StopTimers()
-        {
-            ListTimer.ForEach(timer => timer.Enabled = false);
-        }
-
         private static void AddTimerFunction()
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
