@@ -5,6 +5,7 @@ using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -39,7 +40,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private static TwitchBot _okayegTeaTime;
 
-        public TwitchBot()
+        public TwitchBot(string[] args)
         {
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
@@ -49,12 +50,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 ReconnectionPolicy = new(3000)
             };
             TwitchClient = new(WebSocketClient);
-            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
 
-            #region Testing
-            //TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
-            //LastMessages.Add("#lbnshlfe", "");
-            #endregion Testing
+            if (args.Any(args => args.ToLower() == "test"))
+            {
+                TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
+                LastMessages.Add("#lbnshlfe", "");
+            }
+            else
+            {
+                TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
+            }
 
             TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
