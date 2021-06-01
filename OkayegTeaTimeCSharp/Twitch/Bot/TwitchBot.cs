@@ -78,10 +78,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             _okayegTeaTime ??= this;
         }
 
-        public void Send(string channel, string message)
+        public void Send(string channel, string message, string emoteInFront = "Okayeg")
         {
             message = LastMessages[$"#{channel.Replace("#", "")}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
-            TwitchClient.SendMessage(channel.Replace("#", ""), $"Okayeg {message}");
+            TwitchClient.SendMessage(channel.Replace("#", ""), $"{emoteInFront} {message}");
             LastMessages[$"#{channel}"] = message;
         }
 
