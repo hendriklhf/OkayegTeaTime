@@ -1,7 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
-using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,8 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using Time = System.Timers;
+using static OkayegTeaTimeCSharp.Time.TimeHelper;
+using Timers = System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -26,9 +26,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public WebSocketClient WebSocketClient { get; private set; } = new();
 
-        public static List<Time::Timer> ListTimer { get; private set; } = new();
+        public static List<Timers::Timer> ListTimer { get; private set; } = new();
 
-        public string Runtime => TimeHelper.ConvertMillisecondsToPassedTime(_runtime);
+        public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
 
         private readonly long _runtime;
 
@@ -42,6 +42,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TwitchBot(string[] args)
         {
+            _runtime = Now();
+
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
@@ -69,7 +71,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             TwitchClient.Connect();
 
-            _runtime = TimeHelper.Now();
             InitializeTimers();
         }
 
@@ -165,12 +166,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Timers.GetTimer(30000).Elapsed += OnTimer30000;
         }
 
-        private static void OnTimer1000(object sender, Time::ElapsedEventArgs e)
+        private static void OnTimer1000(object sender, Timers::ElapsedEventArgs e)
         {
             TimerFunctions.CheckForTimedReminders(_okayegTeaTime);
         }
 
-        private static void OnTimer30000(object sender, Time::ElapsedEventArgs e)
+        private static void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
         {
             TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
         }
