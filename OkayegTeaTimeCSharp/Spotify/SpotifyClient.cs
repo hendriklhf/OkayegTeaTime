@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {
-    public class SpotifyRequest
+    public static class SpotifyRequest
     {
         public static string GetLoginURL()
         {
-            LoginRequest login = new(new Uri("https://example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
+            LoginRequest login = new(new Uri("https://www.example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
             {
 #warning add neeeded scopes
                 Scope = new[] { Scopes.UserReadCurrentlyPlaying, "" }
@@ -17,9 +17,9 @@ namespace OkayegTeaTimeCSharp.Spotify
             return login.ToUri().ToString();
         }
 
-        public static async Task GetNewAuthToken(string username, string code)
+        public static async Task GetNewAuthTokens(string username, string code)
         {
-            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new Uri("example.com/callback")));
+            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new Uri("https://www.example.com/callback")));
         }
 
         public static async Task GetNewAccesToken(string username, string refreshToken)
@@ -29,7 +29,7 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static string GetCurrentlyPlaying(string username, string accesToken)
         {
-            return new SpotifyClient(accesToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest()).Result.Context.Type;
+            return new SpotifyClient(accesToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest()).Result.Context.Href;
         }
     }
 }
