@@ -8,7 +8,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
     {
         public string URL { get; }
 
-        public JsonElement Data { get; private set; }
+        public JsonElement Data { get; }
 
         private readonly HttpClient _httpClient = new();
 
