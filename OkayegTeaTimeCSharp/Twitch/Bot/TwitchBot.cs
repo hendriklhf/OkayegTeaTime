@@ -53,7 +53,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             };
             TwitchClient = new(WebSocketClient);
 
-            if (args.Any(args => args.ToLower() == "test"))
+            if (args.Any(param => param.ToLower() == "test"))
             {
                 TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
                 LastMessages.Add("#lbnshlfe", "");

@@ -6,10 +6,12 @@ using System;
 
 namespace OkayegTeaTimeCSharp
 {
-    public abstract class Program
+    public static class Program
     {
         private static void Main(string[] args)
         {
+            Console.Title = "OkayegTeaTime";
+
             JsonHelper.SetData();
             ReadMeGenerator.GenerateReadMe();
             PrefixHelper.FillDictionary();
