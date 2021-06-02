@@ -53,7 +53,7 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string ReplaceHashtag(this string str)
         {
-            return str.ReplaceHashtag();
+            return str.Replace("#", "");
         }
 
         public static string ReplacePattern(this string str, string pattern, string replacement)
