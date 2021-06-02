@@ -48,12 +48,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ClientOptions = new()
             {
                 MessagesAllowedInPeriod = 10000,
-                SendDelay = 250,
+                SendDelay = 2000,
+                SendQueueCapacity = 100,
                 ReconnectionPolicy = new(3000)
             };
             TwitchClient = new(WebSocketClient);
 
-            if (args.Any(param => param.ToLower() == "test"))
+            if (args.Any(param => param.ToLower() == "test" || param.ToLower() == "debug"))
             {
                 TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
                 LastMessages.Add("#lbnshlfe", "");

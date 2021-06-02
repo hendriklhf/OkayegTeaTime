@@ -11,6 +11,8 @@ namespace OkayegTeaTimeCSharp
         private static void Main(string[] args)
         {
             Console.Title = "OkayegTeaTime";
+            Console.WriteLine("args?");
+            args = Console.ReadLine().Split(" ");
 
             JsonHelper.SetData();
             ReadMeGenerator.GenerateReadMe();
@@ -37,3 +39,5 @@ namespace OkayegTeaTimeCSharp
 #warning afkmessage: add check message
 #warning join channel cmd
 #warning nukes wont be deleted
+#warning "randeg strbhlfe" always sends my first message
+#warning remove "(no message)" from afk messages
