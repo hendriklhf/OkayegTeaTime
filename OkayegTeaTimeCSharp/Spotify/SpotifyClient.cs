@@ -2,6 +2,7 @@
 using SpotifyAPI.Web;
 using System;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {
@@ -11,10 +12,9 @@ namespace OkayegTeaTimeCSharp.Spotify
         {
             LoginRequest login = new(new Uri("https://www.example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
             {
-#warning add neeeded scopes
-                Scope = new[] { Scopes.UserReadCurrentlyPlaying, "" }
+                Scope = new[] { Scopes.UserReadCurrentlyPlaying }
             };
-            return login.ToUri().ToString();
+            return HttpUtility.UrlDecode(login.ToUri().ToString());
         }
 
         public static async Task GetNewAuthTokens(string username, string code)
@@ -27,9 +27,9 @@ namespace OkayegTeaTimeCSharp.Spotify
             AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, refreshToken));
         }
 
-        public static string GetCurrentlyPlaying(string username, string accesToken)
+        public static async Task GetCurrentlyPlaying(string username, string accessToken)
         {
-            return new SpotifyClient(accesToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest()).Result.Context.Href;
+            CurrentlyPlaying response = await new SpotifyClient(accessToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest());
         }
     }
 }
