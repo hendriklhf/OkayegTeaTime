@@ -36,14 +36,12 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static bool IsMatch(this string str, string pattern)
         {
-            Regex regex = new(pattern, RegexOptions.IgnoreCase);
-            return regex.IsMatch(str);
+            return new Regex(pattern, RegexOptions.IgnoreCase).IsMatch(str);
         }
 
         public static string Match(this string str, string pattern)
         {
-            Regex regex = new(pattern, RegexOptions.IgnoreCase);
-            return regex.Match(str).Value;
+            return new Regex(pattern, RegexOptions.IgnoreCase).Match(str).Value;
         }
 
         public static string ReplaceChatterinoChar(this string str)
