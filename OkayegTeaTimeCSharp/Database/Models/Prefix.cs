@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using OkayegTeaTimeCSharp.Utils;
+
 namespace OkayegTeaTimeCSharp.Database.Models
 {
     public partial class Prefix
@@ -17,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
         public Prefix(string channel, string prefixString)
         {
-            Channel = $"#{channel.Replace("#", "")}";
+            Channel = $"#{channel.ReplaceHashtag()}";
             PrefixString = prefixString;
         }
     }

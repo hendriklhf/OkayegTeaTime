@@ -8,14 +8,14 @@ namespace OkayegTeaTimeCSharp.HttpRequests
     {
         public static int GetChatterCount(string channel)
         {
-            HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Replace("#", "")}/chatters");
+            HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.ReplaceHashtag()}/chatters");
             return request.Data.GetProperty("chatter_count").GetInt32();
         }
 
         public static List<string> GetChatters(string channel)
         {
             List<string> result = new();
-            HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Replace("#", "")}/chatters");
+            HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.ReplaceHashtag()}/chatters");
             return result
                 .Concat(request.Data.GetProperty("chatters").GetProperty("broadcaster").ToString().WordArrayStringToList())
                 .Concat(request.Data.GetProperty("chatters").GetProperty("vips").ToString().WordArrayStringToList())
@@ -30,7 +30,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         public static List<Emote> GetFFZEmotes(string channel, int count = 5)
         {
             List<Emote> emotes = new();
-            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.Replace("#", "")}");
+            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.ReplaceHashtag()}");
             int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
             int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
             count = count > emoteCountInChannel ? emoteCountInChannel : count;

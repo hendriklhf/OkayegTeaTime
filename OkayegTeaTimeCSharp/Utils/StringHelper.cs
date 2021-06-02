@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OkayegTeaTimeCSharp.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,7 +48,12 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string ReplaceChatterinoChar(this string str)
         {
-            return str.Replace(Properties.Resources.ChatterinoChar, "");
+            return str.Replace(Resources.ChatterinoChar, "");
+        }
+
+        public static string ReplaceHashtag(this string str)
+        {
+            return str.ReplaceHashtag();
         }
 
         public static string ReplacePattern(this string str, string pattern, string replacement)

@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void AddChannel(string channel)
         {
             OkayegTeaTimeContext database = new();
-            database.Bots.Where(b => b.Id == 1).FirstOrDefault().Channels += $" {channel.Replace("#", "").Trim()}";
+            database.Bots.Where(b => b.Id == 1).FirstOrDefault().Channels += $" {channel.ReplaceHashtag().Trim()}";
             database.SaveChanges();
         }
 
@@ -135,7 +135,7 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
+                return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault();
             }
             catch (Exception)
             {
@@ -148,7 +148,7 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == username && channel == $"#{channel.Replace("#", "")}").FirstOrDefault();
+                return database.Messages.Where(m => m.Username == username && channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault();
             }
             catch (Exception)
             {
@@ -237,7 +237,7 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Channel == $"#{channel.Replace("#", "")}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+                return database.Messages.Where(m => m.Channel == $"#{channel.ReplaceHashtag()}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
             }
             catch (Exception)
             {
@@ -269,7 +269,7 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             }
             catch (Exception)
             {
@@ -295,7 +295,7 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.Replace("#", "").MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             }
             catch (Exception)
             {
@@ -357,11 +357,11 @@ namespace OkayegTeaTimeCSharp.Database
         public static void SetPrefix(string channel, string prefix)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Prefixes.Any(p => p.Channel == $"#{channel.Replace("#", "")}"))
+            if (database.Prefixes.Any(p => p.Channel == $"#{channel.ReplaceHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault().PrefixString = prefix.MakeQueryable();
+                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = prefix.MakeQueryable();
                 database.SaveChanges();
-                PrefixHelper.Update($"#{channel.Replace("#", "")}");
+                PrefixHelper.Update($"#{channel.ReplaceHashtag()}");
             }
             else
             {
@@ -374,9 +374,9 @@ namespace OkayegTeaTimeCSharp.Database
         public static void UnsetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Prefixes.Any(p => p.Channel == $"#{channel.Replace("#", "")}"))
+            if (database.Prefixes.Any(p => p.Channel == $"#{channel.ReplaceHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.Replace("#", "")}").FirstOrDefault().PrefixString = null;
+                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = null;
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }

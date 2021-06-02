@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
@@ -82,8 +83,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void Send(string channel, string message, string emoteInFront = "Okayeg")
         {
-            message = LastMessages[$"#{channel.Replace("#", "")}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
-            TwitchClient.SendMessage(channel.Replace("#", ""), $"{emoteInFront} {message}");
+            message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+            TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
             LastMessages[$"#{channel}"] = message;
         }
 
@@ -92,12 +93,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             DataBase.AddChannel(channel);
             try
             {
-                TwitchClient.JoinChannel(channel.Replace("#", ""));
+                TwitchClient.JoinChannel(channel.ReplaceHashtag());
                 Send(channel, "/ I'm online");
             }
             catch (Exception)
             {
-                Send(Resources.Username, $"{Resources.Owner}, unable to join #{channel.Replace("#", "")}");
+                Send(Resources.Username, $"{Resources.Owner}, unable to join #{channel.ReplaceHashtag()}");
             }
         }
 

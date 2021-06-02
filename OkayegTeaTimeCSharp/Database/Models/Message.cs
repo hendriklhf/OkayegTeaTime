@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
@@ -16,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             Username = username;
             MessageText = messageText;
-            Channel = $"#{channel.Replace("#", "")}";
+            Channel = $"#{channel.ReplaceHashtag()}";
         }
     }
 }

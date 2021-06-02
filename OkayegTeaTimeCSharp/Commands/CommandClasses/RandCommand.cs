@@ -14,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+\s#?\w+")))
             {
-                twitchBot.SendRandomMessage(chatMessage, chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].Replace("#", ""));
+                twitchBot.SendRandomMessage(chatMessage, chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].ReplaceHashtag());
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+")))
             {
