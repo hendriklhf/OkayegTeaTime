@@ -23,6 +23,24 @@ namespace OkayegTeaTimeCSharp.Database
             database.SaveChanges();
         }
 
+        public static void AddNewToken(string username, string accessToken, string refreshToken)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Spotify.Any(s => s.Username == username))
+            {
+                Models.Spotify user = database.Spotify.Where(s => s.Username == username).FirstOrDefault();
+                user.AccessToken = accessToken;
+                user.RefreshToken = refreshToken;
+                user.Time = TimeHelper.Now();
+            }
+            else
+            {
+                Models.Spotify user = new(username, accessToken, refreshToken);
+                database.Spotify.Add(user);
+                database.SaveChanges();
+            }
+        }
+
         public static void AddNuke(Nuke nuke)
         {
             OkayegTeaTimeContext database = new();
@@ -185,7 +203,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static string GetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.Where(p => p.Channel == $"#{channel}").FirstOrDefault().PrefixString;
+            return database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString;
         }
 
         public static Dictionary<string, string> GetPrefixes()
@@ -251,6 +269,11 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Yourmom.OrderBy(y => Guid.NewGuid()).Take(1).FirstOrDefault();
         }
 
+        public static string GetRefreshToken(string username)
+        {
+            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault().RefreshToken;
+        }
+
         public static Message GetSearch(string keyword)
         {
             try
@@ -301,6 +324,11 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 throw new MessageNotFoundException();
             }
+        }
+
+        public static Models.Spotify GetSpotifyUser(string username)
+        {
+            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault();
         }
 
         public static User GetUser(string username)
@@ -405,17 +433,6 @@ namespace OkayegTeaTimeCSharp.Database
                 throw new ReminderNotFoundException();
             }
         }
-
-        public static Models.Spotify GetSpotifyUser(string username)
-        {
-            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault();
-        }
-
-        public static string GetRefreshToken(string username)
-        {
-            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault().RefreshToken;
-        }
-
         public static void UpdateAccessToken(string username, string accessToken)
         {
             OkayegTeaTimeContext database = new();
@@ -423,24 +440,6 @@ namespace OkayegTeaTimeCSharp.Database
             user.AccessToken = accessToken;
             user.Time = TimeHelper.Now();
             database.SaveChanges();
-        }
-
-        public static void AddNewToken(string username, string accessToken, string refreshToken)
-        {
-            OkayegTeaTimeContext database = new();
-            if (database.Spotify.Any(s => s.Username == username))
-            {
-                Models.Spotify user = database.Spotify.Where(s => s.Username == username).FirstOrDefault();
-                user.AccessToken = accessToken;
-                user.RefreshToken = refreshToken;
-                user.Time = TimeHelper.Now();
-            }
-            else
-            {
-                Models.Spotify user = new(username, accessToken, refreshToken);
-                database.Spotify.Add(user);
-                database.SaveChanges();
-            }
         }
     }
 }
