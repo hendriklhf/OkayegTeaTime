@@ -1,4 +1,5 @@
-﻿using SpotifyAPI.Web;
+﻿using OkayegTeaTimeCSharp.Utils;
+using SpotifyAPI.Web;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {
@@ -8,7 +9,7 @@ namespace OkayegTeaTimeCSharp.Spotify
         {
             Artist = track.Artists.GetArtistString();
             Title = track.Name;
-            URI = track.Uri;
+            URI = track.Uri.IsMatch("local") ? "local file" : track.Uri;
             Message = $"{Title} by {Artist} || {URI}";
         }
     }
