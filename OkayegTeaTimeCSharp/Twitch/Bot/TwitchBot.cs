@@ -85,7 +85,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
             TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
-            LastMessages[$"#{channel}"] = message;
+            LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
         }
 
         public void JoinChannel(string channel)
