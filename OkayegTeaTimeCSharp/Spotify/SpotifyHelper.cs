@@ -7,13 +7,20 @@ namespace OkayegTeaTimeCSharp.Spotify
     {
         public static PlayingItem GetItem(this CurrentlyPlaying currentlyPlaying)
         {
-            if (currentlyPlaying.Item is FullTrack track)
+            if (currentlyPlaying != null)
             {
-                return new Track(track);
-            }
-            else if (currentlyPlaying.Item is FullEpisode episode)
-            {
-                return new Episode(episode);
+                if (currentlyPlaying.Item is FullTrack track)
+                {
+                    return new Track(track);
+                }
+                else if (currentlyPlaying.Item is FullEpisode episode)
+                {
+                    return new Episode(episode);
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
@@ -28,7 +35,7 @@ namespace OkayegTeaTimeCSharp.Spotify
             {
                 result += $"{artist.Name}, ";
             });
-            return result.Trim()[..1];
+            return result.Trim()[..^1];
         }
     }
 }
