@@ -8,7 +8,7 @@ namespace OkayegTeaTimeCSharp
 {
     public static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.Title = "OkayegTeaTime";
             Console.WriteLine("args?");
