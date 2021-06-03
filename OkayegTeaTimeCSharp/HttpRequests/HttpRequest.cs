@@ -46,7 +46,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         public static List<Emote> GetBTTVEmotes(string channel, int count = 5)
         {
             List<Emote> emotes = new();
-#warning fill list
+            throw new System.NotImplementedException();
             return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
         }
     }

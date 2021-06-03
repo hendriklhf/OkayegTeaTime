@@ -433,6 +433,7 @@ namespace OkayegTeaTimeCSharp.Database
                 throw new ReminderNotFoundException();
             }
         }
+
         public static void UpdateAccessToken(string username, string accessToken)
         {
             OkayegTeaTimeContext database = new();
