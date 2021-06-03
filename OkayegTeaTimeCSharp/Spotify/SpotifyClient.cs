@@ -27,9 +27,10 @@ namespace OkayegTeaTimeCSharp.Spotify
             AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, refreshToken));
         }
 
-        public static async Task GetCurrentlyPlaying(string username, string accessToken)
+        public static async Task<PlayingItem> GetCurrentlyPlaying(string username, string accessToken)
         {
             CurrentlyPlaying response = await new SpotifyClient(accessToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest());
+            return response.GetItem();
         }
     }
 }

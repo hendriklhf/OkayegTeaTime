@@ -1,21 +1,13 @@
-﻿using SpotifyAPI.Web;
-
-namespace OkayegTeaTimeCSharp.Spotify
+﻿namespace OkayegTeaTimeCSharp.Spotify
 {
     public class PlayingItem
     {
-        public string Title { get; }
+        public string Title { get; protected set; }
 
-        public string Artist { get; }
+        public string Artist { get; protected set; }
 
-        public string Message { get; private set; }
+        public string URI { get; protected set; }
 
-        public ItemType ItemType { get; }
-
-        private readonly IPlayableItem _item;
-
-        public PlayingItem(CurrentlyPlaying currentlyPlaying)
-        {
-        }
+        public string Message { get; protected set; }
     }
 }
