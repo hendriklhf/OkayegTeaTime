@@ -405,5 +405,42 @@ namespace OkayegTeaTimeCSharp.Database
                 throw new ReminderNotFoundException();
             }
         }
+
+        public static Models.Spotify GetSpotifyUser(string username)
+        {
+            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault();
+        }
+
+        public static string GetRefreshToken(string username)
+        {
+            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault().RefreshToken;
+        }
+
+        public static void UpdateAccessToken(string username, string accessToken)
+        {
+            OkayegTeaTimeContext database = new();
+            Models.Spotify user = database.Spotify.Where(s => s.Username == username).FirstOrDefault();
+            user.AccessToken = accessToken;
+            user.Time = TimeHelper.Now();
+            database.SaveChanges();
+        }
+
+        public static void AddNewToken(string username, string accessToken, string refreshToken)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Spotify.Any(s => s.Username == username))
+            {
+                Models.Spotify user = database.Spotify.Where(s => s.Username == username).FirstOrDefault();
+                user.AccessToken = accessToken;
+                user.RefreshToken = refreshToken;
+                user.Time = TimeHelper.Now();
+            }
+            else
+            {
+                Models.Spotify user = new(username, accessToken, refreshToken);
+                database.Spotify.Add(user);
+                database.SaveChanges();
+            }
+        }
     }
 }
