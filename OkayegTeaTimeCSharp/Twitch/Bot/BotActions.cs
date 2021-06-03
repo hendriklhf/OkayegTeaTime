@@ -6,6 +6,7 @@ using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
@@ -394,6 +395,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
             int id = DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime));
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderAuthor(target, chatMessage.Username)} (ID: {id})");
+        }
+
+        public static void SendSpotifyCurrentlyPlaying(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            string username = chatMessage.GetLowerSplit().Length > 1 ? (chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1]) : chatMessage.Channel;
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}");
         }
 
         public static void SendSuggestionNoted(this TwitchBot twitchBot, ChatMessage chatMessage)
