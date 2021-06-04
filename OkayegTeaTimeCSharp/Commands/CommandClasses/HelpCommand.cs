@@ -1,5 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
-using OkayegTeaTimeCSharp.Properties;
+﻿using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
@@ -9,8 +8,6 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public class HelpCommand
     {
-        public const CommandType Type = CommandType.Help;
-
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+")))
