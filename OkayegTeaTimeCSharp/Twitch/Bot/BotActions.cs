@@ -290,6 +290,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
         }
 
+        public static void SendMathResult(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {HttpRequest.GetMathResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}");
+        }
+
         public static void SendRandomCookie(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             Pechkekse keks = DataBase.GetRandomCookie();
