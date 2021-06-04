@@ -24,14 +24,7 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string GetPrefix(string channel)
         {
-            try
-            {
-                return Prefixes[$"#{channel}"] ?? "";
-            }
-            catch (KeyNotFoundException)
-            {
-                return "";
-            }
+            return Prefixes.TryGetValue($"#{channel}", out string prefix) ? prefix : "";
         }
     }
 }
