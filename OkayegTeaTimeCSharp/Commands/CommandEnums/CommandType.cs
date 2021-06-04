@@ -8,7 +8,7 @@
         Cookie,
         Count,
         Cytube,//
-        Emote,//
+        Emote,
         First,
         Fuck,
         Gachi,
@@ -24,7 +24,7 @@
         Remind,
         Search,
         Set,
-        Spotify,//
+        Spotify,
         Suggest,
         Tuck,
         Unset,

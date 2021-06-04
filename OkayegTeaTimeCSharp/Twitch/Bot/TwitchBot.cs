@@ -65,7 +65,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
             }
 
-            TwitchClient.OnLog += Client_OnLog;
+            //TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
             TwitchClient.OnMessageReceived += Client_OnMessageReceived;
@@ -91,6 +91,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public void JoinChannel(string channel)
         {
             DataBase.AddChannel(channel);
+            LastMessages.Add($"#{channel.ReplaceHashtag()}", "");
+            PrefixHelper.FillDictionary();
             try
             {
                 TwitchClient.JoinChannel(channel.ReplaceHashtag());
@@ -104,10 +106,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         #region Bot_On
 
-        private void Client_OnLog(object sender, OnLogArgs e)
-        {
-            //Console.WriteLine($"LOG: {e.Data}");
-        }
+        //private void Client_OnLog(object sender, OnLogArgs e)
+        //{
+        //    Console.WriteLine($"LOG: {e.Data}");
+        //}
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {

@@ -9,6 +9,7 @@ using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
@@ -84,6 +85,24 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
 
+        public static void SendBTTVEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            try
+            {
+                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.GetBTTVEmotes(chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.GetBTTVEmotes(chatMessage.GetLowerSplit()[1]);
+                string emoteString = string.Empty;
+                emotes.ForEach(e =>
+                {
+                    emoteString += $"{e} ";
+                });
+                twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()}");
+            }
+            catch (Exception)
+            {
+                twitchBot.Send(chatMessage.Channel, $"error");
+            }
+        }
+
         public static void SendChattersCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {HttpRequest.GetChatterCount(channel)} chatter in the channel of {channel}");
@@ -131,6 +150,24 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             else
             {
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+            }
+        }
+
+        public static void SendFFZEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            try
+            {
+                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.GetFFZEmotes(chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.GetFFZEmotes(chatMessage.GetLowerSplit()[1]);
+                string emoteString = string.Empty;
+                emotes.ForEach(e =>
+                {
+                    emoteString += $"{e} ";
+                });
+                twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()}");
+            }
+            catch (Exception)
+            {
+                twitchBot.Send(chatMessage.Channel, $"error");
             }
         }
 
