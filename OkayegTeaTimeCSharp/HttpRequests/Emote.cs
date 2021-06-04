@@ -11,10 +11,5 @@
             Index = index;
             Name = name;
         }
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }
