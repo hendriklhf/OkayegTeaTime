@@ -22,9 +22,9 @@ namespace OkayegTeaTimeCSharp.Twitch.API
             HttpPost request = new("https://id.twitch.tv/oauth2/token",
                 new List<KeyValuePair<string, string>>()
                 {
-                    new KeyValuePair<string, string>("client_id", _api.Settings.ClientId),
-                    new KeyValuePair<string, string>("client_secret", _api.Settings.Secret),
-                    new KeyValuePair<string, string>("grant_type", "client_credentials")
+                    new("client_id", _api.Settings.ClientId),
+                    new("client_secret", _api.Settings.Secret),
+                    new("grant_type", "client_credentials")
                 });
             return request.Data.GetProperty("access_token").GetString();
         }
