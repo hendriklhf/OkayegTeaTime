@@ -1,18 +1,26 @@
 ﻿namespace OkayegTeaTimeCSharp.Time
 {
-    public static class Day
+    public class Day : ITimeUnit
     {
-        private const long InMilliseconds = 86400000;
+        public int Count { get; set; }
+
         public const string Pattern = @"\d+d(ay)?s?";
 
-        public static long ToMilliseconds(uint days = 1)
+        private const long InMilliseconds = 86400000;
+
+        public Day(int count = 1)
         {
-            return InMilliseconds * days;
+            Count = count;
         }
 
-        public static long ToSeconds(uint days = 1)
+        public long ToMilliseconds()
         {
-            return ToMilliseconds(days) / 1000;
+            return Count * InMilliseconds;
+        }
+
+        public long ToSeconds()
+        {
+            return ToMilliseconds() / 1000;
         }
     }
 }

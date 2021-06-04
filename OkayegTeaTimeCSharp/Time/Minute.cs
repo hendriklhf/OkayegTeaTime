@@ -1,13 +1,26 @@
 ﻿namespace OkayegTeaTimeCSharp.Time
 {
-    public static class Minute
+    public class Minute : ITimeUnit
     {
-        private const long InMilliseconds = 60000;
+        public int Count { get; set; }
+
         public const string Pattern = @"\d+m(in(ute)?)?s?";
 
-        public static long ToMilliseconds(uint minutes = 1)
+        private const long InMilliseconds = 60000;
+
+        public Minute(int count = 1)
         {
-            return InMilliseconds * minutes;
+            Count = count;
+        }
+
+        public long ToMilliseconds()
+        {
+            return Count * InMilliseconds;
+        }
+
+        public long ToSeconds()
+        {
+            return ToMilliseconds() / 1000;
         }
     }
 }

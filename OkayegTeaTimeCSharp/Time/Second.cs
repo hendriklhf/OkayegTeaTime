@@ -1,13 +1,26 @@
 ﻿namespace OkayegTeaTimeCSharp.Time
 {
-    public static class Second
+    public class Second : ITimeUnit
     {
-        private const long InMilliseconds = 1000;
+        public int Count { get; set; }
+
         public const string Pattern = @"\d+s(ec(ond)?)?s?";
 
-        public static long ToMilliseconds(uint seconds = 1)
+        private const long InMilliseconds = 1000;
+
+        public Second(int count = 1)
         {
-            return InMilliseconds * seconds;
+            Count = count;
+        }
+
+        public long ToMilliseconds()
+        {
+            return Count * InMilliseconds;
+        }
+
+        public long ToSeconds()
+        {
+            return ToMilliseconds() / 1000;
         }
     }
 }

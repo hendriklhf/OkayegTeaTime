@@ -17,230 +17,230 @@ namespace OkayegTeaTimeCSharp.Time
             {
                 string result = "";
                 time = Now() - time;
-                if (Math.Truncate((double)(time / Year.ToMilliseconds())) > 0)
+                if (Math.Truncate((double)(time / new Year().ToMilliseconds())) > 0)
                 {
-                    result += Math.Truncate((double)(time / Year.ToMilliseconds())).ToString() + "y, ";
-                    time -= (Math.Truncate((double)(time / Year.ToMilliseconds())) * Year.ToMilliseconds()).ToLong();
-                    if (Math.Truncate((double)(time / Day.ToMilliseconds())) > 0)
+                    result += Math.Truncate((double)(time / new Year().ToMilliseconds())).ToString() + "y, ";
+                    time -= (Math.Truncate((double)(time / new Year().ToMilliseconds())) * new Year().ToMilliseconds()).ToLong();
+                    if (Math.Truncate((double)(time / new Day().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Day.ToMilliseconds())).ToString() + "d, ";
-                        time -= (Math.Truncate((double)(time / Day.ToMilliseconds())) * Day.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Day().ToMilliseconds())).ToString() + "d, ";
+                        time -= (Math.Truncate((double)(time / new Day().ToMilliseconds())) * new Day().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                            time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                            time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                                time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                                if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                                time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                                if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                    result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                 }
                             }
-                            else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                            else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                            time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                            time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                                time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                                if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                                time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                                if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                    result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                 }
                             }
-                            else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                            else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                            time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                            time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Day.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Day().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Day.ToMilliseconds())).ToString() + "d, ";
-                        time -= (Math.Truncate((double)(time / Day.ToMilliseconds())) * Day.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Day().ToMilliseconds())).ToString() + "d, ";
+                        time -= (Math.Truncate((double)(time / new Day().ToMilliseconds())) * new Day().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                            time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                            time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                                time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                                if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                                time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                                if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                    result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                 }
                             }
-                            else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                            else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                                time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                                if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                                time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                                if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                    result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                 }
                             }
-                            else if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                            else if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                                time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                                if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                                result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                                time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                                if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                                    time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                                    if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                    result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                                    time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                                    if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                     {
-                                        result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                        result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                     }
                                 }
-                                else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                                else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                                    time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                                    if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                    result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                                    time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                                    if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                     {
-                                        result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                        result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                     }
                                 }
-                                else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                                else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                                 {
-                                    result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                    result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                                 }
                             }
                         }
-                        else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                            time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                            time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                        time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                        time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                            time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                            time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                        time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                        time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                        result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate((double)(time / Day.ToMilliseconds())) > 0)
+                else if (Math.Truncate((double)(time / new Day().ToMilliseconds())) > 0)
                 {
-                    result += Math.Truncate((double)(time / Day.ToMilliseconds())).ToString() + "d, ";
-                    time -= (Math.Truncate((double)(time / Day.ToMilliseconds())) * Day.ToMilliseconds()).ToLong();
-                    if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                    result += Math.Truncate((double)(time / new Day().ToMilliseconds())).ToString() + "d, ";
+                    time -= (Math.Truncate((double)(time / new Day().ToMilliseconds())) * new Day().ToMilliseconds()).ToLong();
+                    if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                        time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                        time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                            time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                            if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                            result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                            time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                            if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                             {
-                                result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                                result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                             }
                         }
-                        else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                        time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                        time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                        result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate((double)(time / Hour.ToMilliseconds())) > 0)
+                else if (Math.Truncate((double)(time / new Hour().ToMilliseconds())) > 0)
                 {
-                    result += Math.Truncate((double)(time / Hour.ToMilliseconds())).ToString() + "h, ";
-                    time -= (Math.Truncate((double)(time / Hour.ToMilliseconds())) * Hour.ToMilliseconds()).ToLong();
-                    if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                    result += Math.Truncate((double)(time / new Hour().ToMilliseconds())).ToString() + "h, ";
+                    time -= (Math.Truncate((double)(time / new Hour().ToMilliseconds())) * new Hour().ToMilliseconds()).ToLong();
+                    if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                        time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                        if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                        result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                        time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                        if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                         {
-                            result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                            result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                         }
                     }
-                    else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                    else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                        result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate((double)(time / Minute.ToMilliseconds())) > 0)
+                else if (Math.Truncate((double)(time / new Minute().ToMilliseconds())) > 0)
                 {
-                    result += Math.Truncate((double)(time / Minute.ToMilliseconds())).ToString() + "min, ";
-                    time -= (Math.Truncate((double)(time / Minute.ToMilliseconds())) * Minute.ToMilliseconds()).ToLong();
-                    if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                    result += Math.Truncate((double)(time / new Minute().ToMilliseconds())).ToString() + "min, ";
+                    time -= (Math.Truncate((double)(time / new Minute().ToMilliseconds())) * new Minute().ToMilliseconds()).ToLong();
+                    if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                     {
-                        result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                        result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                     }
                 }
-                else if (Math.Truncate((double)(time / Second.ToMilliseconds())) > 0)
+                else if (Math.Truncate((double)(time / new Second().ToMilliseconds())) > 0)
                 {
-                    result += Math.Truncate((double)(time / Second.ToMilliseconds())).ToString() + "s";
+                    result += Math.Truncate((double)(time / new Second().ToMilliseconds())).ToString() + "s";
                 }
 
                 result = result.Trim();
@@ -264,23 +264,23 @@ namespace OkayegTeaTimeCSharp.Time
             {
                 if (str.IsMatch(Year.Pattern))
                 {
-                    result += Year.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                    result += new Year(Convert.ToInt32(str.Match(@"\d+"))).ToMilliseconds();
                 }
                 else if (str.IsMatch(Day.Pattern))
                 {
-                    result += Day.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                    result += new Day(Convert.ToInt32(str.Match(@"\d+"))).ToMilliseconds();
                 }
                 else if (str.IsMatch(Hour.Pattern))
                 {
-                    result += Hour.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                    result += new Hour(Convert.ToInt32(str.Match(@"\d+"))).ToMilliseconds();
                 }
                 else if (str.IsMatch(Minute.Pattern))
                 {
-                    result += Minute.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                    result += new Minute(Convert.ToInt32(str.Match(@"\d+"))).ToMilliseconds();
                 }
                 else if (str.IsMatch(Second.Pattern))
                 {
-                    result += Second.ToMilliseconds(Convert.ToUInt32(str.Match(@"\d+")));
+                    result += new Second(Convert.ToInt32(str.Match(@"\d+"))).ToMilliseconds();
                 }
             });
             return result;
