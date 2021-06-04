@@ -31,7 +31,6 @@ namespace OkayegTeaTimeCSharp
 }
 
 #warning needs a list of channels in which the bot is not allowed to send messages
-#warning cmd type const missing in some cmd classes
 #warning change prefixstring column to varbinary to support emojis
 #warning poopeg, pisseg
 #warning code needs doc
