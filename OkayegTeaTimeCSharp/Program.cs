@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.GitHub;
 using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System;
@@ -12,17 +13,17 @@ namespace OkayegTeaTimeCSharp
         {
             Console.Title = "OkayegTeaTime";
             Console.WriteLine("args?");
-            args = Console.ReadLine().Split(" ");
+            string[] args = Console.ReadLine().Split(" ");
 
             JsonHelper.SetData();
             ReadMeGenerator.GenerateReadMe();
             PrefixHelper.FillDictionary();
             BotActions.FillLastMessagesDictionary();
 
+            TwitchAPI.Configure();
+
             TwitchBot OkayegTeaTime = new(args);
             OkayegTeaTime.SetBot();
-
-            //TwitchAPI twitchAPI = new();
 
             Console.ReadLine();
         }
