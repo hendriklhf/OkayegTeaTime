@@ -41,3 +41,5 @@ namespace OkayegTeaTimeCSharp
 #warning nukes wont be deleted
 #warning "randeg strbhlfe" always sends my first message
 #warning remove "(no message)" from afk messages
+#warning make time classes non-static
+#warning twitch api needs to be renewed after 60days
