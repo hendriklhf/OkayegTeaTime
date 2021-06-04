@@ -20,10 +20,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
     {
         public static void AddAfkCooldown(string username)
         {
-            if (TwitchBot.ListAfkCooldowns.Any(c => c.Username == username))
+            if (TwitchBot.AfkCooldowns.Any(c => c.Username == username))
             {
-                TwitchBot.ListAfkCooldowns.Remove(
-                    TwitchBot.ListAfkCooldowns.Where(c => c.Username == username).FirstOrDefault()
+                TwitchBot.AfkCooldowns.Remove(
+                    TwitchBot.AfkCooldowns.Where(c => c.Username == username).FirstOrDefault()
                     );
                 AddUserToAfkCooldownDictionary(username);
             }
@@ -31,10 +31,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddCooldown(string username, CommandType type)
         {
-            if (TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
+            if (TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
             {
-                TwitchBot.ListCooldowns.Remove(
-                    TwitchBot.ListCooldowns.Where(c => c.Username == username && c.Type == type).FirstOrDefault()
+                TwitchBot.Cooldowns.Remove(
+                    TwitchBot.Cooldowns.Where(c => c.Username == username && c.Type == type).FirstOrDefault()
                     );
                 AddUserToCooldownDictionary(username, type);
             }
@@ -44,9 +44,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (username != Resources.Owner)
             {
-                if (!TwitchBot.ListAfkCooldowns.Any(c => c.Username == username))
+                if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
                 {
-                    TwitchBot.ListAfkCooldowns.Add(new AfkCooldown(username));
+                    TwitchBot.AfkCooldowns.Add(new AfkCooldown(username));
                 }
             }
         }
@@ -55,9 +55,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (username != Resources.Owner)
             {
-                if (!TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type))
+                if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
                 {
-                    TwitchBot.ListCooldowns.Add(new Cooldown(username, type));
+                    TwitchBot.Cooldowns.Add(new Cooldown(username, type));
                 }
             }
         }
@@ -77,12 +77,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static bool IsOnAfkCooldown(string username)
         {
-            return TwitchBot.ListAfkCooldowns.Any(c => c.Username == username && c.Time > TimeHelper.Now());
+            return TwitchBot.AfkCooldowns.Any(c => c.Username == username && c.Time > TimeHelper.Now());
         }
 
         public static bool IsOnCooldown(string username, CommandType type)
         {
-            return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
+            return TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
 
         public static void Send7TVEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)

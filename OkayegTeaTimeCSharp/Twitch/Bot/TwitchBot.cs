@@ -35,9 +35,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly Dictionary<string, string> LastMessages = new();
 
-        public static readonly List<Cooldown> ListCooldowns = new();
+        public static readonly List<Cooldown> Cooldowns = new();
 
-        public static readonly List<AfkCooldown> ListAfkCooldowns = new();
+        public static readonly List<AfkCooldown> AfkCooldowns = new();
 
         private static TwitchBot _okayegTeaTime;
 
@@ -49,7 +49,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ClientOptions = new()
             {
                 MessagesAllowedInPeriod = 10000,
-                SendDelay = 2000,
+                SendDelay = 500,
                 SendQueueCapacity = 100,
                 ReconnectionPolicy = new(3000)
             };
