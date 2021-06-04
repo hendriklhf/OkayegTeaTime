@@ -17,6 +17,10 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 twitchBot.SendBTTVEmotes(chatMessage);
             }
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s7tv($|(\s\d+))")))
+            {
+                twitchBot.Send7TVEmotes(chatMessage);
+            }
         }
     }
 }

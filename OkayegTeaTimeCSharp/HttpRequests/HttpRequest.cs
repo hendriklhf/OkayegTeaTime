@@ -60,10 +60,33 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{TwitchAPI.GetChannelID(channel)}");
                 int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
                 count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
-
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
                     emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
+                }
+                return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static List<Emote> Get7TVEmotes(string channel, int count = 5)
+        {
+            try
+            {
+                List<Emote> emotes = new();
+                HttpPost request = new("https://api.7tv.app/v2/gql", new List<KeyValuePair<string, string>>()
+                {
+                    new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
+                    new("variables", "{}")
+                });
+                int emoteCountInChannel = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes").GetArrayLength();
+                count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
+                for (int i = 0; i <= emoteCountInChannel - 1; i++)
+                {
+                    emotes.Add(new(i, request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes")[i].GetProperty("name").GetString()));
                 }
                 return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
             }

@@ -85,11 +85,29 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return TwitchBot.ListCooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
 
+        public static void Send7TVEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            try
+            {
+                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.Get7TVEmotes(chatMessage.Channel, chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.Get7TVEmotes(chatMessage.Channel);
+                string emoteString = string.Empty;
+                emotes.ForEach(e =>
+                {
+                    emoteString += $"{e.Name} ";
+                });
+                twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()}");
+            }
+            catch (Exception)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
+            }
+        }
+
         public static void SendBTTVEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             try
             {
-                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.GetBTTVEmotes(chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.GetBTTVEmotes(chatMessage.GetLowerSplit()[1]);
+                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.GetBTTVEmotes(chatMessage.Channel, chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.GetBTTVEmotes(chatMessage.Channel);
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
@@ -157,7 +175,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.GetFFZEmotes(chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.GetFFZEmotes(chatMessage.GetLowerSplit()[1]);
+                List<HttpRequests.Emote> emotes = chatMessage.GetSplit().Length > 2 ? HttpRequest.GetFFZEmotes(chatMessage.Channel, chatMessage.GetLowerSplit()[2].ToInt()) : HttpRequest.GetFFZEmotes(chatMessage.Channel);
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
