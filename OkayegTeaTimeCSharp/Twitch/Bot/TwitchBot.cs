@@ -31,13 +31,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
 
-        private readonly long _runtime;
-
         public static readonly Dictionary<string, string> LastMessages = new();
 
         public static readonly List<Cooldown> Cooldowns = new();
 
         public static readonly List<AfkCooldown> AfkCooldowns = new();
+
+        private readonly long _runtime;
 
         private static TwitchBot _okayegTeaTime;
 
