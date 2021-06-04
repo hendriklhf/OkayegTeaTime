@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,13 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         public static List<Emote> GetBTTVEmotes(string channel, int count = 5)
         {
             List<Emote> emotes = new();
-            throw new System.NotImplementedException();
+            HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{TwitchAPI.GetChannelID(channel)}");
+            int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
+            count = count > emoteCountInChannel ? emoteCountInChannel : count;
+            for (int i = 0; i <= emoteCountInChannel - 1; i++)
+            {
+                emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
+            }
             return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
         }
     }
