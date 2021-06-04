@@ -389,7 +389,7 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = prefix.MakeQueryable();
                 database.SaveChanges();
-                PrefixHelper.Update($"#{channel.ReplaceHashtag()}");
+                PrefixHelper.Update(channel);
             }
             else
             {
