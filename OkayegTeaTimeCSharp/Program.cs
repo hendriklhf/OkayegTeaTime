@@ -30,17 +30,13 @@ namespace OkayegTeaTimeCSharp
     }
 }
 
-#warning needs a list of channels in which the bot is not allowed to send massages
+#warning needs a list of channels in which the bot is not allowed to send messages
 #warning cmd type const missing in some cmd classes
 #warning change prefixstring column to varbinary to support emojis
-#warning fill prefix dictionary after set or unset
 #warning poopeg, pisseg
 #warning code needs doc
 #warning move databasehelper methods
-#warning afkmessage: add check message
-#warning join channel cmd
 #warning nukes wont be deleted
 #warning "randeg strbhlfe" always sends my first message
 #warning remove "(no message)" from afk messages
-#warning make time classes non-static
 #warning twitch api access token needs to be renewed after 60days
