@@ -93,13 +93,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
-                    emoteString += $"{e} ";
+                    emoteString += $"{e.Name} ";
                 });
                 twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()}");
             }
             catch (Exception)
             {
-                twitchBot.Send(chatMessage.Channel, $"error");
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
             }
         }
 
@@ -161,13 +161,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
-                    emoteString += $"{e} ";
+                    emoteString += $"{e.Name} ";
                 });
                 twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()}");
             }
             catch (Exception)
             {
-                twitchBot.Send(chatMessage.Channel, $"error");
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
             }
         }
 

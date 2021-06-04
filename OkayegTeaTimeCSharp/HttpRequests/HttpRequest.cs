@@ -39,10 +39,10 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.ReplaceHashtag()}");
                 int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
                 int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : count;
+                count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
-                    emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetProperty(i.ToString()).GetProperty("name").GetString()));
+                    emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons")[i].GetProperty("name").GetString()));
                 }
                 return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
             }
@@ -59,10 +59,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 List<Emote> emotes = new();
                 HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{TwitchAPI.GetChannelID(channel)}");
                 int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : count;
+                count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
+
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
-                    emotes.Add(new(i, request.Data.GetProperty("sharedEmotes").GetProperty(i.ToString()).GetProperty("code").GetString()));
+                    emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
                 }
                 return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
             }
