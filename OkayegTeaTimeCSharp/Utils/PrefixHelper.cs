@@ -14,12 +14,12 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static void Add(string channel)
         {
-            Prefixes.Add($"#{channel.ReplaceHashtag()}", DataBase.GetPrefix($"#{channel.ReplaceHashtag()}"));
+            Prefixes.Add($"#{channel.ReplaceHashtag()}", DataBase.GetPrefix(channel));
         }
 
         public static void Update(string channel)
         {
-            Prefixes[$"#{channel.ReplaceHashtag()}"] = DataBase.GetPrefix($"#{channel.ReplaceHashtag()}");
+            Prefixes[$"#{channel.ReplaceHashtag()}"] = DataBase.GetPrefix(channel);
         }
 
         public static string GetPrefix(string channel)
