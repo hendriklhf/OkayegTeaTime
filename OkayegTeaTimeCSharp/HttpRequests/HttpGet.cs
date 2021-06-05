@@ -8,14 +8,27 @@ namespace OkayegTeaTimeCSharp.HttpRequests
     {
         public string URL { get; }
 
+        public string Result { get; }
+
         public JsonElement Data { get; }
+
+        public bool ValidJsonData { get; }
 
         private readonly HttpClient _httpClient = new();
 
         public HttpGet(string url)
         {
             URL = url;
-            Data = JsonSerializer.Deserialize<JsonElement>(GetRequest().Result);
+            Result = GetRequest().Result;
+            try
+            {
+                Data = JsonSerializer.Deserialize<JsonElement>(Result);
+                ValidJsonData = true;
+            }
+            catch (JsonException)
+            {
+                ValidJsonData = false;
+            }
         }
 
         private async Task<string> GetRequest()

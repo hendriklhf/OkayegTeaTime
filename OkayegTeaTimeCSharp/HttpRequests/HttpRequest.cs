@@ -96,9 +96,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 throw;
             }
         }
+
         public static string GetMathResult(string expression)
         {
-            return new HttpGet($"http://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}").Data.GetRawText();
+            HttpGet request = new($"http://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
+            return request.ValidJsonData ? request.Data.GetRawText() : request.Result;
         }
     }
 }
