@@ -150,12 +150,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetFirstChannel(ChatMessage chatMessage, string channel)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -163,12 +164,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetFirstMessageUserChannel(string username, string channel)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Username == username && channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == username && channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -176,12 +178,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetFirstUser(string username)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Username == username).FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == username).FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -189,12 +192,14 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetLastMessage(string username)
         {
-            try
+
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new UserNotFoundException();
             }
@@ -226,12 +231,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetRandomMessage(ChatMessage chatMessage)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -239,12 +245,14 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetRandomMessage(string username)
         {
-            try
+
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -252,12 +260,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetRandomMessage(string username, string channel)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.Where(m => m.Channel == $"#{channel.ReplaceHashtag()}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Channel == $"#{channel.ReplaceHashtag()}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -276,12 +285,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetSearch(string keyword)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -289,12 +299,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetSearchChannel(string keyword, string channel)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -302,12 +313,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetSearchUser(string keyword, string username)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -315,12 +327,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetSearchUserChannel(string keyword, string username, string channel)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            if (message != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username}' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+                return message;
             }
-            catch (Exception)
+            else
             {
                 throw new MessageNotFoundException();
             }
@@ -333,12 +346,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static User GetUser(string username)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            User user = database.Users.Where(u => u.Username == username).FirstOrDefault();
+            if (user != null)
             {
-                OkayegTeaTimeContext database = new();
-                return database.Users.Where(u => u.Username == username).FirstOrDefault();
+                return user;
             }
-            catch (Exception)
+            else
             {
                 throw new UserNotFoundException();
             }
@@ -387,13 +401,13 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.ReplaceHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = prefix.MakeQueryable();
+                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = prefix.MakeUsable();
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, prefix.MakeQueryable()));
+                database.Prefixes.Add(new Prefix(channel, prefix.MakeUsable()));
                 database.SaveChanges();
                 PrefixHelper.Add(channel);
             }

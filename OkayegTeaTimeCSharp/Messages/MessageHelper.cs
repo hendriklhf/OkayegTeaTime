@@ -42,11 +42,12 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static byte[] MakeInsertable(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars().Encode();
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Encode();
         }
 
         public static string MakeQueryable(this string input)
         {
+            throw new System.InvalidOperationException("chars are not escaped");
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars();
         }
 

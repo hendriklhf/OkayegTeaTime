@@ -162,7 +162,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModOrBroadcaster())
             {
                 timeoutTime = timeoutTime > new Day(14).ToSeconds() ? new Day(14).ToSeconds() : timeoutTime;
-                DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration));
+                DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]}");
             }
             else
@@ -435,7 +435,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModOrBroadcaster())
             {
                 DataBase.SetPrefix(chatMessage.Channel, prefix);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, prefix set to \"{prefix}\"");
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, prefix set to: {prefix}");
             }
             else
             {
@@ -446,14 +446,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendSetReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message)
         {
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
-            int id = DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
+            int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {GetReminderAuthor(target, chatMessage.Username)} (ID: {id})");
         }
 
         public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
         {
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
-            int id = DataBase.AddReminder(new Reminder(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime));
+            int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderAuthor(target, chatMessage.Username)} (ID: {id})");
         }
 
