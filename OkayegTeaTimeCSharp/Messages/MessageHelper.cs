@@ -47,7 +47,6 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static string MakeQueryable(this string input)
         {
-            throw new System.InvalidOperationException("chars are not escaped");
             return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars();
         }
 
