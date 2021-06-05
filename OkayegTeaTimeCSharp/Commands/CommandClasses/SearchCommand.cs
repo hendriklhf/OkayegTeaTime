@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Twitch;
+﻿using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using TwitchLib.Client.Models;
@@ -13,19 +14,19 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             _chatMessage = chatMessage;
 
-            if (chatMessage.GetMessage().IsMatch(@"\su(ser(name)?)?:\w+(\s|$)") && chatMessage.GetMessage().IsMatch(@"\sc(hannel)?:#?\w+(\s|$)"))
+            if (chatMessage.GetMessage().IsMatch(@"\s?u(ser(name)?)?:\w+") && chatMessage.GetMessage().IsMatch(@"\s?c(hannel)?:#?\w+"))
             {
                 twitchBot.SendSearchUserChannel(chatMessage, GetKeyWord(), GetUsername(), GetChannel());
             }
-            else if (chatMessage.GetMessage().IsMatch(@"\su(ser(name)?)?:\w+(\s|$)"))
+            else if (chatMessage.GetMessage().IsMatch(@"\su(ser(name)?)?:\w+"))
             {
                 twitchBot.SendSearchUser(chatMessage, GetKeyWord(), GetUsername());
             }
-            else if (chatMessage.GetMessage().IsMatch(@"\sc(hannel)?:#?\w+(\s|$)"))
+            else if (chatMessage.GetMessage().IsMatch(@"\sc(hannel)?:#?\w+"))
             {
                 twitchBot.SendSearchChannel(chatMessage, GetKeyWord(), GetChannel());
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s(\S+(\s|$))+")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\S+")))
             {
                 twitchBot.SendSearch(chatMessage, GetKeyWord());
             }
@@ -33,17 +34,20 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private static string GetKeyWord()
         {
-            return _chatMessage.GetMessage()[_chatMessage.GetSplit()[0].Length..].ReplacePattern(@"\su(ser(name)?)?:\w+(\s|$)", "").ReplacePattern(@"\sc(hannel)?:#?\w+(\s|$)", "").Trim();
+            System.Console.WriteLine($"Keyword: {_chatMessage.GetMessage()[(_chatMessage.GetSplit()[0].Length + 1)..].ReplacePattern(@"\s?u(ser(name)?)?:\w+", "").ReplacePattern(@"\s?c(hannel)?:#?\w+", "").Trim().MakeQueryable()}");
+            return _chatMessage.GetMessage()[(_chatMessage.GetSplit()[0].Length + 1)..].ReplacePattern(@"\s?u(ser(name)?)?:\w+", "").ReplacePattern(@"\s?c(hannel)?:#?\w+", "").Trim();
         }
 
         private static string GetUsername()
         {
-            return _chatMessage.GetMessage().Match(@"\su(ser(name)?)?:\w+(\s|$)").Trim().ReplacePattern(@"u(ser(name)?)?:", "");
+            System.Console.WriteLine($"Username: {_chatMessage.GetMessage().Match(@"\s?u(ser(name)?)?:\w+").Trim().ReplacePattern(@"u(ser(name)?)?:", "").MakeQueryable()}");
+            return _chatMessage.GetMessage().Match(@"\s?u(ser(name)?)?:\w+").Trim().ReplacePattern(@"u(ser(name)?)?:", "");
         }
 
         private static string GetChannel()
         {
-            return _chatMessage.GetMessage().Match(@"\sc(hannel)?:#?\w+(\s|$)").Trim().ReplacePattern(@"c(hannel)?:#?", "");
+            System.Console.WriteLine($"Channel: {_chatMessage.GetMessage().Match(@"\s?c(hannel)?:#?\w+").Trim().ReplacePattern(@"c(hannel)?:#?", "").MakeQueryable()}");
+            return _chatMessage.GetMessage().Match(@"\s?c(hannel)?:#?\w+").Trim().ReplacePattern(@"c(hannel)?:#?", "");
         }
     }
 }
