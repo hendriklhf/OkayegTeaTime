@@ -31,7 +31,11 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string EscapeChars(this string str)
         {
-            return str.Replace("\\", "\\\\").Replace("'", "\\'");
+            new List<string>() { "\0", "'", "\"", "\b", "\n", "\r", "\t", "\\", "%", "_" }.ForEach(c =>
+            {
+                str = str.Replace(c, $"\\{c}");
+            });
+            return str;
         }
 
         public static bool IsMatch(this string str, string pattern)
