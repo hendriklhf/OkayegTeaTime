@@ -7,7 +7,6 @@
         Coinflip,
         Cookie,
         Count,
-        Cytube,//
         Emote,
         First,
         Fuck,
@@ -16,7 +15,7 @@
         Join,
         Last,
         Massping,
-        Math,//
+        Math,
         Nuke,
         Ping,
         Rafk,
