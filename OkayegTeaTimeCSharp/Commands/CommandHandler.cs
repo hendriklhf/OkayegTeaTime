@@ -51,45 +51,44 @@ namespace OkayegTeaTimeCSharp.Commands
                         }
                     }
                 });
+                twitchBot.CommandCount++;
             }
             else if (MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
             {
-                if (MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
+                ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ToList().ForEach(type =>
                 {
-                    ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ToList().ForEach(type =>
+                    if (chatMessage.MatchesAnyAlias(type))
                     {
-                        if (chatMessage.MatchesAnyAlias(type))
+                        if (!BotActions.IsOnAfkCooldown(chatMessage.Username))
                         {
-                            if (!BotActions.IsOnAfkCooldown(chatMessage.Username))
+                            if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
                             {
-                                if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
+                                CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
                                 {
-                                    CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
+                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None)))
                                     {
-                                        if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None)))
-                                        {
-                                            BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
-                                            AfkCommandHandler.Handle(twitchBot, chatMessage, type);
-                                            BotActions.AddAfkCooldown(chatMessage.Username);
-                                        }
-                                    });
-                                }
-                                else
+                                        BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
+                                        AfkCommandHandler.Handle(twitchBot, chatMessage, type);
+                                        BotActions.AddAfkCooldown(chatMessage.Username);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
                                 {
-                                    CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
+                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active)))
                                     {
-                                        if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active)))
-                                        {
-                                            BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
-                                            AfkCommandHandler.Handle(twitchBot, chatMessage, type);
-                                            BotActions.AddAfkCooldown(chatMessage.Username);
-                                        }
-                                    });
-                                }
+                                        BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
+                                        AfkCommandHandler.Handle(twitchBot, chatMessage, type);
+                                        BotActions.AddAfkCooldown(chatMessage.Username);
+                                    }
+                                });
                             }
                         }
-                    });
-                }
+                    }
+                });
+                twitchBot.CommandCount++;
             }
         }
     }

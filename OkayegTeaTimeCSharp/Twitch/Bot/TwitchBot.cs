@@ -27,6 +27,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public WebSocketClient WebSocketClient { get; private set; } = new();
 
+        public int CommandCount { get; set; } = 0;
+
         public static List<Timers::Timer> ListTimer { get; private set; } = new();
 
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
