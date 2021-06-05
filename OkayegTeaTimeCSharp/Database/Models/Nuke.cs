@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using OkayegTeaTimeCSharp.Time;
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
@@ -21,7 +20,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
             Channel = channel;
             Word = word;
             TimeoutTime = timeoutTime;
-            ForTime = TimeHelper.Now() + forTime;
+            ForTime = forTime;
         }
     }
 }
