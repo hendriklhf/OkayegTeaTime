@@ -13,9 +13,9 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 twitchBot.SendMassping(chatMessage, chatMessage.GetSplit()[1]);
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"$")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias)))
             {
-                twitchBot.SendMassping(chatMessage, null);
+                twitchBot.SendMassping(chatMessage);
             }
         }
     }
