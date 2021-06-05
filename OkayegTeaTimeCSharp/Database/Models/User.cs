@@ -12,6 +12,17 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public string IsAfk { get; set; } = "false";
         public long Egs { get; set; } = 0;
 
+        public User(int id, string username, byte[] messageText, string type, long time, string isAfk, long egs)
+        {
+            Id = id;
+            Username = username;
+            MessageText = messageText;
+            Type = type;
+            Time = time;
+            IsAfk = isAfk;
+            Egs = egs;
+        }
+
         public User(string username)
         {
             Username = username;
