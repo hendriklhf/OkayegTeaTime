@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static string[] GetSplit(this ChatMessage chatMessage)
         {
-            return chatMessage.Message.Split();
+            return chatMessage.Message.SplitNormal();
         }
     }
 }
