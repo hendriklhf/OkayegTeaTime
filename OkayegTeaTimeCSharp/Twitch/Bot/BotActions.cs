@@ -128,7 +128,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendChattersCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {new DottedNumber(HttpRequest.GetChatterCount(channel))} chatter in the channel of {channel}");
+            int chatterCount = HttpRequest.GetChatterCount(channel);
+            if (chatterCount > 1)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {new DottedNumber(chatterCount)} chatters in the channel of {channel}");
+            }
+            else if (chatterCount > 0)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there is {new DottedNumber(chatterCount)} chatter in the channel of {channel}");
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are no chatters in the channel of {channel}");
+            }
         }
 
         public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
