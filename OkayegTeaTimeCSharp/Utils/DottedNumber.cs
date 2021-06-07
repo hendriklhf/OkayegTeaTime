@@ -24,6 +24,9 @@
             OrigninalNumber = number;
         }
 
-        public override string ToString() => Number;
+        public override string ToString()
+        {
+            return Number;
+        }
     }
 }
