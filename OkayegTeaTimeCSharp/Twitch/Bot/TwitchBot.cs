@@ -142,6 +142,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void Client_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
             ((TwitchClient)sender).Reconnect();
+            Console.WriteLine("Connection lost. Reconnecting...");
         }
 
         #endregion Bot_On
