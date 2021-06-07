@@ -285,9 +285,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote = null)
         {
-            List<string> chatters = HttpRequest.GetChatters(chatMessage.Channel);
             emote ??= "Okayeg";
             string message = emote;
+            List<string> chatters;
+
+            if (chatMessage.Channel != Resources.SecretOfflineChat)
+            {
+                chatters = HttpRequest.GetChatters(chatMessage.Channel);
+                chatters.Remove(chatMessage.Username);
+            }
+            else
+            {
+                chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
+            }
+
             chatters.ForEach(c =>
             {
                 message += $" {c} {emote}";
