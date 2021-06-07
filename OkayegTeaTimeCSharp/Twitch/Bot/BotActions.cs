@@ -532,5 +532,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());
         }
+
+        public static void SendCompilerResult(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}");
+        }
     }
 }

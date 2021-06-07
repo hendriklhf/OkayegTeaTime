@@ -7,6 +7,7 @@
         Coinflip,
         Cookie,
         Count,
+        CSharp,
         Emote,
         First,
         Fuck,

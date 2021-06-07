@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
 using System;
@@ -101,6 +102,23 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         {
             HttpGet request = new($"http://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
             return request.ValidJsonData ? request.Data.GetRawText() : request.Result;
+        }
+
+        public static string GetOnlineCompilerResult(string input)
+        {
+            HttpPost request = new("https://dotnetfiddle.net/Home/Run", new()
+            {
+                new("CodeBlock", GetOnlineCompilerTemplate(input)),
+                new("Compiler", "NetCore22"),
+                new("Language", "CSharp"),
+                new("ProjectType", "Console")
+            });
+            return request.Data.GetProperty("ConsoleOutput").GetString();
+        }
+
+        private static string GetOnlineCompilerTemplate(string code)
+        {
+            return System.IO.File.ReadAllText(Resources.OnlineCompilerTemplatePath).Replace("{code}", code);
         }
     }
 }
