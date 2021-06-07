@@ -24,20 +24,6 @@
             OrigninalNumber = number;
         }
 
-        public DottedNumber(int number)
-        {
-            string num = number.ToString();
-            if (num.Length >= 4)
-            {
-                for (int i = num.Length - 3; i > 0; i -= 3)
-                {
-                    num = num.Insert(i, ".");
-                }
-            }
-            Number = num;
-            OrigninalNumber = number;
-        }
-
         public override string ToString() => Number;
     }
 }
