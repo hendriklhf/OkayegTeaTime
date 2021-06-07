@@ -10,19 +10,19 @@ namespace OkayegTeaTimeCSharp.Messages
 {
     public static class MessageHelper
     {
-        public static bool IsAfkCommand(string message)
+        public static bool IsAfkCommand(ChatMessage chatMessage)
         {
-            return CommandHelper.GetAfkCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None)));
+            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))) || chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))));
         }
 
-        public static bool IsAnyCommand(string message)
+        public static bool IsAnyCommand(ChatMessage chatMessage)
         {
-            return CommandHelper.GetAllAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None)));
+            return CommandHelper.GetAllAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))) || chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))));
         }
 
-        public static bool IsCommand(string message)
+        public static bool IsCommand(ChatMessage chatMessage)
         {
-            return CommandHelper.GetCommandAliases().Any(alias => message.IsMatch(PatternCreator.Create(alias, PrefixType.Active)) || message.IsMatch(PatternCreator.Create(alias, PrefixType.None)));
+            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))) || chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))));
         }
 
         public static bool IsModOrBroadcaster(this ChatMessage chatMessage)

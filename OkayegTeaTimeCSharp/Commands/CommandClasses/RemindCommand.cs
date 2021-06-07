@@ -17,11 +17,11 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             _chatMessage = chatMessage;
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, Pattern.ReminderInTimePattern)))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, PrefixHelper.GetPrefix(chatMessage.Channel), Pattern.ReminderInTimePattern)))
             {
                 twitchBot.SendSetTimedReminder(chatMessage, GetTimedRemindMessage(), GetToTime());
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\w+\s\S+")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+\s\S+")))
             {
                 twitchBot.SendSetReminder(chatMessage, GetRemindMessage());
             }

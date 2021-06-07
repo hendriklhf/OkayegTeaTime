@@ -26,7 +26,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 twitchBot.SendSearchChannel(chatMessage, GetKeyWord(), GetChannel());
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, @"\s\S+")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\S+")))
             {
                 twitchBot.SendSearch(chatMessage, GetKeyWord());
             }

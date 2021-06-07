@@ -65,7 +65,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            if (!MessageHelper.IsAnyCommand(chatMessage.Message))
+            if (!MessageHelper.IsAnyCommand(chatMessage))
             {
                 OkayegTeaTimeContext database = new();
                 if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
@@ -128,7 +128,7 @@ namespace OkayegTeaTimeCSharp.Database
             if (user.IsAfk == "true")
             {
                 twitchBot.SendComingBack(user, chatMessage);
-                if (!MessageHelper.IsAfkCommand(chatMessage.GetMessage()))
+                if (!MessageHelper.IsAfkCommand(chatMessage))
                 {
                     database.SetAfk(chatMessage.Username, "false");
                 }
