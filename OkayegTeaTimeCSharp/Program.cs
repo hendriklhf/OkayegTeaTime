@@ -39,3 +39,7 @@ namespace OkayegTeaTimeCSharp
 #warning remove "(no message)" from afk messages
 #warning twitch api access token needs to be renewed after 60days
 #warning cookieg always shows the same cookie
+#warning too long messages wont be send
+#warning doesnt reconnect on disconnect
+#warning "DansGame" wont set isafk to false
+#warning remove own name from massping
