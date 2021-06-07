@@ -128,7 +128,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendChattersCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {HttpRequest.GetChatterCount(channel)} chatter in the channel of {channel}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {new DottedNumber(HttpRequest.GetChatterCount(channel))} chatter in the channel of {channel}");
         }
 
         public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
@@ -268,19 +268,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendLoggedMessagesChannelCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
             OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountChannelMessages(channel)} messages of the channel {channel}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountChannelMessages(channel))} messages of the channel {channel}");
         }
 
         public static void SendLoggedMessagesCount(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountMessages()} messages across all channels");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountMessages())} messages across all channels");
         }
 
         public static void SendLoggedMessagesUserCount(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
         {
             OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {database.CountUserMessages(username)} messages of {username}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountUserMessages(username))} messages of {username}");
         }
 
         public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote = null)
