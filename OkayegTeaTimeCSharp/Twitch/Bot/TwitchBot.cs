@@ -11,6 +11,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
+using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static OkayegTeaTimeCSharp.Time.TimeHelper;
 using Timers = System.Timers;
@@ -59,8 +60,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             if (args.Any(param => param.ToLower() == "test" || param.ToLower() == "debug"))
             {
-                TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
-                LastMessages.Add("#lbnshlfe", "");
+                TwitchClient.Initialize(ConnectionCredentials, "xxdirkthecrafterxx");
             }
             else
             {
@@ -72,6 +72,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
             TwitchClient.OnMessageReceived += Client_OnMessageReceived;
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
+            TwitchClient.OnDisconnected += Client_OnDisconnected;
 
             TwitchClient.Connect();
 
@@ -136,6 +137,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             WhisperHandler.Handle(_okayegTeaTime, e.WhisperMessage);
 
             Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
+        }
+
+        private void Client_OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        {
+            ((TwitchClient)sender).Reconnect();
         }
 
         #endregion Bot_On
