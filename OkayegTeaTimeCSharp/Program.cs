@@ -43,3 +43,4 @@ namespace OkayegTeaTimeCSharp
 #warning doesnt reconnect on disconnect
 #warning "DansGame" wont set isafk to false
 #warning remove own name from massping
+#warning make AfkMessage's ctor public and stop using the create method
