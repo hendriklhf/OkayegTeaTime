@@ -75,6 +75,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return toUser == fromUser ? "yourself" : fromUser;
         }
 
+        public static string GetReminderTarget(string toUser, string fromUser)
+        {
+            return toUser == fromUser ? "yourself" : toUser;
+        }
+
         public static bool IsOnAfkCooldown(string username)
         {
             return TwitchBot.AfkCooldowns.Any(c => c.Username == username && c.Time > TimeHelper.Now());
