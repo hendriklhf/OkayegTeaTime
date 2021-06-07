@@ -100,7 +100,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     emoteString += $"{e.Name} | ";
                 });
-                twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()[..2]}");
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }
             catch (Exception)
             {
@@ -118,7 +118,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     emoteString += $"{e.Name} | ";
                 });
-                twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()[..2]}");
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }
             catch (Exception)
             {
@@ -186,7 +186,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     emoteString += $"{e.Name} | ";
                 });
-                twitchBot.Send(chatMessage.Channel, $"recently added emotes: {emoteString.Trim()[..2]}");
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }
             catch (Exception)
             {
@@ -452,14 +452,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
             int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {GetReminderAuthor(target, chatMessage.Username)} (ID: {id})");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
         }
 
         public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
         {
             string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
             int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderAuthor(target, chatMessage.Username)} (ID: {id})");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
         }
 
         public static void SendSpotifyCurrentlyPlaying(this TwitchBot twitchBot, ChatMessage chatMessage)
@@ -476,7 +476,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
         {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}");
+            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}");
         }
 
         public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)
