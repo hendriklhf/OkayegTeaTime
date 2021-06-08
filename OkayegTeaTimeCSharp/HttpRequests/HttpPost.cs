@@ -13,13 +13,23 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public JsonElement Data { get; }
 
+        public bool ValdiJsonData { get; }
+
         private readonly HttpClient _httpClient = new();
 
         public HttpPost(string url, List<KeyValuePair<string, string>> headers)
         {
             URL = url;
             HeaderContent = new FormUrlEncodedContent(headers);
-            Data = JsonSerializer.Deserialize<JsonElement>(PostRequest().Result);
+            try
+            {
+                Data = JsonSerializer.Deserialize<JsonElement>(PostRequest().Result);
+                ValdiJsonData = true;
+            }
+            catch (JsonException)
+            {
+                ValdiJsonData = false;
+            }
         }
 
         private async Task<string> PostRequest()
