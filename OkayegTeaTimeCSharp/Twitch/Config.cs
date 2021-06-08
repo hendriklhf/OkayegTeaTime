@@ -11,8 +11,7 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static List<string> GetChannels()
         {
-            OkayegTeaTimeContext database = new();
-            return database.Bots.Where(b => b.Id == 1).FirstOrDefault().Channels.Split().ToList();
+            return new OkayegTeaTimeContext().Bots.Where(b => b.Id == 1).FirstOrDefault().Channels.Split().ToList();
         }
 
         public static List<string> GetNotLoggedChannels()
