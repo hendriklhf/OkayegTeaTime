@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Diagnostics;
 using TwitchLib.Client.Models;
@@ -9,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            twitchBot.Send(chatMessage.Channel, $"Pongeg, I'm here! Uptime: {twitchBot.Runtime} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {twitchBot.CommandCount}");
+            twitchBot.Send(chatMessage.Channel, $"Pongeg, I'm here! Uptime: {twitchBot.Runtime} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {new DottedNumber(twitchBot.CommandCount)}");
         }
 
         private static double GetMemoryUsage()
