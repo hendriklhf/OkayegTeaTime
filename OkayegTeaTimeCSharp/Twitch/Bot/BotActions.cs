@@ -174,6 +174,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
         }
 
+        public static void SendCompilerResult(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}");
+        }
+
         public static void SendCreatedNuke(this TwitchBot twitchBot, ChatMessage chatMessage, string word, long timeoutTime, long duration)
         {
             if (chatMessage.IsModOrBroadcaster())
@@ -531,11 +536,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());
-        }
-
-        public static void SendCompilerResult(this TwitchBot twitchBot, ChatMessage chatMessage)
-        {
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}");
         }
     }
 }
