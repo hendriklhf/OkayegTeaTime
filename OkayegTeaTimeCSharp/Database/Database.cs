@@ -445,7 +445,7 @@ namespace OkayegTeaTimeCSharp.Database
                     }
                     else
                     {
-                        throw new NoPermissionException();
+                        throw new NoPermissionException("you have no permission to delete the reminder of someone else");
                     }
                 }
                 else
