@@ -25,7 +25,10 @@ namespace OkayegTeaTimeCSharp
             TwitchBot OkayegTeaTime = new(args);
             OkayegTeaTime.SetBot();
 
-            Console.ReadLine();
+            while (true)
+            {
+                Console.ReadLine();
+            }
         }
     }
 }
