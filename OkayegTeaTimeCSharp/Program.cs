@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp
         {
             Console.Title = "OkayegTeaTime";
             Console.WriteLine("args?");
-            string[] args = Console.ReadLine().Split(" ");
+            string[] args = Console.ReadLine().Split();
 
             JsonHelper.SetData();
             ReadMeGenerator.GenerateReadMe();
