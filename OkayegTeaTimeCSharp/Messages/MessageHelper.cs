@@ -57,12 +57,12 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static string[] SplitNormal(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Split(" ");
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Split();
         }
 
         public static string[] SplitToLowerCase(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().ToLower().Split(" ");
+            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().ToLower().Split();
         }
     }
 }
