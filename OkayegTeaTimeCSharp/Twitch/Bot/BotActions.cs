@@ -527,6 +527,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 DataBase.UnsetReminder(chatMessage);
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the reminder has been unset");
             }
+            catch (NoPermissionException ex)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+            }
             catch (ReminderNotFoundException ex)
             {
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");

@@ -436,15 +436,26 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 OkayegTeaTimeContext database = new();
                 Reminder reminder = database.Reminders.Where(r => r.Id == chatMessage.GetSplit()[2].ToInt()).FirstOrDefault();
-                if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
+                if (reminder != null)
                 {
-                    database.Reminders.Remove(reminder);
-                    database.SaveChanges();
+                    if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
+                    {
+                        database.Reminders.Remove(reminder);
+                        database.SaveChanges();
+                    }
+                    else
+                    {
+                        throw new NoPermissionException();
+                    }
+                }
+                else
+                {
+                    throw new ReminderNotFoundException();
                 }
             }
             catch (Exception)
             {
-                throw new ReminderNotFoundException();
+                throw;
             }
         }
 
