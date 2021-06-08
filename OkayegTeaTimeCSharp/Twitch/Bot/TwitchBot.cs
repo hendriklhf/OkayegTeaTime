@@ -72,7 +72,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
             TwitchClient.OnMessageReceived += Client_OnMessageReceived;
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
-            TwitchClient.OnDisconnected += Client_OnDisconnected;
+            TwitchClient.OnConnectionError += Client_OnConnectionError;
+            TwitchClient.OnReconnected += Client_OnReconnected;
 
             TwitchClient.Connect();
 
@@ -116,12 +117,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
-            Console.WriteLine("CONNECTED");
+            Console.WriteLine("BOT>CONNECTED");
         }
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine($"JOINED CHANNEL>{e.Channel}");
+            Console.WriteLine($"BOT>Joined channel: {e.Channel}");
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -139,10 +140,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
 
-        private void Client_OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
-            ((TwitchClient)sender).Reconnect();
-            Console.WriteLine("Connection lost. Reconnecting...");
+            TwitchClient.Reconnect();
+            Console.WriteLine("BOT>Connection Lost! Reconnecting...");
+        }
+
+        private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
+        {
+            Console.WriteLine("BOT>Reconnected!");
         }
 
         #endregion Bot_On
