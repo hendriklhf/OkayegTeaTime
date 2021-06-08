@@ -9,6 +9,7 @@
 		<Platforms>AnyCPU;x86</Platforms>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<ApplicationIcon>Resources\Okayeg.ico</ApplicationIcon>
+		<PackageIcon></PackageIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
