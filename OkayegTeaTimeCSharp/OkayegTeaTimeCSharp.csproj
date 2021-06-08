@@ -20,10 +20,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Resources\OnlineCompilerTemplate.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\app.config.transform" />
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.24\contentFiles\any\netstandard2.1\web.config.transform" />
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\app.config.transform" />
 		<Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\web.config.transform" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Resources\OnlineCompilerTemplate.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
