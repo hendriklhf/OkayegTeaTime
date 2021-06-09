@@ -113,7 +113,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
             });
-            return request.Data.GetProperty("ConsoleOutput").GetString();
+            return request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
         }
 
         private static string GetOnlineCompilerTemplate(string code)

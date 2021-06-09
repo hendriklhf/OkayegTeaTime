@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public JsonElement Data { get; }
 
-        public bool ValidJsonData { get; }
+        public bool ValidJsonData { get; } = true;
 
         private readonly HttpClient _httpClient = new();
 
@@ -23,7 +23,6 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             try
             {
                 Data = JsonSerializer.Deserialize<JsonElement>(Result);
-                ValidJsonData = true;
             }
             catch (JsonException)
             {

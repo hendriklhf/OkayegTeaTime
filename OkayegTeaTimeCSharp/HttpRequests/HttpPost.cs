@@ -9,11 +9,13 @@ namespace OkayegTeaTimeCSharp.HttpRequests
     {
         public string URL { get; }
 
+        public string Result { get; }
+
         public HttpContent HeaderContent { get; }
 
         public JsonElement Data { get; }
 
-        public bool ValdiJsonData { get; }
+        public bool ValidJsonData { get; } = true;
 
         private readonly HttpClient _httpClient = new();
 
@@ -21,14 +23,14 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         {
             URL = url;
             HeaderContent = new FormUrlEncodedContent(headers);
+            Result = PostRequest().Result;
             try
             {
-                Data = JsonSerializer.Deserialize<JsonElement>(PostRequest().Result);
-                ValdiJsonData = true;
+                Data = JsonSerializer.Deserialize<JsonElement>(Result);
             }
             catch (JsonException)
             {
-                ValdiJsonData = false;
+                ValidJsonData = false;
             }
         }
 
