@@ -11,6 +11,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
+using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static OkayegTeaTimeCSharp.Time.TimeHelper;
@@ -26,23 +27,29 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public ClientOptions ClientOptions { get; private set; }
 
-        public WebSocketClient WebSocketClient { get; private set; } = new();
+        public WebSocketClient WebSocketClient { get; private set; }
 
-        public int CommandCount { get; set; } = 0;
-
-        public static List<Timers::Timer> ListTimer { get; private set; } = new();
+        public string CommandCount
+        {
+            get => new DottedNumber(_commandCount).Number;
+            set => _commandCount++;
+        }
 
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
+
+        private readonly long _runtime;
+
+        private long _commandCount = 1;
+
+        private static TwitchBot _okayegTeaTime;
+
+        public static List<Timers::Timer> ListTimer = new();
 
         public static readonly Dictionary<string, string> LastMessages = new();
 
         public static readonly List<Cooldown> Cooldowns = new();
 
         public static readonly List<AfkCooldown> AfkCooldowns = new();
-
-        private readonly long _runtime;
-
-        private static TwitchBot _okayegTeaTime;
 
         public TwitchBot(string[] args)
         {
@@ -51,16 +58,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
-                MessagesAllowedInPeriod = 10000,
-                SendDelay = 500,
-                SendQueueCapacity = 100,
-                ReconnectionPolicy = new(3000)
+                ClientType = ClientType.Chat,
+                //SendDelay = 10,
+                ReconnectionPolicy = new(5000),
+                DisconnectWait = 5000,
+                SendCacheItemTimeout = TimeSpan.FromSeconds(1.3),
             };
+            WebSocketClient = new(ClientOptions);
             TwitchClient = new(WebSocketClient);
 
             if (args.Any(param => param.ToLower() == "test" || param.ToLower() == "debug"))
             {
                 TwitchClient.Initialize(ConnectionCredentials, "xxdirkthecrafterxx");
+                //LastMessages.Add("#lbnshlfe", "");
             }
             else
             {
@@ -72,8 +82,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
             TwitchClient.OnMessageReceived += Client_OnMessageReceived;
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
+            TwitchClient.OnError += Client_OnError;
             TwitchClient.OnConnectionError += Client_OnConnectionError;
             TwitchClient.OnReconnected += Client_OnReconnected;
+            WebSocketClient.OnReconnected += WebSocketClient_OnReconnected;
 
             TwitchClient.Connect();
 
@@ -140,15 +152,28 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
 
+        private void Client_OnError(object sender, OnErrorEventArgs e)
+        {
+            Console.WriteLine($"TwitchClient>Exception: {e.Exception.Message}");
+            TwitchClient.Reconnect();
+            WebSocketClient.Reconnect();
+        }
+
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
+            Console.WriteLine($"TwitchClient>Exception: {e.Error.Message}");
             TwitchClient.Reconnect();
-            Console.WriteLine("BOT>Connection Lost! Reconnecting...");
+            WebSocketClient.Reconnect();
         }
 
         private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
         {
-            Console.WriteLine("BOT>Reconnected!");
+            Console.WriteLine("TwitchClient>Reconnected!");
+        }
+
+        private void WebSocketClient_OnReconnected(object sender, OnReconnectedEventArgs e)
+        {
+            Console.WriteLine("WebSocketClient>Reconnected!");
         }
 
         #endregion Bot_On
