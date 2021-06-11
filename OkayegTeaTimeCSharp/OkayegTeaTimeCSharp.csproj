@@ -8,7 +8,7 @@
 		<SignAssembly>false</SignAssembly>
 		<Platforms>AnyCPU;x86</Platforms>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<ApplicationIcon>Resources\Okayeg.ico</ApplicationIcon>
+		<ApplicationIcon>.\Resources\Okayeg.ico</ApplicationIcon>
 		<PackageIcon></PackageIcon>
 	</PropertyGroup>
 
