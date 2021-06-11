@@ -108,7 +108,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         {
             HttpPost request = new("https://dotnetfiddle.net/Home/Run", new()
             {
-                new("CodeBlock", GetOnlineCompilerTemplate(input)),
+                new("CodeBlock", HttpUtility.HtmlEncode(GetOnlineCompilerTemplate(input))),
                 new("Compiler", "NetCore22"),
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
