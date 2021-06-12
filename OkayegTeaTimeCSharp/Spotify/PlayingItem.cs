@@ -1,6 +1,6 @@
 ﻿namespace OkayegTeaTimeCSharp.Spotify
 {
-    public class PlayingItem
+    public abstract class PlayingItem
     {
         public string Title { get; protected set; }
 
