@@ -216,7 +216,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirst(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -229,7 +229,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirstChannel(chatMessage, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -242,7 +242,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirstUser(username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -255,7 +255,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirstMessageUserChannel(username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -274,7 +274,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetLastMessage(username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (UserNotFoundException ex)
             {
@@ -345,7 +345,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message randomMessage = DataBase.GetRandomMessage(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -358,7 +358,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message randomMessage = DataBase.GetRandomMessage(username);
-                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -371,7 +371,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message randomMessage = DataBase.GetRandomMessage(username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, " ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -396,11 +396,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             string message;
             if (listReminder[0].Message.Length > 0)
             {
-                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message.Decode()}";
+                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, "ago")}): {listReminder[0].Message.Decode()}";
             }
             else
             {
-                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")})";
+                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, "ago")})";
             }
             if (listReminder.Count > 1)
             {
@@ -408,11 +408,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     if (reminder.Message.Length > 0)
                     {
-                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}";
+                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")}): {reminder.Message.Decode()}";
                     }
                     else
                     {
-                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")})";
+                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")})";
                     }
                 });
             }
@@ -431,7 +431,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearch(keyword);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -444,7 +444,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearchChannel(keyword, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -457,7 +457,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearchUser(keyword, username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -470,7 +470,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearchUserChannel(keyword, username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, " ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -521,11 +521,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (reminder.Message.Length > 0)
             {
-                twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}");
+                twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")}): {reminder.Message.Decode()}");
             }
             else
             {
-                twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")})");
+                twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")})");
             }
         }
 
