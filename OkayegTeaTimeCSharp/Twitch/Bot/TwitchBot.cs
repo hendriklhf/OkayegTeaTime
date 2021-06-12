@@ -120,6 +120,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public void Reconnect()
+        {
+            new ReconnectTimer(this).Start();
+        }
+
         #region Bot_On
 
         //private void Client_OnLog(object sender, OnLogArgs e)
@@ -147,7 +152,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            WhisperHandler.Handle(_okayegTeaTime, e.WhisperMessage);
+            WhisperHandler.Handle(this, e.WhisperMessage);
 
             Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
@@ -184,7 +189,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (!MessageHelper.IsSpecialUser(((ChatMessage)chatMessage).Username))
             {
-                MessageHandler.Handle(_okayegTeaTime, ((ChatMessage)chatMessage));
+                MessageHandler.Handle(_okayegTeaTime, (ChatMessage)chatMessage);
             }
         }
 
