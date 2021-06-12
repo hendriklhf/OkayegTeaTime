@@ -393,12 +393,27 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> listReminder)
         {
-            string message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message.Decode()}";
+            string message;
+            if (listReminder[0].Message.Length > 0)
+            {
+                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")}): {listReminder[0].Message.Decode()}";
+            }
+            else
+            {
+                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, " ago")})";
+            }
             if (listReminder.Count > 1)
             {
                 listReminder.Skip(1).ToList().ForEach(reminder =>
                 {
-                    message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}";
+                    if (reminder.Message.Length > 0)
+                    {
+                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}";
+                    }
+                    else
+                    {
+                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")})";
+                    }
                 });
             }
             twitchBot.Send(chatMessage.Channel, message);
@@ -504,7 +519,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
         {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}");
+            if (reminder.Message.Length > 0)
+            {
+                twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")}): {reminder.Message.Decode()}");
+            }
+            else
+            {
+                twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, " ago")})");
+            }
         }
 
         public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)
