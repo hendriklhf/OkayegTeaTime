@@ -48,3 +48,4 @@ namespace OkayegTeaTimeCSharp
 #warning remove own name from massping
 #warning make AfkMessage's ctor public and stop using the create method
 #warning create delay between messages sent
+#warning reminder in time doesnt stack up the time correctly
