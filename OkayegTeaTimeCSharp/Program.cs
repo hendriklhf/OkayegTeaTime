@@ -44,13 +44,7 @@ namespace OkayegTeaTimeCSharp
 #warning code needs doc
 #warning move databasehelper methods
 #warning "randeg strbhlfe" always sends my first message
-#warning remove "(no message)" from afk messages
 #warning twitch api access token needs to be renewed after 60days
 #warning cookieg always shows the same cookie
 #warning too long messages wont be send
-#warning doesnt reconnect on disconnect
-#warning "DansGame" wont set isafk to false
-#warning remove own name from massping
-#warning make AfkMessage's ctor public and stop using the create method
 #warning create delay between messages sent
-#warning reminder in time doesnt stack up the time correctly
