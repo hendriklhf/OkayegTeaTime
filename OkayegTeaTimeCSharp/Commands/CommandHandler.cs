@@ -24,30 +24,15 @@ namespace OkayegTeaTimeCSharp.Commands
                     {
                         if (!BotActions.IsOnCooldown(chatMessage.Username, type))
                         {
-                            if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
+                            CommandHelper.GetCommand(type).Alias.ForEach(alias =>
                             {
-                                CommandHelper.GetCommand(type).Alias.ForEach(alias =>
+                                if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")))
                                 {
-                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))))
-                                    {
-                                        BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
-                                        Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
-                                        BotActions.AddCooldown(chatMessage.Username, type);
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                CommandHelper.GetCommand(type).Alias.ForEach(alias =>
-                                {
-                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))))
-                                    {
-                                        BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
-                                        Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
-                                        BotActions.AddCooldown(chatMessage.Username, type);
-                                    }
-                                });
-                            }
+                                    BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
+                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
+                                    BotActions.AddCooldown(chatMessage.Username, type);
+                                }
+                            });
                         }
                     }
                 });
@@ -61,30 +46,15 @@ namespace OkayegTeaTimeCSharp.Commands
                     {
                         if (!BotActions.IsOnAfkCooldown(chatMessage.Username))
                         {
-                            if (string.IsNullOrEmpty(PrefixHelper.GetPrefix(chatMessage.Channel)))
+                            CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
                             {
-                                CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
+                                if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")))
                                 {
-                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))))
-                                    {
-                                        BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
-                                        AfkCommandHandler.Handle(twitchBot, chatMessage, type);
-                                        BotActions.AddAfkCooldown(chatMessage.Username);
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
-                                {
-                                    if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))))
-                                    {
-                                        BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
-                                        AfkCommandHandler.Handle(twitchBot, chatMessage, type);
-                                        BotActions.AddAfkCooldown(chatMessage.Username);
-                                    }
-                                });
-                            }
+                                    BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
+                                    AfkCommandHandler.Handle(twitchBot, chatMessage, type);
+                                    BotActions.AddAfkCooldown(chatMessage.Username);
+                                }
+                            });
                         }
                     }
                 });

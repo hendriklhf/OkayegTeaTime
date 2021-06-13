@@ -9,7 +9,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\safk\s\w+")))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\safk\s\w+")))
             {
                 twitchBot.SendCheckAfk(chatMessage, chatMessage.GetLowerSplit()[2]);
             }

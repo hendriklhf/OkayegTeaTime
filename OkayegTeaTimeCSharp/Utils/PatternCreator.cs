@@ -1,17 +1,13 @@
-﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+﻿using OkayegTeaTimeCSharp.Commands;
+using System.Text.RegularExpressions;
 
 namespace OkayegTeaTimeCSharp.Utils
 {
     public static class PatternCreator
     {
-        public static string Create(string alias, PrefixType prefixType, string prefix, string addition = "")
+        public static string Create(string alias, string prefix, string addition = "")
         {
-            return prefixType.Equals(PrefixType.Active) ? @"^" + prefix + alias + addition : @"^" + alias + @"eg" + addition;
-        }
-
-        public static string CreateBoth(string alias, string prefix, string addition = "")
-        {
-            return @"((^" + prefix + alias + addition + @")|(^" + alias + @"eg" + addition + @"))";
+            return string.IsNullOrEmpty(prefix) ? "^" + Regex.Escape(alias + CommandHelper.Suffix) + addition : "^" + Regex.Escape(prefix + alias) + addition;
         }
     }
 }

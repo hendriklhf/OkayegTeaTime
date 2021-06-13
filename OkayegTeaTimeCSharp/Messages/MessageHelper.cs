@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Commands;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
@@ -12,17 +11,17 @@ namespace OkayegTeaTimeCSharp.Messages
     {
         public static bool IsAfkCommand(ChatMessage chatMessage)
         {
-            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))) || chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))));
+            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
 
         public static bool IsAnyCommand(ChatMessage chatMessage)
         {
-            return CommandHelper.GetAllAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))) || chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))));
+            return CommandHelper.GetAllAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
 
         public static bool IsCommand(ChatMessage chatMessage)
         {
-            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.Active, PrefixHelper.GetPrefix(chatMessage.Channel))) || chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixType.None, PrefixHelper.GetPrefix(chatMessage.Channel))));
+            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
 
         public static bool IsModOrBroadcaster(this ChatMessage chatMessage)

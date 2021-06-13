@@ -9,11 +9,11 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix")))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix")))
             {
                 twitchBot.SendUnsetPrefix(chatMessage);
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.CreateBoth(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sreminder\s\d+")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sreminder\s\d+")))
             {
                 twitchBot.SendUnsetReminder(chatMessage);
             }

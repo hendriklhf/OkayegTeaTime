@@ -33,6 +33,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
             ComingBack = ComingBack.Replace("{username}", user.Username)
                 .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, "ago"))
                 .Replace("{message}", user.MessageText.Decode());
+            ComingBack = string.IsNullOrEmpty(user.MessageText.Decode()) ? ComingBack.Replace(":", "").ReplaceSpaces() : ComingBack;
 
             GoingAway = GoingAway.Replace("{username}", user.Username);
 
