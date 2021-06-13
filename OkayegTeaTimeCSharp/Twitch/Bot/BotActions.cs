@@ -126,6 +126,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendChatNeighbours(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+#warning needs check if left and right exist
+            List<string> chatters = HttpRequest.GetChatters(chatMessage.Channel).OrderByDescending(chatters => chatters).ToList();
+            string chatterLeft = chatters[chatters.IndexOf(chatMessage.Username) - 1];
+            string chatterRight = chatters[chatters.IndexOf(chatMessage.Username) + 1];
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, your chatneighbours are {chatterLeft} and {chatterRight}");
+        }
+
         public static void SendChattersCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
         {
             int chatterCount = HttpRequest.GetChatterCount(channel);
