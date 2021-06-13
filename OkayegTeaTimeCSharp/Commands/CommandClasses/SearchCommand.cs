@@ -1,5 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Messages;
-using OkayegTeaTimeCSharp.Twitch;
+﻿using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using TwitchLib.Client.Models;
@@ -34,19 +33,16 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private static string GetKeyWord()
         {
-            System.Console.WriteLine($"Keyword: {_chatMessage.GetMessage()[(_chatMessage.GetSplit()[0].Length + 1)..].ReplacePattern(@"\s?u(ser(name)?)?:\w+", "").ReplacePattern(@"\s?c(hannel)?:#?\w+", "").Trim().MakeQueryable()}");
             return _chatMessage.GetMessage()[(_chatMessage.GetSplit()[0].Length + 1)..].ReplacePattern(@"\s?u(ser(name)?)?:\w+", "").ReplacePattern(@"\s?c(hannel)?:#?\w+", "").Trim();
         }
 
         private static string GetUsername()
         {
-            System.Console.WriteLine($"Username: {_chatMessage.GetMessage().Match(@"\s?u(ser(name)?)?:\w+").Trim().ReplacePattern(@"u(ser(name)?)?:", "").MakeQueryable()}");
             return _chatMessage.GetMessage().Match(@"\s?u(ser(name)?)?:\w+").Trim().ReplacePattern(@"u(ser(name)?)?:", "");
         }
 
         private static string GetChannel()
         {
-            System.Console.WriteLine($"Channel: {_chatMessage.GetMessage().Match(@"\s?c(hannel)?:#?\w+").Trim().ReplacePattern(@"c(hannel)?:#?", "").MakeQueryable()}");
             return _chatMessage.GetMessage().Match(@"\s?c(hannel)?:#?\w+").Trim().ReplacePattern(@"c(hannel)?:#?", "");
         }
     }

@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp
         private static void Main()
         {
             Console.Title = "OkayegTeaTime";
-            Console.WriteLine("args?");
+            ConsoleOut("args?");
             string[] args = Console.ReadLine().Split();
 
             JsonHelper.SetData();
@@ -29,6 +29,11 @@ namespace OkayegTeaTimeCSharp
             {
                 Console.ReadLine();
             }
+        }
+
+        public static void ConsoleOut(string value)
+        {
+            Console.WriteLine($"{DateTime.UtcNow.TimeOfDay.ToString()[..8]} {value}");
         }
     }
 }

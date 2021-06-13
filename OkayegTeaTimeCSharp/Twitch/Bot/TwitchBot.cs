@@ -13,6 +13,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Models;
+using static OkayegTeaTimeCSharp.Program;
 using static OkayegTeaTimeCSharp.Time.TimeHelper;
 using Timers = System.Timers;
 
@@ -76,6 +77,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnConnected += Client_OnConnected;
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
             TwitchClient.OnMessageReceived += Client_OnMessageReceived;
+            TwitchClient.OnMessageSent += Client_OnMessageSent;
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
 
             TwitchClient.Connect();
@@ -115,17 +117,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnLog(object sender, OnLogArgs e)
         {
-            Console.WriteLine($"LOG: {e.Data}");
+            ConsoleOut($"LOG: {e.Data}");
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
-            Console.WriteLine("BOT>CONNECTED");
+            ConsoleOut("BOT>CONNECTED");
         }
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine($"BOT>Joined channel: {e.Channel}");
+            ConsoleOut($"BOT>Joined channel: {e.Channel}");
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -133,14 +135,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Thread thread = new(OnMessage);
             thread.Start(e.ChatMessage);
 
-            Console.WriteLine($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
+            ConsoleOut($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
+        }
+
+        private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
+        {
+            ConsoleOut($"#{e.SentMessage.Channel}>{Resources.Username}: {e.SentMessage.Message}");
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
             WhisperHandler.Handle(this, e.WhisperMessage);
 
-            Console.WriteLine($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
+            ConsoleOut($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
 
         #endregion Bot_On
