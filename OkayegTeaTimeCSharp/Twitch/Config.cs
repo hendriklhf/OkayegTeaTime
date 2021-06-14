@@ -8,6 +8,9 @@ namespace OkayegTeaTimeCSharp.Twitch
     public static class Config
     {
         public const int AfkCooldown = 10000;
+        public const string EmoteInFront = "Okayeg";
+        public const string Suffix = "eg";
+        public const int MaxMessageLength = 500;
 
         public static List<string> GetChannels()
         {

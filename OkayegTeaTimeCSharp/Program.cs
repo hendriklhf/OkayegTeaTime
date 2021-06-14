@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp
 
         public static void ConsoleOut(string value)
         {
-            Console.WriteLine($"{DateTime.UtcNow.TimeOfDay.ToString()[..8]} {value}");
+            Console.WriteLine($"{DateTime.UtcNow.TimeOfDay.ToString()[..8]} | {value}");
         }
     }
 }
@@ -47,4 +47,5 @@ namespace OkayegTeaTimeCSharp
 #warning twitch api access token needs to be renewed after 60days
 #warning cookieg always shows the same cookie
 #warning too long messages wont be send
-#warning create delay between messages sent
+#warning create delay between messages 
+#warning divided message doesnt work as intended

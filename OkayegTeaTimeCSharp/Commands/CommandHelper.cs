@@ -11,8 +11,6 @@ namespace OkayegTeaTimeCSharp.Commands
 {
     public static class CommandHelper
     {
-        public const string Suffix = "eg";
-
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
             return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
@@ -71,12 +69,12 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static bool MatchesAnyAlias(this ChatMessage chatMessage, CommandType type)
         {
-            return GetCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Suffix == chatMessage.GetLowerSplit()[0]);
+            return GetCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Config.Suffix == chatMessage.GetLowerSplit()[0]);
         }
 
         public static bool MatchesAnyAlias(this ChatMessage chatMessage, AfkCommandType type)
         {
-            return GetAfkCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Suffix == chatMessage.GetLowerSplit()[0]);
+            return GetAfkCommand(type).Alias.Any(alias => PrefixHelper.GetPrefix(chatMessage.Channel) + alias == chatMessage.GetLowerSplit()[0] || alias + Config.Suffix == chatMessage.GetLowerSplit()[0]);
         }
     }
 }

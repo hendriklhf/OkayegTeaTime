@@ -90,11 +90,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             _okayegTeaTime ??= this;
         }
 
-        public void Send(string channel, string message, string emoteInFront = "Okayeg")
+        public void Send(string channel, string message, string emoteInFront = Config.EmoteInFront)
         {
-            message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
-            TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
-            LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
+            if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length < 495)
+            {
+                message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+                TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
+                LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
+            }
+            else
+            {
+                new DividedMessage(this, channel, message).StartSending();
+            }
         }
 
         public void JoinChannel(string channel)

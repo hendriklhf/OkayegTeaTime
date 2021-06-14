@@ -82,5 +82,26 @@ namespace OkayegTeaTimeCSharp.Utils
             });
             return result;
         }
+
+        public static List<string> Split(this string str, int charCount)
+        {
+            if (str.Length > charCount)
+            {
+                List<string> result = new();
+                result.Add(str[..charCount]);
+                str = str[charCount..];
+                while (str.Length > charCount)
+                {
+                    result.Add(str[..charCount]);
+                    str = str[charCount..];
+                }
+                result.Add(str);
+                return result;
+            }
+            else
+            {
+                return new() { str };
+            }
+        }
     }
 }

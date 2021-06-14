@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Commands;
+﻿using OkayegTeaTimeCSharp.Twitch;
 using System.Text.RegularExpressions;
 
 namespace OkayegTeaTimeCSharp.Utils
@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Utils
     {
         public static string Create(string alias, string prefix, string addition = "")
         {
-            return string.IsNullOrEmpty(prefix) ? "^" + Regex.Escape(alias + CommandHelper.Suffix) + addition : "^" + Regex.Escape(prefix + alias) + addition;
+            return string.IsNullOrEmpty(prefix) ? "^" + Regex.Escape(alias + Config.Suffix) + addition : "^" + Regex.Escape(prefix + alias) + addition;
         }
     }
 }
