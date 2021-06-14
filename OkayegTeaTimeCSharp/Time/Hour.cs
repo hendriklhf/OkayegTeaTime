@@ -6,7 +6,7 @@
 
         public const string Pattern = @"\d+h(our)?s?";
 
-        private const long InMilliseconds = 3600000;
+        private const long _inMilliseconds = 3600000;
 
         public Hour(int count = 1)
         {
@@ -15,7 +15,7 @@
 
         public long ToMilliseconds()
         {
-            return Count * InMilliseconds;
+            return Count * _inMilliseconds;
         }
 
         public long ToSeconds()

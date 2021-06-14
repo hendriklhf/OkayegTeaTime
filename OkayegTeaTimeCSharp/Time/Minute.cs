@@ -6,7 +6,7 @@
 
         public const string Pattern = @"\d+m(in(ute)?)?s?";
 
-        private const long InMilliseconds = 60000;
+        private const long _inMilliseconds = 60000;
 
         public Minute(int count = 1)
         {
@@ -15,7 +15,7 @@
 
         public long ToMilliseconds()
         {
-            return Count * InMilliseconds;
+            return Count * _inMilliseconds;
         }
 
         public long ToSeconds()

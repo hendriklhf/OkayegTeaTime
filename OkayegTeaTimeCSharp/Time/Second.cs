@@ -6,7 +6,7 @@
 
         public const string Pattern = @"\d+s(ec(ond)?)?s?";
 
-        private const long InMilliseconds = 1000;
+        private const long _inMilliseconds = 1000;
 
         public Second(int count = 1)
         {
@@ -15,7 +15,7 @@
 
         public long ToMilliseconds()
         {
-            return Count * InMilliseconds;
+            return Count * _inMilliseconds;
         }
 
         public long ToSeconds()

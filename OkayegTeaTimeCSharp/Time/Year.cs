@@ -6,7 +6,7 @@
 
         public const string Pattern = @"\d+y(ear)?s?";
 
-        private const long InMilliseconds = 31556952000;
+        private const long _inMilliseconds = 31556952000;
 
         public Year(int count = 1)
         {
@@ -15,7 +15,7 @@
 
         public long ToMilliseconds()
         {
-            return Count * InMilliseconds;
+            return Count * _inMilliseconds;
         }
 
         public long ToSeconds()
