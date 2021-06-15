@@ -34,10 +34,16 @@
             OrigninalNumber = number;
         }
 
-        /// <summary>
-        /// Override method of ToString() that returns the result.
-        /// </summary>
-        /// <returns>the result dotted number</returns>
+        public static bool operator >(DottedNumber left, DottedNumber right) => left.OrigninalNumber > right.OrigninalNumber;
+        public static bool operator <(DottedNumber left, DottedNumber right) => left.OrigninalNumber < right.OrigninalNumber;
+        public static bool operator >=(DottedNumber left, DottedNumber right) => left.OrigninalNumber >= right.OrigninalNumber;
+        public static bool operator <=(DottedNumber left, DottedNumber right) => left.OrigninalNumber <= right.OrigninalNumber;
+        public static DottedNumber operator +(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber + right.OrigninalNumber);
+        public static DottedNumber operator -(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber - right.OrigninalNumber);
+        public static DottedNumber operator *(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber * right.OrigninalNumber);
+        public static DottedNumber operator /(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber / right.OrigninalNumber);
+        public static DottedNumber operator ++(DottedNumber dottedNumber) => new(dottedNumber.OrigninalNumber + 1);
+        public static DottedNumber operator --(DottedNumber dottedNumber) => new(dottedNumber.OrigninalNumber - 1);
         public override string ToString() => Number;
     }
 }
