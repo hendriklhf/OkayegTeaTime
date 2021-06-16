@@ -22,7 +22,8 @@
         /// <param name="number">A number of type long in which the dots will be inserted</param>
         public DottedNumber(long number)
         {
-            string num = number.ToString();
+            OrigninalNumber = number;
+            string num = OrigninalNumber.ToString();
             if (num.Length >= 4)
             {
                 for (int i = num.Length - 3; i > 0; i -= 3)
@@ -31,19 +32,61 @@
                 }
             }
             Number = num;
-            OrigninalNumber = number;
         }
 
-        public static bool operator >(DottedNumber left, DottedNumber right) => left.OrigninalNumber > right.OrigninalNumber;
-        public static bool operator <(DottedNumber left, DottedNumber right) => left.OrigninalNumber < right.OrigninalNumber;
-        public static bool operator >=(DottedNumber left, DottedNumber right) => left.OrigninalNumber >= right.OrigninalNumber;
-        public static bool operator <=(DottedNumber left, DottedNumber right) => left.OrigninalNumber <= right.OrigninalNumber;
-        public static DottedNumber operator +(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber + right.OrigninalNumber);
-        public static DottedNumber operator -(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber - right.OrigninalNumber);
-        public static DottedNumber operator *(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber * right.OrigninalNumber);
-        public static DottedNumber operator /(DottedNumber left, DottedNumber right) => new(left.OrigninalNumber / right.OrigninalNumber);
-        public static DottedNumber operator ++(DottedNumber dottedNumber) => new(dottedNumber.OrigninalNumber + 1);
-        public static DottedNumber operator --(DottedNumber dottedNumber) => new(dottedNumber.OrigninalNumber - 1);
-        public override string ToString() => Number;
+        public static bool operator >(DottedNumber left, DottedNumber right)
+        {
+            return left.OrigninalNumber > right.OrigninalNumber;
+        }
+
+        public static bool operator <(DottedNumber left, DottedNumber right)
+        {
+            return left.OrigninalNumber < right.OrigninalNumber;
+        }
+
+        public static bool operator >=(DottedNumber left, DottedNumber right)
+        {
+            return left.OrigninalNumber >= right.OrigninalNumber;
+        }
+
+        public static bool operator <=(DottedNumber left, DottedNumber right)
+        {
+            return left.OrigninalNumber <= right.OrigninalNumber;
+        }
+
+        public static DottedNumber operator +(DottedNumber left, DottedNumber right)
+        {
+            return new(left.OrigninalNumber + right.OrigninalNumber);
+        }
+
+        public static DottedNumber operator -(DottedNumber left, DottedNumber right)
+        {
+            return new(left.OrigninalNumber - right.OrigninalNumber);
+        }
+
+        public static DottedNumber operator *(DottedNumber left, DottedNumber right)
+        {
+            return new(left.OrigninalNumber * right.OrigninalNumber);
+        }
+
+        public static DottedNumber operator /(DottedNumber left, DottedNumber right)
+        {
+            return new(left.OrigninalNumber / right.OrigninalNumber);
+        }
+
+        public static DottedNumber operator ++(DottedNumber dottedNumber)
+        {
+            return new(dottedNumber.OrigninalNumber + 1);
+        }
+
+        public static DottedNumber operator --(DottedNumber dottedNumber)
+        {
+            return new(dottedNumber.OrigninalNumber - 1);
+        }
+
+        public override string ToString()
+        {
+            return Number;
+        }
     }
 }

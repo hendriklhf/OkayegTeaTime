@@ -29,9 +29,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public WebSocketClient WebSocketClient { get; private set; }
 
-        public string CommandCount
+        public DottedNumber CommandCount
         {
-            get => new DottedNumber(_commandCount).Number;
+            get => _commandCount;
             set => _commandCount++;
         }
 
@@ -39,7 +39,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private readonly long _runtime;
 
-        private long _commandCount = 1;
+        private DottedNumber _commandCount = new(1);
 
         private static TwitchBot _okayegTeaTime;
 

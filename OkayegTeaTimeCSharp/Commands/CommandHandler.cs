@@ -36,7 +36,7 @@ namespace OkayegTeaTimeCSharp.Commands
                         }
                     }
                 });
-                twitchBot.CommandCount = "+1";
+                twitchBot.CommandCount++;
             }
             else if (MessageHelper.IsAfkCommand(chatMessage))
             {
@@ -58,7 +58,7 @@ namespace OkayegTeaTimeCSharp.Commands
                         }
                     }
                 });
-                twitchBot.CommandCount = "+1";
+                twitchBot.CommandCount++;
             }
         }
     }
