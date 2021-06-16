@@ -1,6 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Properties;
-using System.Collections.Generic;
 using System.Web;
 using TwitchLib.Api.V5.Models.Channels;
 
@@ -20,13 +19,18 @@ namespace OkayegTeaTimeCSharp.Twitch.API
         public static string GetAccessToken()
         {
             HttpPost request = new("https://id.twitch.tv/oauth2/token",
-                new List<KeyValuePair<string, string>>()
+                new()
                 {
                     new("client_id", _api.Settings.ClientId),
                     new("client_secret", _api.Settings.Secret),
                     new("grant_type", "client_credentials")
                 });
             return request.Data.GetProperty("access_token").GetString();
+        }
+
+        public static void RefreshAccessToken()
+        {
+            _api.Settings.AccessToken = GetAccessToken();
         }
 
         public static Channel GetChannelByName(string channel)

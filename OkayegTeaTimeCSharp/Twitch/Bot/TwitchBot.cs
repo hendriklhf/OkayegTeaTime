@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
@@ -182,13 +183,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private static void StartTimers()
         {
-            ListTimer.ForEach(timer => timer.Enabled = true);
+            ListTimer.ForEach(timer => timer.Start());
         }
 
         private static void AddTimerFunction()
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
             Timers.GetTimer(30000).Elapsed += OnTimer30000;
+            Timers.GetTimer(new Day(10).ToMilliseconds()).Elapsed += OnTimer10Days;
         }
 
         private static void OnTimer1000(object sender, Timers::ElapsedEventArgs e)
@@ -199,6 +201,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private static void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
         {
             TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
+        }
+
+        private static void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)
+        {
+            TimerFunctions.TwitchApiRefreshAccessToken();
         }
 
         #endregion Timer

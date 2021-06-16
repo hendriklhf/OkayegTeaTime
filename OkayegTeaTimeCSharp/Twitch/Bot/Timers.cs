@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using OkayegTeaTimeCSharp.Time;
+using System.Linq;
 using System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
@@ -9,9 +10,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             CreateTimer(1000);
             CreateTimer(30000);
+            CreateTimer(new Day(10).ToMilliseconds());
         }
 
-        private static void CreateTimer(int interval)
+        private static void CreateTimer(long interval)
         {
             Timer timer = new()
             {
@@ -22,7 +24,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchBot.ListTimer.Add(timer);
         }
 
-        public static Timer GetTimer(int interval)
+        public static Timer GetTimer(long interval)
         {
             return TwitchBot.ListTimer.Where(timer => timer.Interval == interval).FirstOrDefault();
         }
