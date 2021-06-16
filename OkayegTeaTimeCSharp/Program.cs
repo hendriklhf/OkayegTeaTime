@@ -47,3 +47,4 @@ namespace OkayegTeaTimeCSharp
 #warning twitch api access token needs to be renewed after 60days
 #warning cookieg always shows the same cookie
 #warning create delay between messages
+#warning emote cmd not available for external channels
