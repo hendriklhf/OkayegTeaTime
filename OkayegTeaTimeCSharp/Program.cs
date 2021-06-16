@@ -44,7 +44,6 @@ namespace OkayegTeaTimeCSharp
 #warning code needs doc
 #warning move databasehelper methods
 #warning "randeg strbhlfe" always sends my first message
-#warning twitch api access token needs to be renewed after 60days
 #warning cookieg always shows the same cookie
-#warning create delay between messages
 #warning emote cmd not available for external channels
+#warning create own class library
