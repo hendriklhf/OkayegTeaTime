@@ -99,7 +99,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
-                    emoteString += $"{e.Name} | ";
+                    emoteString += $"{e} | ";
                 });
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }
@@ -117,7 +117,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
-                    emoteString += $"{e.Name} | ";
+                    emoteString += $"{e} | ";
                 });
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }
@@ -211,7 +211,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
                 {
-                    emoteString += $"{e.Name} | ";
+                    emoteString += $"{e} | ";
                 });
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }

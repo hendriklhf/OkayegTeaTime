@@ -1,6 +1,6 @@
 ﻿namespace OkayegTeaTimeCSharp.HttpRequests
 {
-    public class Emote
+    public struct Emote
     {
         public int Index { get; }
 
@@ -10,6 +10,11 @@
         {
             Index = index;
             Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
