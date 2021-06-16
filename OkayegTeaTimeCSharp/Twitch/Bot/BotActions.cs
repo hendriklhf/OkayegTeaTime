@@ -221,6 +221,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendFill(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            string emote = chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..];
+            string message = emote;
+            string strToAdd = $" {emote}";
+            while ((message + strToAdd).Length <= Config.MaxMessageLength)
+            {
+                message += strToAdd;
+            }
+            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
+        }
+
         public static void SendFirst(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             try
@@ -322,25 +334,32 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote = "Okayeg")
         {
-            string message = emote;
-            List<string> chatters;
-
-            if (chatMessage.Channel != Resources.SecretOfflineChat)
+            if (chatMessage.IsModOrBroadcaster())
             {
-                chatters = HttpRequest.GetChatters(chatMessage.Channel);
-                chatters.Remove(chatMessage.Username);
+                string message = emote;
+                List<string> chatters;
+
+                if (chatMessage.Channel != Resources.SecretOfflineChat)
+                {
+                    chatters = HttpRequest.GetChatters(chatMessage.Channel);
+                    chatters.Remove(chatMessage.Username);
+                }
+                else
+                {
+                    message = $"{emote} OkayegTeaTime {emote}";
+                    chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
+                }
+
+                chatters.ForEach(c =>
+                {
+                    message += $" {c} {emote}";
+                });
+                twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
             }
             else
             {
-                message = $"{emote} OkayegTeaTime {emote}";
-                chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
             }
-
-            chatters.ForEach(c =>
-            {
-                message += $" {c} {emote}";
-            });
-            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
         }
 
         public static void SendMathResult(this TwitchBot twitchBot, ChatMessage chatMessage)

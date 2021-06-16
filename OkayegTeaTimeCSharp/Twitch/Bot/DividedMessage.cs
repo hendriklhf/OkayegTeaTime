@@ -16,7 +16,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             TwitchBot = twitchBot;
             Channel = channel;
-            Messages = message.Split(Config.MaxMessageLength - 5);
+            Messages = message.Split(Config.MaxMessageLength);
         }
 
         public void StartSending()
