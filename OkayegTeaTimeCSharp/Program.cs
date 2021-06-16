@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp
 
         public static void ConsoleOut(string value)
         {
-            Console.WriteLine($"{DateTime.UtcNow.TimeOfDay.ToString()[..8]} | {value}");
+            Console.WriteLine($"{DateTime.Now.TimeOfDay.ToString()[..8]} | {value}");
         }
     }
 }
