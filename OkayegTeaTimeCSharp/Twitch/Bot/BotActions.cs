@@ -8,6 +8,7 @@ using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Time.TimeEnums;
 using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
@@ -225,7 +226,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirst(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -238,7 +239,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirstChannel(chatMessage, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -251,7 +252,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirstUser(username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -264,7 +265,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetFirstMessageUserChannel(username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -354,7 +355,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message randomMessage = DataBase.GetRandomMessage(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago", ConversionType.YearDayHour)}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -367,7 +368,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message randomMessage = DataBase.GetRandomMessage(username);
-                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago", ConversionType.YearDayHour)}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -380,7 +381,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message randomMessage = DataBase.GetRandomMessage(username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago")}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(randomMessage.Time, "ago", ConversionType.YearDayHour)}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -440,7 +441,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearch(keyword);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -453,7 +454,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearchChannel(keyword, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -466,7 +467,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearchUser(keyword, username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
@@ -479,7 +480,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 Message message = DataBase.GetSearchUserChannel(keyword, username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertMillisecondsToPassedTime(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
             }
             catch (MessageNotFoundException ex)
             {
