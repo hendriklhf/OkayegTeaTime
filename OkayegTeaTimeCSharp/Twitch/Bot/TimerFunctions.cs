@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Twitch.API;
+using System;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -17,6 +18,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void TwitchApiRefreshAccessToken()
         {
             TwitchAPI.RefreshAccessToken();
+        }
+
+        public static void SetConsoleTitle(TwitchBot twitchBot)
+        {
+            Console.Title = $"OkayegTeaTime - {twitchBot.GetSystemInfo()}";
         }
     }
 }

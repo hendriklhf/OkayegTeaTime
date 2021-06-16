@@ -6,6 +6,7 @@ using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -116,6 +117,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public string GetSystemInfo()
+        {
+            return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {CommandCount}";
+        }
+
+        private static double GetMemoryUsage()
+        {
+            return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100;
+        }
         #region Bot_On
 
         private void Client_OnLog(object sender, OnLogArgs e)
@@ -196,6 +206,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private static void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
         {
             TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
+            TimerFunctions.SetConsoleTitle(_okayegTeaTime);
         }
 
         private static void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)

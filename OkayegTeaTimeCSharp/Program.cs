@@ -19,7 +19,6 @@ namespace OkayegTeaTimeCSharp
             BotActions.FillLastMessagesDictionary();
 
             TwitchAPI.Configure();
-
             new TwitchBot().SetBot();
 
             while (true)
