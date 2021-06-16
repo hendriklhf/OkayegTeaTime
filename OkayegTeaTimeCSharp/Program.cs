@@ -12,8 +12,6 @@ namespace OkayegTeaTimeCSharp
         private static void Main()
         {
             Console.Title = "OkayegTeaTime";
-            ConsoleOut("args?");
-            string[] args = Console.ReadLine().Split();
 
             JsonHelper.SetData();
             ReadMeGenerator.GenerateReadMe();
@@ -22,8 +20,7 @@ namespace OkayegTeaTimeCSharp
 
             TwitchAPI.Configure();
 
-            TwitchBot OkayegTeaTime = new(args);
-            OkayegTeaTime.SetBot();
+            new TwitchBot().SetBot();
 
             while (true)
             {
