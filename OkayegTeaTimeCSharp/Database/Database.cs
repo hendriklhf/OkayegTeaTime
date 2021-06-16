@@ -220,19 +220,19 @@ namespace OkayegTeaTimeCSharp.Database
         public static Pechkekse GetRandomCookie()
         {
             OkayegTeaTimeContext database = new();
-            return database.Pechkekse.OrderBy(p => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Pechkekse.FromSqlRaw($"SELECT * FROM pechkekse ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
         public static Gachi GetRandomGachi()
         {
             OkayegTeaTimeContext database = new();
-            return database.Gachi.OrderBy(g => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Gachi.FromSqlRaw($"SELECT * FROM gachi ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
         public static Message GetRandomMessage(ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.Where(m => m.Channel == $"#{chatMessage.Channel}").OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE channel = '#{chatMessage.Channel}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             if (message != null)
             {
                 return message;
@@ -245,9 +245,8 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetRandomMessage(string username)
         {
-
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.Where(m => m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username = '{username.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             if (message != null)
             {
                 return message;
@@ -261,7 +260,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetRandomMessage(string username, string channel)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.Where(m => m.Channel == $"#{channel.ReplaceHashtag()}" && m.Username == username).OrderBy(m => Guid.NewGuid()).Take(1).FirstOrDefault();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username ='{username.MakeQueryable()}' AND channel = '#{channel.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             if (message != null)
             {
                 return message;
@@ -275,7 +274,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Yourmom GetRandomYourmom()
         {
             OkayegTeaTimeContext database = new();
-            return database.Yourmom.OrderBy(y => Guid.NewGuid()).Take(1).FirstOrDefault();
+            return database.Yourmom.FromSqlRaw($"SELECT * FROM yourmom ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
         public static string GetRefreshToken(string username)
