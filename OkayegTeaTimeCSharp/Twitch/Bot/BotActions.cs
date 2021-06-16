@@ -310,9 +310,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountUserMessages(username))} messages of {username}");
         }
 
-        public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote = null)
+        public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote = "Okayeg")
         {
-            emote ??= "Okayeg";
             string message = emote;
             List<string> chatters;
 

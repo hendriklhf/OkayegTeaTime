@@ -299,36 +299,8 @@ namespace OkayegTeaTimeCSharp.Time
                 else if (Math.Truncate((time / new Hour().ToMilliseconds()).ToDouble()) > 0)
                 {
                     result += Math.Truncate((time / new Hour().ToMilliseconds()).ToDouble()).ToString() + "h, ";
-                    if ((int)conversionType >= (int)ConversionType.YearDayHourMin)
-                    {
-                        time -= (Math.Truncate((time / new Hour().ToMilliseconds()).ToDouble()) * new Hour().ToMilliseconds()).ToLong();
-                        if (Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()) > 0)
-                        {
-                            if ((int)conversionType >= (int)ConversionType.YearDayHourMin)
-                            {
-                                result += Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()).ToString() + "min, ";
-                                if ((int)conversionType >= (int)ConversionType.YearDayHourMinSec)
-                                {
-                                    time -= (Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()) * new Minute().ToMilliseconds()).ToLong();
-                                    if (Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()) > 0)
-                                    {
-                                        result += Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()).ToString() + "s";
-                                    }
-                                }
-                            }
-                        }
-                        else if (Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()) > 0)
-                        {
-                            if ((int)conversionType >= (int)ConversionType.YearDayHourMinSec)
-                            {
-                                result += Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()).ToString() + "s";
-                            }
-                        }
-                    }
-                }
-                else if (Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()) > 0)
-                {
-                    if ((int)conversionType >= (int)ConversionType.YearDayHourMin)
+                    time -= (Math.Truncate((time / new Hour().ToMilliseconds()).ToDouble()) * new Hour().ToMilliseconds()).ToLong();
+                    if (Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()) > 0)
                     {
                         result += Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()).ToString() + "min, ";
                         if ((int)conversionType >= (int)ConversionType.YearDayHourMinSec)
@@ -340,13 +312,26 @@ namespace OkayegTeaTimeCSharp.Time
                             }
                         }
                     }
+                    else if (Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()) > 0)
+                    {
+                        if ((int)conversionType >= (int)ConversionType.YearDayHourMinSec)
+                        {
+                            result += Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()).ToString() + "s";
+                        }
+                    }
                 }
-                else if (Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()) > 0)
+                else if (Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()) > 0)
                 {
-                    if ((int)conversionType >= (int)ConversionType.YearDayHourMinSec)
+                    result += Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()).ToString() + "min, ";
+                    time -= (Math.Truncate((time / new Minute().ToMilliseconds()).ToDouble()) * new Minute().ToMilliseconds()).ToLong();
+                    if (Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()) > 0)
                     {
                         result += Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()).ToString() + "s";
                     }
+                }
+                else if (Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()) > 0)
+                {
+                    result += Math.Truncate((time / new Second().ToMilliseconds()).ToDouble()).ToString() + "s";
                 }
 
                 result = result.Trim();

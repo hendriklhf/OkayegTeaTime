@@ -23,7 +23,9 @@
         public DottedNumber(long number)
         {
             OrigninalNumber = number;
-            string num = OrigninalNumber.ToString();
+            bool negative = OrigninalNumber < 0;
+            string num = negative ? OrigninalNumber.ToString()[1..] : OrigninalNumber.ToString();
+
             if (num.Length >= 4)
             {
                 for (int i = num.Length - 3; i > 0; i -= 3)
@@ -31,7 +33,8 @@
                     num = num.Insert(i, ".");
                 }
             }
-            Number = num;
+
+            Number = negative ? $"-{num}" : num;
         }
 
         public static bool operator >(DottedNumber left, DottedNumber right)
