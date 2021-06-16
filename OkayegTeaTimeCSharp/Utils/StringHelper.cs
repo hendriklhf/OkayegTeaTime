@@ -31,7 +31,7 @@ namespace OkayegTeaTimeCSharp.Utils
 
         public static string EscapeChars(this string str)
         {
-            new List<string>() { "\0", "\b", "\n", "\r", "\t", "'", "\"", "\\", "%", "_" }.ForEach(c =>
+            new List<string>() { "\0", "\b", "\n", "\r", "\t", "'", "\"", "\\", }.ForEach(c =>
             {
                 str = str.Replace(c, "");
             });
@@ -68,21 +68,6 @@ namespace OkayegTeaTimeCSharp.Utils
             return str.ReplacePattern(@"\s+", " ");
         }
 
-        public static int ToInt(this string input)
-        {
-            return Convert.ToInt32(input);
-        }
-
-        public static List<string> WordArrayStringToList(this string input)
-        {
-            List<string> result = new();
-            Regex.Matches(input, @"\w+", RegexOptions.IgnoreCase).ToList().ForEach(m =>
-            {
-                result.Add(m.Value);
-            });
-            return result;
-        }
-
         public static List<string> Split(this string str, int charCount)
         {
             if (str.Length > charCount)
@@ -102,6 +87,21 @@ namespace OkayegTeaTimeCSharp.Utils
             {
                 return new() { str };
             }
+        }
+
+        public static int ToInt(this string input)
+        {
+            return Convert.ToInt32(input);
+        }
+
+        public static List<string> WordArrayStringToList(this string input)
+        {
+            List<string> result = new();
+            Regex.Matches(input, @"\w+", RegexOptions.IgnoreCase).ToList().ForEach(m =>
+            {
+                result.Add(m.Value);
+            });
+            return result;
         }
     }
 }
