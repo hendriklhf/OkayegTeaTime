@@ -4,6 +4,7 @@ using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -16,11 +17,12 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             try
             {
                 List<Emote> emotes = new();
-                HttpPost request = new("https://api.7tv.app/v2/gql", new List<KeyValuePair<string, string>>()
-                {
-                    new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
-                    new("variables", "{}")
-                });
+                HttpPost request = new("https://api.7tv.app/v2/gql",
+                   new()
+                   {
+                       new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
+                       new("variables", "{}")
+                   });
                 int emoteCountInChannel = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes").GetArrayLength();
                 count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
@@ -63,9 +65,8 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public static List<string> GetChatters(string channel)
         {
-            List<string> result = new();
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.ReplaceHashtag()}/chatters");
-            return result
+            return new List<string>()
                 .Concat(request.Data.GetProperty("chatters").GetProperty("broadcaster").ToString().WordArrayStringToList())
                 .Concat(request.Data.GetProperty("chatters").GetProperty("vips").ToString().WordArrayStringToList())
                 .Concat(request.Data.GetProperty("chatters").GetProperty("moderators").ToString().WordArrayStringToList())
@@ -106,19 +107,20 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public static string GetOnlineCompilerResult(string input)
         {
-            HttpPost request = new("https://dotnetfiddle.net/Home/Run", new()
-            {
-                new("CodeBlock", HttpUtility.HtmlEncode(GetOnlineCompilerTemplate(input))),
-                new("Compiler", "NetCore22"),
-                new("Language", "CSharp"),
-                new("ProjectType", "Console")
-            });
+            HttpPost request = new("https://dotnetfiddle.net/Home/Run",
+                new()
+                {
+                    new("CodeBlock", HttpUtility.HtmlEncode(GetOnlineCompilerTemplate(input))),
+                    new("Compiler", "NetCore22"),
+                    new("Language", "CSharp"),
+                    new("ProjectType", "Console")
+                });
             return request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
         }
 
         private static string GetOnlineCompilerTemplate(string code)
         {
-            return System.IO.File.ReadAllText(Resources.OnlineCompilerTemplatePath).Replace("{code}", code);
+            return File.ReadAllText(Resources.OnlineCompilerTemplatePath).Replace("{code}", code);
         }
     }
 }
