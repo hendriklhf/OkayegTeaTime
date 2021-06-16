@@ -273,6 +273,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendFuck(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            string message = $"{Emoji.PointRight} {Emoji.OkHand} {chatMessage.Username} fucked {chatMessage.GetSplit()[1]}";
+            if (chatMessage.GetSplit().Length > 2)
+            {
+                message += $" {chatMessage.GetSplit()[2]}";
+            }
+            twitchBot.Send(chatMessage.Channel, message);
+        }
+
         public static void SendGoingAfk(this TwitchBot twitchBot, ChatMessage chatMessage, AfkCommandType type)
         {
             DataBase.SetAfk(chatMessage, type);
@@ -322,6 +332,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
+                message = $"{emote} OkayegTeaTime {emote}";
                 chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
             }
 
@@ -340,7 +351,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void SendRandomCookie(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             Pechkekse keks = DataBase.GetRandomCookie();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {keks.Message}");
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {keks.Message} {Emoji.Cookie}");
         }
 
         public static void SendRandomGachi(this TwitchBot twitchBot, ChatMessage chatMessage)
