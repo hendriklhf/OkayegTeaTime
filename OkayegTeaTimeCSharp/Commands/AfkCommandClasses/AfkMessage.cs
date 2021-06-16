@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Time;
+using OkayegTeaTimeCSharp.Time.TimeEnums;
 using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
@@ -31,7 +32,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
         private AfkMessage ReplaceSpaceHolder(User user)
         {
             ComingBack = ComingBack.Replace("{username}", user.Username)
-                .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, "ago"))
+                .Replace("{time}", TimeHelper.ConvertMillisecondsToPassedTime(user.Time, "ago", ConversionType.YearDayHourMin))
                 .Replace("{message}", user.MessageText.Decode());
             ComingBack = string.IsNullOrEmpty(user.MessageText.Decode()) ? ComingBack.Replace(":", "").ReplaceSpaces() : ComingBack;
 
