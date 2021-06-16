@@ -6,7 +6,6 @@ using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -52,7 +51,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly List<AfkCooldown> AfkCooldowns = new();
 
-        public TwitchBot(string[] args)
+        public TwitchBot()
         {
             _runtime = Now();
 
@@ -65,15 +64,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             WebSocketClient = new(ClientOptions);
             TwitchClient = new(WebSocketClient);
 
-            if (args.Any(param => param.ToLower() == "test" || param.ToLower() == "debug"))
-            {
-                TwitchClient.Initialize(ConnectionCredentials, "lbnshlfe");
-                LastMessages.Add("#lbnshlfe", "");
-            }
-            else
-            {
-                TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
-            }
+            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
 
             //TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
@@ -94,15 +85,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void Send(string channel, string message, string emoteInFront = Config.EmoteInFront)
         {
-            if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length < 495)
+            if (!Config.GetNotAllowedChannels().Contains(channel.ReplaceHashtag()))
             {
-                message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
-                TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
-                LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
-            }
-            else
-            {
-                new DividedMessage(this, channel, message).StartSending();
+                if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length < 495)
+                {
+                    message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+                    TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
+                    LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
+                }
+                else
+                {
+                    new DividedMessage(this, channel, message).StartSending();
+                }
             }
         }
 
