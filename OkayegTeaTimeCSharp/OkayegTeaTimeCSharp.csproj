@@ -10,6 +10,9 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<ApplicationIcon>.\Resources\Okayeg.ico</ApplicationIcon>
 		<PackageIcon></PackageIcon>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<Description>A Twitch bot.</Description>
+		<NeutralLanguage>en</NeutralLanguage>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
