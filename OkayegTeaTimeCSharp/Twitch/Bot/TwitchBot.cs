@@ -88,7 +88,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (!Config.GetNotAllowedChannels().Contains(channel.ReplaceHashtag()))
             {
-                if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length < Config.MaxMessageLength)
+                if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
                 {
                     message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
                     TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");

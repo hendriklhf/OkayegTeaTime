@@ -230,12 +230,31 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendFill(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            string emote = chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..];
-            string message = emote;
-            string strToAdd = $" {emote}";
-            while ((message + strToAdd).Length <= Config.MaxMessageLength)
+            string message = string.Empty;
+            if (chatMessage.GetSplit()[1].IsMatch(@"rand(om)?"))
             {
-                message += strToAdd;
+                message += (char)NumberHelper.Random(0, ushort.MaxValue);
+                while (message.Length + 2 <= Config.MaxMessageLength)
+                {
+                    message += $" {(char)NumberHelper.Random(0, ushort.MaxValue)}";
+                }
+            }
+            else
+            {
+                string[] emotes = chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..].Split();
+                message += emotes[NumberHelper.Random(0, emotes.Length - 1)];
+                while(true)
+                {
+                    string emote = emotes[NumberHelper.Random(0, emotes.Length - 1)];
+                    if ((message + $" {emote}").Length <= Config.MaxMessageLength)
+                    {
+                        message += $" {emote}";
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
         }
