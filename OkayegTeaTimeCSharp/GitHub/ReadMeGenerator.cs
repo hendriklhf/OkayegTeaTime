@@ -38,7 +38,6 @@ namespace OkayegTeaTimeCSharp.GitHub
 
         public static void GenerateReadMe()
         {
-            System.Console.WriteLine(GenerateString());
             File.WriteAllText(Resources.ReadMePath, GenerateString());
         }
 

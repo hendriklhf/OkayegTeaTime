@@ -5,7 +5,6 @@
         Chatters,
         Check,
         Coinflip,
-        Color,
         Cookie,
         Count,
         CSharp,
