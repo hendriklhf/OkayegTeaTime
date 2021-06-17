@@ -10,18 +10,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string Channel { get; }
 
+        public string EmoteInFront { get; }
+
         public List<string> Messages { get; }
 
-        public DividedMessage(TwitchBot twitchBot, string channel, string message)
+        public DividedMessage(TwitchBot twitchBot, string channel, string emoteInFront, string message)
         {
             TwitchBot = twitchBot;
             Channel = channel;
-            Messages = message.Split(Config.MaxMessageLength);
+            EmoteInFront = emoteInFront;
+            Messages = message.Split(Config.MaxMessageLength - (EmoteInFront.Length + 1));
         }
 
         public void StartSending()
         {
-            TwitchBot.Send(Channel, Messages[0]);
+            TwitchBot.TwitchClient.SendMessage(Channel, $"{EmoteInFront} {Messages[0]}");
             Messages.RemoveAt(0);
             if (Messages.Count > 0)
             {

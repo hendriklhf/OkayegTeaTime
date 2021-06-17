@@ -96,7 +96,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
                 else
                 {
-                    new DividedMessage(this, channel, message).StartSending();
+                    new DividedMessage(this, channel, emoteInFront, message).StartSending();
                 }
             }
         }

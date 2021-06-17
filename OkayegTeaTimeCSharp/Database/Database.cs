@@ -53,7 +53,7 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             database.Reminders.Add(reminder);
             database.SaveChanges();
-            return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime).OrderByDescending(r => r.Id).FirstOrDefault().Id;
+            return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime).FirstOrDefault().Id;
         }
 
         public static void AddSugestion(ChatMessage chatMessage, string suggestion)
