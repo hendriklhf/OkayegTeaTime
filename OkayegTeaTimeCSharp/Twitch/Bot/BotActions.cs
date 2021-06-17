@@ -243,7 +243,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 string[] emotes = chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..].Split();
                 message += emotes[NumberHelper.Random(0, emotes.Length - 1)];
-                while(true)
+                while (true)
                 {
                     string emote = emotes[NumberHelper.Random(0, emotes.Length - 1)];
                     if ((message + $" {emote}").Length <= Config.MaxMessageLength)
