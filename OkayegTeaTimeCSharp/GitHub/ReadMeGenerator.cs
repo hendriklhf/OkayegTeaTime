@@ -8,6 +8,8 @@ namespace OkayegTeaTimeCSharp.GitHub
 {
     public static class ReadMeGenerator
     {
+        private const string _linebreak = "<br />";
+
         private const string _title = "OkayegTeaTime";
         private const string _header1 = "Commands";
         private const string _header2 = "AFK-Commands";
@@ -36,6 +38,7 @@ namespace OkayegTeaTimeCSharp.GitHub
 
         public static void GenerateReadMe()
         {
+            System.Console.WriteLine(GenerateString());
             File.WriteAllText(Resources.ReadMePath, GenerateString());
         }
 
@@ -46,9 +49,9 @@ namespace OkayegTeaTimeCSharp.GitHub
             result += Header(2, _header1);
             _header1Text.ForEach(str =>
             {
-                result += str + LineBreak();
+                result += str + _linebreak;
             });
-            result += LineBreak();
+            result += _linebreak;
             result += "<table><tr>";
             _cmdTableHeader.ForEach(str =>
             {
@@ -98,11 +101,6 @@ namespace OkayegTeaTimeCSharp.GitHub
         private static string Header(int i, string text)
         {
             return $"<h{i}>{text}</h{i}>";
-        }
-
-        private static string LineBreak()
-        {
-            return "<br />";
         }
 
         private static string TableHeader(string content)
