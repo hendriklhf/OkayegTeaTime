@@ -299,7 +299,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetSearchChannel(string keyword, string channel)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             if (message != null)
             {
                 return message;
@@ -313,7 +313,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetSearchUser(string keyword, string username)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             if (message != null)
             {
                 return message;
@@ -327,7 +327,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetSearchUserChannel(string keyword, string username, string channel)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable()}' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+            Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' AND Channel = '#{channel.ReplaceHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
             if (message != null)
             {
                 return message;
