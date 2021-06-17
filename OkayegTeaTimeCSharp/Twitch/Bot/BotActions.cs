@@ -14,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
-using TwitchLib.Api.V5.Models.Channels;
-using OkayegTeaTimeCSharp.Twitch.API;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -179,6 +177,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             string result = NumberHelper.Random(0, 100) >= 50 ? "yes/heads" : "no/tails";
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result} {Emoji.Coin}");
+        }
+
+        public static void SendColor(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        {
+#warning needs implementation
         }
 
         public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)
@@ -603,11 +606,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());
-        }
-
-        public static void SendColor(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
-        {
-#warning needs implementation
         }
     }
 }
