@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL(Resources.MySqlConnectionString);
+                optionsBuilder.UseMySQL(System.IO.File.ReadAllText(Resources.ConnectionStringPath));
             }
         }
 

@@ -16,14 +16,17 @@ namespace OkayegTeaTimeCSharp
             JsonHelper.SetData();
             PrefixHelper.FillDictionary();
             BotActions.FillLastMessagesDictionary();
-            ReadMeGenerator.GenerateReadMe();
 
             TwitchAPI.Configure();
             new TwitchBot().SetBot();
 
             while (true)
             {
-                Console.ReadLine();
+                string input = Console.ReadLine();
+                if (input == "readme")
+                {
+                    ReadMeGenerator.GenerateReadMe();
+                }
             }
         }
 
