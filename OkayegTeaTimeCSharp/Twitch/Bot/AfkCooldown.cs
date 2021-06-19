@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Time;
+﻿using Sterbehilfe.Time;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {

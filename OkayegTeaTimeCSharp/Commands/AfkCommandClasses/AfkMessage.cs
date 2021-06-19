@@ -1,7 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
-using OkayegTeaTimeCSharp.Time;
-using OkayegTeaTimeCSharp.Time.TimeEnums;
-using OkayegTeaTimeCSharp.Utils;
+using Sterbehilfe.Strings;
+using Sterbehilfe.Time;
+using Sterbehilfe.Time.Enums;
 
 namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 {

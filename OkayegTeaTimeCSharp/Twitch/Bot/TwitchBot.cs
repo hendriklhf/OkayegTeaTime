@@ -1,9 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
-using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
+using Sterbehilfe.Numbers;
+using Sterbehilfe.Time;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +16,7 @@ using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Models;
 using static OkayegTeaTimeCSharp.Program;
-using static OkayegTeaTimeCSharp.Time.TimeHelper;
+using static Sterbehilfe.Time.TimeHelper;
 using Timers = System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot

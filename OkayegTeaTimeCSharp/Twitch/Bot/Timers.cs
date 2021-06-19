@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Time;
+﻿using Sterbehilfe.Time;
 using System.Linq;
 using System.Timers;
 

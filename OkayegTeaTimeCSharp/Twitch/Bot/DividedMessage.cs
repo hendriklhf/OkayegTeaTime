@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Utils;
+﻿using Sterbehilfe.Strings;
 using System.Collections.Generic;
 using System.Threading;
 

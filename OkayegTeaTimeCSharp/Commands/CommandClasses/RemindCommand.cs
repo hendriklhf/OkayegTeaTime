@@ -1,8 +1,9 @@
 ﻿using OkayegTeaTimeCSharp.Messages;
-using OkayegTeaTimeCSharp.Time;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
+using Sterbehilfe.Strings;
+using Sterbehilfe.Time;
 using System.Linq;
 using TwitchLib.Client.Models;
 

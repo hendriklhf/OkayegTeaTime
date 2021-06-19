@@ -7,13 +7,16 @@ using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
-using OkayegTeaTimeCSharp.Time;
-using OkayegTeaTimeCSharp.Time.TimeEnums;
-using OkayegTeaTimeCSharp.Utils;
+using Sterbehilfe.Emojis;
+using Sterbehilfe.Numbers;
+using Sterbehilfe.Strings;
+using Sterbehilfe.Time;
+using Sterbehilfe.Time.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
+using StrbhRand = Sterbehilfe.Randoms;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -177,7 +180,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendCoinFlip(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            string result = NumberHelper.Random(0, 100) >= 50 ? "yes/heads" : "no/tails";
+            string result = StrbhRand.Random.Int(0, 100) >= 50 ? "yes/heads" : "no/tails";
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result} {Emoji.Coin}");
         }
 
@@ -233,19 +236,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             string message = string.Empty;
             if (chatMessage.GetSplit()[1].IsMatch(@"rand(om)?"))
             {
-                message += (char)NumberHelper.Random(0, ushort.MaxValue);
+                message += (char)StrbhRand::Random.Int(0, ushort.MaxValue);
                 while (message.Length + 2 <= Config.MaxMessageLength)
                 {
-                    message += $" {(char)NumberHelper.Random(0, ushort.MaxValue)}";
+                    message += $" {(char)StrbhRand.Random.Int(0, ushort.MaxValue)}";
                 }
             }
             else
             {
                 string[] emotes = chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..].Split();
-                message += emotes[NumberHelper.Random(0, emotes.Length - 1)];
+                message += emotes[StrbhRand.Random.Int(0, emotes.Length - 1)];
                 while (true)
                 {
-                    string emote = emotes[NumberHelper.Random(0, emotes.Length - 1)];
+                    string emote = emotes[StrbhRand.Random.Int(0, emotes.Length - 1)];
                     if ((message + $" {emote}").Length <= Config.MaxMessageLength)
                     {
                         message += $" {emote}";

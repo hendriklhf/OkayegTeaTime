@@ -41,4 +41,3 @@ namespace OkayegTeaTimeCSharp
 #warning code needs doc
 #warning move databasehelper methods
 #warning emote cmd not available for external channels
-#warning create own class library

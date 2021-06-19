@@ -2,6 +2,7 @@
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
+using Sterbehilfe.Strings;
 using System.Linq;
 using TwitchLib.Client.Models;
 

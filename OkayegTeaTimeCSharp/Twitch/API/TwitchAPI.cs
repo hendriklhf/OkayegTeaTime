@@ -1,5 +1,5 @@
-﻿using OkayegTeaTimeCSharp.HttpRequests;
-using OkayegTeaTimeCSharp.Properties;
+﻿using OkayegTeaTimeCSharp.Properties;
+using Sterbehilfe.HttpRequests;
 using System.Web;
 using TwitchLib.Api.V5.Models.Channels;
 

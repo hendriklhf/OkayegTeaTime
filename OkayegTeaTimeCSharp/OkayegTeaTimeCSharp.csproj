@@ -8,7 +8,7 @@
 		<SignAssembly>false</SignAssembly>
 		<Platforms>AnyCPU;x86</Platforms>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<ApplicationIcon></ApplicationIcon>
+		<ApplicationIcon>Resources\Okayeg.ico</ApplicationIcon>
 		<PackageIcon></PackageIcon>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<Description>A Twitch bot.</Description>
@@ -59,6 +59,12 @@
 		<PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3.1" />
 		<PackageReference Include="SpotifyAPI.Web" Version="6.2.0" />
 		<PackageReference Include="TwitchLib" Version="3.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Sterbehilfe">
+	    <HintPath>..\..\SterbehilfeClassLibrary\Build\Sterbehilfe.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>

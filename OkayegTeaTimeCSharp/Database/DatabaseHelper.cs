@@ -1,5 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
-using OkayegTeaTimeCSharp.Utils;
+using Sterbehilfe.Strings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
