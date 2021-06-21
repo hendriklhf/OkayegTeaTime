@@ -27,7 +27,6 @@ namespace OkayegTeaTimeCSharp
                 if (input == "readme")
                 {
                     ReadMeGenerator.GenerateReadMe();
-                    ConsoleOut("Generated new README.md");
                 }
             }
         }

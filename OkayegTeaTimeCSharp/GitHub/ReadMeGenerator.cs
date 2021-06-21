@@ -3,6 +3,7 @@ using OkayegTeaTimeCSharp.Properties;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static OkayegTeaTimeCSharp.Program;
 
 namespace OkayegTeaTimeCSharp.GitHub
 {
@@ -39,6 +40,7 @@ namespace OkayegTeaTimeCSharp.GitHub
         public static void GenerateReadMe()
         {
             File.WriteAllText(Resources.ReadMePath, GenerateString());
+            ConsoleOut("Generated new README.md");
         }
 
         private static string GenerateString()
