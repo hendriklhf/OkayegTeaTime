@@ -139,8 +139,8 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.PrefixString)
-                    .HasMaxLength(10)
+                entity.Property(e => e.Prefix1)
+                    .HasMaxLength(50)
                     .HasColumnName("Prefix");
             });
 
