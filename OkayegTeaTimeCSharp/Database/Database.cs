@@ -209,7 +209,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static string GetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString.Decode();
+            return database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString?.Decode();
         }
 
         public static Dictionary<string, string> GetPrefixes()
@@ -418,13 +418,13 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.ReplaceHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = "\0".Encode();
+                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = null;
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, "\0".Encode()));
+                database.Prefixes.Add(new Prefix(channel, null));
                 database.SaveChanges();
                 PrefixHelper.Add(channel);
             }
