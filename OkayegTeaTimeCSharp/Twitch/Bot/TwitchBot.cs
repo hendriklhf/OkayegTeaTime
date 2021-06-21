@@ -41,7 +41,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private readonly long _runtime;
 
-        private DottedNumber _commandCount = new(1);
+        private DottedNumber _commandCount = 1;
 
         private static TwitchBot _okayegTeaTime;
 

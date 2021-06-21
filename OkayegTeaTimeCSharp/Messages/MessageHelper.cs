@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
 using Sterbehilfe.Strings;
@@ -42,27 +43,32 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static byte[] MakeInsertable(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Encode();
+            return input.Prepare().Encode();
         }
 
         public static string MakeQueryable(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().EscapeChars();
+            return input.Prepare().RemoveSQLChars();
         }
 
         public static string MakeUsable(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces();
+            return input.Prepare();
+        }
+
+        public static string Prepare(this string input)
+        {
+            return input.Remove(Resources.ChatterinoChar).Trim().ReplaceSpaces();
         }
 
         public static string[] SplitNormal(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().Split();
+            return input.Prepare().Split();
         }
 
         public static string[] SplitToLowerCase(this string input)
         {
-            return input.ReplaceChatterinoChar().Trim().ReplaceSpaces().ToLower().Split();
+            return input.Prepare().ToLower().Split();
         }
     }
 }
