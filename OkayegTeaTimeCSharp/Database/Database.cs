@@ -209,13 +209,13 @@ namespace OkayegTeaTimeCSharp.Database
         public static string GetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString;
+            return database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString.Decode();
         }
 
         public static Dictionary<string, string> GetPrefixes()
         {
             OkayegTeaTimeContext database = new();
-            return database.Prefixes.ToDictionary(p => p.Channel, prefix => prefix.PrefixString);
+            return database.Prefixes.ToDictionary(p => p.Channel, prefix => prefix.PrefixString?.Decode());
         }
 
         public static Pechkekse GetRandomCookie()
@@ -401,13 +401,13 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.ReplaceHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = prefix.MakeUsable();
+                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = prefix.MakeUsable().Encode();
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, prefix.MakeUsable()));
+                database.Prefixes.Add(new Prefix(channel, prefix.MakeUsable().Encode()));
                 database.SaveChanges();
                 PrefixHelper.Add(channel);
             }
@@ -418,13 +418,13 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.ReplaceHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = null;
+                database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString = "\0".Encode();
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, null));
+                database.Prefixes.Add(new Prefix(channel, "\0".Encode()));
                 database.SaveChanges();
                 PrefixHelper.Add(channel);
             }

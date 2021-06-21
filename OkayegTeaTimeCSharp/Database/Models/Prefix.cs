@@ -1,4 +1,4 @@
-﻿#nullable disable
+﻿#nullable enable
 
 using OkayegTeaTimeCSharp.Utils;
 
@@ -8,7 +8,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
     {
         public int Id { get; set; }
         public string Channel { get; set; }
-        public byte[] PrefixString { get; set; }
+        public byte[]? PrefixString { get; set; }
 
         public Prefix(int id, string channel, byte[] prefixString)
         {
