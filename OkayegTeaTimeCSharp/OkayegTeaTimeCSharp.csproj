@@ -6,7 +6,7 @@
 		<StartupObject>OkayegTeaTimeCSharp.Program</StartupObject>
 		<RepositoryUrl>github.com/Sterbehilfe/OkayegTeaTimeCSharp</RepositoryUrl>
 		<SignAssembly>false</SignAssembly>
-		<Platforms>AnyCPU;x86</Platforms>
+		<Platforms>AnyCPU;x86;ARM64;ARM32</Platforms>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<ApplicationIcon>Resources\Okayeg.ico</ApplicationIcon>
 		<PackageIcon></PackageIcon>
@@ -18,6 +18,14 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM32'">
+	  <Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+	  <Optimize>false</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -82,8 +90,8 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I" />
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I" />
 	</Target>
 
 </Project>
