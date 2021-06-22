@@ -83,7 +83,7 @@
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="xcopy C:\Users\Hendrik\Documents\Git\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp\Resources &quot;$(TargetDir)Resources&quot; /E /Y /I" />
+		<Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I" />
 	</Target>
 
 </Project>
