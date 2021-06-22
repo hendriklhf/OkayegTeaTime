@@ -8,12 +8,14 @@ using Sterbehilfe.Time;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Enums;
+using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static OkayegTeaTimeCSharp.Program;
 using static Sterbehilfe.Time.TimeHelper;
@@ -61,19 +63,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ClientOptions = new()
             {
                 ClientType = ClientType.Chat,
-                ReconnectionPolicy = new(5000, 10000, 1000),
+                ReconnectionPolicy = new(10000, 30000, 1000)
             };
             WebSocketClient = new(ClientOptions);
             TwitchClient = new(WebSocketClient);
 
             TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
 
-            //TwitchClient.OnLog += Client_OnLog;
+            TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
             TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
             TwitchClient.OnMessageReceived += Client_OnMessageReceived;
             TwitchClient.OnMessageSent += Client_OnMessageSent;
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
+            TwitchClient.OnConnectionError += Client_OnConnectionError;
+            TwitchClient.OnError += Client_OnError;
 
             TwitchClient.Connect();
 
@@ -131,7 +135,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnLog(object sender, OnLogArgs e)
         {
-            ConsoleOut($"LOG: {e.Data}");
+            ConsoleOut($"LOG>{e.Data}");
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
@@ -162,6 +166,22 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             WhisperHandler.Handle(this, e.WhisperMessage);
 
             ConsoleOut($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
+        }
+
+        private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            ConsoleOut($"ERROR>{e.Error.Message}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | {e.Error.Message}\n");
+        }
+
+        private void Client_OnError(object sender, OnErrorEventArgs e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            ConsoleOut($"ERROR>{e.Exception.Message}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | {e.Exception.Message}\n");
         }
 
         #endregion Bot_On
