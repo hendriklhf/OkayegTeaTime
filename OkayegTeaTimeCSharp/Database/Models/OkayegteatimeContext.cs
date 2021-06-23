@@ -87,7 +87,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.MessageText)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(1000);
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
@@ -257,11 +257,15 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .HasColumnName("IsAFK")
                     .HasDefaultValueSql("'false'");
 
-                entity.Property(e => e.MessageText).HasMaxLength(500);
+                entity.Property(e => e.MessageText)
+                    .HasMaxLength(1000)
+                    .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.Type).HasMaxLength(10);
+                entity.Property(e => e.Type)
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
