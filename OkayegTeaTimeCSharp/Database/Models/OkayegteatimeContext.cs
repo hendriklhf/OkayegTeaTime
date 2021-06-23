@@ -142,7 +142,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.PrefixString)
                     .HasMaxLength(50)
-                    .HasColumnName("Prefix");
                     .HasMaxLength(1000)
                     .HasColumnName("Prefix")
                     .HasDefaultValueSql("'NULL'");
