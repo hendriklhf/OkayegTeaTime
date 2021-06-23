@@ -87,7 +87,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.MessageText)
                     .IsRequired()
-                    .HasMaxLength(1000);
+                    .HasMaxLength(2000);
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
@@ -116,7 +116,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Word)
                     .IsRequired()
-                    .HasMaxLength(250);
+                    .HasMaxLength(1000);
             });
 
             modelBuilder.Entity<Pechkekse>(entity =>
@@ -143,6 +143,9 @@ namespace OkayegTeaTimeCSharp.Database.Models
                 entity.Property(e => e.PrefixString)
                     .HasMaxLength(50)
                     .HasColumnName("Prefix");
+                    .HasMaxLength(1000)
+                    .HasColumnName("Prefix")
+                    .HasDefaultValueSql("'NULL'");
             });
 
             modelBuilder.Entity<Quote>(entity =>
@@ -184,7 +187,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Message)
                     .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(2000);
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
@@ -233,7 +236,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Suggestion1)
                     .IsRequired()
-                    .HasMaxLength(500)
+                    .HasMaxLength(2000)
                     .HasColumnName("Suggestion");
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
@@ -258,7 +261,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .HasDefaultValueSql("'false'");
 
                 entity.Property(e => e.MessageText)
-                    .HasMaxLength(1000)
+                    .HasMaxLength(2000)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
