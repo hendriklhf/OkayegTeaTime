@@ -12,6 +12,7 @@ namespace OkayegTeaTimeCSharp.Twitch
         public const int MaxMessageLength = 500;
         public const int MinimumDelayBetweenMessages = 1300;
         public const string Suffix = "eg";
+        public const int MaximumReminders = 10;
 
         public static List<string> GetChannels()
         {

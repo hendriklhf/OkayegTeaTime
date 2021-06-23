@@ -561,16 +561,30 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendSetReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message)
         {
-            string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
-            int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
+            try
+            {
+                string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
+                int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
+            }
+            catch (TooManyReminderException ex)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+            }
         }
 
         public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
         {
-            string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
-            int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
+            try
+            {
+                string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
+                int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
+            }
+            catch (TooManyReminderException ex)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+            }
         }
 
         public static void SendSpotifyCurrentlyPlaying(this TwitchBot twitchBot, ChatMessage chatMessage)

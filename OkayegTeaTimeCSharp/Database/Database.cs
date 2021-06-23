@@ -51,16 +51,27 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static int AddReminder(Reminder reminder)
         {
-            OkayegTeaTimeContext database = new();
-            database.Reminders.Add(reminder);
-            database.SaveChanges();
-            return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime).FirstOrDefault().Id;
+            try
+            {
+                OkayegTeaTimeContext database = new();
+                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaximumReminders || database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaximumReminders)
+                {
+                    throw new TooManyReminderException();
+                }
+                database.Reminders.Add(reminder);
+                database.SaveChanges();
+                return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime).FirstOrDefault().Id;
+            }
+            catch (TooManyReminderException)
+            {
+                throw;
+            }
         }
 
         public static void AddSugestion(ChatMessage chatMessage, string suggestion)
         {
             OkayegTeaTimeContext database = new();
-            database.Suggestions.Add(new Suggestion(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
+            database.Suggestions.Add(new(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
             database.SaveChanges();
         }
 
