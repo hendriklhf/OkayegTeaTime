@@ -28,11 +28,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Messages.RemoveAt(0);
             if (Messages.Count > 0)
             {
-                Thread.Sleep(1300);
+                Thread.Sleep(Config.MinimumDelayBetweenMessages);
                 Messages.ForEach(str =>
                 {
                     TwitchBot.TwitchClient.SendMessage(Channel, str);
-                    Thread.Sleep(1300);
+                    Thread.Sleep(Config.MinimumDelayBetweenMessages);
                 });
             }
         }

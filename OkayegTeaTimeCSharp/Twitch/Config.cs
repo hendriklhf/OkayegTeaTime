@@ -10,6 +10,7 @@ namespace OkayegTeaTimeCSharp.Twitch
         public const int AfkCooldown = 10000;
         public const string EmoteInFront = "Okayeg";
         public const int MaxMessageLength = 500;
+        public const int MinimumDelayBetweenMessages = 1300;
         public const string Suffix = "eg";
 
         public static List<string> GetChannels()
