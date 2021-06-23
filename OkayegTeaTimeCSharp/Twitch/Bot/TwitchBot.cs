@@ -8,7 +8,6 @@ using Sterbehilfe.Time;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -79,6 +78,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnConnectionError += Client_OnConnectionError;
             TwitchClient.OnError += Client_OnError;
             TwitchClient.OnDisconnected += Client_OnDisconnect;
+            TwitchClient.OnReconnected += Client_OnReconnected;
 
             TwitchClient.Connect();
 
@@ -123,6 +123,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public void Reconnect()
+        {
+            ConsoleOut($"BOT>RECONNECTING...", true, ConsoleColor.Red);
+            TwitchClient.Reconnect();
+        }
+
+        #region SystemInfo
+
         public string GetSystemInfo()
         {
             return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {CommandCount}";
@@ -132,6 +140,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100;
         }
+
+        #endregion SystemInfo
+
         #region Bot_On
 
         private void Client_OnLog(object sender, OnLogArgs e)
@@ -141,12 +152,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
-            ConsoleOut("BOT>CONNECTED");
+            ConsoleOut("BOT>CONNECTED", true, ConsoleColor.Red);
         }
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            ConsoleOut($"BOT>Joined channel: {e.Channel}");
+            ConsoleOut($"BOT>Joined channel: {e.Channel}", false, ConsoleColor.Red);
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -159,7 +170,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
         {
-            ConsoleOut($"#{e.SentMessage.Channel}>{Resources.Username}: {e.SentMessage.Message}");
+            ConsoleOut($"#{e.SentMessage.Channel}>{Resources.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
@@ -171,26 +182,24 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            ConsoleOut($"ERROR>{e.Error.Message}");
-            Console.ForegroundColor = ConsoleColor.Gray;
-            File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | {e.Error.Message}\n");
+            ConsoleOut($"ERROR>{e.Error.Message}", true, ConsoleColor.Red);
         }
 
         private void Client_OnError(object sender, OnErrorEventArgs e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            ConsoleOut($"ERROR>{e.Exception.Message}");
-            Console.ForegroundColor = ConsoleColor.Gray;
-            File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | {e.Exception.Message}\n");
+            ConsoleOut($"ERROR>{e.Exception.Message}", true, ConsoleColor.Red);
+            Reconnect();
         }
 
         private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            ConsoleOut($"BOT>DISCONNECTED");
-            Console.ForegroundColor = ConsoleColor.Red;
-            File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | BOT DISCONNECTED");
+            ConsoleOut($"BOT>DISCONNECTED", true, ConsoleColor.Red);
+            Reconnect();
+        }
+
+        private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
+        {
+            ConsoleOut($"BOT>RECONNECTED", true, ConsoleColor.Red);
         }
 
         #endregion Bot_On

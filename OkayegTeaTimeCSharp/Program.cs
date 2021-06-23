@@ -1,9 +1,11 @@
 ﻿using OkayegTeaTimeCSharp.GitHub;
 using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System;
+using System.IO;
 
 namespace OkayegTeaTimeCSharp
 {
@@ -30,14 +32,21 @@ namespace OkayegTeaTimeCSharp
             }
         }
 
-        public static void ConsoleOut(string value)
+        public static void ConsoleOut(string value, bool logging = false, ConsoleColor fontColor = ConsoleColor.Gray)
         {
+            Console.ForegroundColor = fontColor;
             Console.WriteLine($"{DateTime.Now.TimeOfDay.ToString()[..8]} | {value}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            if (logging)
+            {
+                File.AppendAllText(Resources.LogsPath, $"{DateTime.Today:dd/MM/yyyy HH:mm:ss} | {value}\n");
+            }
         }
     }
 }
 
 #warning code needs doc
 #warning move databasehelper methods
-#warning emote cmd not available for external channels
 #warning discord
+#warning merge of all emote actions
+#warning emote cmd not working correct
