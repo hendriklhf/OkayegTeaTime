@@ -135,7 +135,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnLog(object sender, OnLogArgs e)
         {
-            ConsoleOut($"LOG>{e.Data}");
+            //ConsoleOut($"LOG>{e.Data}");
         }
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
