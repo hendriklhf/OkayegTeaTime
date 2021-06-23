@@ -78,6 +78,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
             TwitchClient.OnConnectionError += Client_OnConnectionError;
             TwitchClient.OnError += Client_OnError;
+            TwitchClient.OnDisconnected += Client_OnDisconnect;
 
             TwitchClient.Connect();
 
@@ -182,6 +183,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ConsoleOut($"ERROR>{e.Exception.Message}");
             Console.ForegroundColor = ConsoleColor.Gray;
             File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | {e.Exception.Message}\n");
+        }
+
+        private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            ConsoleOut($"BOT>DISCONNECTED");
+            Console.ForegroundColor = ConsoleColor.Red;
+            File.AppendAllText(Resources.LogsPath, $"{DateTime.Now.TimeOfDay} | BOT DISCONNECTED");
         }
 
         #endregion Bot_On
