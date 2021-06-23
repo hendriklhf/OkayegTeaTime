@@ -54,9 +54,19 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaximumReminders || database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaximumReminders)
+                if (reminder.ToTime == 0)
                 {
-                    throw new TooManyReminderException();
+                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaximumReminders)
+                    {
+                        throw new TooManyReminderException();
+                    }
+                }
+                else
+                {
+                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaximumReminders)
+                    {
+                        throw new TooManyReminderException();
+                    }
                 }
                 database.Reminders.Add(reminder);
                 database.SaveChanges();
