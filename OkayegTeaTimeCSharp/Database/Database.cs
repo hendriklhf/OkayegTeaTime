@@ -70,7 +70,7 @@ namespace OkayegTeaTimeCSharp.Database
                 }
                 database.Reminders.Add(reminder);
                 database.SaveChanges();
-                return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime).FirstOrDefault().Id;
+                return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime && r.Time == reminder.Time).FirstOrDefault().Id;
             }
             catch (TooManyReminderException)
             {
