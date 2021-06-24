@@ -183,6 +183,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
             ConsoleOut($"ERROR>{e.Error.Message}", true, ConsoleColor.Red);
+            Reconnect();
         }
 
         private void Client_OnError(object sender, OnErrorEventArgs e)
@@ -194,7 +195,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
         {
             ConsoleOut($"BOT>DISCONNECTED", true, ConsoleColor.Red);
-            Reconnect();
         }
 
         private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
