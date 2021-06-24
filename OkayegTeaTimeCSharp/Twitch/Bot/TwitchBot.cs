@@ -126,7 +126,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public void Reconnect()
         {
             ConsoleOut($"BOT>RECONNECTING...", true, ConsoleColor.Red);
-            TwitchClient.Reconnect();
+            TwitchClient.Disconnect();
+            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
+            TwitchClient.Connect();
+            ConsoleOut($"BOT>RECONNECTED...", true, ConsoleColor.Red);
         }
 
         #region SystemInfo
