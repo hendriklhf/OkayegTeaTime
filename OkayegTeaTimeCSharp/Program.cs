@@ -50,3 +50,4 @@ namespace OkayegTeaTimeCSharp
 #warning discord
 #warning merge of all emote actions
 #warning emote cmd not working correct
+#warning add try-catch to sending reminder, crashes if someone spams and receives a reminder
