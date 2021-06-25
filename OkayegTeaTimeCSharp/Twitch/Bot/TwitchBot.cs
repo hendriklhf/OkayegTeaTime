@@ -180,7 +180,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
-            ConsoleOut($"ERROR>{e.Error.Message}", true, ConsoleColor.Red);
+            ConsoleOut($"CONNECTION-ERROR>{e.Error.Message}", true, ConsoleColor.Red);
         }
 
         private void Client_OnError(object sender, OnErrorEventArgs e)
