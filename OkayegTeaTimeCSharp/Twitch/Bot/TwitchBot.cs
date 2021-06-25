@@ -40,9 +40,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
 
-        private readonly long _runtime;
-
         private DottedNumber _commandCount = 1;
+
+        private readonly long _runtime;
 
         private static TwitchBot _okayegTeaTime;
 
@@ -62,10 +62,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ClientOptions = new()
             {
                 ClientType = ClientType.Chat,
-                ReconnectionPolicy = new(10000, 30000, 1000)
+                ReconnectionPolicy = new(10000, 30000, 1000),
+                DisconnectWait = 15000
             };
             WebSocketClient = new(ClientOptions);
-            TwitchClient = new(WebSocketClient);
+            TwitchClient = new(WebSocketClient)
+            {
+                AutoReListenOnException = true
+            };
 
             TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
 
@@ -123,15 +127,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public void Reconnect()
-        {
-            ConsoleOut($"BOT>RECONNECTING...", true, ConsoleColor.Red);
-            TwitchClient.Disconnect();
-            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
-            TwitchClient.Connect();
-            ConsoleOut($"BOT>RECONNECTED...", true, ConsoleColor.Red);
-        }
-
         #region SystemInfo
 
         public string GetSystemInfo()
@@ -186,13 +181,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
             ConsoleOut($"ERROR>{e.Error.Message}", true, ConsoleColor.Red);
-            Reconnect();
         }
 
         private void Client_OnError(object sender, OnErrorEventArgs e)
         {
             ConsoleOut($"ERROR>{e.Exception.Message}", true, ConsoleColor.Red);
-            Reconnect();
         }
 
         private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
@@ -231,6 +224,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private static void StartTimers()
         {
             ListTimer.ForEach(timer => timer.Start());
+        }
+
+        private static void StopTimers()
+        {
+            ListTimer.ForEach(timer => timer.Stop());
         }
 
         private static void AddTimerFunction()
