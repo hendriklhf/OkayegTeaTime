@@ -257,6 +257,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendDetectedSpotifyURI(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            (bool isMatch, string uri) = new LinkRecognizer(chatMessage).FindSpotifyLink();
+            if (isMatch)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{uri}");
+            }
+        }
+
         public static void SendFFZEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             try
