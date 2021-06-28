@@ -1,5 +1,8 @@
 ﻿using OkayegTeaTimeCSharp.Properties;
 using Sterbehilfe.HttpRequests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using TwitchLib.Api.V5.Models.Channels;
 
@@ -35,7 +38,15 @@ namespace OkayegTeaTimeCSharp.Twitch.API
 
         public static Channel GetChannelByName(string channel)
         {
-            return _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 1).Result.Channels[0];
+            List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 10).Result.Channels.ToList();
+            try
+            {
+                return channels.Where(c => c.Name == channel).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                return channels[0];
+            }
         }
 
         public static string GetChannelID(string channel)

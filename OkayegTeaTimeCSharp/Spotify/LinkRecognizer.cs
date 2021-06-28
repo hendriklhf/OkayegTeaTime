@@ -1,7 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
 using Sterbehilfe.Strings;
-using System;
 using System.Collections.Generic;
 using TwitchLib.Client.Models;
 
