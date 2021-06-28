@@ -63,7 +63,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 ClientType = ClientType.Chat,
                 ReconnectionPolicy = new(10000, 30000, 1000),
-                DisconnectWait = 15000
+                DisconnectWait = 15000,
+                UseSsl = true
             };
             WebSocketClient = new(ClientOptions);
             TwitchClient = new(WebSocketClient)
