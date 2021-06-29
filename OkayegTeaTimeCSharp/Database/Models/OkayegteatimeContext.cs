@@ -19,6 +19,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
         public virtual DbSet<Bot> Bots { get; set; }
         public virtual DbSet<Gachi> Gachi { get; set; }
+        public virtual DbSet<EmoteInFront> EmoteInFronts { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Nuke> Nukes { get; set; }
         public virtual DbSet<Pechkekse> Pechkekse { get; set; }
@@ -58,6 +59,21 @@ namespace OkayegTeaTimeCSharp.Database.Models
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<EmoteInFront>(entity =>
+            {
+                entity.ToTable("emoteInFront");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Channel)
+                    .HasMaxLength(50)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Emote)
+                    .HasMaxLength(50)
+                    .HasDefaultValueSql("'NULL'");
             });
 
             modelBuilder.Entity<Gachi>(entity =>
