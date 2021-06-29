@@ -4,7 +4,6 @@ using System;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 
-
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public static class VanishCommand
