@@ -8,18 +8,7 @@ namespace OkayegTeaTimeCSharp.JsonData
 {
     public static class JsonHelper
     {
-        public static Data BotData { get; private set; }
-
-        public static void SetData()
-        {
-            BotData = JsonToObject();
-        }
-
-        public static void UpdateJson()
-        {
-            ObjectToJson(BotData);
-            SetData();
-        }
+        public static readonly Data BotData = JsonToObject();
 
         private static Data JsonToObject()
         {

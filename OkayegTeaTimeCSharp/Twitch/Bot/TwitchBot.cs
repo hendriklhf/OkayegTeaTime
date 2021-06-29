@@ -48,7 +48,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly List<Timers::Timer> ListTimer = new();
 
-        public static readonly Dictionary<string, string> LastMessages = new();
+        public static readonly Dictionary<string, string> LastMessages = LastMessagesHelper.FillDictionary();
+
+        public static readonly Dictionary<string, string> Prefixes = DataBase.GetPrefixes();
 
         public static readonly List<Cooldown> Cooldowns = new();
 
@@ -115,7 +117,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public void JoinChannel(string channel)
         {
             DataBase.AddChannel(channel);
-            LastMessages.Add($"#{channel.ReplaceHashtag()}", "");
+            LastMessages.Add($"#{channel.ReplaceHashtag()}", string.Empty);
             PrefixHelper.FillDictionary();
             try
             {

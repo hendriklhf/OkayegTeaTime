@@ -66,14 +66,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static void FillLastMessagesDictionary()
-        {
-            Config.GetChannels().ForEach(channel =>
-            {
-                TwitchBot.LastMessages.Add($"#{channel}", "");
-            });
-        }
-
         public static string GetReminderAuthor(string toUser, string fromUser)
         {
             return toUser == fromUser ? "yourself" : fromUser;

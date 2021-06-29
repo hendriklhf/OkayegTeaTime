@@ -1,9 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.GitHub;
-using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.IO;
 
@@ -14,10 +12,6 @@ namespace OkayegTeaTimeCSharp
         private static void Main()
         {
             Console.Title = "OkayegTeaTime";
-
-            JsonHelper.SetData();
-            PrefixHelper.FillDictionary();
-            BotActions.FillLastMessagesDictionary();
 
             TwitchAPI.Configure();
             new TwitchBot().SetBot();

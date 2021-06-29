@@ -3,6 +3,7 @@ using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
@@ -155,6 +156,11 @@ namespace OkayegTeaTimeCSharp.Database
                     database.SetAfk(chatMessage.Username, "false");
                 }
             }
+        }
+
+        public static List<string> GetChannels()
+        {
+            return new OkayegTeaTimeContext().Bots.Where(b => b.Username == Resources.Username).FirstOrDefault().Channels.Split().ToList();
         }
 
         public static Message GetFirst(ChatMessage chatMessage)

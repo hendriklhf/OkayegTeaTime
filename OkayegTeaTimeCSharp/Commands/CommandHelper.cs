@@ -2,7 +2,7 @@
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses;
 using OkayegTeaTimeCSharp.Twitch;
-using OkayegTeaTimeCSharp.Utils;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
