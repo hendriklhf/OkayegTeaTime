@@ -16,7 +16,8 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static List<string> GetChannels()
         {
-            return new OkayegTeaTimeContext().Bots.Where(b => b.Id == 1).FirstOrDefault().Channels.Split().ToList();
+            #error check, if done correctly
+            return new OkayegTeaTimeContext().Bots.Where(b => b.Username == Resources.Username).FirstOrDefault().Channels.Split().ToList();
         }
 
         public static List<string> GetNotAllowedChannels()
