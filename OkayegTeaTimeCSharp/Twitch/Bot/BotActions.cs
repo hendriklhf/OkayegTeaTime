@@ -615,9 +615,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendSetEmoteInFront(this TwitchBot twitchBot, ChatMessage chatMessage, string emote)
         {
-            DataBase.SetEmoteInFront(chatMessage.Channel, emote);
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, emote set to: {emote}");
-            EmoteInFrontHelper.Update(chatMessage.Channel, emote);
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                DataBase.SetEmoteInFront(chatMessage.Channel, emote);
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, emote set to: {emote}");
+                EmoteInFrontHelper.Update(chatMessage.Channel, emote);
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+            }
         }
 
         public static void SendSetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage, string prefix)
@@ -687,9 +694,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendUnsetEmoteInFront(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            DataBase.UnsetEmoteInFront(chatMessage.Channel);
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, unset emote");
-            EmoteInFrontHelper.Update(chatMessage.Channel, null);
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                DataBase.UnsetEmoteInFront(chatMessage.Channel);
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, unset emote");
+                EmoteInFrontHelper.Update(chatMessage.Channel, null);
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+            }
         }
 
         public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)
