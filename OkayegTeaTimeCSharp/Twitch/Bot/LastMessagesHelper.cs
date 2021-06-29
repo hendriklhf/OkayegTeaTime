@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OkayegTeaTimeCSharp.Utils;
+using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -12,6 +13,24 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 dic.Add($"#{channel}", "");
             });
             return dic;
+        }
+
+        public static string GetLastMessage(string channel, string message)
+        {
+            if (TwitchBot.LastMessages.TryGetValue($"#{channel.ReplaceHashtag()}", out string lastMessage))
+            {
+                return lastMessage;
+            }
+            else
+            {
+                AddChannel(channel, message);
+                return string.Empty;
+            }
+        }
+
+        public static void AddChannel(string channel, string message)
+        {
+            TwitchBot.LastMessages.Add($"#{channel.ReplaceHashtag()}", message);
         }
     }
 }

@@ -52,6 +52,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly Dictionary<string, string> Prefixes = DataBase.GetPrefixes();
 
+        public static readonly Dictionary<string, string> EmoteInFront = EmoteInFrontHelper.FillEmotesInFront();
+
         public static readonly List<Cooldown> Cooldowns = new();
 
         public static readonly List<AfkCooldown> AfkCooldowns = new();
@@ -97,13 +99,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             _okayegTeaTime ??= this;
         }
 
-        public void Send(string channel, string message, string emoteInFront = Config.EmoteInFront)
+        public void Send(string channel, string message)
         {
             if (!Config.GetNotAllowedChannels().Contains(channel.ReplaceHashtag()))
             {
+                string emoteInFront = EmoteInFrontHelper.GetEmote(channel);
                 if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
                 {
-                    message = LastMessages[$"#{channel.ReplaceHashtag()}"] == message ? $"{message} {Resources.ChatterinoChar}" : message;
+                    message = message == LastMessagesHelper.GetLastMessage(channel, message) ? $"{message} {Resources.ChatterinoChar}" : message;
                     TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
                     LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
                 }

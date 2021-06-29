@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OkayegTeaTimeCSharp.Utils;
 
-#nullable disable
+#nullable enable
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
@@ -9,6 +8,12 @@ namespace OkayegTeaTimeCSharp.Database.Models
     {
         public int Id { get; set; }
         public string Channel { get; set; }
-        public byte[] Emote { get; set; }
+        public byte[]? Emote { get; set; }
+
+        public EmoteInFront(string channel, byte[]? emote)
+        {
+            Channel = $"#{channel.ReplaceHashtag()}";
+            Emote = emote;
+        }
     }
 }

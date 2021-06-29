@@ -613,6 +613,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendSetEmoteInFront(this TwitchBot twitchBot, ChatMessage chatMessage, string emote)
+        {
+            DataBase.SetEmoteInFront(chatMessage.Channel, emote);
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, emote set to: {emote}");
+            EmoteInFrontHelper.Update(chatMessage.Channel, emote);
+        }
+
         public static void SendSetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage, string prefix)
         {
             if (chatMessage.IsModOrBroadcaster())
@@ -676,6 +683,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderTarget(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")})");
             }
+        }
+
+        public static void SendUnsetEmoteInFront(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            DataBase.UnsetEmoteInFront(chatMessage.Channel);
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, unset emote");
+            EmoteInFrontHelper.Update(chatMessage.Channel, null);
         }
 
         public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)

@@ -163,6 +163,11 @@ namespace OkayegTeaTimeCSharp.Database
             return new OkayegTeaTimeContext().Bots.Where(b => b.Username == Resources.Username).FirstOrDefault().Channels.Split().ToList();
         }
 
+        public static Dictionary<string, string> GetEmotesInFront()
+        {
+            return new OkayegTeaTimeContext().EmoteInFronts.ToDictionary(e => e.Channel, e => e.Emote?.Decode());
+        }
+
         public static Message GetFirst(ChatMessage chatMessage)
         {
             try
@@ -235,16 +240,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static string GetPrefix(string channel)
         {
-            OkayegTeaTimeContext database = new();
-            return database.Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString?.Decode();
+            return new OkayegTeaTimeContext().Prefixes.Where(p => p.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().PrefixString?.Decode();
         }
 
         public static Dictionary<string, string> GetPrefixes()
         {
-            OkayegTeaTimeContext database = new();
-            return database.Prefixes.ToDictionary(p => p.Channel, prefix => prefix.PrefixString?.Decode());
+            return new OkayegTeaTimeContext().Prefixes.ToDictionary(p => p.Channel, p => p.PrefixString?.Decode());
         }
-
         public static Pechkekse GetRandomCookie()
         {
             OkayegTeaTimeContext database = new();
@@ -423,6 +425,21 @@ namespace OkayegTeaTimeCSharp.Database
             database.SetAfk(chatMessage.Username, "true");
         }
 
+        public static void SetEmoteInFront(string channel, string emote)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.EmoteInFronts.Any(e => e.Channel == $"#{channel.ReplaceHashtag()}"))
+            {
+                database.EmoteInFronts.Where(e => e.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().Emote = emote.MakeInsertable();
+                database.SaveChanges();
+            }
+            else
+            {
+                database.EmoteInFronts.Add(new(channel, emote.MakeInsertable()));
+                database.SaveChanges();
+            }
+        }
+
         public static void SetPrefix(string channel, string prefix)
         {
             OkayegTeaTimeContext database = new();
@@ -440,6 +457,20 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
+        public static void UnsetEmoteInFront(string channel)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.EmoteInFronts.Any(e => e.Channel == $"#{channel.ReplaceHashtag()}"))
+            {
+                database.EmoteInFronts.Where(e => e.Channel == $"#{channel.ReplaceHashtag()}").FirstOrDefault().Emote = null;
+                database.SaveChanges();
+            }
+            else
+            {
+                database.EmoteInFronts.Add(new(channel, null));
+                database.SaveChanges();
+            }
+        }
         public static void UnsetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();

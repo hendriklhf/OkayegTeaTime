@@ -10,9 +10,13 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix\s\S{1,10}")))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix\s\S{1," + Config.MaxPrefixLength + "}")))
             {
-                twitchBot.SendSetPrefix(chatMessage, chatMessage.GetLowerSplit()[2][..(chatMessage.GetLowerSplit()[2].Length > 10 ? 10 : chatMessage.GetLowerSplit()[2].Length)]);
+                twitchBot.SendSetPrefix(chatMessage, chatMessage.GetLowerSplit()[2][..(chatMessage.GetLowerSplit()[2].Length > Config.MaxPrefixLength ? Config.MaxPrefixLength : chatMessage.GetLowerSplit()[2].Length)]);
+            }
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\semote\s\S{1," + Config.MaxEmoteInFrontLength + "}")))
+            {
+                twitchBot.SendSetEmoteInFront(chatMessage, chatMessage.GetSplit()[2][..(chatMessage.GetSplit()[2].Length > Config.MaxEmoteInFrontLength ? Config.MaxEmoteInFrontLength : chatMessage.GetSplit()[2].Length)]);
             }
         }
     }

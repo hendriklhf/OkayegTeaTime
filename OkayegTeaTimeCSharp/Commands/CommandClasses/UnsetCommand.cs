@@ -18,6 +18,10 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 twitchBot.SendUnsetReminder(chatMessage);
             }
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\semote")))
+            {
+                twitchBot.SendUnsetEmoteInFront(chatMessage);
+            }
         }
     }
 }
