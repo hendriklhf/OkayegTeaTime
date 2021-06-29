@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using TwitchLib.Client;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
@@ -71,7 +72,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 UseSsl = true
             };
             WebSocketClient = new(ClientOptions);
-            TwitchClient = new(WebSocketClient)
+            TwitchClient = new(WebSocketClient, ClientProtocol.TCP)
             {
                 AutoReListenOnException = true
             };
