@@ -29,6 +29,7 @@
         Suggest,
         Tuck,
         Unset,
+        Vanish,
         Yourmom
     }
 
