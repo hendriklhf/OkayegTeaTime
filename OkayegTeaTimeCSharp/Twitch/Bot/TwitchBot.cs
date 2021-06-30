@@ -33,10 +33,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public WebSocketClient WebSocketClient { get; private set; }
 
+        public TcpClient TcpClient { get; private set; }
+
         public DottedNumber CommandCount
         {
             get => _commandCount;
-            set => _commandCount++;
+            set => _commandCount = value;
         }
 
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
@@ -72,7 +74,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 UseSsl = true
             };
             WebSocketClient = new(ClientOptions);
-            TwitchClient = new(WebSocketClient, ClientProtocol.TCP)
+            TcpClient = new(ClientOptions);
+            TwitchClient = new(TcpClient, ClientProtocol.TCP)
             {
                 AutoReListenOnException = true
             };
