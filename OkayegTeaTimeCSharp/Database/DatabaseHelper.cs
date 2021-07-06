@@ -1,6 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Database.Models;
-using Sterbehilfe.Strings;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,17 +36,10 @@ namespace OkayegTeaTimeCSharp.Database
             database.SaveChanges();
         }
 
-        public static void SetAfk(this OkayegTeaTimeContext database, string username, string state)
+        public static void SetAfk(this OkayegTeaTimeContext database, string username, bool afk)
         {
-            if (state.IsMatch(@"^(t(rue)?)|(f(alse)?)$"))
-            {
-                database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = state.IsMatch(@"^t(rue)?$") ? "true" : "false";
-                database.SaveChanges();
-            }
-            else
-            {
-                throw new Exception("state doesn't match the required pattern");
-            }
+            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = afk.ToString();
+            database.SaveChanges();
         }
     }
 }
