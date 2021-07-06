@@ -4,10 +4,12 @@ using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using Sterbehilfe.Numbers;
+using Sterbehilfe.Strings;
 using Sterbehilfe.Time;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -45,7 +47,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private DottedNumber _commandCount = 1;
 
-        private readonly long _runtime = Now();
+        private long _runtime = Now();
 
         private static TwitchBot _okayegTeaTime;
 
@@ -63,6 +65,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TwitchBot()
         {
+            SetRunTime();
+
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
@@ -147,6 +151,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100;
         }
 
+        private void SetRunTime()
+        {
+            string runtime = File.ReadAllText(Resources.RuntimePath);
+            if (string.IsNullOrEmpty(runtime))
+            {
+                File.WriteAllText(Resources.RuntimePath, Now().ToString());
+            }
+            else
+            {
+                _runtime = File.ReadAllText(Resources.RuntimePath).ToLong();
+            }
+        }
+
         #endregion SystemInfo
 
         #region Bot_On
@@ -189,16 +206,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
             ConsoleOut($"CONNECTION-ERROR>{e.Error.Message}", true, ConsoleColor.Red);
+            Restart();
         }
 
         private void Client_OnError(object sender, OnErrorEventArgs e)
         {
             ConsoleOut($"ERROR>{e.Exception.Message}", true, ConsoleColor.Red);
+            Restart();
         }
 
         private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
         {
             ConsoleOut($"BOT>DISCONNECTED", true, ConsoleColor.Red);
+            Restart();
         }
 
         private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)

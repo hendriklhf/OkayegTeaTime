@@ -3,6 +3,7 @@ using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace OkayegTeaTimeCSharp
@@ -35,6 +36,13 @@ namespace OkayegTeaTimeCSharp
             {
                 File.AppendAllText(Resources.LogsPath, $"{DateTime.Today:dd/MM/yyyy HH:mm:ss} | {value}\n");
             }
+        }
+
+        public static void Restart()
+        {
+            Process.Start("./OkayegTeaTimeCSharp");
+            Environment.Exit(0);
+            ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
         }
     }
 }
