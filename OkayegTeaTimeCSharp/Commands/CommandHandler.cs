@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Commands
 {
     public static class CommandHandler
     {
-        private static readonly string _handleName = "Handle";
+        private const string _handleName = "Handle";
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
