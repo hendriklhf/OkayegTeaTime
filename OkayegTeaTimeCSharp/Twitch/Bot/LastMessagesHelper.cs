@@ -5,6 +5,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class LastMessagesHelper
     {
+        public static void AddChannel(string channel, string message)
+        {
+            TwitchBot.LastMessages.Add($"#{channel.ReplaceHashtag()}", message);
+        }
+
         public static Dictionary<string, string> FillDictionary()
         {
             Dictionary<string, string> dic = new();
@@ -27,10 +32,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 return string.Empty;
             }
         }
-
-        public static void AddChannel(string channel, string message)
+        public static void SetLastMessage(string channel, string message)
         {
-            TwitchBot.LastMessages.Add($"#{channel.ReplaceHashtag()}", message);
+            TwitchBot.LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
         }
     }
 }

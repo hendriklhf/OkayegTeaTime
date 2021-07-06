@@ -112,7 +112,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     message = message == LastMessagesHelper.GetLastMessage(channel, message) ? $"{message} {Resources.ChatterinoChar}" : message;
                     TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
-                    LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
+                    LastMessagesHelper.SetLastMessage(channel, message);
                 }
                 else
                 {
@@ -165,7 +165,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            ConsoleOut($"BOT>Joined channel: {e.Channel}", false, ConsoleColor.Red);
+            ConsoleOut($"BOT>Joined channel: {e.Channel}", fontColor: ConsoleColor.Red);
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
