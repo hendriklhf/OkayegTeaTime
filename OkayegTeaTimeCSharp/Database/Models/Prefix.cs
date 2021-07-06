@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
         public Prefix(string channel, byte[] prefixString)
         {
-            Channel = $"#{channel.ReplaceHashtag()}";
+            Channel = $"#{channel.RemoveHashtag()}";
             PrefixString = prefixString;
         }
     }

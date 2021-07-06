@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string GetEmote(string channel)
         {
-            if (TwitchBot.EmoteInFront.TryGetValue($"#{channel.ReplaceHashtag()}", out string emote))
+            if (TwitchBot.EmoteInFront.TryGetValue($"#{channel.RemoveHashtag()}", out string emote))
             {
                 return !string.IsNullOrEmpty(emote) ? emote : Config.EmoteInFront;
             }
@@ -25,13 +25,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void Update(string channel, string emote)
         {
-            if (TwitchBot.EmoteInFront.ContainsKey($"#{channel.ReplaceHashtag()}"))
+            if (TwitchBot.EmoteInFront.ContainsKey($"#{channel.RemoveHashtag()}"))
             {
-                TwitchBot.EmoteInFront[$"#{channel.ReplaceHashtag()}"] = emote;
+                TwitchBot.EmoteInFront[$"#{channel.RemoveHashtag()}"] = emote;
             }
             else
             {
-                TwitchBot.EmoteInFront.Add($"#{channel.ReplaceHashtag()}", emote);
+                TwitchBot.EmoteInFront.Add($"#{channel.RemoveHashtag()}", emote);
             }
         }
     }

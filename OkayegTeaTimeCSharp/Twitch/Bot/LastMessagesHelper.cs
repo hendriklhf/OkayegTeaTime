@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
     {
         public static void AddChannel(string channel, string message)
         {
-            TwitchBot.LastMessages.Add($"#{channel.ReplaceHashtag()}", message);
+            TwitchBot.LastMessages.Add($"#{channel.RemoveHashtag()}", message);
         }
 
         public static Dictionary<string, string> FillDictionary()
@@ -22,7 +22,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string GetLastMessage(string channel, string message)
         {
-            if (TwitchBot.LastMessages.TryGetValue($"#{channel.ReplaceHashtag()}", out string lastMessage))
+            if (TwitchBot.LastMessages.TryGetValue($"#{channel.RemoveHashtag()}", out string lastMessage))
             {
                 return lastMessage;
             }
@@ -34,7 +34,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         }
         public static void SetLastMessage(string channel, string message)
         {
-            TwitchBot.LastMessages[$"#{channel.ReplaceHashtag()}"] = message;
+            TwitchBot.LastMessages[$"#{channel.RemoveHashtag()}"] = message;
         }
     }
 }

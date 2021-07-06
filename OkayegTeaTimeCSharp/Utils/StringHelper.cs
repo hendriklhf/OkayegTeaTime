@@ -6,7 +6,7 @@ namespace OkayegTeaTimeCSharp.Utils
 {
     public static class StringHelper
     {
-        public static string ReplaceHashtag(this string str)
+        public static string RemoveHashtag(this string str)
         {
             return str.Replace("#", "");
         }

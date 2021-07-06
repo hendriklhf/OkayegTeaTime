@@ -103,13 +103,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void Send(string channel, string message)
         {
-            if (!Config.GetNotAllowedChannels().Contains(channel.ReplaceHashtag()))
+            if (!Config.GetNotAllowedChannels().Contains(channel.RemoveHashtag()))
             {
                 string emoteInFront = EmoteInFrontHelper.GetEmote(channel);
                 if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
                 {
                     message = message == LastMessagesHelper.GetLastMessage(channel, message) ? $"{message} {Resources.ChatterinoChar}" : message;
-                    TwitchClient.SendMessage(channel.ReplaceHashtag(), $"{emoteInFront} {message}");
+                    TwitchClient.SendMessage(channel.RemoveHashtag(), $"{emoteInFront} {message}");
                     LastMessagesHelper.SetLastMessage(channel, message);
                 }
                 else
@@ -122,16 +122,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public void JoinChannel(string channel)
         {
             DataBase.AddChannel(channel);
-            LastMessages.Add($"#{channel.ReplaceHashtag()}", string.Empty);
+            LastMessages.Add($"#{channel.RemoveHashtag()}", string.Empty);
             PrefixHelper.FillDictionary();
             try
             {
-                TwitchClient.JoinChannel(channel.ReplaceHashtag());
+                TwitchClient.JoinChannel(channel.RemoveHashtag());
                 Send(channel, "/ I'm online");
             }
             catch (Exception)
             {
-                Send(Resources.Username, $"{Resources.Owner}, unable to join #{channel.ReplaceHashtag()}");
+                Send(Resources.Username, $"{Resources.Owner}, unable to join #{channel.RemoveHashtag()}");
             }
         }
 

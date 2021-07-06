@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
         public EmoteInFront(string channel, byte[]? emote)
         {
-            Channel = $"#{channel.ReplaceHashtag()}";
+            Channel = $"#{channel.RemoveHashtag()}";
             Emote = emote;
         }
     }

@@ -28,7 +28,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             Username = username;
             Suggestion1 = suggestion;
-            Channel = $"#{channel.ReplaceHashtag()}";
+            Channel = $"#{channel.RemoveHashtag()}";
         }
     }
 }
