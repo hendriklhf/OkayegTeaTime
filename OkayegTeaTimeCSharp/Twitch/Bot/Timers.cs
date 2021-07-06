@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             CreateTimer(1000);
             CreateTimer(30000);
-            CreateTimer(new Day(10).ToMilliseconds());
+            CreateTimer(new Day(10).Milliseconds);
         }
 
         private static void CreateTimer(long interval)

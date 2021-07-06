@@ -239,7 +239,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsModOrBroadcaster())
             {
-                timeoutTime = timeoutTime > new Day(14).ToSeconds() ? new Day(14).ToSeconds() : timeoutTime;
+                timeoutTime = timeoutTime > new Day(14).Seconds ? new Day(14).Seconds : timeoutTime;
                 DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]}");
             }

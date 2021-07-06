@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Spotify
             if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username))
             {
                 Database.Models.Spotify user = DataBase.GetSpotifyUser(username);
-                if (user.Time + new Hour().ToMilliseconds() <= TimeHelper.Now() + new Second(5).ToMilliseconds())
+                if (user.Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(5).Milliseconds)
                 {
                     await GetNewAccessToken(username);
                     user = DataBase.GetSpotifyUser(username);

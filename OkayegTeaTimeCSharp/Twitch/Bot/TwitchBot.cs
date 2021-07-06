@@ -45,7 +45,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private DottedNumber _commandCount = 1;
 
-        private readonly long _runtime;
+        private readonly long _runtime = Now();
 
         private static TwitchBot _okayegTeaTime;
 
@@ -53,7 +53,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly Dictionary<string, string> LastMessages = LastMessagesHelper.FillDictionary();
 
-        public static readonly Dictionary<string, string> Prefixes = DataBase.GetPrefixes();
+        public static readonly Dictionary<string, string> Prefixes = PrefixHelper.FillDictionary();
 
         public static readonly Dictionary<string, string> EmoteInFront = EmoteInFrontHelper.FillEmotesInFront();
 
@@ -63,8 +63,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TwitchBot()
         {
-            _runtime = Now();
-
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
@@ -245,7 +243,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
             Timers.GetTimer(30000).Elapsed += OnTimer30000;
-            Timers.GetTimer(new Day(10).ToMilliseconds()).Elapsed += OnTimer10Days;
+            Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
         }
 
         private static void OnTimer1000(object sender, Timers::ElapsedEventArgs e)
