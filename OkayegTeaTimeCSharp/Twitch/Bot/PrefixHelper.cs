@@ -23,7 +23,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string GetPrefix(string channel)
         {
-            return TwitchBot.Prefixes.TryGetValue($"#{channel}", out string prefix) ? prefix : string.Empty;
+            return TwitchBot.Prefixes.TryGetValue($"#{channel.ReplaceHashtag()}", out string prefix) ? prefix : string.Empty;
         }
     }
 }
