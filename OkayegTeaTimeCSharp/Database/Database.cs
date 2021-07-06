@@ -153,7 +153,7 @@ namespace OkayegTeaTimeCSharp.Database
                 twitchBot.SendComingBack(user, chatMessage);
                 if (!MessageHelper.IsAfkCommand(chatMessage))
                 {
-                    database.SetAfk(chatMessage.Username, "false");
+                    database.SetAfk(chatMessage.Username, false);
                 }
             }
         }
@@ -409,7 +409,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void ResumeAfkStatus(string username)
         {
             OkayegTeaTimeContext database = new();
-            database.SetAfk(username, "true");
+            database.SetAfk(username, true);
             database.SaveChanges();
         }
 
@@ -422,7 +422,7 @@ namespace OkayegTeaTimeCSharp.Database
             user.Type = type.ToString();
             user.Time = TimeHelper.Now();
             database.SaveChanges();
-            database.SetAfk(chatMessage.Username, "true");
+            database.SetAfk(chatMessage.Username, true);
         }
 
         public static void SetEmoteInFront(string channel, string emote)
