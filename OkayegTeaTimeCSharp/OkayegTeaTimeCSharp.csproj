@@ -18,6 +18,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<Optimize>false</Optimize>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM32'">
@@ -97,5 +98,7 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I" />
 	</Target>
+
+	<ProjectExtensions><VisualStudio><UserProperties resources_4data_1json__JsonSchema="https://json.schemastore.org/config.json" /></VisualStudio></ProjectExtensions>
 
 </Project>
