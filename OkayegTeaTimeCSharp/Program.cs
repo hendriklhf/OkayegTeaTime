@@ -40,9 +40,9 @@ namespace OkayegTeaTimeCSharp
 
         public static void Restart()
         {
-            Process.Start("./OkayegTeaTimeCSharp");
-            Environment.Exit(0);
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
+            Process.Start($"{Directory.GetCurrentDirectory().Replace("\\", "/")}/OkayegTeaTimeCSharp");
+            Environment.Exit(0);
         }
     }
 }
