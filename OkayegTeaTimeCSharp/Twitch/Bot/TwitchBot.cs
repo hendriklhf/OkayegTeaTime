@@ -82,7 +82,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 AutoReListenOnException = true
             };
 
-            TwitchClient.Initialize(ConnectionCredentials, Config.GetChannels());
+#if DEBUG
+            TwitchClient.Initialize(ConnectionCredentials, Resources.DebugChannel);
+#else
+            TwitchClient.Initialize(ConnectionCredentials, Config.Channels);
+#endif
 
             TwitchClient.OnLog += Client_OnLog;
             TwitchClient.OnConnected += Client_OnConnected;
