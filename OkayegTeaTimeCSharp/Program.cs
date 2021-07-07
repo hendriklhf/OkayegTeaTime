@@ -53,3 +53,9 @@ namespace OkayegTeaTimeCSharp
 #warning merge of all emote actions
 #warning add try-catch to sending reminder, crashes if someone spams and receives a reminder
 #warning create class for channel specific messages
+#warning twitter sub
+#warning weather api
+#warning random reddit post
+#warning unset nuke
+#warning pick cmd
+#warning .Split(int) splits in middle of a word
