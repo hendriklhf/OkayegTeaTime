@@ -107,7 +107,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void Send(string channel, string message)
         {
-            if (!Config.GetNotAllowedChannels().Contains(channel.RemoveHashtag()))
+            if (!Config.NotAllowedChannels.Contains(channel.RemoveHashtag()))
             {
                 string emoteInFront = EmoteInFrontHelper.GetEmote(channel);
                 if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
