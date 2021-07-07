@@ -162,7 +162,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 File.WriteAllText(Resources.RuntimePath, Now().ToString());
             }
-            else
+            else if (runtime.IsMatch(@"^\d+$"))
             {
                 _runtime = File.ReadAllText(Resources.RuntimePath).ToLong();
             }
