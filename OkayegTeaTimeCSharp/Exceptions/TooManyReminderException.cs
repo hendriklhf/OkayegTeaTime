@@ -12,7 +12,6 @@ namespace OkayegTeaTimeCSharp.Exceptions
 
         public TooManyReminderException(string message) : base(message)
         {
-            Message = message;
         }
     }
 }

@@ -12,7 +12,6 @@ namespace OkayegTeaTimeCSharp.Exceptions
 
         public UserNotFoundException(string message) : base(message)
         {
-            Message = message;
         }
     }
 }

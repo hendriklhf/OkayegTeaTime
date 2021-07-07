@@ -12,7 +12,6 @@ namespace OkayegTeaTimeCSharp.Exceptions
 
         public ReminderNotFoundException(string message) : base(message)
         {
-            Message = message;
         }
     }
 }
