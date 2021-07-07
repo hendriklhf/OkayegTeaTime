@@ -56,6 +56,5 @@ namespace OkayegTeaTimeCSharp
 #warning twitter sub
 #warning weather api
 #warning random reddit post
-#warning unset nuke
 #warning pick cmd
 #warning .Split(int) splits in middle of a word

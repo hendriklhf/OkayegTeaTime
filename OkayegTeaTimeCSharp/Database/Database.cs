@@ -43,11 +43,12 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void AddNuke(Nuke nuke)
+        public static int AddNuke(Nuke nuke)
         {
             OkayegTeaTimeContext database = new();
             database.Nukes.Add(nuke);
             database.SaveChanges();
+            return database.Nukes.Where(n => n.Channel == nuke.Channel && n.ForTime == nuke.ForTime && n.TimeoutTime == nuke.TimeoutTime && n.Username == nuke.Username && n.Word == nuke.Word).FirstOrDefault().Id;
         }
 
         public static int AddReminder(Reminder reminder)
@@ -247,6 +248,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             return new OkayegTeaTimeContext().Prefixes.ToDictionary(p => p.Channel, p => p.PrefixString?.Decode());
         }
+
         public static Pechkekse GetRandomCookie()
         {
             OkayegTeaTimeContext database = new();
@@ -406,6 +408,57 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
+        public static void RemoveNuke(ChatMessage chatMessage)
+        {
+            int id = chatMessage.GetSplit()[2].ToInt();
+            OkayegTeaTimeContext database = new();
+            Nuke nuke = database.Nukes.Where(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.RemoveHashtag()}").FirstOrDefault();
+            if (nuke != null)
+            {
+                if (chatMessage.IsModOrBroadcaster())
+                {
+                    database.Nukes.Remove(nuke);
+                    database.SaveChanges();
+                }
+                else
+                {
+                    throw new NoPermissionException("you aren't a mod or the broadcaster");
+                }
+            }
+            else
+            {
+                throw new NukeNotFoundException();
+            }
+        }
+        public static void RemoveReminder(ChatMessage chatMessage)
+        {
+            try
+            {
+                OkayegTeaTimeContext database = new();
+                Reminder reminder = database.Reminders.Where(r => r.Id == chatMessage.GetSplit()[2].ToInt()).FirstOrDefault();
+                if (reminder != null)
+                {
+                    if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
+                    {
+                        database.Reminders.Remove(reminder);
+                        database.SaveChanges();
+                    }
+                    else
+                    {
+                        throw new NoPermissionException("you have no permission to delete the reminder of someone else");
+                    }
+                }
+                else
+                {
+                    throw new ReminderNotFoundException();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public static void ResumeAfkStatus(string username)
         {
             OkayegTeaTimeContext database = new();
@@ -487,36 +540,6 @@ namespace OkayegTeaTimeCSharp.Database
                 PrefixHelper.Add(channel);
             }
         }
-
-        public static void UnsetReminder(ChatMessage chatMessage)
-        {
-            try
-            {
-                OkayegTeaTimeContext database = new();
-                Reminder reminder = database.Reminders.Where(r => r.Id == chatMessage.GetSplit()[2].ToInt()).FirstOrDefault();
-                if (reminder != null)
-                {
-                    if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
-                    {
-                        database.Reminders.Remove(reminder);
-                        database.SaveChanges();
-                    }
-                    else
-                    {
-                        throw new NoPermissionException("you have no permission to delete the reminder of someone else");
-                    }
-                }
-                else
-                {
-                    throw new ReminderNotFoundException();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         public static void UpdateAccessToken(string username, string accessToken)
         {
             OkayegTeaTimeContext database = new();

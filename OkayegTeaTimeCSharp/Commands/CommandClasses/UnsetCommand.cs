@@ -22,6 +22,10 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 twitchBot.SendUnsetEmoteInFront(chatMessage);
             }
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\snuke\s\d+")))
+            {
+                twitchBot.SendUnsetNuke(chatMessage);
+            }
         }
     }
 }

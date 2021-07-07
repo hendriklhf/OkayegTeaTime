@@ -240,8 +240,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModOrBroadcaster())
             {
                 timeoutTime = timeoutTime > new Day(14).Seconds ? new Day(14).Seconds : timeoutTime;
-                DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]}");
+                int id = DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]} (ID: {id})");
             }
             else
             {
@@ -706,6 +706,22 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendUnsetNuke(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            try
+            {
+                DataBase.RemoveNuke(chatMessage);
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the nuke has been unset");
+            }
+            catch (NukeNotFoundException ex)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+            }
+            catch (NoPermissionException ex)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+            }
+        }
         public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
@@ -723,7 +739,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                DataBase.UnsetReminder(chatMessage);
+                DataBase.RemoveReminder(chatMessage);
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the reminder has been unset");
             }
             catch (NoPermissionException ex)
