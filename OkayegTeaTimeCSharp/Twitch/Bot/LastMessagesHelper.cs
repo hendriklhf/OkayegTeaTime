@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static Dictionary<string, string> FillDictionary()
         {
             Dictionary<string, string> dic = new();
-            Config.GetChannels().ForEach(channel =>
+            Config.Channels.ForEach(channel =>
             {
                 dic.Add($"#{channel}", "");
             });

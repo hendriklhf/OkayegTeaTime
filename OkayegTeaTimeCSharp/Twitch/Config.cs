@@ -16,19 +16,10 @@ namespace OkayegTeaTimeCSharp.Twitch
         public const int MinimumDelayBetweenMessages = 1300;
         public const string Suffix = "eg";
 
-        public static List<string> GetChannels()
-        {
-            return DataBase.GetChannels();
-        }
+        public static readonly List<string> Channels = DataBase.GetChannels();
 
-        public static List<string> GetNotAllowedChannels()
-        {
-            return Resources.NotAllowedChannels.Split().ToList();
-        }
+        public static readonly List<string> NotAllowedChannels = Resources.NotAllowedChannels.Split().ToList();
 
-        public static List<string> GetNotLoggedChannels()
-        {
-            return Resources.NotLoggedChannels.Split().ToList();
-        }
+        public static readonly List<string> NotLoggedChannels = Resources.NotLoggedChannels.Split().ToList();
     }
 }

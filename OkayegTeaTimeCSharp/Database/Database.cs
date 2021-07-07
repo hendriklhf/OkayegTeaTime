@@ -148,7 +148,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
-            if (user.IsAfk == "true")
+            if (user.IsAfk == "True")
             {
                 twitchBot.SendComingBack(user, chatMessage);
                 if (!MessageHelper.IsAfkCommand(chatMessage))
@@ -398,7 +398,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void LogMessage(ChatMessage chatMessage)
         {
-            if (!Config.GetNotLoggedChannels().Contains(chatMessage.Channel))
+            if (!Config.NotLoggedChannels.Contains(chatMessage.Channel))
             {
                 OkayegTeaTimeContext database = new();
                 database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));

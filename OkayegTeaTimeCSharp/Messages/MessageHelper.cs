@@ -34,7 +34,7 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static bool IsNotLoggedChannel(string channel)
         {
-            return Config.GetNotLoggedChannels().Contains(channel);
+            return Config.NotLoggedChannels.Contains(channel);
         }
 
         public static bool IsSpecialUser(string username)
