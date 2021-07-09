@@ -106,7 +106,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public void SetBot()
         {
-            _okayegTeaTime ??= this;
+            _okayegTeaTime = this;
         }
 
         public void Send(string channel, string message)
@@ -279,6 +279,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
             TimerFunctions.SetConsoleTitle(_okayegTeaTime);
+            TimerFunctions.ConnectionStatus(_okayegTeaTime);
         }
 
         private static void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)

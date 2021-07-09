@@ -10,6 +10,8 @@ namespace OkayegTeaTimeCSharp
 {
     public static class Program
     {
+        private static bool _running = true;
+
         private static void Main()
         {
             Console.Title = "OkayegTeaTime";
@@ -17,31 +19,30 @@ namespace OkayegTeaTimeCSharp
             TwitchAPI.Configure();
             new TwitchBot().SetBot();
 
-            while (true)
+#if DEBUG
+            ReadMeGenerator.GenerateReadMe();
+#endif
+            while (_running)
             {
-                string input = Console.ReadLine();
-                if (input == "readme")
-                {
-                    ReadMeGenerator.GenerateReadMe();
-                }
             }
         }
 
         public static void ConsoleOut(string value, bool logging = false, ConsoleColor fontColor = ConsoleColor.Gray)
         {
             Console.ForegroundColor = fontColor;
-            Console.WriteLine($"{DateTime.Now.TimeOfDay.ToString()[..8]} | {value}");
+            Console.WriteLine($"{DateTime.Now:HH:mm:ss} | {value}");
             Console.ForegroundColor = ConsoleColor.Gray;
             if (logging)
             {
-                File.AppendAllText(Resources.LogsPath, $"{DateTime.Today:dd/MM/yyyy HH:mm:ss} | {value}\n");
+                File.AppendAllText(Resources.LogsPath, $"{DateTime.Now:dd/MM/yyyy HH:mm:ss} | {value}\n");
             }
         }
 
         public static void Restart()
         {
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
-            Process.Start($"{Directory.GetCurrentDirectory().Replace("\\", "/")}/OkayegTeaTimeCSharp");
+            Process.Start($"./OkayegTeaTimeCSharp");
+            _running = false;
             Environment.Exit(0);
         }
     }

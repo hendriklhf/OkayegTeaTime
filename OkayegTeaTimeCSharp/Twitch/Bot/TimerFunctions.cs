@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Twitch.API;
 using System;
+using static OkayegTeaTimeCSharp.Program;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -15,14 +16,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             DataBase.CheckForTimedReminder(twitchBot);
         }
 
-        public static void TwitchApiRefreshAccessToken()
+        public static void ConnectionStatus(TwitchBot twitchBot)
         {
-            TwitchAPI.RefreshAccessToken();
+            ConsoleOut($"TwitchClient: {twitchBot.TwitchClient.IsConnected}", fontColor: ConsoleColor.Red);
+            ConsoleOut($"TcpClient: {twitchBot.TcpClient.IsConnected}", fontColor: ConsoleColor.Red);
         }
 
         public static void SetConsoleTitle(TwitchBot twitchBot)
         {
             Console.Title = $"OkayegTeaTime - {twitchBot.GetSystemInfo()}";
+        }
+
+        public static void TwitchApiRefreshAccessToken()
+        {
+            TwitchAPI.RefreshAccessToken();
         }
     }
 }
