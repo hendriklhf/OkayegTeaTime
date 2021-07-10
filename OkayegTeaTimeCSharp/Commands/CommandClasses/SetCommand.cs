@@ -18,6 +18,15 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 twitchBot.SendSetEmoteInFront(chatMessage, chatMessage.GetSplit()[2][..(chatMessage.GetSplit()[2].Length > Config.MaxEmoteInFrontLength ? Config.MaxEmoteInFrontLength : chatMessage.GetSplit()[2].Length)]);
             }
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))")))
+            {
+                twitchBot.SendSetSongRequestState(chatMessage, ParseBool(chatMessage.GetSplit()[2]));
+            }
+        }
+
+        private static bool ParseBool(string input)
+        {
+            return input.IsMatch(@"(1|true|enabled?)");
         }
     }
 }

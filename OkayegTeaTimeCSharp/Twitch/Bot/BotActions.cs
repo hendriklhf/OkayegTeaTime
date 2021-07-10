@@ -7,6 +7,7 @@ using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
+using OkayegTeaTimeCSharp.Utils;
 using Sterbehilfe.Emojis;
 using Sterbehilfe.Numbers;
 using Sterbehilfe.Strings;
@@ -654,6 +655,28 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static void SendSetSongRequestState(this TwitchBot twitchBot, ChatMessage chatMessage, bool state)
+        {
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                OkayegTeaTimeContext database = new();
+                if (database.Spotify.Any(s => s.Username == chatMessage.Channel))
+                {
+                    database.Spotify.Where(s => s.Username == chatMessage.Channel.RemoveHashtag()).FirstOrDefault().SongRequestEnabled = state;
+                    database.SaveChanges();
+                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, song requests {(state ? "enabled" : "disabled")} for channel {chatMessage.Channel}");
+                }
+                else
+                {
+                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, channel {chatMessage.Channel} is not registered, they have to register first");
+                }
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you have to be a mod or the broadcaster to set song request settings");
+            }
+        }
+
         public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
         {
             try
@@ -666,6 +689,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
             }
+        }
+
+        public static void SendSongAddedToQueue(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            string song = chatMessage.GetSplit()[1];
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel, song).Result}");
         }
 
         public static void SendSpotifyCurrentlyPlaying(this TwitchBot twitchBot, ChatMessage chatMessage)
@@ -751,7 +780,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
             }
         }
-
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());

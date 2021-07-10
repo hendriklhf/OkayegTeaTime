@@ -1,4 +1,6 @@
-﻿using SpotifyAPI.Web;
+﻿using OkayegTeaTimeCSharp.Utils;
+using SpotifyAPI.Web;
+using Sterbehilfe.Strings;
 using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Spotify
@@ -13,6 +15,27 @@ namespace OkayegTeaTimeCSharp.Spotify
                 result += $"{artist.Name}, ";
             });
             return result.Trim()[..^1];
+        }
+
+        public static string GetSpotifyURI(string input)
+        {
+            if (input.IsMatch(Pattern.SpotifyUriPattern))
+            {
+                return input;
+            }
+            else if (input.IsMatch(Pattern.SpotifyLinkPattern))
+            {
+                string uriCode = input.Match(@"track/\w+\?").Remove("track/").Remove("?");
+                return $"spotify:track:{uriCode}";
+            }
+            else if (input.IsMatch(@"\w{22}"))
+            {
+                return $"spotify:track:{input}";
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static PlayingItem GetItem(this CurrentlyPlaying currentlyPlaying)
