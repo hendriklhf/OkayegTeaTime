@@ -227,6 +227,10 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .IsRequired()
                     .HasMaxLength(300);
 
+                entity.Property(e => e.SongRequestEnabled)
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
+
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
                 entity.Property(e => e.Username)

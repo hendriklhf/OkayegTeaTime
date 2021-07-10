@@ -11,6 +11,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
         public long Time { get; set; } = TimeHelper.Now();
+        public bool? SongRequestEnabled { get; set; } = false;
 
         public Spotify(string username, string accessToken, string refreshToken)
         {
