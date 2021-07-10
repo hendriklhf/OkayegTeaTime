@@ -1,8 +1,10 @@
-﻿using Sterbehilfe.Strings;
+﻿using OkayegTeaTimeCSharp.Twitch;
+using OkayegTeaTimeCSharp.Twitch.Bot;
+using Sterbehilfe.Strings;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace OkayegTeaTimeCSharp.Twitch.Bot
+namespace OkayegTeaTimeCSharp.Messages
 {
     public class DividedMessage
     {
