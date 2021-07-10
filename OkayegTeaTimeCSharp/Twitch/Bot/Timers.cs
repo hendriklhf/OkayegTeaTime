@@ -26,7 +26,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static Timer GetTimer(long interval)
         {
-            return TwitchBot.ListTimer.Where(timer => timer.Interval == interval).FirstOrDefault();
+            return TwitchBot.ListTimer.Where(t => t.Interval == interval).FirstOrDefault();
         }
     }
 }

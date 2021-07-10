@@ -45,6 +45,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
 
+        public RestartTimer RestartTimer { get; } = new(new() { 4, 5 });
+
         private DottedNumber _commandCount = 1;
 
         private long _runtime = Now();
@@ -102,6 +104,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.Connect();
 
             InitializeTimers();
+            RestartTimer.Initialize();
         }
 
         public void SetBot()
@@ -255,12 +258,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private static void StartTimers()
         {
-            ListTimer.ForEach(timer => timer.Start());
+            ListTimer.ForEach(t => t.Start());
         }
 
         private static void StopTimers()
         {
-            ListTimer.ForEach(timer => timer.Stop());
+            ListTimer.ForEach(t => t.Stop());
         }
 
         private static void AddTimerFunction()
@@ -279,7 +282,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
             TimerFunctions.SetConsoleTitle(_okayegTeaTime);
-            TimerFunctions.ConnectionStatus(_okayegTeaTime);
         }
 
         private static void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)
