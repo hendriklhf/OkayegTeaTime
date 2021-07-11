@@ -240,7 +240,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsModOrBroadcaster())
             {
-                timeoutTime = timeoutTime > new Day(14).Seconds ? new Day(14).Seconds : timeoutTime;
+                timeoutTime = timeoutTime > new Week(2).Seconds ? new Week(2).Seconds : timeoutTime;
                 int id = DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]} (ID: {id})");
             }
@@ -316,8 +316,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 message += emotes[StrbhRand.Random.Int(0, emotes.Length - 1)];
                 while (true)
                 {
-                    string emote = emotes[StrbhRand.Random.Int(0, emotes.Length - 1)];
-                    if ((message + $" {emote}").Length <= Config.MaxMessageLength)
+                    string emote = emotes[StrbhRand::Random.Int(0, emotes.Length - 1)];
+                    if ($"{message} {emote}".Length <= Config.MaxMessageLength)
                     {
                         message += $" {emote}";
                     }
@@ -527,28 +527,28 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{username}, {yourmom.MessageText} YOURMOM");
         }
 
-        public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> listReminder)
+        public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> reminders)
         {
             string message;
-            if (listReminder[0].Message.Length > 0)
+            if (reminders[0].Message.Length > 0)
             {
-                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, "ago")}): {listReminder[0].Message.Decode()}";
+                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminders[0].Time, "ago")}): {reminders[0].Message.Decode()}";
             }
             else
             {
-                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, listReminder[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(listReminder[0].Time, "ago")})";
+                message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminders[0].Time, "ago")})";
             }
-            if (listReminder.Count > 1)
+            if (reminders.Count > 1)
             {
-                listReminder.Skip(1).ToList().ForEach(reminder =>
+                reminders.Skip(1).ToList().ForEach(r =>
                 {
-                    if (reminder.Message.Length > 0)
+                    if (r.Message.Length > 0)
                     {
-                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")}): {reminder.Message.Decode()}";
+                        message += $" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(r.Time, "ago")}): {r.Message.Decode()}";
                     }
                     else
                     {
-                        message += $" || {GetReminderAuthor(chatMessage.Username, reminder.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(reminder.Time, "ago")})";
+                        message += $" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertMillisecondsToPassedTime(r.Time, "ago")})";
                     }
                 });
             }
