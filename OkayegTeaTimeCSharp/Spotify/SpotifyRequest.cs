@@ -34,7 +34,7 @@ namespace OkayegTeaTimeCSharp.Spotify
                     }
                     catch (APIException)
                     {
-                        return $"no music playing on any device, the broadcaster has to start their playback first";
+                        return $"no music playing on any device, the {channel} has to start their playback first";
                     }
                     catch (Exception)
                     {
