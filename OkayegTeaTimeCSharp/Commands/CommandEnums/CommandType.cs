@@ -25,6 +25,7 @@
         Remind,
         Search,
         Set,
+        Skip,
         SongRequest,
         Spotify,
         Suggest,

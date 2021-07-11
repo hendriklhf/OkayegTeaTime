@@ -25,14 +25,25 @@ namespace OkayegTeaTimeCSharp.Spotify
                 Database.Models.Spotify user = await GetSpotifyUser(channel);
                 if (user.SongRequestEnabled == true)
                 {
-                    SpotifyClient client = new(user.AccessToken);
-                    await client.Player.AddToQueue(new PlayerAddToQueueRequest(song));
-                    FullTrack item = await client.Tracks.Get(song.Remove("spotify:track:"));
-                    return $"{item.Name} by {item.Artists.GetArtistString()} has been added to the queue";
+                    try
+                    {
+                        SpotifyClient client = new(user.AccessToken);
+                        await client.Player.AddToQueue(new(song));
+                        FullTrack item = await client.Tracks.Get(song.Remove("spotify:track:"));
+                        return $"{item.Name} by {item.Artists.GetArtistString()} has been added to the queue";
+                    }
+                    catch (APIException)
+                    {
+                        return $"no music playing on any device, the broadcaster has to start their playback first";
+                    }
+                    catch (Exception)
+                    {
+                        return $"that song id doesn't match any song";
+                    }
                 }
                 else
                 {
-                    return $"song requests are currently not open, {channel} has to enable song requests first";
+                    return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
                 }
             }
             else
@@ -41,12 +52,40 @@ namespace OkayegTeaTimeCSharp.Spotify
             }
         }
 
+        public static async Task<string> SkipToNextSong(string channel)
+        {
+            if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == channel))
+            {
+                Database.Models.Spotify user = await GetSpotifyUser(channel);
+                if (user.SongRequestEnabled == true)
+                {
+                    try
+                    {
+                        await new SpotifyClient(user.AccessToken).Player.SkipNext(new());
+                        return $"skipped to the next song in queue";
+                    }
+                    catch (Exception)
+                    {
+                        return $"couldn't skip to the next song";
+                    }
+                }
+                else
+                {
+                    return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
+                }
+            }
+            else
+            {
+                return $"can't skip a song of {channel}, they have to register first";
+            }
+        }
+
         public static async Task<string> GetCurrentlyPlaying(string username)
         {
             if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username))
             {
                 Database.Models.Spotify user = await GetSpotifyUser(username);
-                CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new PlayerCurrentlyPlayingRequest());
+                CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
                 return response.GetItem() != null ? response.GetItem().Message : "nothing playing";
             }
             else
@@ -56,7 +95,7 @@ namespace OkayegTeaTimeCSharp.Spotify
         }
         public static string GetLoginURL()
         {
-            LoginRequest login = new(new Uri("https://example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
+            LoginRequest login = new(new("https://example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
             {
                 Scope = new[] { Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState }
             };
@@ -71,7 +110,7 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static async Task GetNewAuthTokens(string username, string code)
         {
-            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new Uri("https://example.com/callback")));
+            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new("https://example.com/callback")));
             DataBase.AddNewToken(username, response.AccessToken, response.RefreshToken);
         }
 

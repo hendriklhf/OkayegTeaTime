@@ -697,6 +697,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel, song).Result}");
         }
 
+        public static void SendSongSkipped(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            if (chatMessage.IsModOrBroadcaster())
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.SkipToNextSong(chatMessage.Channel).Result}");
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you have to be a mod or the broadcaster to skip the song");
+            }
+        }
+
         public static void SendSpotifyCurrentlyPlaying(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             string username = chatMessage.GetLowerSplit().Length > 1 ? (chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1]) : chatMessage.Channel;
