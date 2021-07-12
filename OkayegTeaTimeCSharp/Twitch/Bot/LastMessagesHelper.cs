@@ -28,7 +28,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                AddChannel(channel, message);
+                AddChannel(channel);
                 return string.Empty;
             }
         }
