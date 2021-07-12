@@ -59,7 +59,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly Dictionary<string, string> Prefixes = PrefixHelper.FillDictionary();
 
-        public static readonly Dictionary<string, string> EmoteInFront = EmoteInFrontHelper.FillEmotesInFront();
+        public static readonly Dictionary<string, string> EmoteInFront = EmoteInFrontHelper.FillDictionary();
 
         public static readonly List<Cooldown> Cooldowns = new();
 

@@ -5,9 +5,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class LastMessagesHelper
     {
-        public static void AddChannel(string channel, string message)
+        public static void AddChannel(string channel)
         {
-            TwitchBot.LastMessages.Add($"#{channel.RemoveHashtag()}", message);
+            TwitchBot.LastMessages.Add($"#{channel.RemoveHashtag()}", string.Empty);
         }
 
         public static Dictionary<string, string> FillDictionary()
