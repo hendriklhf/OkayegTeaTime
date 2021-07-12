@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Twitch.Bot.MessageQueue;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using Sterbehilfe.Numbers;
@@ -46,6 +47,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
 
         public RestartTimer RestartTimer { get; } = new(new() { 4, 5 });
+
+        public MessageQueue.MessageQueue MessageQueue { get; } = new();
 
         private DottedNumber _commandCount = 1;
 
@@ -100,6 +103,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnError += Client_OnError;
             TwitchClient.OnDisconnected += Client_OnDisconnect;
             TwitchClient.OnReconnected += Client_OnReconnected;
+            MessageQueue.OnMessageAddedToQueue += Queue_OnMessageAdded;
 
             TwitchClient.Connect();
 
@@ -235,6 +239,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         }
 
         #endregion Bot_On
+
+        #region Queue
+
+        private void Queue_OnMessageAdded(object sender, OnMessageAddedToQueueArgs e)
+        {
+
+        }
+
+        #endregion Queue
 
         #region Threading
 
