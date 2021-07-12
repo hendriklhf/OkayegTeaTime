@@ -133,8 +133,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public void JoinChannel(string channel)
         {
             DataBase.AddChannel(channel);
-            LastMessages.Add($"#{channel.RemoveHashtag()}", string.Empty);
+            LastMessagesHelper.FillDictionary();
             PrefixHelper.FillDictionary();
+            EmoteInFrontHelper.FillDictionary();
             try
             {
                 TwitchClient.JoinChannel(channel.RemoveHashtag());

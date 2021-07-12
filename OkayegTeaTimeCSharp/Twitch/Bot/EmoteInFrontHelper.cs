@@ -6,7 +6,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class EmoteInFrontHelper
     {
-        public static Dictionary<string, string> FillEmotesInFront()
+        public static Dictionary<string, string> FillDictionary()
         {
             return DataBase.GetEmotesInFront();
         }
