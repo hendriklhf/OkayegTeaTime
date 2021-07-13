@@ -1,5 +1,5 @@
-﻿using SpotifyAPI.Web;
-using Sterbehilfe.Strings;
+﻿using HLE.Strings;
+using SpotifyAPI.Web;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {

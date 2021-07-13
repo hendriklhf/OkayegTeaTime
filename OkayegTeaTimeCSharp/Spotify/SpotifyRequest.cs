@@ -1,9 +1,9 @@
-﻿using OkayegTeaTimeCSharp.Database;
+﻿using HLE.Strings;
+using HLE.Time;
+using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Properties;
 using SpotifyAPI.Web;
-using Sterbehilfe.Strings;
-using Sterbehilfe.Time;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

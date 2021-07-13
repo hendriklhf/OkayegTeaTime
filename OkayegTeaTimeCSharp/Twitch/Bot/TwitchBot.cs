@@ -1,12 +1,12 @@
-﻿using OkayegTeaTimeCSharp.Database;
+﻿using HLE.Numbers;
+using HLE.Strings;
+using HLE.Time;
+using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Bot.MessageQueue;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
-using Sterbehilfe.Numbers;
-using Sterbehilfe.Strings;
-using Sterbehilfe.Time;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,8 +20,8 @@ using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
+using static HLE.Time.TimeHelper;
 using static OkayegTeaTimeCSharp.Program;
-using static Sterbehilfe.Time.TimeHelper;
 using Timers = System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
@@ -44,7 +44,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             set => _commandCount = value;
         }
 
-        public string Runtime => ConvertMillisecondsToPassedTime(_runtime);
+        public string Runtime => ConvertUnixTimeToPassedTime(_runtime);
 
         public RestartTimer RestartTimer { get; } = new(new() { 4, 5 });
 
@@ -244,7 +244,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Queue_OnMessageAdded(object sender, OnMessageAddedToQueueArgs e)
         {
-
         }
 
         #endregion Queue

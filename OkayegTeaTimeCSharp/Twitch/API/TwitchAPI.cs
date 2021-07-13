@@ -1,5 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Properties;
-using Sterbehilfe.HttpRequests;
+﻿using HLE.HttpRequests;
+using OkayegTeaTimeCSharp.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;

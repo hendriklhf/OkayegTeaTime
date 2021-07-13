@@ -1,8 +1,8 @@
-﻿using OkayegTeaTimeCSharp.Properties;
+﻿using HLE.Strings;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.Strings;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses

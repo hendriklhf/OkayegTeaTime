@@ -1,10 +1,10 @@
-﻿using OkayegTeaTimeCSharp.Commands;
+﻿using HLE.Strings;
+using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.Strings;
 using System.Linq;
 using TwitchLib.Client.Models;
 

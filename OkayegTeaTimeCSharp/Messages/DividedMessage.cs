@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Twitch;
+﻿using HLE.Strings;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using Sterbehilfe.Strings;
 using System.Collections.Generic;
 using System.Threading;
 

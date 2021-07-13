@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Utils;
+﻿using HLE.Strings;
+using OkayegTeaTimeCSharp.Utils;
 using SpotifyAPI.Web;
-using Sterbehilfe.Strings;
 using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Spotify

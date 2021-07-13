@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
+using HLE.Time;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.Time;
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {

@@ -1,9 +1,9 @@
-﻿using OkayegTeaTimeCSharp.Messages;
+﻿using HLE.Strings;
+using HLE.Time;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.Strings;
-using Sterbehilfe.Time;
 using System.Linq;
 using TwitchLib.Client.Models;
 
@@ -45,11 +45,11 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             int messageStartIdx = GetMessageStartIdx();
             if (messageStartIdx == _noMessageIndex)
             {
-                return TimeHelper.ConvertStringToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..].ToList());
+                return TimeHelper.ConvertTimeToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..].ToList());
             }
             else
             {
-                return TimeHelper.ConvertStringToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList());
+                return TimeHelper.ConvertTimeToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList());
             }
         }
 

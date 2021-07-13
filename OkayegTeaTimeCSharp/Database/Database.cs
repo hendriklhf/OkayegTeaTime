@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HLE.Strings;
+using HLE.Time;
+using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
@@ -7,8 +9,6 @@ using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.Strings;
-using Sterbehilfe.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;

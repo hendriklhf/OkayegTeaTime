@@ -1,4 +1,4 @@
-﻿using Sterbehilfe.Time;
+﻿using HLE.Time;
 using System.Linq;
 using System.Timers;
 

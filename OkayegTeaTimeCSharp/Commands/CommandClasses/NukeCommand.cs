@@ -1,8 +1,8 @@
-﻿using OkayegTeaTimeCSharp.Twitch;
+﻿using HLE.Strings;
+using HLE.Time;
+using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.Strings;
-using Sterbehilfe.Time;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\S+\s" + Pattern.TimeSplitPattern + @"\s" + Pattern.TimeSplitPattern + @"(\s|$)")))
             {
-                twitchBot.SendCreatedNuke(chatMessage, chatMessage.GetLowerSplit()[1], TimeHelper.ConvertStringToSeconds(new() { chatMessage.GetLowerSplit()[2] }), TimeHelper.ConvertStringToMilliseconds(new() { chatMessage.GetLowerSplit()[3] }));
+                twitchBot.SendCreatedNuke(chatMessage, chatMessage.GetLowerSplit()[1], TimeHelper.ConvertStringToSeconds(new() { chatMessage.GetLowerSplit()[2] }), TimeHelper.ConvertTimeToMilliseconds(new() { chatMessage.GetLowerSplit()[3] }));
             }
         }
     }

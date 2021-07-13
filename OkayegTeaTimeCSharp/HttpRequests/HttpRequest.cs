@@ -1,8 +1,8 @@
-﻿using OkayegTeaTimeCSharp.JsonData;
+﻿using HLE.HttpRequests;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
-using Sterbehilfe.HttpRequests;
 using System;
 using System.Collections.Generic;
 using System.IO;

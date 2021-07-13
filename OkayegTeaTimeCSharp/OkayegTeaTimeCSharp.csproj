@@ -4,7 +4,7 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net5.0</TargetFramework>
 		<StartupObject>OkayegTeaTimeCSharp.Program</StartupObject>
-		<RepositoryUrl>github.com/Sterbehilfe/OkayegTeaTimeCSharp</RepositoryUrl>
+		<RepositoryUrl>github.com/HLE/OkayegTeaTimeCSharp</RepositoryUrl>
 		<SignAssembly>false</SignAssembly>
 		<Platforms>AnyCPU;x86;ARM64;ARM32</Platforms>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -75,8 +75,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Sterbehilfe">
-	    <HintPath>..\..\SterbehilfeClassLibrary\Build\Sterbehilfe.dll</HintPath>
+	  <Reference Include="HLE">
+	    <HintPath>..\..\HLEClassLibrary\Build\HLE.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
