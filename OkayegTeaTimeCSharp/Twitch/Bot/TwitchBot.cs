@@ -1,16 +1,13 @@
 ﻿using HLE.Numbers;
-using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
-using OkayegTeaTimeCSharp.Twitch.Bot.MessageQueue;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -46,13 +43,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string Runtime => ConvertUnixTimeToPassedTime(_runtime);
 
-        public RestartTimer RestartTimer { get; } = new(new() { 4, 5 });
-
-        public MessageQueue.MessageQueue MessageQueue { get; } = new();
+        public Restarter Restarter { get; } = new(new() { 5 });
 
         private DottedNumber _commandCount = 1;
 
-        private long _runtime = Now();
+        private readonly long _runtime = Now();
 
         private static TwitchBot _okayegTeaTime;
 
@@ -70,8 +65,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TwitchBot()
         {
-            SetRunTime();
-
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
@@ -102,12 +95,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnError += Client_OnError;
             TwitchClient.OnDisconnected += Client_OnDisconnect;
             TwitchClient.OnReconnected += Client_OnReconnected;
-            MessageQueue.OnMessageAddedToQueue += Queue_OnMessageAdded;
 
             TwitchClient.Connect();
 
             InitializeTimers();
-            RestartTimer.Initialize();
+            Restarter.InitializeResartTimer();
         }
 
         public void SetBot()
@@ -160,19 +152,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private static double GetMemoryUsage()
         {
             return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100;
-        }
-
-        private void SetRunTime()
-        {
-            string runtime = File.ReadAllText(Resources.RuntimePath);
-            if (string.IsNullOrEmpty(runtime))
-            {
-                File.WriteAllText(Resources.RuntimePath, Now().ToString());
-            }
-            else if (runtime.IsMatch(@"^\d+$"))
-            {
-                _runtime = File.ReadAllText(Resources.RuntimePath).ToLong();
-            }
         }
 
         #endregion SystemInfo
@@ -238,14 +217,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         }
 
         #endregion Bot_On
-
-        #region Queue
-
-        private void Queue_OnMessageAdded(object sender, OnMessageAddedToQueueArgs e)
-        {
-        }
-
-        #endregion Queue
 
         #region Threading
 
