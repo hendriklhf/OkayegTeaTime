@@ -34,6 +34,7 @@ namespace OkayegTeaTimeCSharp.Database
                 user.AccessToken = accessToken;
                 user.RefreshToken = refreshToken;
                 user.Time = TimeHelper.Now();
+                database.SaveChanges();
             }
             else
             {
