@@ -10,15 +10,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public class Restarter
     {
-        private List<int> _hoursOfDay;
-
-        private readonly List<Timer::Timer> _restartTimers = new();
-
-        private readonly Timer::Timer _pingTimer = new(_pingInterval);
-
         private const int _pingInterval = 1000;
 
         private const string _routerIP = "192.168.178.1";
+
+        private readonly Timer::Timer _pingTimer = new(_pingInterval);
+
+        private readonly List<Timer::Timer> _restartTimers = new();
+
+        private List<int> _hoursOfDay;
 
         public Restarter()
         {
@@ -28,12 +28,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public Restarter(List<int> hoursOfDay) : this()
         {
             _hoursOfDay = hoursOfDay;
-        }
-
-        private void InitializePingRestart()
-        {
-            _pingTimer.Elapsed += PingTimer_OnElapsed;
-            _pingTimer.Start();
         }
 
         public void InitializeResartTimer()
@@ -63,10 +57,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             _restartTimers.Clear();
         }
 
-        private void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
+        private void InitializePingRestart()
         {
-            (sender as Timer::Timer).Interval = new Day().Milliseconds;
-            Restart();
+            _pingTimer.Elapsed += PingTimer_OnElapsed;
+            _pingTimer.Start();
         }
 
         private void PingTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
@@ -76,6 +70,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 Thread.Sleep(10000);
                 Restart();
             }
+        }
+
+        private void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
+        {
+            (sender as Timer::Timer).Interval = new Day().Milliseconds;
+            Restart();
         }
 
         private long TimeUntil(int hourOfDay)
