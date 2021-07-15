@@ -715,6 +715,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}");
         }
 
+        public static void SendSpotifySearch(this TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            string query = chatMessage.GetSplit().Skip(2).ToArray().ArrayToString();
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}");
+        }
+
         public static void SendSuggestionNoted(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
             DataBase.AddSugestion(chatMessage, chatMessage.GetMessage()[chatMessage.GetLowerSplit()[0].Length..]);

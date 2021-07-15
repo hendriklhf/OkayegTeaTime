@@ -2,6 +2,7 @@
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Properties;
 using SpotifyAPI.Web;
 using System;
@@ -32,9 +33,10 @@ namespace OkayegTeaTimeCSharp.Spotify
                         FullTrack item = await client.Tracks.Get(song.Remove("spotify:track:"));
                         return $"{item.Name} by {item.Artists.GetArtistString()} has been added to the queue";
                     }
-                    catch (APIException)
+                    catch (APIException ex)
                     {
-                        return $"no music playing on any device, the {channel} has to start their playback first";
+                        Logger.Log(ex);
+                        return $"no music playing on any device, {channel} has to start their playback first";
                     }
                     catch (Exception)
                     {
@@ -52,34 +54,6 @@ namespace OkayegTeaTimeCSharp.Spotify
             }
         }
 
-        public static async Task<string> SkipToNextSong(string channel)
-        {
-            if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == channel))
-            {
-                Database.Models.Spotify user = await GetSpotifyUser(channel);
-                if (user.SongRequestEnabled == true)
-                {
-                    try
-                    {
-                        await new SpotifyClient(user.AccessToken).Player.SkipNext(new());
-                        return $"skipped to the next song in queue";
-                    }
-                    catch (Exception)
-                    {
-                        return $"couldn't skip to the next song";
-                    }
-                }
-                else
-                {
-                    return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
-                }
-            }
-            else
-            {
-                return $"can't skip a song of {channel}, they have to register first";
-            }
-        }
-
         public static async Task<string> GetCurrentlyPlaying(string username)
         {
             if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username))
@@ -93,6 +67,7 @@ namespace OkayegTeaTimeCSharp.Spotify
                 return $"can't request the current playing song, user {username} has to register first";
             }
         }
+
         public static string GetLoginURL()
         {
             LoginRequest login = new(new("https://example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
@@ -125,6 +100,49 @@ namespace OkayegTeaTimeCSharp.Spotify
             else
             {
                 return user;
+            }
+        }
+
+        public static async Task<string> Search(string query)
+        {
+            Database.Models.Spotify user = await GetSpotifyUser(Resources.Owner);
+            SearchResponse response = await new SpotifyClient(user.AccessToken).Search.Item(new(SearchRequest.Types.Track, query));
+            if (response.Tracks.Items.Count > 0)
+            {
+                FullTrack track = SpotifyHelper.GetExcactTrackFromSearch(response.Tracks.Items, query.Split().ToList());
+                return $"{track.Name} by {track.Artists.GetArtistString()} || {track.Uri}";
+            }
+            else
+            {
+                return "no tracks found to match the search query";
+            }
+        }
+
+        public static async Task<string> SkipToNextSong(string channel)
+        {
+            if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == channel))
+            {
+                Database.Models.Spotify user = await GetSpotifyUser(channel);
+                if (user.SongRequestEnabled == true)
+                {
+                    try
+                    {
+                        await new SpotifyClient(user.AccessToken).Player.SkipNext(new());
+                        return $"skipped to the next song in queue";
+                    }
+                    catch (Exception)
+                    {
+                        return $"couldn't skip to the next song";
+                    }
+                }
+                else
+                {
+                    return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
+                }
+            }
+            else
+            {
+                return $"can't skip a song of {channel}, they have to register first";
             }
         }
     }

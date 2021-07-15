@@ -2,6 +2,7 @@
 using OkayegTeaTimeCSharp.Utils;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {
@@ -17,25 +18,12 @@ namespace OkayegTeaTimeCSharp.Spotify
             return result.Trim()[..^1];
         }
 
-        public static string GetSpotifyURI(string input)
+        public static FullTrack GetExcactTrackFromSearch(List<FullTrack> tracks, List<string> query)
         {
-            if (input.IsMatch(Pattern.SpotifyUriPattern))
-            {
-                return input;
-            }
-            else if (input.IsMatch(Pattern.SpotifyLinkPattern))
-            {
-                string uriCode = input.Match(@"track/\w+\?").Remove("track/").Remove("?");
-                return $"spotify:track:{uriCode}";
-            }
-            else if (input.IsMatch(@"\w{22}"))
-            {
-                return $"spotify:track:{input}";
-            }
-            else
-            {
-                return null;
-            }
+            return tracks.Where(t =>
+                query.Any(q => t.Name.IsMatch(q))
+                || query.Any(q => t.Artists.Any(a => a.Name.IsMatch(q))))
+                .FirstOrDefault();
         }
 
         public static PlayingItem GetItem(this CurrentlyPlaying currentlyPlaying)
@@ -54,6 +42,27 @@ namespace OkayegTeaTimeCSharp.Spotify
                 {
                     return null;
                 }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static string GetSpotifyURI(string input)
+        {
+            if (input.IsMatch(Pattern.SpotifyUriPattern))
+            {
+                return input;
+            }
+            else if (input.IsMatch(Pattern.SpotifyLinkPattern))
+            {
+                string uriCode = input.Match(@"track/\w+\?").Remove("track/").Remove("?");
+                return $"spotify:track:{uriCode}";
+            }
+            else if (input.IsMatch(@"\w{22}"))
+            {
+                return $"spotify:track:{input}";
             }
             else
             {
