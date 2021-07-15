@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Twitch.Bot;
-using System;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Whisper
@@ -8,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Whisper
     {
         public static void Handle(TwitchBot twitchBot, WhisperMessage whisperMessage)
         {
-            throw new NotImplementedException();
+#warning not implemented
         }
     }
 }
