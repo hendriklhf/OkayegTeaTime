@@ -1,10 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.GitHub;
-using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 using System.Diagnostics;
-using System.IO;
+using System.Threading.Tasks;
 
 namespace OkayegTeaTimeCSharp
 {
@@ -18,12 +18,15 @@ namespace OkayegTeaTimeCSharp
 
             TwitchAPI.Configure();
             new TwitchBot().SetBot();
-
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
+            Console.WriteLine(Spotify.SpotifyRequest.GetLoginURL());
             while (_running)
             {
+                string input = Console.ReadLine();
+                Task.Run(() => Spotify.SpotifyRequest.GetNewAuthTokens("", input)).Wait();
+                Console.WriteLine("Done");
             }
         }
 
@@ -34,7 +37,7 @@ namespace OkayegTeaTimeCSharp
             Console.ForegroundColor = ConsoleColor.Gray;
             if (logging)
             {
-                File.AppendAllText(Resources.LogsPath, $"{DateTime.Now:dd/MM/yyyy HH:mm:ss} | {value}\n");
+                Logger.Log(value);
             }
         }
 
