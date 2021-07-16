@@ -4,7 +4,6 @@ using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace OkayegTeaTimeCSharp
 {
@@ -21,12 +20,8 @@ namespace OkayegTeaTimeCSharp
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
-            Console.WriteLine(Spotify.SpotifyRequest.GetLoginURL());
             while (_running)
             {
-                string input = Console.ReadLine();
-                Task.Run(() => Spotify.SpotifyRequest.GetNewAuthTokens("", input)).Wait();
-                Console.WriteLine("Done");
             }
         }
 

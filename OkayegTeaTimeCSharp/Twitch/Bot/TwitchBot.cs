@@ -35,17 +35,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TcpClient TcpClient { get; private set; }
 
-        public DottedNumber CommandCount
-        {
-            get => _commandCount;
-            set => _commandCount = value;
-        }
+        public DottedNumber CommandCount { get; set; } = 1;
 
-        public string Runtime => ConvertUnixTimeToPassedTime(_runtime);
+        public string Runtime => ConvertUnixTimeToTimeStamp(_runtime);
 
-        public Restarter Restarter { get; } = new(new() { 5 });
-
-        private DottedNumber _commandCount = 1;
+        public Restarter Restarter { get; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
 
         private readonly long _runtime = Now();
 

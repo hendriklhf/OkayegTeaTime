@@ -1,5 +1,4 @@
 ﻿using HLE.Time;
-using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -18,28 +17,28 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private readonly List<Timer::Timer> _restartTimers = new();
 
-        private List<int> _hoursOfDay;
+        private List<(int Hour, int Minute)> _restartTimes;
 
         public Restarter()
         {
             InitializePingRestart();
         }
 
-        public Restarter(List<int> hoursOfDay) : this()
+        public Restarter(List<(int, int)> restartTimes) : this()
         {
-            _hoursOfDay = hoursOfDay;
+            _restartTimes = restartTimes;
         }
 
         public void InitializeResartTimer()
         {
-            InitializeResartTimer(_hoursOfDay);
+            InitializeResartTimer(_restartTimes);
         }
 
-        public void InitializeResartTimer(List<int> hoursOfDay)
+        public void InitializeResartTimer(List<(int, int)> hoursOfDay)
         {
-            _hoursOfDay = hoursOfDay;
+            _restartTimes = hoursOfDay;
             Stop();
-            _hoursOfDay.ForEach(h => _restartTimers.Add(new(TimeUntil(h))));
+            _restartTimes.ForEach(r => _restartTimers.Add(new(TimeHelper.MillisecondsUntil(r.Hour, r.Minute))));
             _restartTimers.ForEach(t =>
             {
                 t.Elapsed += RestartTimer_OnElapsed;
@@ -76,25 +75,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             (sender as Timer::Timer).Interval = new Day().Milliseconds;
             Restart();
-        }
-
-        private long TimeUntil(int hourOfDay)
-        {
-            long result = 0;
-            (int Hours, int Minutes, int Seconds) now = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-            result += new Second(60 - now.Seconds).Milliseconds;
-            now.Minutes++;
-            result += new Minute(60 - now.Minutes).Milliseconds;
-            now.Hours++;
-            if (now.Hours > hourOfDay)
-            {
-                result += new Hour(24 - now.Hours + hourOfDay).Milliseconds;
-            }
-            else
-            {
-                result += new Hour(hourOfDay - now.Hours).Milliseconds;
-            }
-            return result;
         }
     }
 }

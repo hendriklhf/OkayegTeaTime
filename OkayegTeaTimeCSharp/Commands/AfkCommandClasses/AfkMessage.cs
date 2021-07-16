@@ -32,7 +32,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
         private AfkMessage ReplaceSpaceHolder(User user)
         {
             ComingBack = ComingBack.Replace("{username}", user.Username)
-                .Replace("{time}", TimeHelper.ConvertUnixTimeToPassedTime(user.Time, "ago", ConversionType.YearDayHourMin))
+                .Replace("{time}", TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin))
                 .Replace("{message}", user.MessageText.Decode());
             ComingBack = string.IsNullOrEmpty(user.MessageText.Decode()) ? ComingBack.Replace(":", "").ReplaceSpaces() : ComingBack;
 
