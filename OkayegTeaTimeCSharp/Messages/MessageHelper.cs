@@ -12,17 +12,17 @@ namespace OkayegTeaTimeCSharp.Messages
 {
     public static class MessageHelper
     {
-        public static bool IsAfkCommand(ChatMessage chatMessage)
+        public static bool IsAfkCommand(this ChatMessage chatMessage)
         {
             return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
 
-        public static bool IsAnyCommand(ChatMessage chatMessage)
+        public static bool IsAnyCommand(this ChatMessage chatMessage)
         {
             return CommandHelper.GetAllAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
 
-        public static bool IsCommand(ChatMessage chatMessage)
+        public static bool IsCommand(this ChatMessage chatMessage)
         {
             return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
@@ -32,12 +32,12 @@ namespace OkayegTeaTimeCSharp.Messages
             return chatMessage.IsModerator || chatMessage.IsBroadcaster;
         }
 
-        public static bool IsNotLoggedChannel(string channel)
+        public static bool IsNotLoggedChannel(this string channel)
         {
             return Config.NotLoggedChannels.Contains(channel);
         }
 
-        public static bool IsSpecialUser(string username)
+        public static bool IsSpecialUser(this string username)
         {
             return JsonHelper.BotData.UserLists.SpecialUsers.Contains(username);
         }

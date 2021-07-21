@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Messages
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            if (!MessageHelper.IsSpecialUser(chatMessage.Username))
+            if (!chatMessage.Username.IsSpecialUser())
             {
                 DataBase.InsertNewUser(chatMessage.Username);
 

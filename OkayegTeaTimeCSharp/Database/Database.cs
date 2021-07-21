@@ -59,14 +59,14 @@ namespace OkayegTeaTimeCSharp.Database
                 OkayegTeaTimeContext database = new();
                 if (reminder.ToTime == 0)
                 {
-                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaximumReminders)
+                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
                     {
                         throw new TooManyReminderException();
                     }
                 }
                 else
                 {
-                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaximumReminders)
+                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
                     {
                         throw new TooManyReminderException();
                     }
@@ -90,7 +90,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            if (!MessageHelper.IsAnyCommand(chatMessage))
+            if (!chatMessage.IsAnyCommand())
             {
                 OkayegTeaTimeContext database = new();
                 if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
@@ -153,7 +153,7 @@ namespace OkayegTeaTimeCSharp.Database
             if (user.IsAfk == "True")
             {
                 twitchBot.SendComingBack(user, chatMessage);
-                if (!MessageHelper.IsAfkCommand(chatMessage))
+                if (!chatMessage.IsAfkCommand())
                 {
                     database.SetAfk(chatMessage.Username, false);
                 }

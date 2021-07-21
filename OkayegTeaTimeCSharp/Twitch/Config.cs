@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Twitch
         public const int AfkCooldown = 10000;
         public const string EmoteInFront = "Okayeg";
         public const int MaxEmoteInFrontLength = 20;
-        public const int MaximumReminders = 10;
+        public const int MaxReminders = 10;
         public const int MaxMessageLength = 500;
         public const int MaxPrefixLength = 10;
         public const int MinimumDelayBetweenMessages = 1300;

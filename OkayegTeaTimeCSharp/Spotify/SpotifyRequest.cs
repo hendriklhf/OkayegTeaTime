@@ -145,5 +145,30 @@ namespace OkayegTeaTimeCSharp.Spotify
                 return $"can't skip a song of {channel}, they have to register first";
             }
         }
+
+        public static async Task<string> Listen(string username, string target, bool listenAlong)
+        {
+            OkayegTeaTimeContext database = new();
+            if (database.Spotify.Any(s => s.Username == username))
+            {
+                if (database.Spotify.Any(s => s.Username == target))
+                {
+                    Database.Models.Spotify user = await GetSpotifyUser(username);
+                    Database.Models.Spotify targetUser = await GetSpotifyUser(target);
+                    CurrentlyPlaying currentlyPlaying = await new SpotifyClient(targetUser.AccessToken).Player.GetCurrentlyPlaying(new());
+                    PlayingItem item = currentlyPlaying.GetItem();
+                    SpotifyClient userClient = new(user.AccessToken);
+                    await userClient.Player.AddToQueue(new(item.URI));
+                }
+                else
+                {
+                    return $"can't listen to {target}'s song, they have to register first";
+                }
+            }
+            else
+            {
+                return $"can't listen to {target}'s song, you have to register first";
+            }
+        }
     }
 }

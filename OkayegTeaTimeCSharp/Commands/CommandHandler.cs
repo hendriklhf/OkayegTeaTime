@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage)
         {
-            if (MessageHelper.IsCommand(chatMessage))
+            if (chatMessage.IsCommand())
             {
                 ((CommandType[])Enum.GetValues(typeof(CommandType))).ToList().ForEach(type =>
                 {
@@ -39,7 +39,7 @@ namespace OkayegTeaTimeCSharp.Commands
                 });
                 twitchBot.CommandCount++;
             }
-            else if (MessageHelper.IsAfkCommand(chatMessage))
+            else if (chatMessage.IsAfkCommand())
             {
                 ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ToList().ForEach(type =>
                 {
