@@ -68,17 +68,13 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Egs)
-                    .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValueSql("'0'");
+                entity.Property(e => e.Egs).HasColumnType("bigint(20) unsigned");
 
                 entity.Property(e => e.Level)
                     .HasColumnType("int(11)")
-                    .HasDefaultValueSql("'0'");
+                    .HasDefaultValueSql("'1'");
 
-                entity.Property(e => e.Time)
-                    .HasColumnType("bigint(20)")
-                    .HasDefaultValueSql("'0'");
+                entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
                 entity.Property(e => e.Username)
                     .IsRequired()

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-#nullable disable
+﻿#nullable disable
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
@@ -9,8 +6,8 @@ namespace OkayegTeaTimeCSharp.Database.Models
     {
         public int Id { get; set; }
         public string Username { get; set; }
-        public long? Egs { get; set; }
-        public int? Level { get; set; }
-        public long? Time { get; set; }
+        public long Egs { get; set; }
+        public int Level { get; set; }
+        public long Time { get; set; }
     }
 }
