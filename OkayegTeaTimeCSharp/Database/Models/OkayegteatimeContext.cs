@@ -19,6 +19,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
         public virtual DbSet<Bot> Bots { get; set; }
         public virtual DbSet<Gachi> Gachi { get; set; }
+        public virtual DbSet<Eg> Egs { get; set; }
         public virtual DbSet<EmoteInFront> EmoteInFronts { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Nuke> Nukes { get; set; }
@@ -55,6 +56,29 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .HasColumnName("OAuth");
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Eg>(entity =>
+            {
+                entity.ToTable("egs");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Egs)
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Level)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Time)
+                    .HasColumnType("bigint(20)")
+                    .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
@@ -270,8 +294,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
                 entity.ToTable("users");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Egs).HasColumnType("bigint(20)");
 
                 entity.Property(e => e.IsAfk)
                     .IsRequired()
