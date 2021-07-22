@@ -11,9 +11,6 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
         [JsonProperty("UserLists")]
         public UserLists UserLists { get; set; }
 
-        [JsonProperty("Channels")]
-        public List<Channel> Channels { get; set; }
-
         [JsonProperty("Discord")]
         public Discord Discord { get; set; }
     }
