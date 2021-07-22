@@ -13,18 +13,18 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
-            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+            return JsonController.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
         }
 
         public static AfkCommand GetAfkCommand(string name)
         {
-            return JsonHelper.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
+            return JsonController.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
         }
 
         public static List<string> GetAfkCommandAliases()
         {
             List<string> listAlias = new();
-            JsonHelper.BotData.CommandLists.AfkCommands.ForEach(cmd =>
+            JsonController.BotData.CommandLists.AfkCommands.ForEach(cmd =>
             {
                 cmd.Alias.ForEach(alias =>
                 {
@@ -41,13 +41,13 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static Command GetCommand(CommandType type)
         {
-            return JsonHelper.BotData.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+            return JsonController.BotData.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
         }
 
         public static List<string> GetCommandAliases()
         {
             List<string> listAlias = new();
-            JsonHelper.BotData.CommandLists.Commands.ForEach(cmd =>
+            JsonController.BotData.CommandLists.Commands.ForEach(cmd =>
             {
                 cmd.Alias.ForEach(alias =>
                 {

@@ -75,7 +75,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 .Concat(request.Data.GetProperty("chatters").GetProperty("admins").ToString().WordArrayStringToList())
                 .Concat(request.Data.GetProperty("chatters").GetProperty("global_mods").ToString().WordArrayStringToList())
                 .Concat(request.Data.GetProperty("chatters").GetProperty("viewers").ToString().WordArrayStringToList())
-                .Where(user => !JsonHelper.BotData.UserLists.SpecialUsers.Contains(user))
+                .Where(user => !JsonController.BotData.UserLists.SpecialUsers.Contains(user))
                 .ToList();
         }
 

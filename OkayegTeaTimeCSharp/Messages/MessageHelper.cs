@@ -39,7 +39,7 @@ namespace OkayegTeaTimeCSharp.Messages
 
         public static bool IsSpecialUser(this string username)
         {
-            return JsonHelper.BotData.UserLists.SpecialUsers.Contains(username);
+            return JsonController.BotData.UserLists.SpecialUsers.Contains(username);
         }
 
         public static byte[] MakeInsertable(this string input)
