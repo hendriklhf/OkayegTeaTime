@@ -74,6 +74,8 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .HasColumnType("int(11)")
                     .HasDefaultValueSql("'1'");
 
+                entity.Property(e => e.Prestige).HasColumnType("int(11)");
+
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 
                 entity.Property(e => e.Username)
