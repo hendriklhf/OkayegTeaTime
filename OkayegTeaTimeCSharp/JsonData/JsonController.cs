@@ -6,7 +6,7 @@ using SystemJson = System.Text.Json;
 
 namespace OkayegTeaTimeCSharp.JsonData
 {
-    public static class JsonHelper
+    public static class JsonController
     {
         public static readonly Data BotData = JsonToObject();
 
