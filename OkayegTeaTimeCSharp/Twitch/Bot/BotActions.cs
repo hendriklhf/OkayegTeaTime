@@ -204,7 +204,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 User user = DataBase.GetUser(username);
-                if (user.IsAfk == "true")
+                if (user.IsAfk == "True")
                 {
                     string message = $"{chatMessage.Username}, {AfkMessage.Create(user).GoingAway}";
                     message += user.MessageText.Decode().Length > 0 ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})" : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
