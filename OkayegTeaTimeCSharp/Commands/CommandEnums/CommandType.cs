@@ -14,6 +14,7 @@
         Fuck,
         Gachi,
         Help,
+        Id,
         Join,
         Last,
         Massping,
