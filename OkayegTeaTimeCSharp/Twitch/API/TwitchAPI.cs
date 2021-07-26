@@ -27,7 +27,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
                     new("client_id", _api.Settings.ClientId),
                     new("client_secret", _api.Settings.Secret),
                     new("grant_type", "client_credentials"),
-                    new("scope", Resources.TwitchApiScopes)
+                    new("scope", "channel:read:subscriptions")
                 });
             return request.Data.GetProperty("access_token").GetString();
         }
@@ -39,7 +39,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
 
         public static Channel GetChannelByName(string channel)
         {
-            List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 10).Result.Channels.ToList();
+            List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 20).Result.Channels.ToList();
             try
             {
                 return channels.Where(c => c.Name == channel).FirstOrDefault();
