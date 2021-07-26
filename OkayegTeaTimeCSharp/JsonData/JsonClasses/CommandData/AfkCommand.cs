@@ -6,7 +6,7 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData
     {
         public string CommandName { get; set; }
 
-        public string CommingBack { get; set; }
+        public string ComingBack { get; set; }
 
         public string GoingAway { get; set; }
 
