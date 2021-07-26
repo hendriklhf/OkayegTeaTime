@@ -1,10 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.GitHub;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 using System.Diagnostics;
-using OkayegTeaTimeCSharp.JsonData;
 
 namespace OkayegTeaTimeCSharp
 {

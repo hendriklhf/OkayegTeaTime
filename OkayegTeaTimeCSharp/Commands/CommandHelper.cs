@@ -1,6 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
