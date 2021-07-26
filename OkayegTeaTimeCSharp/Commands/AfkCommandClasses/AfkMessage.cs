@@ -26,7 +26,7 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
         public static AfkMessage Create(User user)
         {
             string type = user.Type.ToLower();
-            return new AfkMessage(type, CommandHelper.GetAfkCommand(type).ComingBack, CommandHelper.GetAfkCommand(type).GoingAway, CommandHelper.GetAfkCommand(type).Resuming).ReplaceSpaceHolder(user);
+            return new AfkMessage(type, CommandHelper.GetAfkCommand(type).CommingBack, CommandHelper.GetAfkCommand(type).GoingAway, CommandHelper.GetAfkCommand(type).Resuming).ReplaceSpaceHolder(user);
         }
 
         private AfkMessage ReplaceSpaceHolder(User user)

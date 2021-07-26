@@ -1,6 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System.Collections.Generic;
@@ -13,18 +14,18 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
-            return JsonController.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+            return JsonController.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
         }
 
         public static AfkCommand GetAfkCommand(string name)
         {
-            return JsonController.BotData.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
+            return JsonController.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
         }
 
         public static List<string> GetAfkCommandAliases()
         {
             List<string> listAlias = new();
-            JsonController.BotData.CommandLists.AfkCommands.ForEach(cmd =>
+            JsonController.CommandLists.AfkCommands.ForEach(cmd =>
             {
                 cmd.Alias.ForEach(alias =>
                 {
@@ -41,13 +42,13 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static Command GetCommand(CommandType type)
         {
-            return JsonController.BotData.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+            return JsonController.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
         }
 
         public static List<string> GetCommandAliases()
         {
             List<string> listAlias = new();
-            JsonController.BotData.CommandLists.Commands.ForEach(cmd =>
+            JsonController.CommandLists.Commands.ForEach(cmd =>
             {
                 cmd.Alias.ForEach(alias =>
                 {

@@ -59,7 +59,7 @@ namespace OkayegTeaTimeCSharp.GitHub
                 result += TableHeader(str);
             });
             result += "</tr>";
-            JsonController.BotData.CommandLists.Commands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
+            JsonController.CommandLists.Commands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
             {
                 result += $"<tr><td>{cmd.CommandName}</td><td><table>";
                 cmd.Alias.ForEach(alias =>
@@ -81,7 +81,7 @@ namespace OkayegTeaTimeCSharp.GitHub
                 result += TableHeader(str);
             });
             result += "</tr>";
-            JsonController.BotData.CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
+            JsonController.CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
             {
                 result += $"<tr><td>{cmd.CommandName}</td><td><table>";
                 cmd.Alias.OrderBy(alias => alias).ToList().ForEach(alias =>

@@ -1,14 +1,15 @@
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData
 {
     public class CommandLists
     {
-        [JsonProperty("Commands")]
         public List<Command> Commands { get; set; }
 
-        [JsonProperty("AfkCommands")]
         public List<AfkCommand> AfkCommands { get; set; }
     }
 }

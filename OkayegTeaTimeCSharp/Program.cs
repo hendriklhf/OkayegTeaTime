@@ -4,6 +4,7 @@ using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 using System.Diagnostics;
+using OkayegTeaTimeCSharp.JsonData;
 
 namespace OkayegTeaTimeCSharp
 {
@@ -15,11 +16,13 @@ namespace OkayegTeaTimeCSharp
         {
             Console.Title = "OkayegTeaTime";
 
+            JsonController.LoadData();
             TwitchAPI.Configure();
             new TwitchBot().SetBot();
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
+
             while (_running)
             {
             }

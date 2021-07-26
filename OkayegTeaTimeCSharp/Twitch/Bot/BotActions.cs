@@ -92,27 +92,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 List<HttpRequests.Emote> emotes;
-                if (chatMessage.GetLowerSplit().Length >= 4)
+                if (chatMessage.GetLowerSplit().Length > 2)
                 {
-                    if (chatMessage.GetLowerSplit()[2].IsMatch(@"\w+"))
-                    {
-                        emotes = HttpRequest.Get7TVEmotes(chatMessage.GetLowerSplit()[2], chatMessage.GetLowerSplit()[3].ToInt());
-                    }
-                    else
-                    {
-                        emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel, chatMessage.GetLowerSplit()[3].ToInt());
-                    }
+                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel, chatMessage.GetSplit()[2].ToInt());
                 }
                 else
                 {
-                    if (chatMessage.GetLowerSplit()[2].IsMatch(@"\w+"))
-                    {
-                        emotes = HttpRequest.Get7TVEmotes(chatMessage.GetLowerSplit()[2]);
-                    }
-                    else
-                    {
-                        emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel);
-                    }
+                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
@@ -121,8 +107,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 });
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
             }
         }
@@ -132,27 +119,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 List<HttpRequests.Emote> emotes;
-                if (chatMessage.GetLowerSplit().Length >= 4)
+                if (chatMessage.GetLowerSplit().Length > 2)
                 {
-                    if (chatMessage.GetLowerSplit()[2].IsMatch(@"\w+"))
-                    {
-                        emotes = HttpRequest.GetBTTVEmotes(chatMessage.GetLowerSplit()[2], chatMessage.GetLowerSplit()[3].ToInt());
-                    }
-                    else
-                    {
-                        emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel, chatMessage.GetLowerSplit()[3].ToInt());
-                    }
+                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel, chatMessage.GetSplit()[2].ToInt());
                 }
                 else
                 {
-                    if (chatMessage.GetLowerSplit()[2].IsMatch(@"\w+"))
-                    {
-                        emotes = HttpRequest.GetBTTVEmotes(chatMessage.GetLowerSplit()[2]);
-                    }
-                    else
-                    {
-                        emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel);
-                    }
+                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>
@@ -270,27 +243,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 List<HttpRequests.Emote> emotes;
-                if (chatMessage.GetLowerSplit().Length >= 4)
+                if (chatMessage.GetLowerSplit().Length > 2)
                 {
-                    if (chatMessage.GetLowerSplit()[2].IsMatch(@"\w+"))
-                    {
-                        emotes = HttpRequest.GetFFZEmotes(chatMessage.GetLowerSplit()[2], chatMessage.GetLowerSplit()[3].ToInt());
-                    }
-                    else
-                    {
-                        emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel, chatMessage.GetLowerSplit()[3].ToInt());
-                    }
+                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel, chatMessage.GetSplit()[2].ToInt());
                 }
                 else
                 {
-                    if (chatMessage.GetLowerSplit()[2].IsMatch(@"\w+"))
-                    {
-                        emotes = HttpRequest.GetFFZEmotes(chatMessage.GetLowerSplit()[2]);
-                    }
-                    else
-                    {
-                        emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel);
-                    }
+                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e =>

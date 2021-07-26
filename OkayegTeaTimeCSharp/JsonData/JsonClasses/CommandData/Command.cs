@@ -1,23 +1,21 @@
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData
 {
     public class Command
     {
-        [JsonProperty("CommandName")]
         public string CommandName { get; set; }
 
-        [JsonProperty("Alias")]
         public List<string> Alias { get; set; }
 
-        [JsonProperty("Parameter")]
         public List<string> Parameter { get; set; }
 
-        [JsonProperty("Description")]
         public List<string> Description { get; set; }
 
-        [JsonProperty("Cooldown")]
         public int Cooldown { get; set; }
     }
 }

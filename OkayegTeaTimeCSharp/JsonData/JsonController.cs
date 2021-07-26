@@ -1,42 +1,21 @@
-﻿using OkayegTeaTimeCSharp.JsonData.JsonClasses;
-using OkayegTeaTimeCSharp.Properties;
+﻿using OkayegTeaTimeCSharp.Properties;
 using System.IO;
-using NewtonJson = Newtonsoft.Json;
-using SystemJson = System.Text.Json;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
+using System.Text.Json;
 
 namespace OkayegTeaTimeCSharp.JsonData
 {
     public static class JsonController
     {
-        public static readonly Data BotData = JsonToObject();
+        public static Data BotData { get; private set; }
 
-        private static Data JsonToObject()
-        {
-            return NewtonJson::JsonConvert.DeserializeObject<Data>(JsonToString());
-        }
+        public static CommandLists CommandLists { get; private set; }
 
-        private static string JsonToString()
+        public static void LoadData()
         {
-            return File.ReadAllText(Resources.JsonPath);
-        }
-
-        private static void ObjectToJson(Data data)
-        {
-            File.WriteAllText(Resources.JsonPath, ObjectToString(data));
-        }
-
-        private static string ObjectToString(Data data)
-        {
-            SystemJson::JsonSerializerOptions options = new()
-            {
-                WriteIndented = true
-            };
-            return SystemJson::JsonSerializer.Serialize(data, options);
-        }
-
-        private static Data StringToObject(string json)
-        {
-            return SystemJson::JsonSerializer.Deserialize<Data>(json);
+            BotData = JsonSerializer.Deserialize<Data>(File.ReadAllText(Resources.JsonPath));
+            CommandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Resources.CommandsJsonPath));
         }
     }
 }
