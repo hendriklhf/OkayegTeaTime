@@ -413,7 +413,7 @@
         "[code]"
       ],
       "Description": [
-        "Executes the given C# code. Use \".Out()\" on an object to mark it as output"
+        "Executes the given C# code. Use \".Out()\" for easy output"
       ],
       "Cooldown": 10000
     },
