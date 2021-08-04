@@ -60,3 +60,4 @@ namespace OkayegTeaTimeCSharp
 #warning random reddit post
 #warning pick cmd
 #warning .Split(int) splits in middle of a word
+#warning reorganize botactions, methods return string that will be sent in the command classes
