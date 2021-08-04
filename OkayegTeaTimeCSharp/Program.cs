@@ -39,6 +39,15 @@ namespace OkayegTeaTimeCSharp
             }
         }
 
+        public static void DebugOut(string value, bool logging = false)
+        {
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss} | {value}");
+            if (logging)
+            {
+                Logger.Log(value);
+            }
+        }
+
         public static void Restart()
         {
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
