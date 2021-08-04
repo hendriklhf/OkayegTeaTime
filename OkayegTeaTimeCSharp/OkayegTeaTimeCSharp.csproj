@@ -89,7 +89,7 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I&#xD;&#xA;xcopy $(ProjectDir)JsonData\Commands.json &quot;$(TargetDir)Resources&quot; /E /Y /I" />
+	  <Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I&#xD;&#xA;xcopy $(ProjectDir)JsonData\Commands.json &quot;$(TargetDir)Resources&quot; /E /Y /I&#xD;&#xA;rmdir /S /Q $(TargetDir)Resources\JsonClasses" />
 	</Target>
 
 	<ProjectExtensions><VisualStudio><UserProperties jsondata_4commands_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
