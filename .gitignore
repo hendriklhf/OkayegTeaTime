@@ -10,7 +10,11 @@
 
 # Properties and Resources
 Properties/
-Resources/
+ConnectionString.txt
+Data.json
+DatabaseModels.txt
+OnlineCompilerTemplate.cs
+SqlCreate.sql
 
 # User-specific files
 *.rsuser
