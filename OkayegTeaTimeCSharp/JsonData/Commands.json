@@ -494,6 +494,33 @@
         "Sends the Twitch user ID of the given user"
       ],
       "Cooldown": 10000
+    },
+    {
+      "CommandName": "chatterino",
+      "Alias": [
+        "chatterino",
+        "c2"
+      ],
+      "Parameter": [
+        "(none)"
+      ],
+      "Description": [
+        "Sends usefull Chatterino links, e.g. for download"
+      ]
+    },
+    {
+      "CommandName": "chatterino7",
+      "Alias": [
+        "chatterino7",
+        "c7",
+        "7tv"
+      ],
+      "Parameter": [
+        "(none)"
+      ],
+      "Description": [
+        "Sends usefull Chatterino7 links, e.g. for download"
+      ]
     }
   ],
   "AfkCommands": [

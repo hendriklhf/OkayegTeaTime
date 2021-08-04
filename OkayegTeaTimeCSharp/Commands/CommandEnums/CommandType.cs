@@ -2,6 +2,8 @@
 {
     public enum CommandType
     {
+        Chatterino7,
+        Chatterino,
         Chatters,
         Check,
         Coinflip,
