@@ -200,9 +200,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result} {Emoji.Coin}");
         }
 
-        public static void SendColor(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        public static void SendColor(this TwitchBot twitchBot, ChatMessage chatMessage)
         {
-#warning needs implementation
+            //twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {chatMessage.ColorHex}");
         }
 
         public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)

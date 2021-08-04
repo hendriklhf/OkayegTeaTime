@@ -8,11 +8,6 @@ namespace OkayegTeaTimeCSharp.Logging
 {
     public static class Logger
     {
-        private static string CreateLog(string input)
-        {
-            return $"{DateTime.Now:dd:MM:yy HH:mm:ss} | {input}\n";
-        }
-
         public static void Log(string text)
         {
             File.AppendAllText(Resources.LogsPath, CreateLog(text));
@@ -26,6 +21,11 @@ namespace OkayegTeaTimeCSharp.Logging
         public static void Log(Exception ex)
         {
             File.AppendAllText(Resources.LogsPath, CreateLog($"Exception: {ex.Message}: {ex.StackTrace}"));
+        }
+
+        private static string CreateLog(string input)
+        {
+            return $"{DateTime.Now:dd:MM:yy HH:mm:ss} | {input}\n";
         }
     }
 }
