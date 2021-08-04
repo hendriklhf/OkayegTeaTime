@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using static OkayegTeaTimeCSharp.Program;
 
-namespace OkayegTeaTimeCSharp.GitHub
+namespace OkayegTeaTimeCSharp.Tools.GitHub
 {
     public static class ReadMeGenerator
     {

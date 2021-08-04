@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.GitHub;
-using OkayegTeaTimeCSharp.JsonData;
+﻿using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Logging;
+using OkayegTeaTimeCSharp.Tools.GitHub;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
