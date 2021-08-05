@@ -43,8 +43,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private readonly long _runtime = Now();
 
-        private static TwitchBot _okayegTeaTime;
-
         public static readonly List<Timers::Timer> ListTimer = new();
 
         public static readonly Dictionary<string, string> LastMessages = LastMessagesHelper.FillDictionary();
@@ -92,11 +90,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             InitializeTimers();
             Restarter.InitializeResartTimer();
-        }
-
-        public void SetBot()
-        {
-            _okayegTeaTime = this;
         }
 
         public void Send(string channel, string message)
@@ -212,11 +205,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         #region Threading
 
-        private static void OnMessage(object chatMessage)
+        private void OnMessage(object chatMessage)
         {
             if (!MessageHelper.IsSpecialUser(((ChatMessage)chatMessage).Username))
             {
-                MessageHandler.Handle(_okayegTeaTime, (ChatMessage)chatMessage);
+                MessageHandler.Handle(this, (ChatMessage)chatMessage);
             }
         }
 
@@ -224,42 +217,42 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         #region Timer
 
-        private static void InitializeTimers()
+        private void InitializeTimers()
         {
             Timers.CreateTimers();
             AddTimerFunction();
             StartTimers();
         }
 
-        private static void StartTimers()
+        private void StartTimers()
         {
             ListTimer.ForEach(t => t.Start());
         }
 
-        private static void StopTimers()
+        private void StopTimers()
         {
             ListTimer.ForEach(t => t.Stop());
         }
 
-        private static void AddTimerFunction()
+        private void AddTimerFunction()
         {
             Timers.GetTimer(1000).Elapsed += OnTimer1000;
             Timers.GetTimer(30000).Elapsed += OnTimer30000;
             Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
         }
 
-        private static void OnTimer1000(object sender, Timers::ElapsedEventArgs e)
+        private void OnTimer1000(object sender, Timers::ElapsedEventArgs e)
         {
-            TimerFunctions.CheckForTimedReminders(_okayegTeaTime);
+            TimerFunctions.CheckForTimedReminders(this);
         }
 
-        private static void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
+        private void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
         {
-            TimerFunctions.BanSecretChatUsers(_okayegTeaTime);
-            TimerFunctions.SetConsoleTitle(_okayegTeaTime);
+            TimerFunctions.BanSecretChatUsers(this);
+            TimerFunctions.SetConsoleTitle(this);
         }
 
-        private static void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)
+        private void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)
         {
             TimerFunctions.TwitchApiRefreshAccessToken();
         }
