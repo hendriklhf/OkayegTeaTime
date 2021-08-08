@@ -110,7 +110,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 });
                 return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
             }
@@ -275,7 +275,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 });
                 return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
             }
