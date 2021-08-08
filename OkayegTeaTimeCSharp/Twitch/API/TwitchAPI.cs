@@ -27,7 +27,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
                     new("client_id", _api.Settings.ClientId),
                     new("client_secret", _api.Settings.Secret),
                     new("grant_type", "client_credentials"),
-                    new("scope", "channel:read:subscriptions")
+                    new("scope", "user_subscriptions")
                 });
             return request.Data.GetProperty("access_token").GetString();
         }

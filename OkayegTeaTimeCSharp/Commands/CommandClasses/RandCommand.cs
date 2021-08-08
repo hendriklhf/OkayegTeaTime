@@ -1,7 +1,4 @@
-﻿using HLE.Strings;
-using OkayegTeaTimeCSharp.Twitch;
-using OkayegTeaTimeCSharp.Twitch.Bot;
-using OkayegTeaTimeCSharp.Utils;
+﻿using OkayegTeaTimeCSharp.Twitch.Bot;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
@@ -10,18 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+\s#?\w+")))
-            {
-                twitchBot.SendRandomMessage(chatMessage, chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].RemoveHashtag());
-            }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+")))
-            {
-                twitchBot.SendRandomMessage(chatMessage, chatMessage.GetLowerSplit()[1]);
-            }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel))))
-            {
-                twitchBot.SendRandomMessage(chatMessage);
-            }
+            twitchBot.Send(chatMessage.Channel, BotActions.SendRandomMessage(chatMessage));
         }
     }
 }

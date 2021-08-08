@@ -105,7 +105,7 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static async Task<string> Search(string query)
         {
-            Database.Models.Spotify user = await GetSpotifyUser(Resources.Owner);
+            Database.Models.Spotify user = await GetSpotifyUser(Resources.Moderators);
             SearchResponse response = await new SpotifyClient(user.AccessToken).Search.Item(new(SearchRequest.Types.Track, query));
             if (response.Tracks.Items.Count > 0)
             {

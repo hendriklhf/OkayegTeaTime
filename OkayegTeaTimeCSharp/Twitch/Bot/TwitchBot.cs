@@ -110,7 +110,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public void JoinChannel(string channel)
+        public bool JoinChannel(string channel)
         {
             DataBase.AddChannel(channel);
             LastMessagesHelper.FillDictionary();
@@ -119,11 +119,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 TwitchClient.JoinChannel(channel.RemoveHashtag());
-                Send(channel, "/ I'm online");
+                Send(channel, "I'm online");
+                return true;
             }
             catch (Exception)
             {
-                Send(Resources.Username, $"{Resources.Owner}, unable to join #{channel.RemoveHashtag()}");
+                Send(Resources.Username, $"{Resources.Moderators}, unable to join #{channel.RemoveHashtag()}");
+                return false;
             }
         }
 

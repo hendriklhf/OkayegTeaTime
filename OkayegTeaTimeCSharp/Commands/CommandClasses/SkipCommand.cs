@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel))))
             {
-                twitchBot.SendSongSkipped(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSongSkipped(chatMessage));
             }
         }
     }

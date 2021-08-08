@@ -51,11 +51,11 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static string GetSpotifyURI(string input)
         {
-            if (input.IsMatch(Pattern.SpotifyUriPattern))
+            if (input.IsMatch(Pattern.SpotifyUri))
             {
                 return input;
             }
-            else if (input.IsMatch(Pattern.SpotifyLinkPattern))
+            else if (input.IsMatch(Pattern.SpotifyLink))
             {
                 string uriCode = input.Match(@"track/\w+\?").Remove("track/").Remove("?");
                 return $"spotify:track:{uriCode}";

@@ -10,13 +10,13 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\ssearch[\S\s]+")))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\ssearch\s.+")))
             {
-                twitchBot.SendSpotifySearch(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSpotifySearch(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s\w+)?")))
             {
-                twitchBot.SendSpotifyCurrentlyPlaying(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSpotifyCurrentlyPlaying(chatMessage));
             }
         }
     }

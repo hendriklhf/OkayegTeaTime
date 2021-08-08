@@ -12,19 +12,19 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     public static class RemindCommand
     {
         private static ChatMessage _chatMessage;
-        private static readonly int _startIndex = 3;
-        private static readonly int _noMessageIndex = -1;
+        private const int _startIndex = 3;
+        private const int _noMessageIndex = -1;
 
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
             _chatMessage = chatMessage;
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), Pattern.ReminderInTimePattern)))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), Pattern.ReminderInTime)))
             {
-                twitchBot.SendSetTimedReminder(chatMessage, GetTimedRemindMessage(), GetToTime());
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSetTimedReminder(chatMessage, GetTimedRemindMessage(), GetToTime()));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+(\s\S+)*")))
             {
-                twitchBot.SendSetReminder(chatMessage, GetRemindMessage());
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSetReminder(chatMessage, GetRemindMessage()));
             }
         }
 
@@ -32,7 +32,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             for (int i = _startIndex; i <= _chatMessage.GetLowerSplit().Length - 1; i++)
             {
-                if (!_chatMessage.GetLowerSplit()[i].IsMatch(Pattern.TimeSplitPattern))
+                if (!_chatMessage.GetLowerSplit()[i].IsMatch(Pattern.TimeSplit))
                 {
                     return i;
                 }

@@ -22,7 +22,6 @@ namespace OkayegTeaTimeCSharp
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
-
             while (_running)
             {
             }
@@ -70,3 +69,7 @@ namespace OkayegTeaTimeCSharp
 #warning pick cmd
 #warning .Split(int) splits in middle of a word
 #warning reorganize botactions, methods return string that will be sent in the command classes
+#warning global cooldown of cmds
+#warning notify me live
+#warning emote cmds for other channels
+#warning "beautify" adding cooldown to dict

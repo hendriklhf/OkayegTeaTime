@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public (bool, string) FindSpotifyLink()
         {
-            if (Message.IsMatch(Pattern.SpotifyLinkPattern))
+            if (Message.IsMatch(Pattern.SpotifyLink))
             {
                 string uriCode = Message.Match(@"track/\w+\?").Remove("track/").Remove("?");
                 return new(true, $"spotify:track:{uriCode}");

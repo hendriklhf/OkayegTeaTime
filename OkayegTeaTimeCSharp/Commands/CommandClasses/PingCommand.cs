@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            twitchBot.Send(chatMessage.Channel, $"Pongeg, I'm here! {twitchBot.GetSystemInfo()}");
+            twitchBot.Send(chatMessage.Channel, BotActions.SendPing(twitchBot));
         }
     }
 }

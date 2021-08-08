@@ -10,23 +10,18 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix\s\S{1," + Config.MaxPrefixLength + "}")))
+            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix\s\S+")))
             {
-                twitchBot.SendSetPrefix(chatMessage, chatMessage.GetLowerSplit()[2][..(chatMessage.GetLowerSplit()[2].Length > Config.MaxPrefixLength ? Config.MaxPrefixLength : chatMessage.GetLowerSplit()[2].Length)]);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSetPrefix(chatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\semote\s\S{1," + Config.MaxEmoteInFrontLength + "}")))
+            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\semote\s\S+")))
             {
-                twitchBot.SendSetEmoteInFront(chatMessage, chatMessage.GetSplit()[2][..(chatMessage.GetSplit()[2].Length > Config.MaxEmoteInFrontLength ? Config.MaxEmoteInFrontLength : chatMessage.GetSplit()[2].Length)]);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSetEmoteInFront(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))")))
             {
-                twitchBot.SendSetSongRequestState(chatMessage, ParseBool(chatMessage.GetSplit()[2]));
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSetSongRequestState(chatMessage));
             }
-        }
-
-        private static bool ParseBool(string input)
-        {
-            return input.IsMatch(@"(1|true|enabled?)");
         }
     }
 }

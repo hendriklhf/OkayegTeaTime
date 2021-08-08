@@ -12,7 +12,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\safk\s\w+")))
             {
-                twitchBot.SendCheckAfk(chatMessage, chatMessage.GetLowerSplit()[2]);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendCheckAfk(chatMessage));
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using HLE.Strings;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
@@ -13,10 +12,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s#?\w+")))
             {
-                if (chatMessage.Username == Resources.Owner)
-                {
-                    twitchBot.JoinChannel(chatMessage.GetLowerSplit()[1]);
-                }
+                twitchBot.Send(chatMessage.Channel, BotActions.SendJoinChannel(twitchBot, chatMessage));
             }
         }
     }

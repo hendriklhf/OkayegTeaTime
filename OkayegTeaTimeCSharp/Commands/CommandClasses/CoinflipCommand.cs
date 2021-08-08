@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            twitchBot.SendCoinFlip(chatMessage);
+            twitchBot.Send(chatMessage.Channel, BotActions.SendCoinFlip(chatMessage));
         }
     }
 }

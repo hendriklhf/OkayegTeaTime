@@ -1,4 +1,5 @@
-﻿using HLE.Emojis;
+﻿using HLE.Collections;
+using HLE.Emojis;
 using HLE.Numbers;
 using HLE.Strings;
 using HLE.Time;
@@ -9,9 +10,11 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
+using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
@@ -47,7 +50,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddUserToAfkCooldownDictionary(string username)
         {
-            if (username != Resources.Owner)
+            if (username != Resources.Moderators)
             {
                 if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
                 {
@@ -58,7 +61,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddUserToCooldownDictionary(string username, CommandType type)
         {
-            if (username != Resources.Owner)
+            if (username != Resources.Moderators)
             {
                 if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
                 {
@@ -87,7 +90,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
         }
 
-        public static void Send7TVEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string Send7TVEmotes(ChatMessage chatMessage)
         {
             try
             {
@@ -105,16 +108,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     emoteString += $"{e} | ";
                 });
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
+                return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
+                return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
             }
         }
 
-        public static void SendBTTVEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendBTTVEmotes(ChatMessage chatMessage)
         {
             try
             {
@@ -132,11 +134,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     emoteString += $"{e} | ";
                 });
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
+                return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
             catch (Exception)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
+                return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
             }
         }
 
@@ -155,49 +157,61 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static void SendChattersCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
+        public static string SendChatterino2Links()
         {
+            return $"Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases";
+        }
+
+        public static string SendChatterino7Links()
+        {
+            return $"Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
+        }
+
+        public static string SendChattersCount(ChatMessage chatMessage)
+        {
+            string channel = chatMessage.GetLowerSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Channel;
             int chatterCount = HttpRequest.GetChatterCount(channel);
             if (chatterCount > 1)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are {new DottedNumber(chatterCount)} chatters in the channel of {channel}");
+                return $"{chatMessage.Username}, there are {new DottedNumber(chatterCount)} chatters in the channel of {channel}";
             }
             else if (chatterCount > 0)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there is {new DottedNumber(chatterCount)} chatter in the channel of {channel}");
+                return $"{chatMessage.Username}, there is {new DottedNumber(chatterCount)} chatter in the channel of {channel}";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, there are no chatters in the channel of {channel}");
+                return $"{chatMessage.Username}, there are no chatters in the channel of {channel}";
             }
         }
 
-        public static void SendCheckAfk(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        public static string SendCheckAfk(ChatMessage chatMessage)
         {
             try
             {
+                string username = chatMessage.GetLowerSplit()[2];
                 User user = DataBase.GetUser(username);
                 if (user.IsAfk == "True")
                 {
                     string message = $"{chatMessage.Username}, {AfkMessage.Create(user).GoingAway}";
                     message += user.MessageText.Decode().Length > 0 ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})" : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
-                    twitchBot.Send(chatMessage.Channel, message);
+                    return message;
                 }
                 else
                 {
-                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {username} is not afk");
+                    return $"{chatMessage.Username}, {username} is not afk";
                 }
             }
             catch (UserNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendCoinFlip(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendCoinFlip(ChatMessage chatMessage)
         {
             string result = StrbhRand.Random.Int(0, 100) >= 50 ? "yes/heads" : "no/tails";
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {result} {Emoji.Coin}");
+            return $"{chatMessage.Username}, {result} {Emoji.Coin}";
         }
 
         public static void SendColor(this TwitchBot twitchBot, ChatMessage chatMessage)
@@ -210,22 +224,25 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
         }
 
-        public static void SendCompilerResult(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendCompilerResult(ChatMessage chatMessage)
         {
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}");
+            return $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}";
         }
 
-        public static void SendCreatedNuke(this TwitchBot twitchBot, ChatMessage chatMessage, string word, long timeoutTime, long duration)
+        public static string SendCreatedNuke(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
+                string word = chatMessage.GetLowerSplit()[1];
+                long timeoutTime = TimeHelper.ConvertStringToSeconds(new() { chatMessage.GetLowerSplit()[2] });
+                long duration = TimeHelper.ConvertTimeToMilliseconds(new() { chatMessage.GetLowerSplit()[3] });
                 timeoutTime = timeoutTime > new Week(2).Seconds ? new Week(2).Seconds : timeoutTime;
                 int id = DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, timeouting '{word}' {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]} (ID: {id})");
+                return $"{chatMessage.Username}, timeouting \"{word}\" {chatMessage.GetLowerSplit()[2]} for the next {chatMessage.GetLowerSplit()[3]} (ID: {id})";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
             }
         }
 
@@ -238,7 +255,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static void SendFFZEmotes(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendFFZEmotes(ChatMessage chatMessage)
         {
             try
             {
@@ -256,105 +273,98 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     emoteString += $"{e} | ";
                 });
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}");
+                return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled");
+                return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
             }
         }
 
-        public static void SendFill(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendFill(ChatMessage chatMessage)
         {
             string message = string.Empty;
-            if (chatMessage.GetSplit()[1].IsMatch(@"rand(om)?"))
+            string[] emotes = chatMessage.GetSplit()[1..];
+            message += emotes.Random();
+            while (true)
             {
-                message += (char)StrbhRand::Random.Int(0, ushort.MaxValue);
-                while (message.Length + 2 <= Config.MaxMessageLength)
+                string emote = emotes.Random();
+                if ($"{message} {emote}".Length <= Config.MaxMessageLength)
                 {
-                    message += $" {(char)StrbhRand.Random.Int(0, ushort.MaxValue)}";
+                    message += $" {emote}";
+                }
+                else
+                {
+                    break;
                 }
             }
-            else
-            {
-                string[] emotes = chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..].Split();
-                message += emotes[StrbhRand.Random.Int(0, emotes.Length - 1)];
-                while (true)
-                {
-                    string emote = emotes[StrbhRand::Random.Int(0, emotes.Length - 1)];
-                    if ($"{message} {emote}".Length <= Config.MaxMessageLength)
-                    {
-                        message += $" {emote}";
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
+            return message;
         }
 
-        public static void SendFirst(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendFirst(ChatMessage chatMessage)
         {
             try
             {
                 Message message = DataBase.GetFirst(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendFirstChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
+        public static string SendFirstChannel(ChatMessage chatMessage)
         {
             try
             {
+                string channel = chatMessage.GetLowerSplit()[1];
                 Message message = DataBase.GetFirstChannel(chatMessage, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendFirstUser(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        public static string SendFirstUser(ChatMessage chatMessage)
         {
             try
             {
+                string username = chatMessage.GetLowerSplit()[1];
                 Message message = DataBase.GetFirstUser(username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendFirstUserChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string username, string channel)
+        public static string SendFirstUserChannel(ChatMessage chatMessage)
         {
             try
             {
+                string username = chatMessage.GetLowerSplit()[1];
+                string channel = chatMessage.GetLowerSplit()[2];
                 Message message = DataBase.GetFirstMessageUserChannel(username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendFuck(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendFuck(ChatMessage chatMessage)
         {
             string message = $"{Emoji.PointRight} {Emoji.OkHand} {chatMessage.Username} fucked {chatMessage.GetSplit()[1]}";
             if (chatMessage.GetSplit().Length > 2)
             {
                 message += $" {chatMessage.GetSplit()[2]}";
             }
-            twitchBot.Send(chatMessage.Channel, message);
+            return message;
         }
 
         public static void SendGoingAfk(this TwitchBot twitchBot, ChatMessage chatMessage, AfkCommandType type)
@@ -363,52 +373,84 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(DataBase.GetUser(chatMessage.Username)).GoingAway);
         }
 
-        public static void SendLastMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        public static string SendHelp(ChatMessage chatMessage)
+        {
+            string username = chatMessage.GetSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Username;
+            return $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {Resources.GitHubRepoLink}";
+        }
+
+        public static string SendJoinChannel(TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            if (Config.Moderators.Contains(chatMessage.Username))
+            {
+                string channel = chatMessage.GetLowerSplit()[1];
+                if (twitchBot.JoinChannel(channel))
+                {
+                    return $"{chatMessage.Username}, joined #{channel.RemoveHashtag()} successfully";
+                }
+                else
+                {
+                    return $"{chatMessage.Username}, failed to join #{channel.RemoveHashtag()}";
+                }
+            }
+            else
+            {
+                return $"{chatMessage.Username}, you are a not a moderator of the bot";
+            }
+        }
+
+        public static string SendLastMessage(ChatMessage chatMessage)
         {
             try
             {
-                Message message = DataBase.GetLastMessage(username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}");
+                Message message = DataBase.GetLastMessage(chatMessage.GetLowerSplit()[1]);
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (UserNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendLoggedMessagesChannelCount(this TwitchBot twitchBot, ChatMessage chatMessage, string channel)
+        public static string SendLoggedMessagesChannelCount(ChatMessage chatMessage)
         {
-            OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountChannelMessages(channel))} messages of the channel {channel}");
+            string channel = chatMessage.GetLowerSplit()[1];
+            return $"{chatMessage.Username}, logging {new DottedNumber(new OkayegTeaTimeContext().CountChannelMessages(channel))} messages of the channel {channel}";
         }
 
-        public static void SendLoggedMessagesCount(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendLoggedMessagesCount(ChatMessage chatMessage)
         {
-            OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountMessages())} messages across all channels");
+            return $"{chatMessage.Username}, logging {new DottedNumber(new OkayegTeaTimeContext().CountMessages())} messages across all channels";
         }
 
-        public static void SendLoggedMessagesUserCount(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
+        public static string SendLoggedMessagesUserCount(ChatMessage chatMessage)
         {
-            OkayegTeaTimeContext database = new();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, logging {new DottedNumber(database.CountUserMessages(username))} messages of {username}");
+            string username = chatMessage.GetLowerSplit()[1];
+            return $"{chatMessage.Username}, logging {new DottedNumber(new OkayegTeaTimeContext().CountUserMessages(username))} messages of {username}";
         }
 
-        public static void SendMassping(this TwitchBot twitchBot, ChatMessage chatMessage, string emote = "Okayeg")
+        public static string SendMassping(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
-                string message = emote;
+                string emote = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1] : EmoteInFrontHelper.GetEmote(chatMessage.Channel);
+                string message = string.Empty;
                 List<string> chatters;
+                List<string> chattersToRemove = new() { chatMessage.Username };
+                chattersToRemove = chattersToRemove.Concat(JsonController.BotData.UserLists.SpecialUsers).ToList();
 
                 if (chatMessage.Channel != Resources.SecretOfflineChat)
                 {
                     chatters = HttpRequest.GetChatters(chatMessage.Channel);
-                    chatters.Remove(chatMessage.Username);
+                    chattersToRemove.ForEach(c => chatters.Remove(c));
+                    if (chatters.Count == 0)
+                    {
+                        return string.Empty;
+                    }
                 }
                 else
                 {
-                    message = $"{emote} OkayegTeaTime {emote}";
+                    message = $"OkayegTeaTime {emote}";
                     chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
                 }
 
@@ -416,80 +458,67 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     message += $" {c} {emote}";
                 });
-                twitchBot.TwitchClient.SendMessage(chatMessage.Channel, message);
+                return message;
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
             }
         }
 
-        public static void SendMathResult(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendMathResult(ChatMessage chatMessage)
         {
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {HttpRequest.GetMathResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}");
+            return $"{chatMessage.Username}, {HttpRequest.GetMathResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}";
         }
 
-        public static void SendRandomCookie(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendPing(TwitchBot twitchBot)
+        {
+            return $"Pongeg, I'm here! {twitchBot.GetSystemInfo()}";
+        }
+
+        public static string SendRandomCookie(ChatMessage chatMessage)
         {
             Pechkekse keks = DataBase.GetRandomCookie();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {keks.Message} {Emoji.Cookie}");
+            return $"{chatMessage.Username}, {keks.Message} {Emoji.Cookie}";
         }
 
-        public static void SendRandomGachi(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendRandomGachi()
         {
             Gachi gachi = DataBase.GetRandomGachi();
-            twitchBot.Send(chatMessage.Channel, $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS");
+            return $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS";
         }
 
-        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendRandomMessage(ChatMessage chatMessage)
         {
             try
             {
-                Message randomMessage = DataBase.GetRandomMessage(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"({TimeHelper.ConvertUnixTimeToTimeStamp(randomMessage.Time, "ago", ConversionType.YearDayHour)}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
+                if (chatMessage.GetSplit().Length > 2)
+                {
+                    Message message = DataBase.GetRandomMessage(chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2].RemoveHashtag());
+                    return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
+                }
+                else if (chatMessage.GetSplit().Length > 1)
+                {
+                    Message message = DataBase.GetRandomMessage(chatMessage.GetLowerSplit()[1]);
+                    return $"({TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
+                }
+                else
+                {
+                    Message message = DataBase.GetRandomMessage(chatMessage);
+                    return $"({TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
+                }
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
-        {
-            try
-            {
-                Message randomMessage = DataBase.GetRandomMessage(username);
-                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(randomMessage.Time, "ago", ConversionType.YearDayHour)}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
-            }
-            catch (MessageNotFoundException ex)
-            {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
-            }
-        }
-
-        public static void SendRandomMessage(this TwitchBot twitchBot, ChatMessage chatMessage, string username, string channel)
-        {
-            try
-            {
-                Message randomMessage = DataBase.GetRandomMessage(username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({randomMessage.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(randomMessage.Time, "ago", ConversionType.YearDayHour)}) {randomMessage.Username}: {randomMessage.MessageText.Decode()}");
-            }
-            catch (MessageNotFoundException ex)
-            {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
-            }
-        }
-
-        public static void SendRandomYourmom(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendRandomYourmom(ChatMessage chatMessage)
         {
             Yourmom yourmom = DataBase.GetRandomYourmom();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {yourmom.MessageText} YOURMOM");
-        }
-
-        public static void SendRandomYourmom(this TwitchBot twitchBot, ChatMessage chatMessage, string username)
-        {
-            Yourmom yourmom = DataBase.GetRandomYourmom();
-            twitchBot.Send(chatMessage.Channel, $"{username}, {yourmom.MessageText} YOURMOM");
+            string target = chatMessage.GetLowerSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Username;
+            return $"{target}, {yourmom.MessageText} YOURMOM";
         }
 
         public static void SendReminder(this TwitchBot twitchBot, ChatMessage chatMessage, List<Reminder> reminders)
@@ -520,176 +549,179 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             twitchBot.Send(chatMessage.Channel, message);
         }
 
-        public static void SendResumingAfkStatus(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendResumingAfkStatus(ChatMessage chatMessage)
         {
             DataBase.ResumeAfkStatus(chatMessage.Username);
             User user = DataBase.GetUser(chatMessage.Username);
-            twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).Resuming);
+            return AfkMessage.Create(user).Resuming;
         }
 
-        public static void SendSearch(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword)
+        public static string SendSearch(ChatMessage chatMessage, string keyword)
         {
             try
             {
                 Message message = DataBase.GetSearch(keyword);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendSearchChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword, string channel)
+        public static string SendSearchChannel(ChatMessage chatMessage, string keyword, string channel)
         {
             try
             {
                 Message message = DataBase.GetSearchChannel(keyword, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendSearchUser(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword, string username)
+        public static string SendSearchUser(ChatMessage chatMessage, string keyword, string username)
         {
             try
             {
                 Message message = DataBase.GetSearchUser(keyword, username);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendSearchUserChannel(this TwitchBot twitchBot, ChatMessage chatMessage, string keyword, string username, string channel)
+        public static string SendSearchUserChannel(ChatMessage chatMessage, string keyword, string username, string channel)
         {
             try
             {
                 Message message = DataBase.GetSearchUserChannel(keyword, username, channel);
-                twitchBot.Send(chatMessage.Channel, $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}");
+                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendSetEmoteInFront(this TwitchBot twitchBot, ChatMessage chatMessage, string emote)
+        public static string SendSetEmoteInFront(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
+                string emote = chatMessage.GetSplit()[2][..(chatMessage.GetSplit()[2].Length > Config.MaxEmoteInFrontLength ? Config.MaxEmoteInFrontLength : chatMessage.GetSplit()[2].Length)];
                 DataBase.SetEmoteInFront(chatMessage.Channel, emote);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, emote set to: {emote}");
                 EmoteInFrontHelper.Update(chatMessage.Channel, emote);
+                return $"{chatMessage.Username}, emote set to: {emote}";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
             }
         }
 
-        public static void SendSetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage, string prefix)
+        public static string SendSetPrefix(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
+                string prefix = chatMessage.GetLowerSplit()[2][..(chatMessage.GetLowerSplit()[2].Length > Config.MaxPrefixLength ? Config.MaxPrefixLength : chatMessage.GetLowerSplit()[2].Length)];
                 DataBase.SetPrefix(chatMessage.Channel, prefix);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, prefix set to: {prefix}");
+                return $"{chatMessage.Username}, prefix set to: {prefix}";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
             }
         }
 
-        public static void SendSetReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message)
+        public static string SendSetReminder(ChatMessage chatMessage, byte[] message)
         {
             try
             {
                 string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
                 int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
+                return $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
             }
             catch (TooManyReminderException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendSetSongRequestState(this TwitchBot twitchBot, ChatMessage chatMessage, bool state)
+        public static string SendSetSongRequestState(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
                 OkayegTeaTimeContext database = new();
+                bool state = chatMessage.GetSplit()[2].IsMatch(@"(1|true|enabled?)");
                 if (database.Spotify.Any(s => s.Username == chatMessage.Channel))
                 {
                     database.Spotify.Where(s => s.Username == chatMessage.Channel.RemoveHashtag()).FirstOrDefault().SongRequestEnabled = state;
                     database.SaveChanges();
-                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, song requests {(state ? "enabled" : "disabled")} for channel {chatMessage.Channel}");
+                    return $"{chatMessage.Username}, song requests {(state ? "enabled" : "disabled")} for channel {chatMessage.Channel}";
                 }
                 else
                 {
-                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, channel {chatMessage.Channel} is not registered, they have to register first");
+                    return $"{chatMessage.Username}, channel {chatMessage.Channel} is not registered, they have to register first";
                 }
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you have to be a mod or the broadcaster to set song request settings");
+                return $"{chatMessage.Username}, you have to be a mod or the broadcaster to set song request settings";
             }
         }
 
-        public static void SendSetTimedReminder(this TwitchBot twitchBot, ChatMessage chatMessage, byte[] message, long toTime)
+        public static string SendSetTimedReminder(ChatMessage chatMessage, byte[] message, long toTime)
         {
             try
             {
                 string target = chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1];
                 int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})");
+                return $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
             }
             catch (TooManyReminderException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
 
-        public static void SendSongAddedToQueue(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendSongAddedToQueue(ChatMessage chatMessage)
         {
             string song = chatMessage.GetSplit()[1];
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel, song).Result}");
+            return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel, song).Result}";
         }
 
-        public static void SendSongSkipped(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendSongSkipped(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.SkipToNextSong(chatMessage.Channel).Result}");
+                return $"{chatMessage.Username}, {SpotifyRequest.SkipToNextSong(chatMessage.Channel).Result}";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you have to be a mod or the broadcaster to skip the song");
+                return $"{chatMessage.Username}, you have to be a mod or the broadcaster to skip the song";
             }
         }
 
-        public static void SendSpotifyCurrentlyPlaying(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendSpotifyCurrentlyPlaying(ChatMessage chatMessage)
         {
             string username = chatMessage.GetLowerSplit().Length > 1 ? (chatMessage.GetLowerSplit()[1] == "me" ? chatMessage.Username : chatMessage.GetLowerSplit()[1]) : chatMessage.Channel;
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}");
+            return $"{chatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}";
         }
 
-        public static void SendSpotifySearch(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendSpotifySearch(ChatMessage chatMessage)
         {
             string query = chatMessage.GetSplit().Skip(2).ToArray().ArrayToString();
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}");
+            return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
         }
 
-        public static void SendSuggestionNoted(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendSuggestionNoted(ChatMessage chatMessage)
         {
             DataBase.AddSugestion(chatMessage, chatMessage.GetMessage()[chatMessage.GetLowerSplit()[0].Length..]);
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, your suggestion has been noted");
+            return $"{chatMessage.Username}, your suggestion has been noted";
         }
 
         public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
@@ -704,64 +736,78 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static void SendUnsetEmoteInFront(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendTuckedToBed(ChatMessage chatMessage)
+        {
+            string target = chatMessage.GetLowerSplit()[1];
+            string emote = chatMessage.GetLowerSplit().Length > 2 ? chatMessage.GetSplit()[2] : string.Empty;
+            return $"{Emoji.PointRight} {Emoji.Bed} {chatMessage.Username} tucked {target} to bed {emote}".Trim();
+        }
+
+        public static string SendUnsetEmoteInFront(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
                 DataBase.UnsetEmoteInFront(chatMessage.Channel);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, unset emote");
                 EmoteInFrontHelper.Update(chatMessage.Channel, null);
+                return $"{chatMessage.Username}, unset emote";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
             }
         }
 
-        public static void SendUnsetNuke(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendUnsetNuke(ChatMessage chatMessage)
         {
             try
             {
                 DataBase.RemoveNuke(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the nuke has been unset");
+                return $"{chatMessage.Username}, the nuke has been unset";
             }
             catch (NukeNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
             catch (NoPermissionException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
         }
-        public static void SendUnsetPrefix(this TwitchBot twitchBot, ChatMessage chatMessage)
+
+        public static string SendUnsetPrefix(ChatMessage chatMessage)
         {
             if (chatMessage.IsModOrBroadcaster())
             {
                 DataBase.UnsetPrefix(chatMessage.Channel);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the prefix has been unset");
+                return $"{chatMessage.Username}, the prefix has been unset";
             }
             else
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you aren't a mod or the broadcaster");
+                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
             }
         }
 
-        public static void SendUnsetReminder(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendUnsetReminder(ChatMessage chatMessage)
         {
             try
             {
                 DataBase.RemoveReminder(chatMessage);
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, the reminder has been unset");
+                return $"{chatMessage.Username}, the reminder has been unset";
             }
             catch (NoPermissionException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
             catch (ReminderNotFoundException ex)
             {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {ex.Message}");
+                return $"{chatMessage.Username}, {ex.Message}";
             }
+        }
+
+        public static string SendUserID(ChatMessage chatMessage)
+        {
+            string username = chatMessage.GetSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Username;
+            return $"{chatMessage.Username}, {TwitchAPI.GetChannelID(username)}";
         }
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {

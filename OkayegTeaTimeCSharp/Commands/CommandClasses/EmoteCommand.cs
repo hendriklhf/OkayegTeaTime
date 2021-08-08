@@ -12,15 +12,15 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sffz(\s((\d+)|(\w+(\s\d+)?)))?")))
             {
-                twitchBot.SendFFZEmotes(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendFFZEmotes(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sbttv(\s((\d+)|(\w+(\s\d+)?)))?")))
             {
-                twitchBot.SendBTTVEmotes(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendBTTVEmotes(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s7tv(\s((\d+)|(\w+(\s\d+)?)))?")))
             {
-                twitchBot.Send7TVEmotes(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.Send7TVEmotes(chatMessage));
             }
         }
     }

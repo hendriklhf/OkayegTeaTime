@@ -25,7 +25,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                        new("variables", "{}")
                    });
                 int emoteCountInChannel = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
+                count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
                     emotes.Add(new(i, request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes")[i].GetProperty("name").GetString()));
@@ -45,7 +45,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 List<Emote> emotes = new();
                 HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{TwitchAPI.GetChannelID(channel)}");
                 int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
+                count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
                     emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
@@ -87,7 +87,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag()}");
                 int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
                 int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : (count == 0 ? 1 : count);
+                count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
                     emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons")[i].GetProperty("name").GetString()));

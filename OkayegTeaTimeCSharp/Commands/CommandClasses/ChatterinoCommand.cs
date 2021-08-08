@@ -7,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
     {
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            twitchBot.Send(chatMessage.Channel, $"Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases");
+            twitchBot.Send(chatMessage.Channel, BotActions.SendChatterino2Links());
         }
     }
 }

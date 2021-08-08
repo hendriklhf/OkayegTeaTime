@@ -12,19 +12,19 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+\s#?\w+")))
             {
-                twitchBot.SendFirstUserChannel(chatMessage, chatMessage.GetLowerSplit()[1], chatMessage.GetLowerSplit()[2]);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendFirstUserChannel(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s#\w+")))
             {
-                twitchBot.SendFirstChannel(chatMessage, chatMessage.GetLowerSplit()[1]);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendFirstChannel(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+")))
             {
-                twitchBot.SendFirstUser(chatMessage, chatMessage.GetLowerSplit()[1]);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendFirstUser(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel))))
             {
-                twitchBot.SendFirst(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendFirst(chatMessage));
             }
         }
     }

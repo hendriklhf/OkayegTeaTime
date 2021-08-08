@@ -12,19 +12,19 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         {
             if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix")))
             {
-                twitchBot.SendUnsetPrefix(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetPrefix(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sreminder\s\d+")))
             {
-                twitchBot.SendUnsetReminder(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetReminder(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\semote")))
             {
-                twitchBot.SendUnsetEmoteInFront(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetEmoteInFront(chatMessage));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\snuke\s\d+")))
             {
-                twitchBot.SendUnsetNuke(chatMessage);
+                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetNuke(chatMessage));
             }
         }
     }
