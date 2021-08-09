@@ -142,21 +142,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static void SendChatNeighbours(this TwitchBot twitchBot, ChatMessage chatMessage)
-        {
-            List<string> chatters = HttpRequest.GetChatters(chatMessage.Channel).OrderByDescending(chatters => chatters).ToList();
-            if (chatters.Count >= 3 && (chatters.IndexOf(chatMessage.Username) != 0 || chatters.IndexOf(chatMessage.Username) != chatters.Count - 1))
-            {
-                string chatterLeft = chatters[chatters.IndexOf(chatMessage.Username) - 1];
-                string chatterRight = chatters[chatters.IndexOf(chatMessage.Username) + 1];
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, your chatneighbours are {chatterLeft} and {chatterRight}");
-            }
-            else
-            {
-#warning needs else
-            }
-        }
-
         public static string SendChatterino2Links()
         {
             return $"Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases";
@@ -441,7 +426,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
                 if (chatMessage.Channel != Resources.SecretOfflineChat)
                 {
-                    chatters = HttpRequest.GetChatters(chatMessage.Channel);
+                    chatters = HttpRequest.GetChatters(chatMessage.Channel).Select(c => c.Username).ToList();
                     chattersToRemove.ForEach(c => chatters.Remove(c));
                     if (chatters.Count == 0)
                     {

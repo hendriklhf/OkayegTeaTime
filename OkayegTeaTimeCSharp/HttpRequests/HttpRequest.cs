@@ -1,5 +1,5 @@
 ﻿using HLE.HttpRequests;
-using OkayegTeaTimeCSharp.JsonData;
+using OkayegTeaTimeCSharp.HttpRequests.Enums;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Web;
 
 namespace OkayegTeaTimeCSharp.HttpRequests
@@ -64,20 +65,19 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             return request.Data.GetProperty("chatter_count").GetInt32();
         }
 
-        public static List<string> GetChatters(string channel)
+        public static List<Chatter> GetChatters(string channel)
         {
-            #error implement Chatter class here
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
-            return new List<string>()
-                .Concat(request.Data.GetProperty("chatters").GetProperty("broadcaster").ToString().WordArrayStringToList())
-                .Concat(request.Data.GetProperty("chatters").GetProperty("vips").ToString().WordArrayStringToList())
-                .Concat(request.Data.GetProperty("chatters").GetProperty("moderators").ToString().WordArrayStringToList())
-                .Concat(request.Data.GetProperty("chatters").GetProperty("staff").ToString().WordArrayStringToList())
-                .Concat(request.Data.GetProperty("chatters").GetProperty("admins").ToString().WordArrayStringToList())
-                .Concat(request.Data.GetProperty("chatters").GetProperty("global_mods").ToString().WordArrayStringToList())
-                .Concat(request.Data.GetProperty("chatters").GetProperty("viewers").ToString().WordArrayStringToList())
-                .Where(user => !JsonController.BotData.UserLists.SpecialUsers.Contains(user))
-                .ToList();
+            JsonElement chatters = request.Data.GetProperty("chatters");
+            List<Chatter> result = new();
+            chatters.GetProperty("broadcaster").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Broadcaster)));
+            chatters.GetProperty("vips").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.VIP)));
+            chatters.GetProperty("moderators").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Moderator)));
+            chatters.GetProperty("staff").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Staff)));
+            chatters.GetProperty("admins").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Admin)));
+            chatters.GetProperty("global_mods").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.GlobalMod)));
+            chatters.GetProperty("viewers").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Viewer)));
+            return result;
         }
 
         public static List<Emote> GetFFZEmotes(string channel, int count = 5)

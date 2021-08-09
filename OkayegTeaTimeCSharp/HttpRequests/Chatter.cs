@@ -1,4 +1,6 @@
-namespace OkayegTeaTimeCSharp.HttpRequests;
+using OkayegTeaTimeCSharp.HttpRequests.Enums;
+
+namespace OkayegTeaTimeCSharp.HttpRequests
 {
     public class Chatter
     {
@@ -10,6 +12,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests;
         {
             Username = username;
             ChatRole = chatRole;
+        }
+
+        public override string ToString()
+        {
+            return Username;
         }
     }
 }
