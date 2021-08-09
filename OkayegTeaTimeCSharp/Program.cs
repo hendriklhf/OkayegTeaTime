@@ -24,6 +24,7 @@ namespace OkayegTeaTimeCSharp
 #endif
             while (_running)
             {
+                Consolse.ReadLine();
             }
         }
 
@@ -73,4 +74,3 @@ namespace OkayegTeaTimeCSharp
 #warning emote cmds for other channels
 #warning "beautify" adding cooldown to dict
 #warning too many static classes, make everything non-static that can be non-static
-
