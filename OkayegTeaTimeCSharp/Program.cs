@@ -24,7 +24,7 @@ namespace OkayegTeaTimeCSharp
 #endif
             while (_running)
             {
-                Consolse.ReadLine();
+                Console.ReadLine();
             }
         }
 
