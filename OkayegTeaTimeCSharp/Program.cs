@@ -10,6 +10,7 @@ namespace OkayegTeaTimeCSharp
 {
     public static class Program
     {
+        private static TwitchBot _twitchBot;
         private static bool _running = true;
 
         private static void Main()
@@ -18,7 +19,7 @@ namespace OkayegTeaTimeCSharp
 
             JsonController.LoadData();
             TwitchAPI.Configure();
-            _ = new TwitchBot();
+            _twitchBot = new();
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
