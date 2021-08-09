@@ -39,6 +39,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
                 });
             return request.Data.GetProperty("access_token").GetString();
         }
+
         public static void RefreshAccessToken()
         {
             _api.Settings.AccessToken = GetAccessToken();
