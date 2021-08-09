@@ -66,6 +66,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public static List<string> GetChatters(string channel)
         {
+            #error implement Chatter class here
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
             return new List<string>()
                 .Concat(request.Data.GetProperty("chatters").GetProperty("broadcaster").ToString().WordArrayStringToList())
