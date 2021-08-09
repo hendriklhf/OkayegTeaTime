@@ -9,7 +9,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests;
         public Chatter(string username, ChatRole chatRole)
         {
             Username = username;
-            ChatRole = charRole;
+            ChatRole = chatRole;
         }
     }
 }
