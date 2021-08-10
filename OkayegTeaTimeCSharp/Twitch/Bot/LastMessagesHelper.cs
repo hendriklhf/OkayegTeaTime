@@ -32,6 +32,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 return string.Empty;
             }
         }
+
         public static void SetLastMessage(string channel, string message)
         {
             TwitchBot.LastMessages[$"#{channel.RemoveHashtag()}"] = message;
