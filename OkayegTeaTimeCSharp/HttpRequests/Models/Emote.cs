@@ -1,4 +1,4 @@
-﻿namespace OkayegTeaTimeCSharp.HttpRequests
+﻿namespace OkayegTeaTimeCSharp.HttpRequests.Models
 {
     public class Emote
     {

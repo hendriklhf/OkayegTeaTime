@@ -1,6 +1,6 @@
 using OkayegTeaTimeCSharp.HttpRequests.Enums;
 
-namespace OkayegTeaTimeCSharp.HttpRequests
+namespace OkayegTeaTimeCSharp.HttpRequests.Models
 {
     public class Chatter
     {
