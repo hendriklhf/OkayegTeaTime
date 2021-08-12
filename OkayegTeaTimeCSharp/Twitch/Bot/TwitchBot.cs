@@ -99,7 +99,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emoteInFront = EmoteInFrontHelper.GetEmote(channel);
                 if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
                 {
-                    message = message == LastMessagesHelper.GetLastMessage(channel, message) ? $"{message} {Resources.ChatterinoChar}" : message;
+                    message = message == LastMessagesHelper.GetLastMessage(channel) ? $"{message} {Resources.ChatterinoChar}" : message;
                     TwitchClient.SendMessage(channel.RemoveHashtag(), $"{emoteInFront} {message}");
                     LastMessagesHelper.SetLastMessage(channel, message);
                 }

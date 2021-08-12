@@ -20,7 +20,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return dic;
         }
 
-        public static string GetLastMessage(string channel, string message)
+        public static string GetLastMessage(string channel)
         {
             if (TwitchBot.LastMessages.TryGetValue($"#{channel.RemoveHashtag()}", out string lastMessage))
             {

@@ -133,14 +133,11 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Reminders.Any(reminder => reminder.ToTime != 0))
             {
-                List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime != 0).ToList();
+                List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime != 0 && reminder.ToTime <= TimeHelper.Now()).ToList();
                 listReminder.ForEach(reminder =>
                 {
-                    if (reminder.ToTime <= TimeHelper.Now())
-                    {
-                        twitchBot.SendTimedReminder(reminder);
-                        database.Reminders.Remove(reminder);
-                    }
+                    twitchBot.SendTimedReminder(reminder);
+                    database.Reminders.Remove(reminder);
                 });
                 database.SaveChanges();
             }
@@ -471,7 +468,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.Where(u => u.Username == chatMessage.Username).FirstOrDefault();
-            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ArrayToString() : "";
+            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : "";
             user.MessageText = message.MakeInsertable();
             user.Type = type.ToString();
             user.Time = TimeHelper.Now();

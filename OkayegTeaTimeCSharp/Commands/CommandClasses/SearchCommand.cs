@@ -33,7 +33,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private static string GetKeyWord()
         {
-            return _chatMessage.GetMessage().Split()[1..].ArrayToString().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
+            return _chatMessage.GetMessage().Split()[1..].ToSequence().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
         }
 
         private static string GetUsername()

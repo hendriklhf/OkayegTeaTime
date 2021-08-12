@@ -699,7 +699,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendSpotifySearch(ChatMessage chatMessage)
         {
-            string query = chatMessage.GetSplit().Skip(2).ToArray().ArrayToString();
+            string query = chatMessage.GetSplit().Skip(2).ToSequence();
             return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
         }
 
