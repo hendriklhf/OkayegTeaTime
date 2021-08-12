@@ -456,6 +456,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return $"{chatMessage.Username}, {HttpRequest.GetMathResult(chatMessage.GetMessage()[(chatMessage.GetSplit()[0].Length + 1)..])}";
         }
 
+        public static string SendPick(ChatMessage chatMessage)
+        {
+            return $"{chatMessage.Username}, {chatMessage.GetSplit()[1..].Random()}";
+        }
+
         public static string SendPing(TwitchBot twitchBot)
         {
             return $"Pongeg, I'm here! {twitchBot.GetSystemInfo()}";

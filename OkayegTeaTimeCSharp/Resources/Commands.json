@@ -521,6 +521,19 @@
       "Description": [
         "Sends usefull Chatterino7 links, e.g. for download"
       ]
+    },
+    {
+      "CommandName": "pick",
+      "Alias": [
+        "pick",
+        "choose"
+      ],
+      "Parameter": [
+        "[options to pick from]"
+      ],
+      "Description": [
+        "Sends one item picked from all provided ones"
+      ]
     }
   ],
   "AfkCommands": [
