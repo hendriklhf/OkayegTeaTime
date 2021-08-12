@@ -22,6 +22,7 @@
         Massping,
         Math,
         Nuke,
+        Pick,
         Ping,
         Rafk,
         Rand,
