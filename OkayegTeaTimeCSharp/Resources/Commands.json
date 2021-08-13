@@ -724,7 +724,7 @@
       "CommandName": "movie",
       "ComingBack": "{username} finished a movie: {message} ({time})",
       "GoingAway": "{username} is now watching a movie",
-      "Resuming": "{username} went to back to watching a movie",
+      "Resuming": "{username} went back to watching a movie",
       "Alias": [
         "movie",
         "film"

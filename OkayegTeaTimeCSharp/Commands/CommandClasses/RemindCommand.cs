@@ -1,4 +1,5 @@
-﻿using HLE.Strings;
+﻿using HLE.Collections;
+using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Twitch;
@@ -63,7 +64,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             else
             {
                 string message = "";
-                _chatMessage.GetSplit()[(_startIndex + _chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList().Count)..].ToList().ForEach(str =>
+                _chatMessage.GetSplit()[(_startIndex + _chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList().Count)..].ForEach(str =>
                 {
                     message += $"{str} ";
                 });
@@ -74,7 +75,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         private static byte[] GetRemindMessage()
         {
             string message = "";
-            _chatMessage.GetSplit()[2..].ToList().ForEach(str =>
+            _chatMessage.GetSplit()[2..].ForEach(str =>
             {
                 message += $"{str} ";
             });

@@ -1,4 +1,5 @@
-﻿using HLE.Strings;
+﻿using HLE.Collections;
+using HLE.Strings;
 using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Messages;
@@ -6,7 +7,6 @@ using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System;
-using System.Linq;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands
@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Commands
         {
             if (chatMessage.IsCommand())
             {
-                ((CommandType[])Enum.GetValues(typeof(CommandType))).ToList().ForEach(type =>
+                ((CommandType[])Enum.GetValues(typeof(CommandType))).ForEach(type =>
                 {
                     if (chatMessage.MatchesAnyAlias(type))
                     {
@@ -41,7 +41,7 @@ namespace OkayegTeaTimeCSharp.Commands
             }
             else if (chatMessage.IsAfkCommand())
             {
-                ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ToList().ForEach(type =>
+                ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ForEach(type =>
                 {
                     if (chatMessage.MatchesAnyAlias(type))
                     {
