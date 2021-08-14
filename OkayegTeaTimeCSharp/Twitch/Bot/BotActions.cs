@@ -524,7 +524,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             if (reminders.Count > 1)
             {
-                reminders.Skip(1).ToList().ForEach(r =>
+                reminders.Skip(1).ForEach(r =>
                 {
                     if (r.Message.Length > 0)
                     {

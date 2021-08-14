@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using HLE.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace OkayegTeaTimeCSharp.Utils
@@ -14,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Utils
         public static List<string> WordArrayStringToList(this string input)
         {
             List<string> result = new();
-            Regex.Matches(input, @"\w+", RegexOptions.IgnoreCase).ToList().ForEach(m =>
+            Regex.Matches(input, @"\w+", RegexOptions.IgnoreCase).ForEach(m =>
             {
                 result.Add(m.Value);
             });

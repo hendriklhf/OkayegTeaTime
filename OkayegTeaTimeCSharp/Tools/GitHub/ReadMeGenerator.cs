@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.JsonData;
+﻿using HLE.Collections;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using System.Collections.Generic;
 using System.IO;
@@ -59,7 +60,7 @@ namespace OkayegTeaTimeCSharp.Tools.GitHub
                 result += TableHeader(str);
             });
             result += "</tr>";
-            JsonController.CommandLists.Commands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
+            JsonController.CommandLists.Commands.OrderBy(cmd => cmd.CommandName).ForEach(cmd =>
             {
                 result += $"<tr><td>{cmd.CommandName}</td><td><table>";
                 cmd.Alias.ForEach(alias =>
@@ -81,10 +82,10 @@ namespace OkayegTeaTimeCSharp.Tools.GitHub
                 result += TableHeader(str);
             });
             result += "</tr>";
-            JsonController.CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ToList().ForEach(cmd =>
+            JsonController.CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ForEach(cmd =>
             {
                 result += $"<tr><td>{cmd.CommandName}</td><td><table>";
-                cmd.Alias.OrderBy(alias => alias).ToList().ForEach(alias =>
+                cmd.Alias.OrderBy(alias => alias).ForEach(alias =>
                 {
                     result += $"<tr><td>{alias}</td></tr>";
                 });

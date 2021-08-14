@@ -52,7 +52,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="EntityFramework" Version="6.4.4" />
-		<PackageReference Include="HLE" Version="1.2.0" />
+		<PackageReference Include="HLE" Version="1.2.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="5.0.8" />
