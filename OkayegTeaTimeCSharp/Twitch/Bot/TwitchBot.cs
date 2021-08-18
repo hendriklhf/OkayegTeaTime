@@ -45,15 +45,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static readonly List<Timers::Timer> ListTimer = new();
 
-        public static readonly Dictionary<string, string> LastMessages = LastMessagesHelper.FillDictionary();
+        public static Dictionary<string, string> LastMessages { get; set; } = LastMessagesHelper.FillDictionary();
 
-        public static readonly Dictionary<string, string> Prefixes = PrefixHelper.FillDictionary();
+        public static Dictionary<string, string> Prefixes { get; set; } = PrefixHelper.FillDictionary();
 
-        public static readonly Dictionary<string, string> EmoteInFront = EmoteInFrontHelper.FillDictionary();
+        public static Dictionary<string, string> EmoteInFront { get; set; } = EmoteInFrontHelper.FillDictionary();
 
-        public static readonly List<Cooldown> Cooldowns = new();
+        public static List<Cooldown> Cooldowns { get; } = new();
 
-        public static readonly List<AfkCooldown> AfkCooldowns = new();
+        public static List<AfkCooldown> AfkCooldowns { get; } = new();
 
         public TwitchBot()
         {
@@ -113,9 +113,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public bool JoinChannel(string channel)
         {
             DataBase.AddChannel(channel);
-            LastMessagesHelper.FillDictionary();
-            PrefixHelper.FillDictionary();
-            EmoteInFrontHelper.FillDictionary();
+            LastMessages = LastMessagesHelper.FillDictionary();
+            Prefixes = PrefixHelper.FillDictionary();
+            EmoteInFront = EmoteInFrontHelper.FillDictionary();
             try
             {
                 TwitchClient.JoinChannel(channel.RemoveHashtag());
@@ -226,14 +226,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             StartTimers();
         }
 
-        private void StartTimers()
+        private static void StartTimers()
         {
             ListTimer.ForEach(t => t.Start());
-        }
-
-        private void StopTimers()
-        {
-            ListTimer.ForEach(t => t.Stop());
         }
 
         private void AddTimerFunction()

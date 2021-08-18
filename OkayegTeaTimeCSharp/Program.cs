@@ -10,7 +10,6 @@ namespace OkayegTeaTimeCSharp
 {
     public static class Program
     {
-        private static TwitchBot _twitchBot;
         private static bool _running = true;
 
         private static void Main()
@@ -19,7 +18,7 @@ namespace OkayegTeaTimeCSharp
 
             JsonController.LoadData();
             TwitchAPI.Configure();
-            _twitchBot = new();
+            _ = new TwitchBot();
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
@@ -51,7 +50,7 @@ namespace OkayegTeaTimeCSharp
         public static void Restart()
         {
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
-            Process.Start($"./OkayegTeaTimeCSharp");
+            _ = Process.Start($"./OkayegTeaTimeCSharp");
             _running = false;
             Environment.Exit(0);
         }

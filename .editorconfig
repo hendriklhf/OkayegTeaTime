@@ -1,0 +1,34 @@
+﻿[*.cs]
+
+# CS0219: Variable ist zugewiesen, der Wert wird jedoch niemals verwendet
+dotnet_diagnostic.CS0219.severity = error
+
+# IDE0008: Expliziten Typ verwenden
+dotnet_diagnostic.IDE0008.severity = error
+csharp_style_expression_bodied_methods=false:silent
+csharp_style_expression_bodied_constructors=false:silent
+csharp_style_expression_bodied_operators=false:suggestion
+csharp_style_expression_bodied_local_functions=false:silent
+csharp_style_expression_bodied_properties=true:warning
+csharp_style_expression_bodied_indexers=true:warning
+csharp_style_expression_bodied_accessors=true:warning
+csharp_style_expression_bodied_lambdas=true:warning
+csharp_style_prefer_range_operator=true:warning
+csharp_style_prefer_index_operator=true:warning
+csharp_style_throw_expression=true:warning
+csharp_style_inlined_variable_declaration=true:warning
+csharp_style_prefer_pattern_matching=true:warning
+csharp_style_pattern_matching_over_is_with_cast_check=true:warning
+csharp_style_pattern_matching_over_as_with_null_check=true:warning
+csharp_style_prefer_switch_expression=true:silent
+
+[*.{cs,vb}]
+dotnet_style_prefer_auto_properties=true:warning
+dotnet_style_prefer_conditional_expression_over_assignment=true:warning
+dotnet_style_prefer_conditional_expression_over_return=true:warning
+dotnet_style_prefer_simplified_boolean_expressions=true:warning
+dotnet_style_collection_initializer=true:warning
+dotnet_style_object_initializer=true:warning
+dotnet_style_prefer_compound_assignment=true:warning
+dotnet_style_readonly_field=true:warning
+dotnet_code_quality_unused_parameters=all:warning
