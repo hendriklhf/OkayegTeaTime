@@ -468,7 +468,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.Where(u => u.Username == chatMessage.Username).FirstOrDefault();
-            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : "";
+            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : string.Empty;
             user.MessageText = message.MakeInsertable();
             user.Type = type.ToString();
             user.Time = TimeHelper.Now();
@@ -538,6 +538,7 @@ namespace OkayegTeaTimeCSharp.Database
                 PrefixHelper.Add(channel);
             }
         }
+
         public static void UpdateAccessToken(string username, string accessToken)
         {
             OkayegTeaTimeContext database = new();

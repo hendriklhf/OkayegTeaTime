@@ -1,4 +1,5 @@
-﻿using HLE.HttpRequests;
+﻿using HLE.Collections;
+using HLE.HttpRequests;
 using OkayegTeaTimeCSharp.HttpRequests.Enums;
 using OkayegTeaTimeCSharp.HttpRequests.Models;
 using OkayegTeaTimeCSharp.Properties;
@@ -71,13 +72,12 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
             JsonElement chatters = request.Data.GetProperty("chatters");
             List<Chatter> result = new();
-            chatters.GetProperty("broadcaster").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Broadcaster)));
-            chatters.GetProperty("vips").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.VIP)));
-            chatters.GetProperty("moderators").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Moderator)));
-            chatters.GetProperty("staff").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Staff)));
-            chatters.GetProperty("admins").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Admin)));
-            chatters.GetProperty("global_mods").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.GlobalMod)));
-            chatters.GetProperty("viewers").ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, ChatRole.Viewer)));
+            int idx = 0;
+            new string[] { "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers" }.ForEach(p =>
+            {
+                chatters.GetProperty(p).ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, (ChatRole)idx)));
+                idx++;
+            });
             return result;
         }
 
@@ -92,7 +92,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
-                    emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons")[i].GetProperty("name").GetString()));
+                    emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty($"{setID}").GetProperty("emoticons")[i].GetProperty("name").GetString()));
                 }
                 return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
             }
