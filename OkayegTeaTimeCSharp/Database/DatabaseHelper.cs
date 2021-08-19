@@ -29,10 +29,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void RemoveReminder(this OkayegTeaTimeContext database, List<Reminder> listReminder)
         {
-            listReminder.ForEach(reminder =>
-            {
-                database.Reminders.Remove(reminder);
-            });
+            listReminder.ForEach(reminder => database.Reminders.Remove(reminder));
             database.SaveChanges();
         }
 

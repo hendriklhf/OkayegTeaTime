@@ -30,9 +30,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (TwitchBot.AfkCooldowns.Any(c => c.Username == username))
             {
-                TwitchBot.AfkCooldowns.Remove(
-                    TwitchBot.AfkCooldowns.Where(c => c.Username == username).FirstOrDefault()
-                    );
+                TwitchBot.AfkCooldowns.Remove(TwitchBot.AfkCooldowns.FirstOrDefault(c => c.Username == username));
                 AddUserToAfkCooldownDictionary(username);
             }
         }
@@ -41,9 +39,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
             {
-                TwitchBot.Cooldowns.Remove(
-                    TwitchBot.Cooldowns.Where(c => c.Username == username && c.Type == type).FirstOrDefault()
-                    );
+                TwitchBot.Cooldowns.Remove(TwitchBot.Cooldowns.FirstOrDefault(c => c.Username == username && c.Type == type));
                 AddUserToCooldownDictionary(username, type);
             }
         }
@@ -104,10 +100,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel);
                 }
                 string emoteString = string.Empty;
-                emotes.ForEach(e =>
-                {
-                    emoteString += $"{e} | ";
-                });
+                emotes.ForEach(e => emoteString += $"{e} | ");
                 return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
             catch (Exception)
@@ -130,10 +123,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel);
                 }
                 string emoteString = string.Empty;
-                emotes.ForEach(e =>
-                {
-                    emoteString += $"{e} | ";
-                });
+                emotes.ForEach(e => emoteString += $"{e} | ");
                 return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
             catch (Exception)
@@ -199,11 +189,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return $"{chatMessage.Username}, {result} {Emoji.Coin}";
         }
 
-        public static void SendColor(this TwitchBot twitchBot, ChatMessage chatMessage)
-        {
-            //twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, {chatMessage.ColorHex}");
-        }
-
         public static void SendComingBack(this TwitchBot twitchBot, User user, ChatMessage chatMessage)
         {
             twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
@@ -254,10 +239,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel);
                 }
                 string emoteString = string.Empty;
-                emotes.ForEach(e =>
-                {
-                    emoteString += $"{e} | ";
-                });
+                emotes.ForEach(e => emoteString += $"{e} | ");
                 return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
             }
             catch (Exception)
@@ -439,10 +421,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
                 }
 
-                chatters.ForEach(c =>
-                {
-                    message += $" {c} {emote}";
-                });
+                chatters.ForEach(c => message += $" {c} {emote}");
                 return message;
             }
             else

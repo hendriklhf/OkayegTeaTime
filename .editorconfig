@@ -1,10 +1,18 @@
 ﻿[*.cs]
-
-# CS0219: Variable ist zugewiesen, der Wert wird jedoch niemals verwendet
 dotnet_diagnostic.CS0219.severity = error
-
-# IDE0008: Expliziten Typ verwenden
 dotnet_diagnostic.IDE0008.severity = error
+dotnet_diagnostic.IDE0100.severity = error
+dotnet_diagnostic.IDE1006.severity = error
+dotnet_diagnostic.IDE0051.severity = error
+dotnet_diagnostic.CS8321.severity = error
+dotnet_diagnostic.CS0162.severity = error
+dotnet_diagnostic.CS0168.severity = error
+dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0058.severity = silent
+dotnet_diagnostic.IDE0055.severity = error
+dotnet_diagnostic.IDE0120.severity = suggestion
+dotnet_diagnostic.IDE0053.severity = warning
+
 csharp_style_expression_bodied_methods=false:silent
 csharp_style_expression_bodied_constructors=false:silent
 csharp_style_expression_bodied_operators=false:suggestion
@@ -12,7 +20,7 @@ csharp_style_expression_bodied_local_functions=false:silent
 csharp_style_expression_bodied_properties=true:warning
 csharp_style_expression_bodied_indexers=true:warning
 csharp_style_expression_bodied_accessors=true:warning
-csharp_style_expression_bodied_lambdas=true:warning
+csharp_style_expression_bodied_lambdas=when_on_single_line:warning
 csharp_style_prefer_range_operator=true:warning
 csharp_style_prefer_index_operator=true:warning
 csharp_style_throw_expression=true:warning
@@ -24,11 +32,17 @@ csharp_style_prefer_switch_expression=true:silent
 
 [*.{cs,vb}]
 dotnet_style_prefer_auto_properties=true:warning
-dotnet_style_prefer_conditional_expression_over_assignment=true:warning
-dotnet_style_prefer_conditional_expression_over_return=true:warning
+dotnet_style_prefer_conditional_expression_over_assignment=true:none
+dotnet_style_prefer_conditional_expression_over_return=false:warning
 dotnet_style_prefer_simplified_boolean_expressions=true:warning
 dotnet_style_collection_initializer=true:warning
 dotnet_style_object_initializer=true:warning
 dotnet_style_prefer_compound_assignment=true:warning
-dotnet_style_readonly_field=true:warning
-dotnet_code_quality_unused_parameters=all:warning
+dotnet_style_readonly_field=true:error
+dotnet_code_quality_unused_parameters=all:suggestion
+dotnet_diagnostic.IDE0044.severity = error
+dotnet_diagnostic.IDE0040.severity = error
+dotnet_diagnostic.IDE0060.severity = suggestion
+dotnet_diagnostic.IDE0003.severity = error
+dotnet_diagnostic.IDE0047.severity = error
+dotnet_diagnostic.IDE0045.severity = none

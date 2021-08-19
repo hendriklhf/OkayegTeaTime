@@ -43,7 +43,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
             List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 20).Result.Channels.ToList();
             try
             {
-                return channels.Where(c => c.Name == channel).FirstOrDefault();
+                return channels.FirstOrDefault(c => c.Name == channel);
             }
             catch (Exception)
             {
