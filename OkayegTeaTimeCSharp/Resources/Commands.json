@@ -94,7 +94,7 @@
       "Description": [
         "Sends a message that includes the given text"
       ],
-      "Cooldown": 15000
+      "Cooldown": 30000
     },
     {
       "CommandName": "cookie",

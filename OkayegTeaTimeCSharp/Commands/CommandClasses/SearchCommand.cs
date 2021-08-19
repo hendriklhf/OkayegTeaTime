@@ -8,42 +8,39 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public static class SearchCommand
     {
-        private static ChatMessage _chatMessage;
-
         public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
         {
-            _chatMessage = chatMessage;
             if (chatMessage.GetMessage().IsMatch(Pattern.SearchUserParameter) && chatMessage.GetMessage().IsMatch(Pattern.SearchChannelParameter))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSearchUserChannel(chatMessage, GetKeyWord(), GetUsername(), GetChannel()));
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSearchUserChannel(chatMessage, GetKeyWord(chatMessage), GetUsername(chatMessage), GetChannel(chatMessage)));
             }
             else if (chatMessage.GetMessage().IsMatch(Pattern.SearchUserParameter))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSearchUser(chatMessage, GetKeyWord(), GetUsername()));
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSearchUser(chatMessage, GetKeyWord(chatMessage), GetUsername(chatMessage)));
             }
             else if (chatMessage.GetMessage().IsMatch(Pattern.SearchChannelParameter))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSearchChannel(chatMessage, GetKeyWord(), GetChannel()));
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSearchChannel(chatMessage, GetKeyWord(chatMessage), GetChannel(chatMessage)));
             }
             else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\S+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSearch(chatMessage, GetKeyWord()));
+                twitchBot.Send(chatMessage.Channel, BotActions.SendSearch(chatMessage, GetKeyWord(chatMessage)));
             }
         }
 
-        private static string GetKeyWord()
+        private static string GetKeyWord(ChatMessage chatMessage)
         {
-            return _chatMessage.GetMessage().Split()[1..].ToSequence().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
+            return chatMessage.GetMessage().Split()[1..].ToSequence().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
         }
 
-        private static string GetUsername()
+        private static string GetUsername(ChatMessage chatMessage)
         {
-            return _chatMessage.GetMessage().Match(Pattern.SearchUserParameter).ReplacePattern(@"(-u|--user)", "").Trim();
+            return chatMessage.GetMessage().Match(Pattern.SearchUserParameter).ReplacePattern(@"(-u|--user)", "").Trim();
         }
 
-        private static string GetChannel()
+        private static string GetChannel(ChatMessage chatMessage)
         {
-            return _chatMessage.GetMessage().Match(Pattern.SearchChannelParameter).ReplacePattern(@"(-c|--channel)", "").Trim();
+            return chatMessage.GetMessage().Match(Pattern.SearchChannelParameter).ReplacePattern(@"(-c|--channel)", "").Trim();
         }
     }
 }
