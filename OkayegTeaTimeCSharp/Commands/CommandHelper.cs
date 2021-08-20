@@ -6,6 +6,7 @@ using OkayegTeaTimeCSharp.Twitch.Bot;
 using System.Collections.Generic;
 using System.Linq;
 using TwitchLib.Client.Models;
+using JCommand = OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData.Command;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
@@ -13,24 +14,18 @@ namespace OkayegTeaTimeCSharp.Commands
     {
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
-            return JsonController.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+            return JsonController.CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
         }
 
         public static AfkCommand GetAfkCommand(string name)
         {
-            return JsonController.CommandLists.AfkCommands.Where(cmd => cmd.CommandName == name).FirstOrDefault();
+            return JsonController.CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == name);
         }
 
         public static List<string> GetAfkCommandAliases()
         {
             List<string> listAlias = new();
-            JsonController.CommandLists.AfkCommands.ForEach(cmd =>
-            {
-                cmd.Alias.ForEach(alias =>
-                {
-                    listAlias.Add(alias);
-                });
-            });
+            JsonController.CommandLists.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             return listAlias;
         }
 
@@ -39,21 +34,15 @@ namespace OkayegTeaTimeCSharp.Commands
             return GetCommandAliases().Concat(GetAfkCommandAliases()).ToList();
         }
 
-        public static Command GetCommand(CommandType type)
+        public static JCommand GetCommand(CommandType type)
         {
-            return JsonController.CommandLists.Commands.Where(cmd => cmd.CommandName == type.ToString().ToLower()).FirstOrDefault();
+            return JsonController.CommandLists.Commands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
         }
 
         public static List<string> GetCommandAliases()
         {
             List<string> listAlias = new();
-            JsonController.CommandLists.Commands.ForEach(cmd =>
-            {
-                cmd.Alias.ForEach(alias =>
-                {
-                    listAlias.Add(alias);
-                });
-            });
+            JsonController.CommandLists.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             return listAlias;
         }
 

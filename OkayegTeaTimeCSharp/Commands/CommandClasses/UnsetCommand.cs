@@ -6,25 +6,30 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class UnsetCommand
+    public class UnsetCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public UnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sprefix")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\sprefix")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetPrefix(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetPrefix(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sreminder\s\d+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\sreminder\s\d+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetReminder(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetReminder(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\semote")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\semote")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetEmoteInFront(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetEmoteInFront(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\snuke\s\d+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\snuke\s\d+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendUnsetNuke(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetNuke(ChatMessage));
             }
         }
     }

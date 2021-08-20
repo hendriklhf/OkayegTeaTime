@@ -6,13 +6,18 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public class TuckCommand
+    public class TuckCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+(\s\S+)?")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s\w+(\s\S+)?")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendTuckedToBed(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendTuckedToBed(ChatMessage));
             }
         }
     }

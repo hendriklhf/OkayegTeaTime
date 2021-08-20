@@ -3,11 +3,16 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class MasspingCommand
+    public class MasspingCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public MasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            twitchBot.Send(chatMessage.Channel, BotActions.SendMassping(chatMessage));
+        }
+
+        public override void Handle()
+        {
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendMassping(ChatMessage));
         }
     }
 }

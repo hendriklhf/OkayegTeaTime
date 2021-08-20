@@ -6,13 +6,18 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class MathCommand
+    public class MathCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public MathCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s.+")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s.+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendMathResult(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendMathResult(ChatMessage));
             }
         }
     }

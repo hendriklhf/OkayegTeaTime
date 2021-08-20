@@ -50,7 +50,7 @@ namespace OkayegTeaTimeCSharp
         public static void Restart()
         {
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
-            _ = Process.Start($"./OkayegTeaTimeCSharp");
+            Process.Start($"./OkayegTeaTimeCSharp");
             _running = false;
             Environment.Exit(0);
         }

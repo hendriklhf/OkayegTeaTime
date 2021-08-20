@@ -3,11 +3,16 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class RafkCommand
+    public class RafkCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            twitchBot.Send(chatMessage.Channel, BotActions.SendResumingAfkStatus(chatMessage));
+        }
+
+        public override void Handle()
+        {
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendResumingAfkStatus(ChatMessage));
         }
     }
 }

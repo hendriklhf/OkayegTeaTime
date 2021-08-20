@@ -3,11 +3,16 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class YourmomCommand
+    public class YourmomCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public YourmomCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            twitchBot.Send(chatMessage.Channel, BotActions.SendRandomYourmom(chatMessage));
+        }
+
+        public override void Handle()
+        {
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendRandomYourmom(ChatMessage));
         }
     }
 }

@@ -3,11 +3,16 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public class HelpCommand
+    public class HelpCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public HelpCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            twitchBot.Send(chatMessage.Channel, BotActions.SendHelp(chatMessage));
+        }
+
+        public override void Handle()
+        {
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendHelp(ChatMessage));
         }
     }
 }

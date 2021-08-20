@@ -6,13 +6,18 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class JoinCommand
+    public class JoinCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public JoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s#?\w+")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s#?\w+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendJoinChannel(twitchBot, chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendJoinChannel(TwitchBot, ChatMessage));
             }
         }
     }

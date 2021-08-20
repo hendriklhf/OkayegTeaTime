@@ -6,17 +6,22 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class SpotifyCommand
+    public class SpotifyCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public SpotifyCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\ssearch\s.+")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\ssearch\s.+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSpotifySearch(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendSpotifySearch(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s\w+)?")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"(\s\w+)?")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSpotifyCurrentlyPlaying(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendSpotifyCurrentlyPlaying(ChatMessage));
             }
         }
     }

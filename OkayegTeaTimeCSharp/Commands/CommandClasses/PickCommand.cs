@@ -3,11 +3,16 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class PickCommand
+    public class PickCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public PickCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            twitchBot.Send(chatMessage.Channel, BotActions.SendPick(chatMessage));
+        }
+
+        public override void Handle()
+        {
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendPick(ChatMessage));
         }
     }
 }

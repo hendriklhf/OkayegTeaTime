@@ -10,30 +10,33 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class RemindCommand
+    public class RemindCommand : Command
     {
-        private static ChatMessage _chatMessage;
         private const int _startIndex = 3;
         private const int _noMessageIndex = -1;
 
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            _chatMessage = chatMessage;
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), Pattern.ReminderInTime)))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), Pattern.ReminderInTime)))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSetTimedReminder(chatMessage, GetTimedRemindMessage(), GetToTime()));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, GetTimedRemindMessage(), GetToTime()));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+(\s\S+)*")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s\w+(\s\S+)*")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendSetReminder(chatMessage, GetRemindMessage()));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetRemindMessage()));
             }
         }
 
-        private static int GetMessageStartIdx()
+        private int GetMessageStartIdx()
         {
-            for (int i = _startIndex; i <= _chatMessage.GetLowerSplit().Length - 1; i++)
+            for (int i = _startIndex; i <= ChatMessage.GetLowerSplit().Length - 1; i++)
             {
-                if (!_chatMessage.GetLowerSplit()[i].IsMatch(Pattern.TimeSplit))
+                if (!ChatMessage.GetLowerSplit()[i].IsMatch(Pattern.TimeSplit))
                 {
                     return i;
                 }
@@ -41,20 +44,20 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             return _noMessageIndex;
         }
 
-        private static long GetToTime()
+        private long GetToTime()
         {
             int messageStartIdx = GetMessageStartIdx();
             if (messageStartIdx == _noMessageIndex)
             {
-                return TimeHelper.ConvertTimeToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..].ToList());
+                return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.GetLowerSplit()[_startIndex..].ToList());
             }
             else
             {
-                return TimeHelper.ConvertTimeToMilliseconds(_chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList());
+                return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList());
             }
         }
 
-        private static byte[] GetTimedRemindMessage()
+        private byte[] GetTimedRemindMessage()
         {
             int messageStartIdx = GetMessageStartIdx();
             if (messageStartIdx == _noMessageIndex)
@@ -63,22 +66,17 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             }
             else
             {
-                string message = "";
-                _chatMessage.GetSplit()[(_startIndex + _chatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList().Count)..].ForEach(str =>
-                {
-                    message += $"{str} ";
-                });
+                string message = string.Empty;
+                ChatMessage.GetSplit()[(_startIndex + ChatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList().Count)..]
+                    .ForEach(str => message += $"{str} ");
                 return message.MakeInsertable();
             }
         }
 
-        private static byte[] GetRemindMessage()
+        private byte[] GetRemindMessage()
         {
-            string message = "";
-            _chatMessage.GetSplit()[2..].ForEach(str =>
-            {
-                message += $"{str} ";
-            });
+            string message = string.Empty;
+            ChatMessage.GetSplit()[2..].ForEach(str => message += $"{str} ");
             return message.MakeInsertable();
         }
     }

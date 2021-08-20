@@ -7,6 +7,7 @@ using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System;
+using System.Reflection;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands
@@ -30,7 +31,9 @@ namespace OkayegTeaTimeCSharp.Commands
                                 if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")))
                                 {
                                     BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
-                                    Type.GetType(CommandHelper.GetCommandClassName(type)).GetMethod(_handleName).Invoke(null, new object[] { twitchBot, chatMessage, alias });
+                                    Type commandClass = Type.GetType(CommandHelper.GetCommandClassName(type));
+                                    ConstructorInfo constructor = commandClass.GetConstructor(new Type[] { typeof(TwitchBot), typeof(ChatMessage), typeof(string) });
+                                    commandClass.GetMethod(_handleName).Invoke(constructor.Invoke(new object[] { twitchBot, chatMessage, alias }), null);
                                     BotActions.AddCooldown(chatMessage.Username, type);
                                 }
                             });

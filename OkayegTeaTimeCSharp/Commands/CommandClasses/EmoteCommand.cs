@@ -6,21 +6,26 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class EmoteCommand
+    public class EmoteCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public EmoteCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sffz(\s((\d+)|(\w+(\s\d+)?)))?")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\sffz(\s((\d+)|(\w+(\s\d+)?)))?")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendFFZEmotes(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendFFZEmotes(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\sbttv(\s((\d+)|(\w+(\s\d+)?)))?")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\sbttv(\s((\d+)|(\w+(\s\d+)?)))?")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendBTTVEmotes(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendBTTVEmotes(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s7tv(\s((\d+)|(\w+(\s\d+)?)))?")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s7tv(\s((\d+)|(\w+(\s\d+)?)))?")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.Send7TVEmotes(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.Send7TVEmotes(ChatMessage));
             }
         }
     }

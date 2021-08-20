@@ -6,13 +6,18 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class VanishCommand
+    public class VanishCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public VanishCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (!chatMessage.IsModOrBroadcaster())
+        }
+
+        public override void Handle()
+        {
+            if (!ChatMessage.IsModOrBroadcaster())
             {
-                twitchBot.TwitchClient.TimeoutUser(chatMessage.Channel, chatMessage.Username, TimeSpan.FromSeconds(1));
+                TwitchBot.TwitchClient.TimeoutUser(ChatMessage.Channel, ChatMessage.Username, TimeSpan.FromSeconds(1));
             }
         }
     }

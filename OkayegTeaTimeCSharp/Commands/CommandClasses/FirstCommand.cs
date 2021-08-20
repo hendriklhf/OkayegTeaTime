@@ -6,25 +6,30 @@ using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
-    public static class FirstCommand
+    public class FirstCommand : Command
     {
-        public static void Handle(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public FirstCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+            : base(twitchBot, chatMessage, alias)
         {
-            if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+\s#?\w+")))
+        }
+
+        public override void Handle()
+        {
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s\w+\s#?\w+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendFirstUserChannel(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstUserChannel(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s#\w+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s#\w+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendFirstChannel(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstChannel(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"\s\w+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s\w+")))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendFirstUser(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstUser(ChatMessage));
             }
-            else if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel))))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel))))
             {
-                twitchBot.Send(chatMessage.Channel, BotActions.SendFirst(chatMessage));
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirst(ChatMessage));
             }
         }
     }
