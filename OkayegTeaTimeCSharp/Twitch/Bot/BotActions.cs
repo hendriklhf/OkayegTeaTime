@@ -183,6 +183,23 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static string SendCheckReminder(ChatMessage chatMessage)
+        {
+            try
+            {
+                int id = chatMessage.GetSplit()[2].ToInt();
+                Reminder reminder = DataBase.GetReminder(id);
+                return $"{chatMessage.Username}, From: {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} || To: {GetReminderTarget(reminder.ToUser, reminder.FromUser)} || " +
+                    $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago", ConversionType.YearDayHourMin)} || " +
+                    $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, conversionType: ConversionType.YearDayHourMin)} || " +
+                    $"Message: {reminder.Message.Decode()}";
+            }
+            catch (ReminderNotFoundException ex)
+            {
+                return $"{chatMessage.Username}, {ex.Message}";
+            }
+        }
+
         public static string SendCoinFlip(ChatMessage chatMessage)
         {
             string result = StrbhRand.Random.Int(0, 100) >= 50 ? "yes/heads" : "no/tails";

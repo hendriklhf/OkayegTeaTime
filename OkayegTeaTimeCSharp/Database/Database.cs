@@ -312,6 +312,19 @@ namespace OkayegTeaTimeCSharp.Database
             return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault().RefreshToken;
         }
 
+        public static Reminder GetReminder(int id)
+        {
+            Reminder reminder = new OkayegTeaTimeContext().Reminders.FirstOrDefault(r => r.Id == id);
+            if (reminder != null)
+            {
+                return reminder;
+            }
+            else
+            {
+                throw new ReminderNotFoundException();
+            }
+        }
+
         public static Message GetSearch(string keyword)
         {
             OkayegTeaTimeContext database = new();

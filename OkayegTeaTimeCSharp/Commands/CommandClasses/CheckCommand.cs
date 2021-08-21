@@ -19,6 +19,10 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckAfk(ChatMessage));
             }
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\sreminder\s\d+(\s|$)")))
+            {
+                TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckReminder(ChatMessage));
+            }
         }
     }
 }

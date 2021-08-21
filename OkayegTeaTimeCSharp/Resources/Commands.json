@@ -213,10 +213,12 @@
         "check"
       ],
       "Parameter": [
-        "afk [username]"
+        "afk [username]",
+        "reminder [id]"
       ],
       "Description": [
-        "Checks the afk status of the given user"
+        "Checks the afk status of the given user",
+        "Sends information about the reminder. Must be a running reminder"
       ],
       "Cooldown": 5000
     },
