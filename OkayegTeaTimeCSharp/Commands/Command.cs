@@ -1,9 +1,10 @@
-﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Commands.Interfaces;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Commands
 {
-    public abstract class Command
+    public abstract class Command : ICommand
     {
         public TwitchBot TwitchBot { get; }
 
