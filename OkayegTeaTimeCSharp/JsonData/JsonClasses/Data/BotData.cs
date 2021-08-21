@@ -1,6 +1,6 @@
 namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Data
 {
-    public class Data
+    public class BotData
     {
         public UserLists UserLists { get; set; }
 

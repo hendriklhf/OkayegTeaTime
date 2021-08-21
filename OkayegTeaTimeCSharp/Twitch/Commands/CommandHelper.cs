@@ -13,18 +13,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands
     {
         public static AfkCommand GetAfkCommand(AfkCommandType type)
         {
-            return JsonController.CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
+            return new JsonController().CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
         }
 
         public static AfkCommand GetAfkCommand(string name)
         {
-            return JsonController.CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == name);
+            return new JsonController().CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == name);
         }
 
         public static List<string> GetAfkCommandAliases()
         {
             List<string> listAlias = new();
-            JsonController.CommandLists.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
+            new JsonController().CommandLists.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             return listAlias;
         }
 
@@ -35,13 +35,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands
 
         public static JCommand GetCommand(CommandType type)
         {
-            return JsonController.CommandLists.Commands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
+            return new JsonController().CommandLists.Commands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
         }
 
         public static List<string> GetCommandAliases()
         {
             List<string> listAlias = new();
-            JsonController.CommandLists.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
+            new JsonController().CommandLists.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             return listAlias;
         }
 

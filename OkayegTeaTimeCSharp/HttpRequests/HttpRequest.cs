@@ -46,7 +46,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             try
             {
                 List<Emote> emotes = new();
-                HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{TwitchAPI.GetChannelID(channel)}");
+                HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{new TwitchAPI().GetChannelID(channel)}");
                 int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
                 count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)

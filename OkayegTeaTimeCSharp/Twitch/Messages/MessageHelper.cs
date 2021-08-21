@@ -38,7 +38,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
 
         public static bool IsSpecialUser(this string username)
         {
-            return JsonController.BotData.UserLists.SpecialUsers.Contains(username);
+            return new JsonController().BotData.UserLists.SpecialUsers.Contains(username);
         }
 
         public static byte[] MakeInsertable(this string input)

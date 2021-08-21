@@ -421,7 +421,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string message = string.Empty;
                 List<string> chatters;
                 List<string> chattersToRemove = new() { chatMessage.Username };
-                chattersToRemove = chattersToRemove.Concat(JsonController.BotData.UserLists.SpecialUsers).ToList();
+                chattersToRemove = chattersToRemove.Concat(new JsonController().BotData.UserLists.SpecialUsers).ToList();
 
                 if (chatMessage.Channel != Resources.SecretOfflineChat)
                 {
@@ -793,7 +793,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static string SendUserID(ChatMessage chatMessage)
         {
             string username = chatMessage.GetSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Username;
-            return $"{chatMessage.Username}, {TwitchAPI.GetChannelID(username)}";
+            return $"{chatMessage.Username}, {new TwitchAPI().GetChannelID(username)}";
         }
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {

@@ -49,24 +49,15 @@ namespace OkayegTeaTimeCSharp.Tools.GitHub
             string result = string.Empty;
             result += Header(1, _title);
             result += Header(2, _header1);
-            _header1Text.ForEach(str =>
-            {
-                result += str + _linebreak;
-            });
+            _header1Text.ForEach(str => result += str + _linebreak);
             result += _linebreak;
             result += "<table><tr>";
-            _cmdTableHeader.ForEach(str =>
-            {
-                result += TableHeader(str);
-            });
+            _cmdTableHeader.ForEach(str => result += TableHeader(str));
             result += "</tr>";
-            JsonController.CommandLists.Commands.OrderBy(cmd => cmd.CommandName).ForEach(cmd =>
+            new JsonController().CommandLists.Commands.OrderBy(cmd => cmd.CommandName).ForEach(cmd =>
             {
                 result += $"<tr><td>{cmd.CommandName}</td><td><table>";
-                cmd.Alias.ForEach(alias =>
-                {
-                    result += $"<tr><td>{alias}</td></tr>";
-                });
+                cmd.Alias.ForEach(alias => result += $"<tr><td>{alias}</td></tr>");
                 result += "</table></td><td><table>";
                 for (int i = 0; i <= cmd.Parameter.Count - 1; i++)
                 {
@@ -77,18 +68,12 @@ namespace OkayegTeaTimeCSharp.Tools.GitHub
             result += "</table>";
             result += Header(2, _header2);
             result += "<table><tr>";
-            _afkCmdTableHeader.ForEach(str =>
-            {
-                result += TableHeader(str);
-            });
+            _afkCmdTableHeader.ForEach(str => result += TableHeader(str));
             result += "</tr>";
-            JsonController.CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ForEach(cmd =>
+            new JsonController().CommandLists.AfkCommands.OrderBy(cmd => cmd.CommandName).ForEach(cmd =>
             {
                 result += $"<tr><td>{cmd.CommandName}</td><td><table>";
-                cmd.Alias.OrderBy(alias => alias).ForEach(alias =>
-                {
-                    result += $"<tr><td>{alias}</td></tr>";
-                });
+                cmd.Alias.OrderBy(alias => alias).ForEach(alias => result += $"<tr><td>{alias}</td></tr>");
                 result += "</table></td>";
                 for (int i = 0; i <= cmd.Parameter.Count - 1; i++)
                 {

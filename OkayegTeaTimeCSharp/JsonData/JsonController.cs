@@ -6,16 +6,19 @@ using System.Text.Json;
 
 namespace OkayegTeaTimeCSharp.JsonData
 {
-    public static class JsonController
+    public class JsonController
     {
-        public static Data BotData { get; private set; }
+        public BotData BotData => _botData;
 
-        public static CommandLists CommandLists { get; private set; }
+        public CommandLists CommandLists => _commandLists;
 
-        public static void LoadData()
+        private static BotData _botData;
+        private static CommandLists _commandLists;
+
+        public void LoadData()
         {
-            BotData = JsonSerializer.Deserialize<Data>(File.ReadAllText(Resources.JsonPath));
-            CommandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Resources.CommandsJsonPath));
+            _botData = JsonSerializer.Deserialize<BotData>(File.ReadAllText(Resources.JsonPath));
+            _commandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Resources.CommandsJsonPath));
         }
     }
 }
