@@ -64,7 +64,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 ReconnectionPolicy = new(10000, 30000, 1000),
                 UseSsl = true
             };
-            WebSocketClient = new(ClientOptions);
+            //WebSocketClient = new(ClientOptions);
             TcpClient = new(ClientOptions);
             TwitchClient = new(TcpClient, ClientProtocol.TCP)
             {
