@@ -12,6 +12,7 @@ dotnet_diagnostic.IDE0058.severity = silent
 dotnet_diagnostic.IDE0055.severity = error
 dotnet_diagnostic.IDE0120.severity = suggestion
 dotnet_diagnostic.IDE0053.severity = warning
+dotnet_diagnostic.CA1822.severity = silent
 
 csharp_style_expression_bodied_methods=false:silent
 csharp_style_expression_bodied_constructors=false:silent
