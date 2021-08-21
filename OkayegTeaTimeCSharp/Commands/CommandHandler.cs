@@ -31,9 +31,7 @@ namespace OkayegTeaTimeCSharp.Commands
                                 if (chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")))
                                 {
                                     BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
-                                    Type commandClass = Type.GetType(CommandHelper.GetCommandClassName(type));
-                                    ConstructorInfo constructor = commandClass.GetConstructor(new Type[] { typeof(TwitchBot), typeof(ChatMessage), typeof(string) });
-                                    commandClass.GetMethod(_handleName).Invoke(constructor.Invoke(new object[] { twitchBot, chatMessage, alias }), null);
+                                    InvokeCommandHandle(type, twitchBot, chatMessage, alias);
                                     BotActions.AddCooldown(chatMessage.Username, type);
                                 }
                             });
@@ -64,6 +62,13 @@ namespace OkayegTeaTimeCSharp.Commands
                 });
                 twitchBot.CommandCount++;
             }
+        }
+
+        private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        {
+            Type commandClass = Type.GetType(CommandHelper.GetCommandClassName(type));
+            ConstructorInfo constructor = commandClass.GetConstructor(new Type[] { typeof(TwitchBot), typeof(ChatMessage), typeof(string) });
+            commandClass.GetMethod(_handleName).Invoke(constructor.Invoke(new object[] { twitchBot, chatMessage, alias }), null);
         }
     }
 }
