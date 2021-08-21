@@ -1,6 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Interfaces;
-using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch
 {
@@ -8,12 +7,9 @@ namespace OkayegTeaTimeCSharp.Twitch
     {
         public TwitchBot TwitchBot { get; }
 
-        public ChatMessage ChatMessage { get; }
-
-        public Handler(TwitchBot twitchBot, ChatMessage chatMessage)
+        protected Handler(TwitchBot twitchBot)
         {
             TwitchBot = twitchBot;
-            ChatMessage = chatMessage;
         }
 
         public abstract void Handle();

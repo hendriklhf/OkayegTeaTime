@@ -10,10 +10,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
     {
         public CommandHandler CommandHandler { get; }
 
+        public ChatMessage ChatMessage { get; }
+
         public MessageHandler(TwitchBot twitchBot, ChatMessage chatMessage)
-            : base(twitchBot, chatMessage)
+            : base(twitchBot)
         {
             CommandHandler = new(twitchBot, chatMessage);
+            ChatMessage = chatMessage;
         }
 
         public override void Handle()

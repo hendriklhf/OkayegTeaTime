@@ -3,8 +3,8 @@ using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Messages;
+using OkayegTeaTimeCSharp.Twitch.Whisper;
 using OkayegTeaTimeCSharp.Utils;
-using OkayegTeaTimeCSharp.Whisper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -175,8 +175,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            WhisperHandler.Handle(this, e.WhisperMessage);
-
+            new WhisperHandler(this, e.WhisperMessage).Handle();
             ConsoleOut($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
 
@@ -211,7 +210,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (!MessageHelper.IsSpecialUser(((ChatMessage)chatMessage).Username))
             {
-                new MessageHandler(this, (ChatMessage)chatMessage).Handle();
+                new MessageHandler(this, chatMessage as ChatMessage).Handle();
             }
         }
 
