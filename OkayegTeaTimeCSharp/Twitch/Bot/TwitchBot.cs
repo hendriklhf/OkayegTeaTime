@@ -1,6 +1,7 @@
 ﻿using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Whisper;
@@ -84,6 +85,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnError += Client_OnError;
             TwitchClient.OnDisconnected += Client_OnDisconnect;
             TwitchClient.OnReconnected += Client_OnReconnected;
+            TwitchClient.OnUserJoined += Client_OnUserJoinedChannel;
 
             TwitchClient.Connect();
 
@@ -202,6 +204,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             ConsoleOut($"BOT>RECONNECTED", true, ConsoleColor.Red);
         }
 
+        private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
+        {
+            if (e.Channel == Resources.SecretOfflineChat && !new JsonController().BotData.UserLists.SecretUsers.Contains(e.Username))
+            {
+                Send(Resources.SecretOfflineChat, $"{e.Username} joined the chat");
+            }
+        }
+
         #endregion Bot_On
 
         #region Timer
@@ -232,7 +242,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
         {
-            TimerFunctions.BanSecretChatUsers(this);
             TimerFunctions.SetConsoleTitle(this);
         }
 
