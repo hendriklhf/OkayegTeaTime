@@ -8,7 +8,6 @@ using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -162,9 +161,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            Thread thread = new(OnMessage);
-            thread.Start(e.ChatMessage);
-
+            if (!MessageHelper.IsSpecialUser(e.ChatMessage.Username))
+            {
+                new MessageHandler(this, e.ChatMessage).Handle();
+            }
             ConsoleOut($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
         }
 
@@ -203,18 +203,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         }
 
         #endregion Bot_On
-
-        #region Threading
-
-        private void OnMessage(object chatMessage)
-        {
-            if (!MessageHelper.IsSpecialUser(((ChatMessage)chatMessage).Username))
-            {
-                new MessageHandler(this, chatMessage as ChatMessage).Handle();
-            }
-        }
-
-        #endregion Threading
 
         #region Timer
 
