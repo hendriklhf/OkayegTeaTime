@@ -1,0 +1,60 @@
+﻿namespace OkayegTeaTimeCSharp.Twitch.Commands.CommandEnums
+{
+    public enum CommandType
+    {
+        Chatterino7,
+        Chatterino,
+        Chatters,
+        Check,
+        Coinflip,
+        Cookie,
+        Count,
+        CSharp,
+        Emote,
+        Fill,
+        First,
+        Fuck,
+        Gachi,
+        Help,
+        Id,
+        Join,
+        Last,
+        Massping,
+        Math,
+        Nuke,
+        Pick,
+        Ping,
+        Rafk,
+        Rand,
+        Remind,
+        Search,
+        Set,
+        Skip,
+        SongRequest,
+        Spotify,
+        Suggest,
+        Tuck,
+        Unset,
+        Vanish,
+        Yourmom
+    }
+
+    public enum AfkCommandType
+    {
+        Afk,
+        Brb,
+        Fat,
+        Game,
+        Gn,
+        Lurk,
+        Movie,
+        Nap,
+        Piss,
+        Poof,
+        Poop,
+        School,
+        Shower,
+        Study,
+        Work
+    }
+}

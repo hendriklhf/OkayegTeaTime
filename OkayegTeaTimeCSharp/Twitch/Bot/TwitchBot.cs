@@ -1,8 +1,8 @@
 ﻿using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Utils;
 using OkayegTeaTimeCSharp.Whisper;
 using System;
@@ -211,7 +211,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (!MessageHelper.IsSpecialUser(((ChatMessage)chatMessage).Username))
             {
-                MessageHandler.Handle(this, (ChatMessage)chatMessage);
+                new MessageHandler(this, (ChatMessage)chatMessage).Handle();
             }
         }
 

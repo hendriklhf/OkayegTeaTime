@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Messages;
+﻿using OkayegTeaTimeCSharp.Twitch.Messages;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch
