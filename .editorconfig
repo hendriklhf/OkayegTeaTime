@@ -1,4 +1,64 @@
 ﻿[*.cs]
+indent_size = 4
+insert_final_newline = true
+
+dotnet_naming_rule.non_private_static_fields_should_be_pascal_case.severity = error
+dotnet_naming_rule.non_private_static_fields_should_be_pascal_case.symbols = non_private_static_fields
+dotnet_naming_rule.non_private_static_fields_should_be_pascal_case.style = non_private_static_field_style
+dotnet_naming_symbols.non_private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.non_private_static_fields.applicable_accessibilities = public, protected, internal, protected_internal
+dotnet_naming_symbols.non_private_static_fields.required_modifiers = static
+dotnet_naming_style.non_private_static_field_style.capitalization = pascal_case
+
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.severity = error
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.symbols = non_private_readonly_fields
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.style = non_private_readonly_field_style
+dotnet_naming_symbols.non_private_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.non_private_readonly_fields.applicable_accessibilities = public, protected, internal, protected_internal
+dotnet_naming_symbols.non_private_readonly_fields.required_modifiers = readonly
+dotnet_naming_style.non_private_readonly_field_style.capitalization = pascal_case
+
+dotnet_naming_rule.constants_should_be_pascal_case.severity = error
+dotnet_naming_rule.constants_should_be_pascal_case.symbols = constants
+dotnet_naming_rule.constants_should_be_pascal_case.style = constant_style
+dotnet_naming_symbols.constants.applicable_kinds = field, local
+dotnet_naming_symbols.constants.applicable_accessibilities = public, protected, internal, protected_internal
+dotnet_naming_symbols.constants.required_modifiers = const
+dotnet_naming_style.constant_style.capitalization = pascal_case
+
+dotnet_naming_rule.static_fields_should_be_camel_case.severity = error
+dotnet_naming_rule.static_fields_should_be_camel_case.symbols = static_fields
+dotnet_naming_rule.static_fields_should_be_camel_case.style = static_field_style
+dotnet_naming_symbols.static_fields.applicable_kinds = field
+dotnet_naming_symbols.static_fields.required_modifiers = static
+dotnet_naming_style.static_field_style.capitalization = camel_case
+dotnet_naming_style.static_field_style.required_prefix = _
+
+dotnet_naming_rule.instance_fields_should_be_camel_case.severity = error
+dotnet_naming_rule.instance_fields_should_be_camel_case.symbols = instance_fields
+dotnet_naming_rule.instance_fields_should_be_camel_case.style = instance_field_style
+dotnet_naming_symbols.instance_fields.applicable_kinds = field
+dotnet_naming_style.instance_field_style.capitalization = camel_case
+dotnet_naming_style.instance_field_style.required_prefix = _
+
+dotnet_naming_rule.locals_should_be_camel_case.severity = error
+dotnet_naming_rule.locals_should_be_camel_case.symbols = locals_and_parameters
+dotnet_naming_rule.locals_should_be_camel_case.style = camel_case_style
+dotnet_naming_symbols.locals_and_parameters.applicable_kinds = parameter, local
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+
+dotnet_naming_rule.local_functions_should_be_pascal_case.severity = error
+dotnet_naming_rule.local_functions_should_be_pascal_case.symbols = local_functions
+dotnet_naming_rule.local_functions_should_be_pascal_case.style = local_function_style
+dotnet_naming_symbols.local_functions.applicable_kinds = local_function
+dotnet_naming_style.local_function_style.capitalization = pascal_case
+
+dotnet_naming_rule.members_should_be_pascal_case.severity = error
+dotnet_naming_rule.members_should_be_pascal_case.symbols = all_members
+dotnet_naming_rule.members_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.all_members.applicable_kinds = *
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
 dotnet_diagnostic.CS0219.severity = error
 dotnet_diagnostic.IDE0008.severity = error
 dotnet_diagnostic.IDE0100.severity = error
@@ -14,6 +74,11 @@ dotnet_diagnostic.IDE0120.severity = suggestion
 dotnet_diagnostic.IDE0053.severity = warning
 dotnet_diagnostic.CA1822.severity = silent
 dotnet_diagnostic.IDE0090.severity = error
+dotnet_diagnostic.IDE0004.severity = error
+dotnet_diagnostic.IDE0036.severity = error
+dotnet_diagnostic.CA1805.severity = silent
+dotnet_diagnostic.IDE0035.severity = error
+dotnet_diagnostic.CA2211.severity = error
 
 csharp_style_expression_bodied_methods=false:silent
 csharp_style_expression_bodied_constructors=false:silent
@@ -31,6 +96,14 @@ csharp_style_prefer_pattern_matching=true:warning
 csharp_style_pattern_matching_over_is_with_cast_check=true:warning
 csharp_style_pattern_matching_over_as_with_null_check=true:warning
 csharp_style_prefer_switch_expression=true:silent
+
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
 
 [*.{cs,vb}]
 dotnet_style_prefer_auto_properties=true:warning
