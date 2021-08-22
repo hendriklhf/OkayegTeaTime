@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using TwitchLib.Api.V5.Models.Channels;
 using TwitchLibAPI = TwitchLib.Api.TwitchAPI;
+using OkayegTeaTimeCSharp.Exceptions;
 
 namespace OkayegTeaTimeCSharp.Twitch.API
 {
@@ -43,17 +44,25 @@ namespace OkayegTeaTimeCSharp.Twitch.API
             List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 20).Result.Channels.ToList();
             try
             {
-                return channels.FirstOrDefault(c => c.Name == channel);
+                return channels.FirstOrDefault(c => c.Name == channel) ?? channels[0];
             }
             catch (Exception)
             {
-                return channels[0];
+                return null;
             }
         }
 
         public string GetChannelID(string channel)
         {
-            return GetChannelByName(channel).Id;
+            string id = GetChannelByName(channel)?.Id;
+            if (id != null)
+            {
+                return id;
+            }
+            else
+            {
+                throw new UserNotFoundException();
+            }
         }
     }
 }

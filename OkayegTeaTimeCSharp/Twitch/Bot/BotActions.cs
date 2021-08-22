@@ -792,8 +792,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendUserID(ChatMessage chatMessage)
         {
-            string username = chatMessage.GetSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Username;
-            return $"{chatMessage.Username}, {new TwitchAPI().GetChannelID(username)}";
+            try
+            {
+                string username = chatMessage.GetSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Username;
+                return $"{chatMessage.Username}, {new TwitchAPI().GetChannelID(username)}";
+            }
+            catch (UserNotFoundException ex)
+            {
+                return $"{chatMessage.Username}, {ex.Message}";
+            }
         }
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
