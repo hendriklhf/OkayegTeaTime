@@ -120,3 +120,4 @@ dotnet_diagnostic.IDE0060.severity = suggestion
 dotnet_diagnostic.IDE0003.severity = error
 dotnet_diagnostic.IDE0047.severity = error
 dotnet_diagnostic.IDE0045.severity = none
+dotnet_diagnostic.IDE0059.severity = error
