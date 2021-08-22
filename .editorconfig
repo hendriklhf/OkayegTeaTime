@@ -105,7 +105,6 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
 
-[*.{cs,vb}]
 dotnet_style_prefer_auto_properties=true:warning
 dotnet_style_prefer_conditional_expression_over_assignment=true:none
 dotnet_style_prefer_conditional_expression_over_return=false:warning
