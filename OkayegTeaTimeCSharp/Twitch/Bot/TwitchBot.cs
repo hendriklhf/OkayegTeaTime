@@ -9,6 +9,7 @@ using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Timers;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -19,7 +20,6 @@ using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static HLE.Time.TimeHelper;
 using static OkayegTeaTimeCSharp.Program;
-using Timers = System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -41,9 +41,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public Restarter Restarter { get; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
 
-        private readonly long _runtime = Now();
-
-        public static readonly List<Timers::Timer> ListTimer = new();
+        public static readonly List<Timer> ListTimer = new();
 
         public static Dictionary<string, string> LastMessages { get; set; } = LastMessagesHelper.FillDictionary();
 
@@ -54,6 +52,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static List<Cooldown> Cooldowns { get; } = new();
 
         public static List<AfkCooldown> AfkCooldowns { get; } = new();
+
+        private readonly long _runtime = Now();
 
         public TwitchBot()
         {
@@ -235,17 +235,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
         }
 
-        private void OnTimer1000(object sender, Timers::ElapsedEventArgs e)
+        private void OnTimer1000(object sender, ElapsedEventArgs e)
         {
             TimerFunctions.CheckForTimedReminders(this);
         }
 
-        private void OnTimer30000(object sender, Timers::ElapsedEventArgs e)
+        private void OnTimer30000(object sender, ElapsedEventArgs e)
         {
             TimerFunctions.SetConsoleTitle(this);
         }
 
-        private void OnTimer10Days(object sender, Timers::ElapsedEventArgs e)
+        private void OnTimer10Days(object sender, ElapsedEventArgs e)
         {
             TimerFunctions.TwitchApiRefreshAccessToken();
         }
