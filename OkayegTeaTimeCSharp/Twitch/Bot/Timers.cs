@@ -21,12 +21,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 Interval = interval,
                 AutoReset = true
             };
-            TwitchBot.ListTimer.Add(timer);
+            TwitchBot.Timers.Add(timer);
         }
 
         public static Timer GetTimer(long interval)
         {
-            return TwitchBot.ListTimer.FirstOrDefault(t => t.Interval == interval);
+            return TwitchBot.Timers.FirstOrDefault(t => t.Interval == interval);
         }
     }
 }

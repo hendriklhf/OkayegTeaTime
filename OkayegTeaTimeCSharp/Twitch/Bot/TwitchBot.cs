@@ -3,6 +3,7 @@ using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
+using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Whisper;
 using OkayegTeaTimeCSharp.Utils;
@@ -41,7 +42,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public Restarter Restarter { get; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
 
-        public static readonly List<Timer> ListTimer = new();
+        public static List<Timer> Timers { get; } = new();
 
         public static Dictionary<string, string> LastMessages { get; set; } = LastMessagesHelper.FillDictionary();
 
@@ -111,21 +112,30 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public bool JoinChannel(string channel)
+        public bool JoinChannel(string channel, out string responseMessage)
         {
-            DataBase.AddChannel(channel);
-            LastMessages = LastMessagesHelper.FillDictionary();
-            Prefixes = PrefixHelper.FillDictionary();
-            EmoteInFront = EmoteInFrontHelper.FillDictionary();
-            try
+            if (new TwitchAPI().GetChannelByName(channel)?.Name == channel)
             {
-                TwitchClient.JoinChannel(channel.RemoveHashtag());
-                Send(channel, "I'm online");
-                return true;
+                DataBase.AddChannel(channel);
+                LastMessages = LastMessagesHelper.FillDictionary();
+                Prefixes = PrefixHelper.FillDictionary();
+                EmoteInFront = EmoteInFrontHelper.FillDictionary();
+                try
+                {
+                    TwitchClient.JoinChannel(channel);
+                    Send(channel, "I'm online");
+                    responseMessage = $"successfully joined #{channel}";
+                    return true;
+                }
+                catch (Exception)
+                {
+                    responseMessage = $"unable to join #{channel}";
+                    return false;
+                }
             }
-            catch (Exception)
+            else
             {
-                Send(Resources.Username, $"{Resources.Moderators}, unable to join #{channel.RemoveHashtag()}");
+                responseMessage = $"channel #{channel} does not exist";
                 return false;
             }
         }
@@ -218,21 +228,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void InitializeTimers()
         {
-            Timers.CreateTimers();
+            Bot.Timers.CreateTimers();
             AddTimerFunction();
             StartTimers();
         }
 
         private static void StartTimers()
         {
-            ListTimer.ForEach(t => t.Start());
+            Timers.ForEach(t => t.Start());
         }
 
         private void AddTimerFunction()
         {
-            Timers.GetTimer(1000).Elapsed += OnTimer1000;
-            Timers.GetTimer(30000).Elapsed += OnTimer30000;
-            Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
+            Bot.Timers.GetTimer(1000).Elapsed += OnTimer1000;
+            Bot.Timers.GetTimer(30000).Elapsed += OnTimer30000;
+            Bot.Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
         }
 
         private void OnTimer1000(object sender, ElapsedEventArgs e)

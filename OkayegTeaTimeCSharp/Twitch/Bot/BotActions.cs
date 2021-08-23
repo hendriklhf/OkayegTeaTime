@@ -368,18 +368,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (Config.Moderators.Contains(chatMessage.Username))
             {
                 string channel = chatMessage.GetLowerSplit()[1];
-                if (twitchBot.JoinChannel(channel))
-                {
-                    return $"{chatMessage.Username}, joined #{channel.RemoveHashtag()} successfully";
-                }
-                else
-                {
-                    return $"{chatMessage.Username}, failed to join #{channel.RemoveHashtag()}";
-                }
+                twitchBot.JoinChannel(channel.RemoveHashtag(), out string response);
+                return $"{chatMessage.Username}, {response}";
             }
             else
             {
-                return $"{chatMessage.Username}, you are a not a moderator of the bot";
+                return $"{chatMessage.Username}, you are not a moderator of the bot";
             }
         }
 
