@@ -19,9 +19,11 @@ namespace OkayegTeaTimeCSharp
             new JsonController().LoadData();
             new TwitchAPI().Configure();
             _ = new TwitchBot();
+
 #if DEBUG
             ReadMeGenerator.GenerateReadMe();
 #endif
+
             while (_running)
             {
             }
