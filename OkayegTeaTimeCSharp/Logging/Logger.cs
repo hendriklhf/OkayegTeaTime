@@ -20,7 +20,7 @@ namespace OkayegTeaTimeCSharp.Logging
 
         public static void Log(Exception ex)
         {
-            File.AppendAllText(Resources.LogsPath, CreateLog($"Exception: {ex.Message}: {ex.StackTrace}"));
+            File.AppendAllText(Resources.LogsPath, CreateLog($"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}"));
         }
 
         private static string CreateLog(string input)
