@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Discord;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands;
 using TwitchLib.Client.Models;
@@ -34,8 +33,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
                 CommandHandler.Handle();
 
                 DataBase.CheckForNukes(TwitchBot, ChatMessage);
-
-                DiscordClient.SendDiscordMessageIfAFK(TwitchBot, ChatMessage);
             }
         }
     }

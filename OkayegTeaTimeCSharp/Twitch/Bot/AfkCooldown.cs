@@ -4,7 +4,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public class AfkCooldown
     {
-        public string Username { get; set; }
+        public string Username { get; }
 
         public long Time { get; private set; }
 

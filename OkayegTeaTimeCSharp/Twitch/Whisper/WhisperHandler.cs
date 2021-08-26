@@ -7,10 +7,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Whisper
     {
         public WhisperMessage WhisperMessage { get; }
 
-        public WhisperHandler(TwitchBot twitchBot, TwitchLibMessage chatMessage)
+        public WhisperHandler(TwitchBot twitchBot, WhisperMessage whisperMessage)
             : base(twitchBot)
         {
-            WhisperMessage = chatMessage as WhisperMessage;
+            WhisperMessage = whisperMessage;
         }
 
         public override void Handle()

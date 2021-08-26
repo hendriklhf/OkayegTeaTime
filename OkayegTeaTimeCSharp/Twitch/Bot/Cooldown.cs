@@ -6,9 +6,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public class Cooldown
     {
-        public string Username { get; set; }
+        public string Username { get; }
 
-        public CommandType Type { get; set; }
+        public CommandType Type { get; }
 
         public long Time { get; private set; }
 

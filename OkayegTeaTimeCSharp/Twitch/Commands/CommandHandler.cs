@@ -17,10 +17,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands
 
         private const string _handleName = "Handle";
 
-        public CommandHandler(TwitchBot twitchBot, TwitchLibMessage twitchLibMessage)
+        public CommandHandler(TwitchBot twitchBot, ChatMessage chatMessage)
             : base(twitchBot)
         {
-            ChatMessage = twitchLibMessage as ChatMessage;
+            ChatMessage = chatMessage;
         }
 
         public override void Handle()
