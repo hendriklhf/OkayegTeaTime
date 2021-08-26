@@ -47,7 +47,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\.editorconfig" Link=".editorconfig" />
 	  <None Include="Resources\OnlineCompilerTemplate.cs" />
 	</ItemGroup>
 
