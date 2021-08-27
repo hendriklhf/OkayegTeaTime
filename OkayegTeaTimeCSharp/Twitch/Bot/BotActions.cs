@@ -398,7 +398,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendLoggedMessagesCount(ChatMessage chatMessage)
         {
-            return $"{chatMessage.Username}, logging {new DottedNumber(new OkayegTeaTimeContext().CountMessages())} messages across all channels";
+            DottedNumber dMessageCount = new OkayegTeaTimeContext().CountMessages();
+            return $"{chatMessage.Username}, logging {dMessageCount} messages across all channels";
         }
 
         public static string SendLoggedMessagesUserCount(ChatMessage chatMessage)

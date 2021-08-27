@@ -19,5 +19,10 @@ namespace OkayegTeaTimeCSharp.Twitch
         {
             return chatMessage.Message.SplitNormal();
         }
+
+        public static bool IsModOrBroadcaster(this ChatMessage chatMessage)
+        {
+            return chatMessage.IsModerator || chatMessage.IsBroadcaster;
+        }
     }
 }

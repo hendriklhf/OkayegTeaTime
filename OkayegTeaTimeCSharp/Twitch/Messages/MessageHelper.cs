@@ -26,11 +26,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
             return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
         }
 
-        public static bool IsModOrBroadcaster(this ChatMessage chatMessage)
-        {
-            return chatMessage.IsModerator || chatMessage.IsBroadcaster;
-        }
-
         public static bool IsNotLoggedChannel(this string channel)
         {
             return Config.NotLoggedChannels.Contains(channel);
