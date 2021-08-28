@@ -214,13 +214,15 @@
       ],
       "Parameter": [
         "afk [username]",
-        "reminder [id]"
+        "reminder [id]",
+        "message [id]"
       ],
       "Description": [
         "Checks the afk status of the given user",
-        "Sends information about the reminder. Must be a running reminder"
+        "Sends information about the reminder. Must be a running reminder",
+        "Sends the message with a matching id"
       ],
-      "Cooldown": 5000
+      "Cooldown": 10000
     },
     {
       "CommandName": "yourmom",

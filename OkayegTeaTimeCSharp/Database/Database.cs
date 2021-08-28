@@ -398,6 +398,20 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
+        public static Message GetMessage(int id)
+        {
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FirstOrDefault(m => m.Id == id);
+            if (message != null)
+            {
+                return message;
+            }
+            else
+            {
+                throw new MessageNotFoundException();
+            }
+        }
+
         public static void InsertNewUser(string username)
         {
             OkayegTeaTimeContext database = new();

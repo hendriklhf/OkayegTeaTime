@@ -182,6 +182,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static string SendCheckMessage(ChatMessage chatMessage)
+        {
+            try
+            {
+                int id = chatMessage.GetSplit()[2].ToInt();
+                Message message = DataBase.GetMessage(id);
+                return $"{chatMessage.Username}, ({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
+            }
+            catch (MessageNotFoundException ex)
+            {
+                return $"{chatMessage.Username}, {ex.Message}";
+            }
+        }
+
         public static string SendCheckReminder(ChatMessage chatMessage)
         {
             try
