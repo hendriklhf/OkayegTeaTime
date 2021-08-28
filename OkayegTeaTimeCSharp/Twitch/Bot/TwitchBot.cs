@@ -143,12 +143,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public string GetSystemInfo()
         {
-            return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {CommandCount}";
+            return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
         }
 
-        private static double GetMemoryUsage()
+        private static string GetMemoryUsage()
         {
-            return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100;
+            return $"{Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100}MB / 8000MB";
         }
 
         #endregion SystemInfo
