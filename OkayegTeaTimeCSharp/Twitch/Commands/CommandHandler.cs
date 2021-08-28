@@ -1,5 +1,4 @@
-﻿using HLE.Collections;
-using HLE.Strings;
+﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Twitch.Commands.CommandEnums;
@@ -27,46 +26,50 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands
         {
             if (ChatMessage.IsCommand())
             {
-                ((CommandType[])Enum.GetValues(typeof(CommandType))).ForEach(type =>
+                foreach (CommandType type in (CommandType[])Enum.GetValues(typeof(CommandType)))
                 {
                     if (ChatMessage.MatchesAnyAlias(type))
                     {
                         if (!BotActions.IsOnCooldown(ChatMessage.Username, type))
                         {
-                            CommandHelper.GetCommand(type).Alias.ForEach(alias =>
+                            foreach (string alias in CommandHelper.GetCommand(type).Alias)
                             {
                                 if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"(\s|$)")))
                                 {
                                     BotActions.AddUserToCooldownDictionary(ChatMessage.Username, type);
                                     InvokeCommandHandle(type, TwitchBot, ChatMessage, alias);
                                     BotActions.AddCooldown(ChatMessage.Username, type);
+                                    break;
                                 }
-                            });
+                            }
+                            break;
                         }
                     }
-                });
+                }
                 TwitchBot.CommandCount++;
             }
             else if (ChatMessage.IsAfkCommand())
             {
-                ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ForEach(type =>
+                foreach (AfkCommandType type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
                 {
                     if (ChatMessage.MatchesAnyAlias(type))
                     {
                         if (!BotActions.IsOnAfkCooldown(ChatMessage.Username))
                         {
-                            CommandHelper.GetAfkCommand(type).Alias.ForEach(alias =>
+                            foreach (string alias in CommandHelper.GetAfkCommand(type).Alias)
                             {
                                 if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"(\s|$)")))
                                 {
                                     BotActions.AddUserToAfkCooldownDictionary(ChatMessage.Username);
                                     AfkCommandHandler.Handle(TwitchBot, ChatMessage, type);
                                     BotActions.AddAfkCooldown(ChatMessage.Username);
+                                    break;
                                 }
-                            });
+                            }
+                            break;
                         }
                     }
-                });
+                }
                 TwitchBot.CommandCount++;
             }
         }
