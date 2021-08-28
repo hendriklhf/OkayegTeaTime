@@ -1,7 +1,5 @@
 ﻿using HLE.Time;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Threading;
 using static OkayegTeaTimeCSharp.Program;
 using Timer = System.Timers;
 
@@ -9,22 +7,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public class Restarter
     {
-        private const int _pingInterval = 1000;
-
-        private const string _routerIP = "192.168.178.1";
-
-        private readonly Timer::Timer _pingTimer = new(_pingInterval);
 
         private readonly List<Timer::Timer> _restartTimers = new();
 
         private List<(int Hour, int Minute)> _restartTimes;
 
-        public Restarter()
-        {
-            InitializePingRestart();
-        }
-
-        public Restarter(List<(int, int)> restartTimes) : this()
+        public Restarter(List<(int, int)> restartTimes)
         {
             _restartTimes = restartTimes;
         }
@@ -54,21 +42,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 t.Dispose();
             });
             _restartTimers.Clear();
-        }
-
-        private void InitializePingRestart()
-        {
-            _pingTimer.Elapsed += PingTimer_OnElapsed;
-            _pingTimer.Start();
-        }
-
-        private void PingTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
-        {
-            if (new Ping().Send(_routerIP).Status != IPStatus.Success)
-            {
-                Thread.Sleep(10000);
-                Restart();
-            }
         }
 
         private void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
