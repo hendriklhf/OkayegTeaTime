@@ -1,7 +1,6 @@
 ﻿using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Messages;
@@ -216,9 +215,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
         {
-            if (e.Channel == Resources.SecretOfflineChat && !new JsonController().BotData.UserLists.SecretUsers.Contains(e.Username))
+            if (e.Channel == Resources.SecretOfflineChat && !Config.SecretUsers.Contains(e.Username))
             {
-                Send(Resources.SecretOfflineChat, $"{e.Username} joined the chat");
+                Send(Resources.SecretOfflineChat, $"{e.Username} joined the chat Stare");
             }
         }
 

@@ -1,5 +1,4 @@
 ﻿using HLE.Strings;
-using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands;
@@ -33,7 +32,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
 
         public static bool IsSpecialUser(this string username)
         {
-            return new JsonController().BotData.UserLists.SpecialUsers.Contains(username);
+            return Config.SpecialUsers.Contains(username);
         }
 
         public static byte[] MakeInsertable(this string input)

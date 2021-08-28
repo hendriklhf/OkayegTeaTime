@@ -8,7 +8,6 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
-using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Twitch.API;
@@ -46,7 +45,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddUserToAfkCooldownDictionary(string username)
         {
-            if (username != Resources.Moderators)
+            if (!Config.Moderators.Contains(username))
             {
                 if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
                 {
@@ -57,7 +56,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void AddUserToCooldownDictionary(string username, CommandType type)
         {
-            if (username != Resources.Moderators)
+            if (!Config.Moderators.Contains(username))
             {
                 if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
                 {
@@ -419,7 +418,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string message = string.Empty;
                 List<string> chatters;
                 List<string> chattersToRemove = new() { chatMessage.Username };
-                chattersToRemove = chattersToRemove.Concat(new JsonController().BotData.UserLists.SpecialUsers).ToList();
+                chattersToRemove = chattersToRemove.Concat(Config.SpecialUsers).ToList();
 
                 if (chatMessage.Channel != Resources.SecretOfflineChat)
                 {
