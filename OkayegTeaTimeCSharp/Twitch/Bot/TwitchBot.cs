@@ -240,8 +240,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void AddTimerFunction()
         {
-            Bot.Timers.GetTimer(1000).Elapsed += OnTimer1000;
-            Bot.Timers.GetTimer(30000).Elapsed += OnTimer30000;
+            Bot.Timers.GetTimer(new Second().Milliseconds).Elapsed += OnTimer1000;
+            Bot.Timers.GetTimer(new Second(30).Milliseconds).Elapsed += OnTimer30000;
+            Bot.Timers.GetTimer(new Minute().Milliseconds).Elapsed += OnTimer60000;
             Bot.Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
         }
 
@@ -253,6 +254,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void OnTimer30000(object sender, ElapsedEventArgs e)
         {
             TimerFunctions.SetConsoleTitle(this);
+        }
+
+        private void OnTimer60000(object sender, ElapsedEventArgs e)
+        {
+            TimerFunctions.LoadJsonData();
         }
 
         private void OnTimer10Days(object sender, ElapsedEventArgs e)

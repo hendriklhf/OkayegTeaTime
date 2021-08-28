@@ -11,19 +11,15 @@ namespace OkayegTeaTimeCSharp.Spotify
         public static string GetArtistString(this List<SimpleArtist> artist)
         {
             string result = string.Empty;
-            artist.ForEach(artist =>
-            {
-                result += $"{artist.Name}, ";
-            });
+            artist.ForEach(artist => result += $"{artist.Name}, ");
             return result.Trim()[..^1];
         }
 
         public static FullTrack GetExcactTrackFromSearch(List<FullTrack> tracks, List<string> query)
         {
-            return tracks.Where(t =>
+            return tracks.FirstOrDefault(t =>
                 query.Any(q => t.Name.IsMatch(q))
-                || query.Any(q => t.Artists.Any(a => a.Name.IsMatch(q))))
-                .FirstOrDefault();
+                || query.Any(q => t.Artists.Any(a => a.Name.IsMatch(q))));
         }
 
         public static PlayingItem GetItem(this CurrentlyPlaying currentlyPlaying)

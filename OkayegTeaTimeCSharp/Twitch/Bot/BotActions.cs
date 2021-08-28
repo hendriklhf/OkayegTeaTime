@@ -145,14 +145,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static string SendChattersCount(ChatMessage chatMessage)
         {
             string channel = chatMessage.GetLowerSplit().Length > 1 ? chatMessage.GetLowerSplit()[1] : chatMessage.Channel;
-            int chatterCount = HttpRequest.GetChatterCount(channel);
+            DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
             if (chatterCount > 1)
             {
-                return $"{chatMessage.Username}, there are {new DottedNumber(chatterCount)} chatters in the channel of {channel}";
+                return $"{chatMessage.Username}, there are {chatterCount} chatters in the channel of {channel}";
             }
             else if (chatterCount > 0)
             {
-                return $"{chatMessage.Username}, there is {new DottedNumber(chatterCount)} chatter in the channel of {channel}";
+                return $"{chatMessage.Username}, there is {chatterCount} chatter in the channel of {channel}";
             }
             else
             {
@@ -233,12 +233,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static void SendDetectedSpotifyURI(this TwitchBot twitchBot, ChatMessage chatMessage)
+        public static string SendDetectedSpotifyURI(ChatMessage chatMessage)
         {
-            (bool isMatch, string uri) = new LinkRecognizer(chatMessage).FindSpotifyLink();
-            if (isMatch)
+            if (new LinkRecognizer(chatMessage).FindSpotifyLink(out string uri))
             {
-                twitchBot.Send(chatMessage.Channel, $"{uri}");
+                return $"{uri}";
+            }
+            else
+            {
+                return null;
             }
         }
 

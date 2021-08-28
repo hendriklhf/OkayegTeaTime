@@ -51,9 +51,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
             return input.Prepare();
         }
 
-        public static string Prepare(this string input)
+        private static string Prepare(this string input)
         {
-            return input.Remove(Resources.ChatterinoChar).Trim().ReplaceSpaces();
+            return input.Remove(Resources.ChatterinoChar).TrimAll();
         }
 
         public static string[] SplitNormal(this string input)

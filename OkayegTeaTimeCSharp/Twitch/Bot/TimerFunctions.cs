@@ -1,4 +1,5 @@
 ﻿using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch.API;
 using System;
 
@@ -9,6 +10,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void CheckForTimedReminders(TwitchBot twitchBot)
         {
             DataBase.CheckForTimedReminder(twitchBot);
+        }
+
+        public static void LoadJsonData()
+        {
+            new JsonController().LoadData();
         }
 
         public static void SetConsoleTitle(TwitchBot twitchBot)

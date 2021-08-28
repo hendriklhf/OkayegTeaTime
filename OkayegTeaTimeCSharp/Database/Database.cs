@@ -1,4 +1,5 @@
-﻿using HLE.Strings;
+﻿using HLE.Collections;
+using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.Database.Models;
@@ -21,7 +22,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void AddChannel(string channel)
         {
             OkayegTeaTimeContext database = new();
-            database.Bots.Where(b => b.Id == 1).FirstOrDefault().Channels += $" {channel.RemoveHashtag().Trim()}";
+            database.Bots.FirstOrDefault(b => b.Id == 1).Channels += $" {channel.RemoveHashtag().Trim()}";
             database.SaveChanges();
         }
 
@@ -30,7 +31,7 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Spotify.Any(s => s.Username == username))
             {
-                Models.Spotify user = database.Spotify.Where(s => s.Username == username).FirstOrDefault();
+                Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == username);
                 user.AccessToken = accessToken;
                 user.RefreshToken = refreshToken;
                 user.Time = TimeHelper.Now();
@@ -38,8 +39,7 @@ namespace OkayegTeaTimeCSharp.Database
             }
             else
             {
-                Models.Spotify user = new(username, accessToken, refreshToken);
-                database.Spotify.Add(user);
+                database.Spotify.Add(new(username, accessToken, refreshToken));
                 database.SaveChanges();
             }
         }
@@ -49,36 +49,34 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             database.Nukes.Add(nuke);
             database.SaveChanges();
-            return database.Nukes.Where(n => n.Channel == nuke.Channel && n.ForTime == nuke.ForTime && n.TimeoutTime == nuke.TimeoutTime && n.Username == nuke.Username && n.Word == nuke.Word).FirstOrDefault().Id;
+            return database.Nukes.FirstOrDefault(n =>
+                n.Channel == nuke.Channel
+                && n.ForTime == nuke.ForTime
+                && n.TimeoutTime == nuke.TimeoutTime
+                && n.Username == nuke.Username
+                && n.Word == nuke.Word).Id;
         }
 
         public static int AddReminder(Reminder reminder)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            if (reminder.ToTime == 0)
             {
-                OkayegTeaTimeContext database = new();
-                if (reminder.ToTime == 0)
+                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
                 {
-                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
-                    {
-                        throw new TooManyReminderException();
-                    }
+                    throw new TooManyReminderException();
                 }
-                else
-                {
-                    if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
-                    {
-                        throw new TooManyReminderException();
-                    }
-                }
-                database.Reminders.Add(reminder);
-                database.SaveChanges();
-                return database.Reminders.Where(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime && r.Time == reminder.Time).FirstOrDefault().Id;
             }
-            catch (TooManyReminderException)
+            else
             {
-                throw;
+                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
+                {
+                    throw new TooManyReminderException();
+                }
             }
+            database.Reminders.Add(reminder);
+            database.SaveChanges();
+            return database.Reminders.FirstOrDefault(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime && r.Time == reminder.Time).Id;
         }
 
         public static void AddSugestion(ChatMessage chatMessage, string suggestion)
@@ -95,7 +93,7 @@ namespace OkayegTeaTimeCSharp.Database
                 OkayegTeaTimeContext database = new();
                 if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
                 {
-                    database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ToList().ForEach(n =>
+                    database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ForEach(n =>
                     {
                         if (n.ForTime > TimeHelper.Now())
                         {
@@ -146,7 +144,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            User user = database.Users.Where(user => user.Username == chatMessage.Username).FirstOrDefault();
+            User user = database.Users.FirstOrDefault(user => user.Username == chatMessage.Username);
             if (user.IsAfk == "True")
             {
                 twitchBot.SendComingBack(user, chatMessage);
@@ -159,7 +157,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static List<string> GetChannels()
         {
-            return new OkayegTeaTimeContext().Bots.Where(b => b.Username == Resources.Username).FirstOrDefault().Channels.Split().ToList();
+            return new OkayegTeaTimeContext().Bots.FirstOrDefault(b => b.Username == Resources.Username).Channels.Split().ToList();
         }
 
         public static Dictionary<string, string> GetEmotesInFront()
@@ -172,7 +170,7 @@ namespace OkayegTeaTimeCSharp.Database
             try
             {
                 OkayegTeaTimeContext database = new();
-                return database.Messages.Where(m => m.Username == chatMessage.Username).FirstOrDefault();
+                return database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username);
             }
             catch (Exception)
             {
@@ -183,7 +181,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetFirstChannel(ChatMessage chatMessage, string channel)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.Where(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.RemoveHashtag()}").FirstOrDefault();
+            Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.RemoveHashtag()}");
             if (message != null)
             {
                 return message;
@@ -197,7 +195,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetFirstMessageUserChannel(string username, string channel)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.Where(m => m.Username == username && channel == $"#{channel.RemoveHashtag()}").FirstOrDefault();
+            Message message = database.Messages.FirstOrDefault(m => m.Username == username && channel == $"#{channel.RemoveHashtag()}");
             if (message != null)
             {
                 return message;
@@ -211,7 +209,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Message GetFirstUser(string username)
         {
             OkayegTeaTimeContext database = new();
-            Message message = database.Messages.Where(m => m.Username == username).FirstOrDefault();
+            Message message = database.Messages.FirstOrDefault(m => m.Username == username);
             if (message != null)
             {
                 return message;
@@ -239,7 +237,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static string GetPrefix(string channel)
         {
-            return new OkayegTeaTimeContext().Prefixes.Where(p => p.Channel == $"#{channel.RemoveHashtag()}").FirstOrDefault().PrefixString?.Decode();
+            return new OkayegTeaTimeContext().Prefixes.FirstOrDefault(p => p.Channel == $"#{channel.RemoveHashtag()}").PrefixString?.Decode();
         }
 
         public static Dictionary<string, string> GetPrefixes()
@@ -309,7 +307,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static string GetRefreshToken(string username)
         {
-            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault().RefreshToken;
+            return new OkayegTeaTimeContext().Spotify.FirstOrDefault(s => s.Username == username).RefreshToken;
         }
 
         public static Reminder GetReminder(int id)
@@ -383,13 +381,13 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Models.Spotify GetSpotifyUser(string username)
         {
-            return new OkayegTeaTimeContext().Spotify.Where(s => s.Username == username).FirstOrDefault();
+            return new OkayegTeaTimeContext().Spotify.FirstOrDefault(s => s.Username == username);
         }
 
         public static User GetUser(string username)
         {
             OkayegTeaTimeContext database = new();
-            User user = database.Users.Where(u => u.Username == username).FirstOrDefault();
+            User user = database.Users.FirstOrDefault(u => u.Username == username);
             if (user != null)
             {
                 return user;
@@ -414,7 +412,7 @@ namespace OkayegTeaTimeCSharp.Database
             if (!Config.NotLoggedChannels.Contains(chatMessage.Channel))
             {
                 OkayegTeaTimeContext database = new();
-                database.Messages.Add(new Message(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
+                database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
                 database.SaveChanges();
             }
         }
@@ -423,7 +421,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             int id = chatMessage.GetSplit()[2].ToInt();
             OkayegTeaTimeContext database = new();
-            Nuke nuke = database.Nukes.Where(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.RemoveHashtag()}").FirstOrDefault();
+            Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.RemoveHashtag()}");
             if (nuke != null)
             {
                 if (chatMessage.IsModOrBroadcaster())
@@ -441,32 +439,26 @@ namespace OkayegTeaTimeCSharp.Database
                 throw new NukeNotFoundException();
             }
         }
+
         public static void RemoveReminder(ChatMessage chatMessage)
         {
-            try
+            OkayegTeaTimeContext database = new();
+            Reminder reminder = database.Reminders.FirstOrDefault(r => r.Id == chatMessage.GetSplit()[2].ToInt());
+            if (reminder != null)
             {
-                OkayegTeaTimeContext database = new();
-                Reminder reminder = database.Reminders.Where(r => r.Id == chatMessage.GetSplit()[2].ToInt()).FirstOrDefault();
-                if (reminder != null)
+                if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
                 {
-                    if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
-                    {
-                        database.Reminders.Remove(reminder);
-                        database.SaveChanges();
-                    }
-                    else
-                    {
-                        throw new NoPermissionException("you have no permission to delete the reminder of someone else");
-                    }
+                    database.Reminders.Remove(reminder);
+                    database.SaveChanges();
                 }
                 else
                 {
-                    throw new ReminderNotFoundException();
+                    throw new NoPermissionException("you have no permission to delete the reminder of someone else");
                 }
             }
-            catch (Exception)
+            else
             {
-                throw;
+                throw new ReminderNotFoundException();
             }
         }
 
@@ -480,7 +472,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void SetAfk(ChatMessage chatMessage, AfkCommandType type)
         {
             OkayegTeaTimeContext database = new();
-            User user = database.Users.Where(u => u.Username == chatMessage.Username).FirstOrDefault();
+            User user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
             string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : string.Empty;
             user.MessageText = message.MakeInsertable();
             user.Type = type.ToString();
@@ -494,7 +486,7 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.EmoteInFronts.Any(e => e.Channel == $"#{channel.RemoveHashtag()}"))
             {
-                database.EmoteInFronts.Where(e => e.Channel == $"#{channel.RemoveHashtag()}").FirstOrDefault().Emote = emote.MakeInsertable();
+                database.EmoteInFronts.FirstOrDefault(e => e.Channel == $"#{channel.RemoveHashtag()}").Emote = emote.MakeInsertable();
                 database.SaveChanges();
             }
             else
@@ -509,13 +501,13 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.RemoveHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.RemoveHashtag()}").FirstOrDefault().PrefixString = prefix.MakeUsable().Encode();
+                database.Prefixes.FirstOrDefault(p => p.Channel == $"#{channel.RemoveHashtag()}").PrefixString = prefix.MakeUsable().Encode();
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, prefix.MakeUsable().Encode()));
+                database.Prefixes.Add(new(channel, prefix.MakeUsable().Encode()));
                 database.SaveChanges();
                 PrefixHelper.Add(channel);
             }
@@ -526,7 +518,7 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (database.EmoteInFronts.Any(e => e.Channel == $"#{channel.RemoveHashtag()}"))
             {
-                database.EmoteInFronts.Where(e => e.Channel == $"#{channel.RemoveHashtag()}").FirstOrDefault().Emote = null;
+                database.EmoteInFronts.FirstOrDefault(e => e.Channel == $"#{channel.RemoveHashtag()}").Emote = null;
                 database.SaveChanges();
             }
             else
@@ -535,18 +527,19 @@ namespace OkayegTeaTimeCSharp.Database
                 database.SaveChanges();
             }
         }
+
         public static void UnsetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
             if (database.Prefixes.Any(p => p.Channel == $"#{channel.RemoveHashtag()}"))
             {
-                database.Prefixes.Where(p => p.Channel == $"#{channel.RemoveHashtag()}").FirstOrDefault().PrefixString = null;
+                database.Prefixes.FirstOrDefault(p => p.Channel == $"#{channel.RemoveHashtag()}").PrefixString = null;
                 database.SaveChanges();
                 PrefixHelper.Update(channel);
             }
             else
             {
-                database.Prefixes.Add(new Prefix(channel, null));
+                database.Prefixes.Add(new(channel, null));
                 database.SaveChanges();
                 PrefixHelper.Add(channel);
             }
@@ -555,7 +548,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void UpdateAccessToken(string username, string accessToken)
         {
             OkayegTeaTimeContext database = new();
-            Models.Spotify user = database.Spotify.Where(s => s.Username == username).FirstOrDefault();
+            Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == username);
             user.AccessToken = accessToken;
             user.Time = TimeHelper.Now();
             database.SaveChanges();

@@ -15,16 +15,18 @@ namespace OkayegTeaTimeCSharp.Spotify
             Message = chatMessage.GetMessage();
         }
 
-        public (bool, string) FindSpotifyLink()
+        public bool FindSpotifyLink(out string uri)
         {
             if (Message.IsMatch(Pattern.SpotifyLink))
             {
                 string uriCode = Message.Match(@"track/\w+\?").Remove("track/").Remove("?");
-                return new(true, $"spotify:track:{uriCode}");
+                uri = $"spotify:track:{uriCode}";
+                return true;
             }
             else
             {
-                return new(false, string.Empty);
+                uri = null;
+                return false;
             }
         }
     }

@@ -8,8 +8,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
     {
         public static void CreateTimers()
         {
-            CreateTimer(1000);
-            CreateTimer(30000);
+            CreateTimer(new Second().Milliseconds);
+            CreateTimer(new Second(30).Milliseconds);
+            CreateTimer(new Minute().Milliseconds);
             CreateTimer(new Day(10).Milliseconds);
         }
 
