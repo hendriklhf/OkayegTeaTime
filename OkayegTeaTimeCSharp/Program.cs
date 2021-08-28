@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp
 {
     public static class Program
     {
-        private static bool _running = true;
+        private static readonly bool _running = true;
 
         private static void Main()
         {
@@ -26,6 +26,7 @@ namespace OkayegTeaTimeCSharp
 
             while (_running)
             {
+                Console.ReadLine();
             }
         }
 
@@ -53,7 +54,6 @@ namespace OkayegTeaTimeCSharp
         {
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
             Process.Start($"./OkayegTeaTimeCSharp");
-            _running = false;
             Environment.Exit(0);
         }
     }
