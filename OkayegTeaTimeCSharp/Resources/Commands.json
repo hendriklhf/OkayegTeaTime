@@ -548,7 +548,7 @@
         "[link to file] [regex match to lines]"
       ],
       "Description": [
-        "Bans all users that match the regex in a multiline file"
+        "Bans all users that match the regex in a multiline file. Currently restricted to moderators"
       ]
     }
   ],
