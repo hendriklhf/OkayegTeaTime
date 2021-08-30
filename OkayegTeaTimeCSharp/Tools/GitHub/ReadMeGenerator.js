@@ -47,7 +47,7 @@ function generateString() {
     result += `${linebreak}<table><tr>`;
     cmdTableHeader.forEach(c => result += `<th>${c}</th>`);
     result += "</tr>";
-    commands.Commands.forEach(cmd => {
+    commands.Commands.sort((c1, c2) => sortCmd(c1, c2)).forEach(cmd => {
         result += `<tr><td>${cmd.CommandName}</td><td><table>`;
         cmd.Alias.forEach(a => result += `<tr><td>${a}</td></tr>`);
         result += "</table></td><td><table>";
@@ -57,7 +57,7 @@ function generateString() {
         result += "</table></td></tr>";
     });
     result += `</table><h2>${header2}</h2><table><tr>`;
-    afkCmdTableHeader.forEach(a => result += `<th>${a}</th>`);
+    afkCmdTableHeader.sort((c1, c2) => sortCmd(c1, c2)).forEach(a => result += `<th>${a}</th>`);
     result += "</tr>";
     commands.AfkCommands.forEach(cmd => {
         result += `<tr><td>${cmd.CommandName}</td><td><table>`;
@@ -70,4 +70,14 @@ function generateString() {
     });
     result += "</table>";
     return result;
+}
+
+function sortCmd(cmdOne, cmdTwo) {
+    if (cmdOne.CommandName < cmdTwo.CommandName) {
+        return -1;
+    } else if (cmdOne.CommandName < cmdTwo.CommandName) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
