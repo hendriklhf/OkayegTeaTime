@@ -1,10 +1,10 @@
 ﻿using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Logging;
-using OkayegTeaTimeCSharp.Tools.GitHub;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace OkayegTeaTimeCSharp
 {
@@ -20,13 +20,15 @@ namespace OkayegTeaTimeCSharp
             new TwitchAPI().Configure();
             _ = new TwitchBot();
 
-#if DEBUG
-            ReadMeGenerator.GenerateReadMe();
-#endif
-
-            while (_running)
+            try
             {
-                Console.ReadLine();
+                while (_running)
+                {
+                    Console.ReadLine();
+                }
+            }
+            catch (IOException)
+            {
             }
         }
 
