@@ -2,6 +2,7 @@
 {
     public enum CommandType
     {
+        BanFromFile,
         Chatterino7,
         Chatterino,
         Chatters,

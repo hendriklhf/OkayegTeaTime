@@ -538,6 +538,18 @@
       "Description": [
         "Sends one item picked from all provided ones"
       ]
+    },
+    {
+      "CommandName": "banfromfile",
+      "Alias": [
+        "banfromfile"
+      ],
+      "Parameter": [
+        "[link to file] [regex match to lines]"
+      ],
+      "Description": [
+        "Bans all users that match the regex in a multiline file"
+      ]
     }
   ],
   "AfkCommands": [

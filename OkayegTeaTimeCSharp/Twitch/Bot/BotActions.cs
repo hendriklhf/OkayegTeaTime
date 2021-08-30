@@ -1,5 +1,6 @@
 ﻿using HLE.Collections;
 using HLE.Emojis;
+using HLE.HttpRequests;
 using HLE.Numbers;
 using HLE.Strings;
 using HLE.Time;
@@ -816,6 +817,27 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());
+        }
+
+        public static void SendBanFromFile(TwitchBot twitchBot, ChatMessage chatMessage)
+        {
+            try
+            {
+                if (Config.Moderators.Contains(chatMessage.Username))
+                {
+                    List<string> fileContent = new HttpGet(chatMessage.GetSplit()[1]).Result.Split("\n").ToList();
+                    string regex = chatMessage.GetSplit()[2];
+                    fileContent.Where(f => f.IsMatch(regex)).ForEach(f => twitchBot.TwitchClient.SendMessage(chatMessage.Channel, $"/ban {f}"));
+                }
+                else
+                {
+                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you must be a moderator of the bot");
+                }
+            }
+            catch (Exception)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, something went wrong");
+            }
         }
     }
 }
