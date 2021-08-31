@@ -35,7 +35,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void SetAfk(this OkayegTeaTimeContext database, string username, bool afk)
         {
-            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = afk.ToString();
+            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;
             database.SaveChanges();
         }
     }

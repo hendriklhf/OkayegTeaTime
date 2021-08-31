@@ -145,7 +145,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.FirstOrDefault(user => user.Username == chatMessage.Username);
-            if (user.IsAfk == "True")
+            if (user.IsAfk == true)
             {
                 twitchBot.SendComingBack(user, chatMessage);
                 if (!chatMessage.IsAfkCommand())
