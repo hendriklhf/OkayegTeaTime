@@ -4,13 +4,13 @@ using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using System;
 using System.Diagnostics;
-using System.IO;
+using System.Threading;
 
 namespace OkayegTeaTimeCSharp
 {
     public static class Program
     {
-        private static readonly bool _running = true;
+        private static bool _running = true;
 
         private static void Main()
         {
@@ -20,15 +20,9 @@ namespace OkayegTeaTimeCSharp
             new TwitchAPI().Configure();
             _ = new TwitchBot();
 
-            try
+            while (_running)
             {
-                while (_running)
-                {
-                    Console.ReadLine();
-                }
-            }
-            catch (IOException)
-            {
+                Thread.Sleep(1000);
             }
         }
 
@@ -56,6 +50,7 @@ namespace OkayegTeaTimeCSharp
         {
             ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
             Process.Start($"./OkayegTeaTimeCSharp");
+            _running = false;
             Environment.Exit(0);
         }
     }
