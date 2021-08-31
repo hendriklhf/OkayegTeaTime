@@ -295,9 +295,8 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
                 entity.Property(e => e.IsAfk)
                     .IsRequired()
-                    .HasMaxLength(5)
-                    .HasColumnName("IsAFK")
-                    .HasDefaultValueSql("'false'");
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
 
                 entity.Property(e => e.MessageText)
                     .HasMaxLength(2000)
