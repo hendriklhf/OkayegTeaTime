@@ -827,7 +827,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     List<string> fileContent = new HttpGet(chatMessage.GetSplit()[1]).Result.Split("\n").ToList();
                     string regex = chatMessage.GetSplit()[2];
-                    fileContent.Where(f => f.IsMatch(regex)).ForEach(f => twitchBot.TwitchClient.SendMessage(chatMessage.Channel, $"/ban {f}"));
+                    fileContent.Where(f => f.IsMatch(regex)).ForEach(f =>
+                    {
+                        if (f.IsMatch(@"^[\./]ban\s\w+"))
+                        {
+                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, f);
+                        }
+                        else
+                        {
+                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, $"/ban {f}");
+                        }
+                    });
                 }
                 else
                 {
