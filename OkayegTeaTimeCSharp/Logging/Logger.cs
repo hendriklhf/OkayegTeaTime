@@ -10,22 +10,27 @@ namespace OkayegTeaTimeCSharp.Logging
     {
         public static void Log(string text)
         {
-            File.AppendAllText(Resources.LogsPath, CreateLog(text));
+            LogToFile(CreateLog(text));
         }
 
         public static void Log(ChatMessage chatMessage)
         {
-            File.AppendAllText(Resources.LogsPath, CreateLog($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.GetMessage()}"));
+            LogToFile(CreateLog($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.GetMessage()}"));
         }
 
         public static void Log(Exception ex)
         {
-            File.AppendAllText(Resources.LogsPath, CreateLog($"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}"));
+            LogToFile(CreateLog($"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}"));
         }
 
         private static string CreateLog(string input)
         {
             return $"{DateTime.Now:dd:MM:yy HH:mm:ss} | {input}\n";
+        }
+
+        private static void LogToFile(string log)
+        {
+            File.AppendAllText(Resources.LogsPath, log);
         }
     }
 }
