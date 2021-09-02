@@ -17,15 +17,14 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
         }
 
-        public virtual DbSet<Bot> Bots { get; set; }
         public virtual DbSet<Gachi> Gachi { get; set; }
         public virtual DbSet<Eg> Egs { get; set; }
+        public virtual DbSet<Channel> Channels { get; set; }
         public virtual DbSet<EmoteInFront> EmoteInFronts { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Nuke> Nukes { get; set; }
         public virtual DbSet<Pechkekse> Pechkekse { get; set; }
         public virtual DbSet<Prefix> Prefixes { get; set; }
-        public virtual DbSet<Quote> Quotes { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
@@ -42,45 +41,30 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Bot>(entity =>
+            modelBuilder.Entity<Channel>(entity =>
             {
-                entity.ToTable("bots");
+                entity.HasIndex(e => e.User, "User");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Channels)
-                    .IsRequired()
-                    .HasColumnType("varchar(10000)");
-
-                entity.Property(e => e.Oauth)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnName("OAuth");
-
-                entity.Property(e => e.Username)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Eg>(entity =>
-            {
-                entity.ToTable("egs");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Egs).HasColumnType("bigint(20) unsigned");
-
-                entity.Property(e => e.Level)
+                entity.Property(e => e.Id)
                     .HasColumnType("int(11)")
-                    .HasDefaultValueSql("'1'");
+                    .HasColumnName("ID");
 
-                entity.Property(e => e.Prestige).HasColumnType("int(11)");
+                entity.Property(e => e.EmoteInFront)
+                    .HasMaxLength(20)
+                    .HasDefaultValueSql("'NULL'");
 
-                entity.Property(e => e.Time).HasColumnType("bigint(20)");
+                entity.Property(e => e.Prefix)
+                    .HasMaxLength(10)
+                    .HasDefaultValueSql("'NULL'");
 
-                entity.Property(e => e.Username)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.User)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.HasOne(d => d.UserNavigation)
+                    .WithMany(p => p.Channels)
+                    .HasForeignKey(d => d.User)
+                    .HasConstraintName("User");
             });
 
             modelBuilder.Entity<EmoteInFront>(entity =>
@@ -185,29 +169,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .HasDefaultValueSql("'NULL'");
             });
 
-            modelBuilder.Entity<Quote>(entity =>
-            {
-                entity.ToTable("quotes");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Channel)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.QuoteMessage)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Submitter)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.TargetUser)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
             modelBuilder.Entity<Reminder>(entity =>
             {
                 entity.ToTable("reminder");
@@ -289,8 +250,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("users");
-
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.IsAfk)
