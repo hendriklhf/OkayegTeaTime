@@ -487,8 +487,8 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
-            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : string.Empty;
-            user.MessageText = message.MakeInsertable();
+            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : null;
+            user.MessageText = message?.MakeInsertable();
             user.Type = type.ToString();
             user.Time = TimeHelper.Now();
             database.SaveChanges();

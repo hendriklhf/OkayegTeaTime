@@ -33,8 +33,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses
         {
             ComingBack = ComingBack.Replace("{username}", user.Username)
                 .Replace("{time}", TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin))
-                .Replace("{message}", user.MessageText.Decode());
-            ComingBack = string.IsNullOrEmpty(user.MessageText.Decode()) ? ComingBack.Replace(":", "").ReplaceSpaces() : ComingBack;
+                .Replace("{message}", user.MessageText?.Decode());
+            ComingBack = string.IsNullOrEmpty(user.MessageText?.Decode()) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
 
             GoingAway = GoingAway.Replace("{username}", user.Username);
 
