@@ -4,7 +4,6 @@ using HLE.Time;
 using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands.CommandEnums;
@@ -22,7 +21,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static void AddChannel(string channel)
         {
             OkayegTeaTimeContext database = new();
-            database.Bots.FirstOrDefault(b => b.Id == 1).Channels += $" {channel.RemoveHashtag().Trim()}";
+            database.Channels.Add(new(channel));
             database.SaveChanges();
         }
 
@@ -157,12 +156,12 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static List<string> GetChannels()
         {
-            return new OkayegTeaTimeContext().Bots.FirstOrDefault(b => b.Username == Resources.Username).Channels.Split().ToList();
+            return new OkayegTeaTimeContext().Channels.Select(c => c.ChannelName).ToList();
         }
 
         public static Dictionary<string, string> GetEmotesInFront()
         {
-            return new OkayegTeaTimeContext().EmoteInFronts.ToDictionary(e => e.Channel, e => e.Emote?.Decode());
+            return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.EmoteInFront?.Decode());
         }
 
         public static Message GetFirst(ChatMessage chatMessage)
@@ -235,14 +234,28 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
+        public static Message GetMessage(int id)
+        {
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FirstOrDefault(m => m.Id == id);
+            if (message != null)
+            {
+                return message;
+            }
+            else
+            {
+                throw new MessageNotFoundException();
+            }
+        }
+
         public static string GetPrefix(string channel)
         {
-            return new OkayegTeaTimeContext().Prefixes.FirstOrDefault(p => p.Channel == $"#{channel.RemoveHashtag()}").PrefixString?.Decode();
+            return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix?.Decode();
         }
 
         public static Dictionary<string, string> GetPrefixes()
         {
-            return new OkayegTeaTimeContext().Prefixes.ToDictionary(p => p.Channel, p => p.PrefixString?.Decode());
+            return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.Prefix?.Decode());
         }
 
         public static Pechkekse GetRandomCookie()
@@ -398,20 +411,6 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static Message GetMessage(int id)
-        {
-            OkayegTeaTimeContext database = new();
-            Message message = database.Messages.FirstOrDefault(m => m.Id == id);
-            if (message != null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
-        }
-
         public static void InsertNewUser(string username)
         {
             OkayegTeaTimeContext database = new();
@@ -498,65 +497,31 @@ namespace OkayegTeaTimeCSharp.Database
         public static void SetEmoteInFront(string channel, string emote)
         {
             OkayegTeaTimeContext database = new();
-            if (database.EmoteInFronts.Any(e => e.Channel == $"#{channel.RemoveHashtag()}"))
-            {
-                database.EmoteInFronts.FirstOrDefault(e => e.Channel == $"#{channel.RemoveHashtag()}").Emote = emote.MakeInsertable();
-                database.SaveChanges();
-            }
-            else
-            {
-                database.EmoteInFronts.Add(new(channel, emote.MakeInsertable()));
-                database.SaveChanges();
-            }
+            database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront = emote.MakeInsertable();
+            database.SaveChanges();
         }
 
         public static void SetPrefix(string channel, string prefix)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Prefixes.Any(p => p.Channel == $"#{channel.RemoveHashtag()}"))
-            {
-                database.Prefixes.FirstOrDefault(p => p.Channel == $"#{channel.RemoveHashtag()}").PrefixString = prefix.MakeUsable().Encode();
-                database.SaveChanges();
-                PrefixHelper.Update(channel);
-            }
-            else
-            {
-                database.Prefixes.Add(new(channel, prefix.MakeUsable().Encode()));
-                database.SaveChanges();
-                PrefixHelper.Add(channel);
-            }
+            database.Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix = prefix.MakeUsable().Encode();
+            database.SaveChanges();
+            PrefixHelper.Update(channel);
         }
 
         public static void UnsetEmoteInFront(string channel)
         {
             OkayegTeaTimeContext database = new();
-            if (database.EmoteInFronts.Any(e => e.Channel == $"#{channel.RemoveHashtag()}"))
-            {
-                database.EmoteInFronts.FirstOrDefault(e => e.Channel == $"#{channel.RemoveHashtag()}").Emote = null;
-                database.SaveChanges();
-            }
-            else
-            {
-                database.EmoteInFronts.Add(new(channel, null));
-                database.SaveChanges();
-            }
+            database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront = null;
+            database.SaveChanges();
         }
 
         public static void UnsetPrefix(string channel)
         {
             OkayegTeaTimeContext database = new();
-            if (database.Prefixes.Any(p => p.Channel == $"#{channel.RemoveHashtag()}"))
-            {
-                database.Prefixes.FirstOrDefault(p => p.Channel == $"#{channel.RemoveHashtag()}").PrefixString = null;
-                database.SaveChanges();
-                PrefixHelper.Update(channel);
-            }
-            else
-            {
-                database.Prefixes.Add(new(channel, null));
-                database.SaveChanges();
-                PrefixHelper.Add(channel);
-            }
+            database.Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix = null;
+            database.SaveChanges();
+            PrefixHelper.Update(channel);
         }
 
         public static void UpdateAccessToken(string username, string accessToken)

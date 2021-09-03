@@ -1,11 +1,15 @@
 ﻿using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class EmoteInFrontHelper
     {
+        public static void Add(string channel)
+        {
+            TwitchBot.EmoteInFront.Add(channel, null);
+        }
+
         public static Dictionary<string, string> FillDictionary()
         {
             return DataBase.GetEmotesInFront();
@@ -13,7 +17,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string GetEmote(string channel)
         {
-            if (TwitchBot.EmoteInFront.TryGetValue($"#{channel.RemoveHashtag()}", out string emote))
+            if (TwitchBot.EmoteInFront.TryGetValue(channel, out string emote))
             {
                 return !string.IsNullOrEmpty(emote) ? emote : Config.EmoteInFront;
             }
@@ -25,13 +29,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void Update(string channel, string emote)
         {
-            if (TwitchBot.EmoteInFront.ContainsKey($"#{channel.RemoveHashtag()}"))
+            if (TwitchBot.EmoteInFront.ContainsKey(channel))
             {
-                TwitchBot.EmoteInFront[$"#{channel.RemoveHashtag()}"] = emote;
+                TwitchBot.EmoteInFront[channel] = emote;
             }
             else
             {
-                TwitchBot.EmoteInFront.Add($"#{channel.RemoveHashtag()}", emote);
+                TwitchBot.EmoteInFront.Add(channel, emote);
             }
         }
     }

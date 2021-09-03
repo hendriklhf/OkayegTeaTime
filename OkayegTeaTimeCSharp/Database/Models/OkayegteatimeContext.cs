@@ -18,13 +18,10 @@ namespace OkayegTeaTimeCSharp.Database.Models
         }
 
         public virtual DbSet<Gachi> Gachi { get; set; }
-        public virtual DbSet<Eg> Egs { get; set; }
         public virtual DbSet<Channel> Channels { get; set; }
-        public virtual DbSet<EmoteInFront> EmoteInFronts { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Nuke> Nukes { get; set; }
         public virtual DbSet<Pechkekse> Pechkekse { get; set; }
-        public virtual DbSet<Prefix> Prefixes { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
@@ -43,41 +40,17 @@ namespace OkayegTeaTimeCSharp.Database.Models
         {
             modelBuilder.Entity<Channel>(entity =>
             {
-                entity.HasIndex(e => e.User, "User");
+                entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("ID");
+                entity.Property(e => e.ChannelName)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.EmoteInFront)
-                    .HasMaxLength(20)
+                    .HasMaxLength(100)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Prefix)
-                    .HasMaxLength(10)
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.User)
-                    .HasColumnType("int(11)")
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.HasOne(d => d.UserNavigation)
-                    .WithMany(p => p.Channels)
-                    .HasForeignKey(d => d.User)
-                    .HasConstraintName("User");
-            });
-
-            modelBuilder.Entity<EmoteInFront>(entity =>
-            {
-                entity.ToTable("emoteInFront");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Channel)
-                    .HasMaxLength(50)
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.Emote)
                     .HasMaxLength(50)
                     .HasDefaultValueSql("'NULL'");
             });
@@ -150,23 +123,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
                 entity.Property(e => e.Message)
                     .IsRequired()
                     .HasMaxLength(500);
-            });
-
-            modelBuilder.Entity<Prefix>(entity =>
-            {
-                entity.ToTable("prefix");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Channel)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.PrefixString)
-                    .HasMaxLength(50)
-                    .HasMaxLength(1000)
-                    .HasColumnName("Prefix")
-                    .HasDefaultValueSql("'NULL'");
             });
 
             modelBuilder.Entity<Reminder>(entity =>

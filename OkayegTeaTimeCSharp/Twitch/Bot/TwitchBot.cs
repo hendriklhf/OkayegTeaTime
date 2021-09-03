@@ -116,9 +116,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (new TwitchAPI().GetChannelByName(channel)?.Name == channel)
             {
                 DataBase.AddChannel(channel);
-                LastMessages = LastMessagesHelper.FillDictionary();
-                Prefixes = PrefixHelper.FillDictionary();
-                EmoteInFront = EmoteInFrontHelper.FillDictionary();
+                LastMessagesHelper.AddChannel(channel);
+                PrefixHelper.Add(channel);
+                EmoteInFrontHelper.Add(channel);
                 try
                 {
                     TwitchClient.JoinChannel(channel);
