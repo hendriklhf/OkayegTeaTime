@@ -1,7 +1,8 @@
 ﻿const file = require("fs");
+const jsonSerializer = require("../../../../JsonSerializerJS/JsonSerializer");
 
 // Data
-const commands = require("../../Resources/Commands.json");
+const commands = jsonSerializer.deserialize("../../Resources/Commands.json");
 const readMePath = "../../../README.md";
 const title = "OkayegTeaTime";
 const header1 = "Commands";
