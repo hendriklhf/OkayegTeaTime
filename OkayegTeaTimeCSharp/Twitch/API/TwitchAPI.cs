@@ -55,7 +55,7 @@ namespace OkayegTeaTimeCSharp.Twitch.API
         public string GetChannelID(string channel)
         {
             string id = GetChannelByName(channel)?.Id;
-            if (id != null)
+            if (id is not null)
             {
                 return id;
             }

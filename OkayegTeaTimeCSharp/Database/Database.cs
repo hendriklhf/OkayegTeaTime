@@ -190,7 +190,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.RemoveHashtag()}");
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -204,7 +204,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == username && channel == $"#{channel.RemoveHashtag()}");
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -218,7 +218,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == username);
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -233,7 +233,7 @@ namespace OkayegTeaTimeCSharp.Database
 
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -247,7 +247,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Id == id);
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -283,7 +283,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE channel = '#{chatMessage.Channel}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -297,7 +297,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username = '{username.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -311,7 +311,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username ='{username.MakeQueryable()}' AND channel = '#{channel.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -335,7 +335,7 @@ namespace OkayegTeaTimeCSharp.Database
         public static Reminder GetReminder(int id)
         {
             Reminder reminder = new OkayegTeaTimeContext().Reminders.FirstOrDefault(r => r.Id == id);
-            if (reminder != null)
+            if (reminder is not null)
             {
                 return reminder;
             }
@@ -349,7 +349,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -363,7 +363,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.RemoveHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -377,7 +377,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -391,7 +391,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' AND Channel = '#{channel.RemoveHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message != null)
+            if (message is not null)
             {
                 return message;
             }
@@ -410,7 +410,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.FirstOrDefault(u => u.Username == username);
-            if (user != null)
+            if (user is not null)
             {
                 return user;
             }
@@ -444,7 +444,7 @@ namespace OkayegTeaTimeCSharp.Database
             int id = chatMessage.GetSplit()[2].ToInt();
             OkayegTeaTimeContext database = new();
             Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.RemoveHashtag()}");
-            if (nuke != null)
+            if (nuke is not null)
             {
                 if (chatMessage.IsModOrBroadcaster())
                 {
@@ -466,7 +466,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Reminder reminder = database.Reminders.FirstOrDefault(r => r.Id == chatMessage.GetSplit()[2].ToInt());
-            if (reminder != null)
+            if (reminder is not null)
             {
                 if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
                 {

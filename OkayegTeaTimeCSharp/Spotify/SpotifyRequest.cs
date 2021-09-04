@@ -18,7 +18,7 @@ namespace OkayegTeaTimeCSharp.Spotify
         public static async Task<string> AddToQueue(string channel, string song)
         {
             song = SpotifyHelper.GetSpotifyURI(song);
-            if (song == null)
+            if (song is null)
             {
                 return "this isn't a valid track link";
             }
@@ -61,7 +61,7 @@ namespace OkayegTeaTimeCSharp.Spotify
             {
                 Database.Models.Spotify user = await GetSpotifyUser(username);
                 CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
-                return response.GetItem() != null ? response.GetItem().Message : "nothing playing";
+                return response.GetItem() is not null ? response.GetItem().Message : "nothing playing";
             }
             else
             {

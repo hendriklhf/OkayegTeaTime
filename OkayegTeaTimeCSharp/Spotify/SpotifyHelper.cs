@@ -24,7 +24,7 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static PlayingItem GetItem(this CurrentlyPlaying currentlyPlaying)
         {
-            if (currentlyPlaying != null)
+            if (currentlyPlaying is not null)
             {
                 if (currentlyPlaying.Item is FullTrack track)
                 {
