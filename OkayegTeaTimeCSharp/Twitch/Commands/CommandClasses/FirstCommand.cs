@@ -14,19 +14,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands.CommandClasses
 
         public override void Handle()
         {
-            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s\w+\s#?\w+")))
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\w+\s#?\w+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstUserChannel(ChatMessage));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s#\w+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s#\w+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstChannel(ChatMessage));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\s\w+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\w+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstUser(ChatMessage));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel))))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel))))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirst(ChatMessage));
             }

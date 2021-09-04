@@ -14,11 +14,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands.CommandClasses
 
         public override void Handle()
         {
-            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\ssearch\s.+")))
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\ssearch\s.+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSpotifySearch(ChatMessage));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"(\s\w+)?")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"(\s\w+)?")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSpotifyCurrentlyPlaying(ChatMessage));
             }

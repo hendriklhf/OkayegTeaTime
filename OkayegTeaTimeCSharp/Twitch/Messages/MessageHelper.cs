@@ -12,17 +12,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
     {
         public static bool IsAfkCommand(this ChatMessage chatMessage)
         {
-            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
+            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")));
         }
 
         public static bool IsAnyCommand(this ChatMessage chatMessage)
         {
-            return CommandHelper.GetAllAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
+            return CommandHelper.GetAllAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")));
         }
 
         public static bool IsCommand(this ChatMessage chatMessage)
         {
-            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixHelper.GetPrefix(chatMessage.Channel), @"(\s|$)")));
+            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.GetMessage().IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")));
         }
 
         public static bool IsNotLoggedChannel(this string channel)

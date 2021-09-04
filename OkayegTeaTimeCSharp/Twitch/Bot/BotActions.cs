@@ -287,7 +287,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             string message = string.Empty;
             string[] emotes = chatMessage.GetSplit()[1..];
             message += emotes.Random();
-            while (true)
+            for (; ; )
             {
                 string emote = emotes.Random();
                 if ($"{message} {emote}".Length <= Config.MaxMessageLength)
@@ -429,7 +429,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsModOrBroadcaster())
             {
-                string emote = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1] : EmoteInFrontHelper.GetEmote(chatMessage.Channel);
+                string emote = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1] : EmoteDictionary.Get(chatMessage.Channel);
                 string message = string.Empty;
                 List<string> chatters;
                 List<string> chattersToRemove = new() { chatMessage.Username };
@@ -612,7 +612,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 string emote = chatMessage.GetSplit()[2][..(chatMessage.GetSplit()[2].Length > Config.MaxEmoteInFrontLength ? Config.MaxEmoteInFrontLength : chatMessage.GetSplit()[2].Length)];
                 DataBase.SetEmoteInFront(chatMessage.Channel, emote);
-                EmoteInFrontHelper.Update(chatMessage.Channel, emote);
+                EmoteDictionary.Update(chatMessage.Channel);
                 return $"{chatMessage.Username}, emote set to: {emote}";
             }
             else
@@ -627,6 +627,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 string prefix = chatMessage.GetLowerSplit()[2][..(chatMessage.GetLowerSplit()[2].Length > Config.MaxPrefixLength ? Config.MaxPrefixLength : chatMessage.GetLowerSplit()[2].Length)];
                 DataBase.SetPrefix(chatMessage.Channel, prefix);
+                PrefixDictionary.Update(chatMessage.Channel);
                 return $"{chatMessage.Username}, prefix set to: {prefix}";
             }
             else
@@ -746,7 +747,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModOrBroadcaster())
             {
                 DataBase.UnsetEmoteInFront(chatMessage.Channel);
-                EmoteInFrontHelper.Update(chatMessage.Channel, null);
+                EmoteDictionary.Update(chatMessage.Channel);
                 return $"{chatMessage.Username}, unset emote";
             }
             else
@@ -777,6 +778,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModOrBroadcaster())
             {
                 DataBase.UnsetPrefix(chatMessage.Channel);
+                PrefixDictionary.Update(chatMessage.Channel);
                 return $"{chatMessage.Username}, the prefix has been unset";
             }
             else

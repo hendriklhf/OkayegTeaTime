@@ -14,15 +14,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Commands.CommandClasses
 
         public override void Handle()
         {
-            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\safk\s\w+")))
+            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\safk\s\w+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckAfk(ChatMessage));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\sreminder\s\d+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\sreminder\s\d+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckReminder(ChatMessage));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixHelper.GetPrefix(ChatMessage.Channel), @"\smessages?\s\d+")))
+            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\smessages?\s\d+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckMessage(ChatMessage));
             }

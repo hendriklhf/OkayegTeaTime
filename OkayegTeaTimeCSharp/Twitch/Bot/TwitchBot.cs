@@ -43,12 +43,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static List<Timer> Timers { get; } = new();
 
-        public static Dictionary<string, string> LastMessages { get; set; } = LastMessagesHelper.FillDictionary();
-
-        public static Dictionary<string, string> Prefixes { get; set; } = PrefixHelper.FillDictionary();
-
-        public static Dictionary<string, string> EmoteInFront { get; set; } = EmoteInFrontHelper.FillDictionary();
-
         public static List<Cooldown> Cooldowns { get; } = new();
 
         public static List<AfkCooldown> AfkCooldowns { get; } = new();
@@ -57,6 +51,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TwitchBot()
         {
+            FillDictionaries();
+
             ConnectionCredentials = new(Resources.Username, Resources.OAuthToken);
             ClientOptions = new()
             {
@@ -97,12 +93,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (!Config.NotAllowedChannels.Contains(channel.RemoveHashtag()))
             {
-                string emoteInFront = EmoteInFrontHelper.GetEmote(channel);
+                string emoteInFront = EmoteDictionary.Get(channel);
                 if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
                 {
-                    message = message == LastMessagesHelper.GetLastMessage(channel) ? $"{message} {Resources.ChatterinoChar}" : message;
-                    TwitchClient.SendMessage(channel.RemoveHashtag(), $"{emoteInFront} {message}");
-                    LastMessagesHelper.SetLastMessage(channel, message);
+                    message = message == LastMessagesDictionary.Get(channel) ? $"{message} {Resources.ChatterinoChar}" : message;
+                    message = $"{emoteInFront} {message}";
+                    TwitchClient.SendMessage(channel.RemoveHashtag(), message);
+                    LastMessagesDictionary.Set(channel, message);
                 }
                 else
                 {
@@ -116,9 +113,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (new TwitchAPI().GetChannelByName(channel)?.Name == channel)
             {
                 DataBase.AddChannel(channel);
-                LastMessagesHelper.AddChannel(channel);
-                PrefixHelper.Add(channel);
-                EmoteInFrontHelper.Add(channel);
+                LastMessagesDictionary.Add(channel);
+                PrefixDictionary.Add(channel);
+                EmoteDictionary.Add(channel);
                 try
                 {
                     TwitchClient.JoinChannel(channel);
@@ -266,5 +263,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         }
 
         #endregion Timer
+
+        private void FillDictionaries()
+        {
+            EmoteDictionary.FillDictionary();
+            LastMessagesDictionary.FillDictionary();
+            PrefixDictionary.FillDictionary();
+        }
     }
 }

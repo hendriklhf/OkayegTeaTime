@@ -75,7 +75,11 @@ namespace OkayegTeaTimeCSharp.Database
             }
             database.Reminders.Add(reminder);
             database.SaveChanges();
-            return database.Reminders.FirstOrDefault(r => r.FromUser == reminder.FromUser && r.ToUser == reminder.ToUser && r.Message == reminder.Message && r.ToTime == reminder.ToTime && r.Time == reminder.Time).Id;
+            return database.Reminders.FirstOrDefault(r => r.FromUser == reminder.FromUser
+                && r.ToUser == reminder.ToUser
+                && r.Message == reminder.Message
+                && r.ToTime == reminder.ToTime
+                && r.Time == reminder.Time).Id;
         }
 
         public static void AddSugestion(ChatMessage chatMessage, string suggestion)
@@ -157,6 +161,11 @@ namespace OkayegTeaTimeCSharp.Database
         public static List<string> GetChannels()
         {
             return new OkayegTeaTimeContext().Channels.Select(c => c.ChannelName).ToList();
+        }
+
+        public static string GetEmoteInFront(string channel)
+        {
+            return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront?.Decode();
         }
 
         public static Dictionary<string, string> GetEmotesInFront()
@@ -506,7 +515,6 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             database.Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix = prefix.MakeUsable().Encode();
             database.SaveChanges();
-            PrefixHelper.Update(channel);
         }
 
         public static void UnsetEmoteInFront(string channel)
@@ -521,7 +529,6 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             database.Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix = null;
             database.SaveChanges();
-            PrefixHelper.Update(channel);
         }
 
         public static void UpdateAccessToken(string username, string accessToken)
