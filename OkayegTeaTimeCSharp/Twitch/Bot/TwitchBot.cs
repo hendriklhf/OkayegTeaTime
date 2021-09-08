@@ -108,7 +108,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public bool JoinChannel(string channel, out string responseMessage)
+        public string JoinChannel(string channel)
         {
             if (new TwitchAPI().GetChannelByName(channel)?.Name == channel)
             {
@@ -120,19 +120,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 {
                     TwitchClient.JoinChannel(channel);
                     Send(channel, "I'm online");
-                    responseMessage = $"successfully joined #{channel}";
-                    return true;
+                    return $"successfully joined #{channel}";
                 }
                 catch (Exception)
                 {
-                    responseMessage = $"unable to join #{channel}";
-                    return false;
+                    return $"unable to join #{channel}";
                 }
             }
             else
             {
-                responseMessage = $"channel #{channel} does not exist";
-                return false;
+                return $"channel #{channel} does not exist";
             }
         }
 

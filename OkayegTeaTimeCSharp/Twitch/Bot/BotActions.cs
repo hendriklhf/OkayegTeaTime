@@ -385,7 +385,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (Config.Moderators.Contains(chatMessage.Username))
             {
                 string channel = chatMessage.GetLowerSplit()[1];
-                twitchBot.JoinChannel(channel.RemoveHashtag(), out string response);
+                string response = twitchBot.JoinChannel(channel.RemoveHashtag());
                 return $"{chatMessage.Username}, {response}";
             }
             else
@@ -432,8 +432,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 string emote = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1] : EmoteDictionary.Get(chatMessage.Channel);
                 string message = string.Empty;
                 List<string> chatters;
-                List<string> chattersToRemove = new() { chatMessage.Username };
-                chattersToRemove = chattersToRemove.Concat(Config.SpecialUsers).ToList();
+                List<string> chattersToRemove = new(Config.SpecialUsers) { chatMessage.Username };
 
                 if (chatMessage.Channel != Resources.SecretOfflineChat)
                 {
