@@ -13,7 +13,6 @@ Properties/
 ConnectionString.txt
 Data.json
 DatabaseModels.txt
-SqlCreate.sql
 todo.txt
 
 # User-specific files
