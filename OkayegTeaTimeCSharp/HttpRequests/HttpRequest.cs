@@ -72,10 +72,13 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
             JsonElement chatters = request.Data.GetProperty("chatters");
             List<Chatter> result = new();
-            int idx = 0;
             new string[] { "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers" }.ForEach(p =>
             {
-                chatters.GetProperty(p).ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, (ChatRole)idx++)));
+                JsonElement chatterList = chatters.GetProperty(p);
+                for (int i = 0; i < chatterList.GetArrayLength(); i++)
+                {
+                    result.Add(new(chatterList[i].GetString(), (ChatRole)i));
+                }
             });
             return result;
         }
