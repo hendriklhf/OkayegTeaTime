@@ -75,8 +75,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             int idx = 0;
             new string[] { "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers" }.ForEach(p =>
             {
-                chatters.GetProperty(p).ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, (ChatRole)idx)));
-                idx++;
+                chatters.GetProperty(p).ToString().WordArrayStringToList().ForEach(c => result.Add(new(c, (ChatRole)idx++)));
             });
             return result;
         }
