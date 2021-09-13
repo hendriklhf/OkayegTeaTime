@@ -1,8 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Properties;
-using OkayegTeaTimeCSharp.Twitch;
 using System;
 using System.IO;
-using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Logging
 {

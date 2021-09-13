@@ -3,7 +3,6 @@ using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Twitch;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

@@ -1,8 +1,5 @@
 ﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Twitch.Messages;
-using System.Collections.Generic;
-using System.Linq;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Messages.Models
@@ -11,18 +8,18 @@ namespace OkayegTeaTimeCSharp.Messages.Models
     {
         public string DisplayName { get; }
 
-        public List<string> LowerSplit { get; }
+        public string[] LowerSplit { get; }
 
         public string Message { get; }
 
-        public List<string> Split { get; }
+        public string[] Split { get; }
 
         public string Username { get; }
 
         public ChatMessage(TwitchLibMessage twitchLibMessage)
         {
             DisplayName = twitchLibMessage.DisplayName;
-            Message = GetMessage(twitchLibMessage);
+            Message = GetMessage(twitchLibMessage).MakeUsable();
             LowerSplit = GetLowerSplit();
             Split = GetSplit();
             Username = twitchLibMessage.Username;
@@ -34,14 +31,14 @@ namespace OkayegTeaTimeCSharp.Messages.Models
             return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
         }
 
-        private List<string> GetSplit()
+        private string[] GetSplit()
         {
-            return Message.SplitNormal().ToList();
+            return Message.SplitNormal();
         }
 
-        private List<string> GetLowerSplit()
+        private string[] GetLowerSplit()
         {
-            return Message.SplitToLowerCase().ToList();
+            return Message.SplitToLowerCase();
         }
     }
 }

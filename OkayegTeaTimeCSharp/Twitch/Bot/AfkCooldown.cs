@@ -11,7 +11,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public AfkCooldown(string username)
         {
             Username = username;
-            Time = TimeHelper.Now() + Config.AfkCooldown;
+            Time = TimeHelper.Now() + TwitchConfig.AfkCooldown;
         }
     }
 }

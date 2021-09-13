@@ -30,12 +30,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
                 else
                 {
-                    return Config.EmoteInFront;
+                    return TwitchConfig.EmoteInFront;
                 }
             }
             else
             {
-                return Config.EmoteInFront;
+                return TwitchConfig.EmoteInFront;
             }
         }
 
