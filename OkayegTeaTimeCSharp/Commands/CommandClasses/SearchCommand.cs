@@ -1,4 +1,5 @@
 ﻿using HLE.Strings;
+using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 
@@ -6,26 +7,26 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public class SearchCommand : Command
     {
-        public SearchCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public SearchCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
             : base(twitchBot, chatMessage, alias)
         {
         }
 
         public override void Handle()
         {
-            if (ChatMessage.GetMessage().IsMatch(Pattern.SearchUserParameter) && ChatMessage.GetMessage().IsMatch(Pattern.SearchChannelParameter))
+            if (ChatMessage.Message.IsMatch(Pattern.SearchUserParameter) && ChatMessage.Message.IsMatch(Pattern.SearchChannelParameter))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearchUserChannel(ChatMessage, GetKeyWord(), GetUsername(), GetChannel()));
             }
-            else if (ChatMessage.GetMessage().IsMatch(Pattern.SearchUserParameter))
+            else if (ChatMessage.Message.IsMatch(Pattern.SearchUserParameter))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearchUser(ChatMessage, GetKeyWord(), GetUsername()));
             }
-            else if (ChatMessage.GetMessage().IsMatch(Pattern.SearchChannelParameter))
+            else if (ChatMessage.Message.IsMatch(Pattern.SearchChannelParameter))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearchChannel(ChatMessage, GetKeyWord(), GetChannel()));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\S+")))
+            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\S+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearch(ChatMessage, GetKeyWord()));
             }
@@ -33,17 +34,17 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private string GetKeyWord()
         {
-            return ChatMessage.GetMessage().Split()[1..].ToSequence().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
+            return ChatMessage.Message.Split()[1..].ToSequence().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
         }
 
         private string GetUsername()
         {
-            return ChatMessage.GetMessage().Match(Pattern.SearchUserParameter).ReplacePattern(@"(-u|--user)", "").Trim();
+            return ChatMessage.Message.Match(Pattern.SearchUserParameter).ReplacePattern(@"(-u|--user)", "").Trim();
         }
 
         private string GetChannel()
         {
-            return ChatMessage.GetMessage().Match(Pattern.SearchChannelParameter).ReplacePattern(@"(-c|--channel)", "").Trim();
+            return ChatMessage.Message.Match(Pattern.SearchChannelParameter).ReplacePattern(@"(-c|--channel)", "").Trim();
         }
     }
 }

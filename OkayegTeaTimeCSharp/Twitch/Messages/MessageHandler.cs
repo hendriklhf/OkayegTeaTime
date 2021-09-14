@@ -1,4 +1,7 @@
-﻿using OkayegTeaTimeCSharp.Database;
+﻿using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Handlers;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 

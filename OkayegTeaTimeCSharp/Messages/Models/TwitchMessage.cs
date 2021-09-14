@@ -31,11 +31,11 @@ namespace OkayegTeaTimeCSharp.Messages.Models
 
         public string DisplayName { get; }
 
-        public List<string> LowerSplit { get; }
+        public string[] LowerSplit { get; }
 
         public string Message { get; }
 
-        public List<string> Split { get; }
+        public string[] Split { get; }
 
         public string Username { get; }
 
@@ -85,14 +85,14 @@ namespace OkayegTeaTimeCSharp.Messages.Models
             return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
         }
 
-        private List<string> GetSplit()
+        private string[] GetSplit()
         {
-            return Message.SplitNormal().ToList();
+            return Message.SplitNormal();
         }
 
-        private List<string> GetLowerSplit()
+        private string[] GetLowerSplit()
         {
-            return Message.SplitToLowerCase().ToList();
+            return Message.SplitToLowerCase();
         }
     }
 }

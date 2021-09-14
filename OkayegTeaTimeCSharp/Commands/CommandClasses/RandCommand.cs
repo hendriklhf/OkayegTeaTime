@@ -1,10 +1,11 @@
-﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public class RandCommand : Command
     {
-        public RandCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public RandCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
             : base(twitchBot, chatMessage, alias)
         {
         }

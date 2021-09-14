@@ -1,10 +1,11 @@
-﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {
     public class PingCommand : Command
     {
-        public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public PingCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
             : base(twitchBot, chatMessage, alias)
         {
         }

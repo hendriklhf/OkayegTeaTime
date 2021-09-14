@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 
 namespace OkayegTeaTimeCSharp.Commands.Interfaces
 {
@@ -6,7 +7,7 @@ namespace OkayegTeaTimeCSharp.Commands.Interfaces
     {
         public TwitchBot TwitchBot { get; }
 
-        public ChatMessage ChatMessage { get; }
+        public ITwitchChatMessage ChatMessage { get; }
 
         public string Alias { get; }
 

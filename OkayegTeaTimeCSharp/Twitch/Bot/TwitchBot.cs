@@ -176,7 +176,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            Console.WriteLine(e.ChatMessage.RawIrcMessage);
             if (!MessageHelper.IsSpecialUser(e.ChatMessage.Username))
             {
                 MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));

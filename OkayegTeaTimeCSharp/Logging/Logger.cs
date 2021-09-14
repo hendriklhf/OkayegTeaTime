@@ -1,4 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Properties;
+﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Properties;
 using System;
 using System.IO;
 
@@ -11,9 +12,9 @@ namespace OkayegTeaTimeCSharp.Logging
             LogToFile(CreateLog(text));
         }
 
-        public static void Log(ChatMessage chatMessage)
+        public static void Log(ITwitchChatMessage chatMessage)
         {
-            LogToFile(CreateLog($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.GetMessage()}"));
+            LogToFile(CreateLog($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}"));
         }
 
         public static void Log(Exception ex)

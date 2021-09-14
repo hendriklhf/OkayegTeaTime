@@ -1,6 +1,8 @@
 ﻿using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
+using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 using System.Linq;
@@ -12,18 +14,18 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         private const int _startIndex = 3;
         private const int _noMessageIndex = -1;
 
-        public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, string alias)
+        public RemindCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
             : base(twitchBot, chatMessage, alias)
         {
         }
 
         public override void Handle()
         {
-            if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), Pattern.ReminderInTime)))
+            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), Pattern.ReminderInTime)))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, GetTimedRemindMessage(), GetToTime()));
             }
-            else if (ChatMessage.GetMessage().IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\w+(\s\S+)*")))
+            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\w+(\s\S+)*")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetRemindMessage()));
             }
@@ -31,9 +33,9 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         private int GetMessageStartIdx()
         {
-            for (int i = _startIndex; i <= ChatMessage.GetLowerSplit().Length - 1; i++)
+            for (int i = _startIndex; i <= ChatMessage.LowerSplit.Length - 1; i++)
             {
-                if (!ChatMessage.GetLowerSplit()[i].IsMatch(Pattern.TimeSplit))
+                if (!ChatMessage.LowerSplit[i].IsMatch(Pattern.TimeSplit))
                 {
                     return i;
                 }
@@ -46,11 +48,11 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             int messageStartIdx = GetMessageStartIdx();
             if (messageStartIdx == _noMessageIndex)
             {
-                return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.GetLowerSplit()[_startIndex..].ToList());
+                return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.LowerSplit[_startIndex..].ToList());
             }
             else
             {
-                return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList());
+                return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList());
             }
         }
 
@@ -59,12 +61,12 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
             int messageStartIdx = GetMessageStartIdx();
             if (messageStartIdx == _noMessageIndex)
             {
-                return "".MakeInsertable();
+                return string.Empty.MakeInsertable();
             }
             else
             {
                 string message = string.Empty;
-                ChatMessage.GetSplit()[(_startIndex + ChatMessage.GetLowerSplit()[_startIndex..GetMessageStartIdx()].ToList().Count)..]
+                ChatMessage.Split[(_startIndex + ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList().Count)..]
                     .ForEach(str => message += $"{str} ");
                 return message.MakeInsertable();
             }
@@ -73,7 +75,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
         private byte[] GetRemindMessage()
         {
             string message = string.Empty;
-            ChatMessage.GetSplit()[2..].ForEach(str => message += $"{str} ");
+            ChatMessage.Split[2..].ForEach(str => message += $"{str} ");
             return message.MakeInsertable();
         }
     }

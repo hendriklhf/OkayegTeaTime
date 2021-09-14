@@ -48,7 +48,7 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static string GetCommandClassName(CommandType type)
         {
-            return $"OkayegTeaTimeCSharp.Twitch.Commands.CommandClasses.{type}Command";
+            return $"OkayegTeaTimeCSharp.Commands.CommandClasses.{type}Command";
         }
 
         public static long GetCoolDown(CommandType type)

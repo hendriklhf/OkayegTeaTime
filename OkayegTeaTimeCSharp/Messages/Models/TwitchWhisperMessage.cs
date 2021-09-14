@@ -35,11 +35,11 @@ namespace OkayegTeaTimeCSharp.Messages.Models
 
         public string DisplayName { get; }
 
-        public List<string> LowerSplit { get; }
+        public string[] LowerSplit { get; }
 
         public string Message { get; }
 
-        public List<string> Split { get; }
+        public string[] Split { get; }
 
         public string Username { get; }
 
@@ -50,11 +50,11 @@ namespace OkayegTeaTimeCSharp.Messages.Models
             ColorHex = whisperMessage.ColorHex;
             DisplayName = whisperMessage.DisplayName;
             IsTurbo = whisperMessage.IsTurbo;
-            LowerSplit = whisperMessage.GetLowerSplit().ToList();
+            LowerSplit = whisperMessage.GetLowerSplit();
             Message = whisperMessage.GetMessage();
             MessageId = whisperMessage.MessageId.ToInt();
             RawIrcMessage = whisperMessage.RawIrcMessage;
-            Split = whisperMessage.GetSplit().ToList();
+            Split = whisperMessage.GetSplit();
             ThreadId = whisperMessage.ThreadId.ToInt();
             UserId = whisperMessage.UserId.ToInt();
             Username = whisperMessage.Username;

@@ -57,7 +57,7 @@ namespace OkayegTeaTimeCSharp.Messages.Models
 
         public bool IsVip { get; }
 
-        public List<string> LowerSplit { get; }
+        public string[] LowerSplit { get; }
 
         public string Message { get; }
 
@@ -67,7 +67,7 @@ namespace OkayegTeaTimeCSharp.Messages.Models
 
         public int RoomId { get; }
 
-        public List<string> Split { get; }
+        public string[] Split { get; }
 
         public int SubcsribedMonthCount { get; }
 
@@ -104,12 +104,12 @@ namespace OkayegTeaTimeCSharp.Messages.Models
             IsSubscriber = chatMessage.IsSubscriber;
             IsTurbo = chatMessage.IsTurbo;
             IsVip = chatMessage.IsVip;
-            LowerSplit = chatMessage.GetLowerSplit().ToList();
+            LowerSplit = chatMessage.GetLowerSplit();
             Message = chatMessage.GetMessage();
             Noisy = chatMessage.Noisy;
             RawIrcMessage = chatMessage.RawIrcMessage;
             RoomId = chatMessage.RoomId.ToInt();
-            Split = chatMessage.GetSplit().ToList();
+            Split = chatMessage.GetSplit();
             SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
             TmiSentTs = chatMessage.TmiSentTs;
             UserId = chatMessage.UserId.ToInt();
