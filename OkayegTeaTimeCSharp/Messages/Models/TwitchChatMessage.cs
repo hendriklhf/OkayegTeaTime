@@ -71,7 +71,7 @@ namespace OkayegTeaTimeCSharp.Messages.Models
 
         public int SubcsribedMonthCount { get; }
 
-        public string TmiSentTs { get; }
+        public long TmiSentTs { get; }
 
         public int UserId { get; }
 
@@ -111,7 +111,7 @@ namespace OkayegTeaTimeCSharp.Messages.Models
             RoomId = chatMessage.RoomId.ToInt();
             Split = chatMessage.GetSplit();
             SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
-            TmiSentTs = chatMessage.TmiSentTs;
+            TmiSentTs = chatMessage.TmiSentTs.ToLong();
             UserId = chatMessage.UserId.ToInt();
             Username = chatMessage.Username;
             UserTags = GetUserTags();

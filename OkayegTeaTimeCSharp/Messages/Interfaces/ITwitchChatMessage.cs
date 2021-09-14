@@ -44,6 +44,6 @@ namespace OkayegTeaTimeCSharp.Messages.Interfaces
 
         public int SubcsribedMonthCount { get; }
 
-        public string TmiSentTs { get; }
+        public long TmiSentTs { get; }
     }
 }

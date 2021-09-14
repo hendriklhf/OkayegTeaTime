@@ -1,7 +1,7 @@
 ﻿using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Handlers;
-using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 
@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
 
         public override void Handle(ITwitchChatMessage chatMessage)
         {
-            if (!chatMessage.Username.IsSpecialUser())
+            if (!chatMessage.UserTags.Contains(UserTag.Special))
             {
                 DataBase.InsertNewUser(chatMessage.Username);
 

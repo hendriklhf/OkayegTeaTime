@@ -2,6 +2,7 @@
 using HLE.Time;
 using HLE.Time.Enums;
 using OkayegTeaTimeCSharp.Database.Models;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 
 namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
 {
@@ -26,7 +27,8 @@ namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
         public static AfkMessage Create(User user)
         {
             string type = user.Type.ToLower();
-            return new AfkMessage(type, CommandHelper.GetAfkCommand(type).ComingBack, CommandHelper.GetAfkCommand(type).GoingAway, CommandHelper.GetAfkCommand(type).Resuming).ReplaceSpaceHolder(user);
+            AfkCommand afkCommand = CommandHelper.GetAfkCommand(type);
+            return new AfkMessage(type, afkCommand.ComingBack, afkCommand.GoingAway, afkCommand.Resuming).ReplaceSpaceHolder(user);
         }
 
         private AfkMessage ReplaceSpaceHolder(User user)
