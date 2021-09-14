@@ -2,17 +2,17 @@
 using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
+using OkayegTeaTimeCSharp.Commands.CommandEnums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
+using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using OkayegTeaTimeCSharp.Twitch.Commands.CommandEnums;
-using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -61,14 +61,14 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (reminder.ToTime == 0)
             {
-                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
+                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= TwitchConfig.MaxReminders)
                 {
                     throw new TooManyReminderException();
                 }
             }
             else
             {
-                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
+                if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= TwitchConfig.MaxReminders)
                 {
                     throw new TooManyReminderException();
                 }
@@ -82,14 +82,14 @@ namespace OkayegTeaTimeCSharp.Database
                 && r.Time == reminder.Time).Id;
         }
 
-        public static void AddSugestion(ChatMessage chatMessage, string suggestion)
+        public static void AddSugestion(ITwitchChatMessage chatMessage, string suggestion)
         {
             OkayegTeaTimeContext database = new();
             database.Suggestions.Add(new(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
             database.SaveChanges();
         }
 
-        public static void CheckForNukes(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void CheckForNukes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
         {
             if (!chatMessage.IsAnyCommand())
             {
@@ -100,9 +100,9 @@ namespace OkayegTeaTimeCSharp.Database
                     {
                         if (n.ForTime > TimeHelper.Now())
                         {
-                            if (!chatMessage.IsModOrBroadcaster())
+                            if (!chatMessage.IsModerator || !chatMessage.IsBroadcaster)
                             {
-                                if (chatMessage.GetMessage().IsMatch(n.Word.Decode()))
+                                if (chatMessage.Message.IsMatch(n.Word.Decode()))
                                 {
                                     twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
                                 }
@@ -118,7 +118,7 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void CheckForReminder(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void CheckForReminder(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
             if (database.Reminders.Any(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username))
@@ -144,7 +144,7 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void CheckIfAFK(TwitchBot twitchBot, ChatMessage chatMessage)
+        public static void CheckIfAFK(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.FirstOrDefault(user => user.Username == chatMessage.Username);
@@ -173,7 +173,7 @@ namespace OkayegTeaTimeCSharp.Database
             return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.EmoteInFront?.Decode());
         }
 
-        public static Message GetFirst(ChatMessage chatMessage)
+        public static Message GetFirst(ITwitchChatMessage chatMessage)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static Message GetFirstChannel(ChatMessage chatMessage, string channel)
+        public static Message GetFirstChannel(ITwitchChatMessage chatMessage, string channel)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.RemoveHashtag()}");
@@ -279,7 +279,7 @@ namespace OkayegTeaTimeCSharp.Database
             return database.Gachi.FromSqlRaw($"SELECT * FROM gachi ORDER BY RAND() LIMIT 1").FirstOrDefault();
         }
 
-        public static Message GetRandomMessage(ChatMessage chatMessage)
+        public static Message GetRandomMessage(ITwitchChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE channel = '#{chatMessage.Channel}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
@@ -429,9 +429,9 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void LogMessage(ChatMessage chatMessage)
+        public static void LogMessage(ITwitchChatMessage chatMessage)
         {
-            if (!Config.NotLoggedChannels.Contains(chatMessage.Channel))
+            if (!TwitchConfig.NotLoggedChannels.Contains(chatMessage.Channel))
             {
                 OkayegTeaTimeContext database = new();
                 database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
@@ -439,14 +439,14 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void RemoveNuke(ChatMessage chatMessage)
+        public static void RemoveNuke(ITwitchChatMessage chatMessage)
         {
-            int id = chatMessage.GetSplit()[2].ToInt();
+            int id = chatMessage.Split[2].ToInt();
             OkayegTeaTimeContext database = new();
             Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.RemoveHashtag()}");
             if (nuke is not null)
             {
-                if (chatMessage.IsModOrBroadcaster())
+                if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
                 {
                     database.Nukes.Remove(nuke);
                     database.SaveChanges();
@@ -462,10 +462,10 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void RemoveReminder(ChatMessage chatMessage)
+        public static void RemoveReminder(ITwitchChatMessage chatMessage)
         {
             OkayegTeaTimeContext database = new();
-            Reminder reminder = database.Reminders.FirstOrDefault(r => r.Id == chatMessage.GetSplit()[2].ToInt());
+            Reminder reminder = database.Reminders.FirstOrDefault(r => r.Id == chatMessage.Split[2].ToInt());
             if (reminder is not null)
             {
                 if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
@@ -488,16 +488,15 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             database.SetAfk(username, true);
-            database.SaveChanges();
         }
 
-        public static void SetAfk(ChatMessage chatMessage, AfkCommandType type)
+        public static void SetAfk(ITwitchChatMessage chatMessage, AfkCommandType type)
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
-            string message = chatMessage.GetSplit().Length > 1 ? chatMessage.GetSplit()[1..].ToSequence() : null;
+            string message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].ToSequence() : null;
             user.MessageText = message?.MakeInsertable();
-            user.Type = type.ToString();
+            user.Type = nameof(type);
             user.Time = TimeHelper.Now();
             database.SaveChanges();
             database.SetAfk(chatMessage.Username, true);

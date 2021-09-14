@@ -20,7 +20,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
             TwitchBot = twitchBot;
             Channel = channel;
             EmoteInFront = emoteInFront;
-            Messages = message.Split(Config.MaxMessageLength - (EmoteInFront.Length + 1));
+            Messages = message.Split(TwitchConfig.MaxMessageLength - (EmoteInFront.Length + 1));
         }
 
         public void StartSending()
@@ -29,11 +29,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
             Messages.RemoveAt(0);
             if (Messages.Count > 0)
             {
-                Thread.Sleep(Config.MinimumDelayBetweenMessages);
+                Thread.Sleep(TwitchConfig.MinimumDelayBetweenMessages);
                 Messages.ForEach(str =>
                 {
                     TwitchBot.TwitchClient.SendMessage(Channel, str);
-                    Thread.Sleep(Config.MinimumDelayBetweenMessages);
+                    Thread.Sleep(TwitchConfig.MinimumDelayBetweenMessages);
                 });
             }
         }

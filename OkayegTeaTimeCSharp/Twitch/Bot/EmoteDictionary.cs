@@ -22,20 +22,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string Get(string channel)
         {
-            if (_emotes.TryGetValue(channel, out string emote))
+            if (_emotes.TryGetValue(channel, out string emote) && !string.IsNullOrEmpty(emote))
             {
-                if (!string.IsNullOrEmpty(emote))
-                {
-                    return emote;
-                }
-                else
-                {
-                    return Config.EmoteInFront;
-                }
+                return emote;
             }
             else
             {
-                return Config.EmoteInFront;
+                return TwitchConfig.EmoteInFront;
             }
         }
 

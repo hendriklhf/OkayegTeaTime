@@ -1,8 +1,7 @@
 ﻿using HLE.Strings;
-using OkayegTeaTimeCSharp.Twitch;
+using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Utils;
 using System.Collections.Generic;
-using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {
@@ -10,9 +9,9 @@ namespace OkayegTeaTimeCSharp.Spotify
     {
         public string Message { get; set; }
 
-        public LinkRecognizer(ChatMessage chatMessage)
+        public LinkRecognizer(IChatMessage chatMessage)
         {
-            Message = chatMessage.GetMessage();
+            Message = chatMessage.Message;
         }
 
         public bool FindSpotifyLink(out string uri)

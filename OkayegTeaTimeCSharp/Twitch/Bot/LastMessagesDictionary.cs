@@ -10,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void FillDictionary()
         {
-            _lastMessages = Config.Channels.ToDictionary(c => c, c => string.Empty);
+            _lastMessages = TwitchConfig.Channels.ToDictionary(c => c, c => string.Empty);
         }
 
         public static void Add(string channel, string message = _empty)

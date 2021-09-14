@@ -1,6 +1,8 @@
 ﻿using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Messages;
+using OkayegTeaTimeCSharp.Messages.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Twitch.Messages;
@@ -34,6 +36,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public WebSocketClient WebSocketClient { get; private set; }
 
         public TcpClient TcpClient { get; private set; }
+
+        public MessageHandler MessageHandler { get; }
+
+        public WhisperHandler WhisperHandler { get; }
 
         public DottedNumber CommandCount { get; set; } = 1;
 
@@ -83,18 +89,22 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnReconnected += Client_OnReconnected;
             TwitchClient.OnUserJoined += Client_OnUserJoinedChannel;
 
+            MessageHandler = new(this);
+            WhisperHandler = new(this);
+
             TwitchClient.Connect();
 
             InitializeTimers();
             Restarter.InitializeResartTimer();
+
         }
 
         public void Send(string channel, string message)
         {
-            if (!Config.NotAllowedChannels.Contains(channel.RemoveHashtag()))
+            if (!TwitchConfig.NotAllowedChannels.Contains(channel.RemoveHashtag()))
             {
                 string emoteInFront = EmoteDictionary.Get(channel);
-                if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= Config.MaxMessageLength)
+                if ($"{emoteInFront} {message} {Resources.ChatterinoChar}".Length <= TwitchConfig.MaxMessageLength)
                 {
                     message = message == LastMessagesDictionary.Get(channel) ? $"{message} {Resources.ChatterinoChar}" : message;
                     message = $"{emoteInFront} {message}";
@@ -166,10 +176,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            if (!MessageHelper.IsSpecialUser(e.ChatMessage.Username))
-            {
-                new MessageHandler(this, e.ChatMessage).Handle();
-            }
+            MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
             ConsoleOut($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
         }
 
@@ -180,7 +187,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            new WhisperHandler(this, e.WhisperMessage).Handle();
+            Console.WriteLine(e.WhisperMessage.RawIrcMessage);
+            WhisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
             ConsoleOut($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }
 
@@ -209,7 +217,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
         {
-            if (e.Channel == Resources.SecretOfflineChat && !Config.SecretUsers.Contains(e.Username))
+            if (e.Channel == Resources.SecretOfflineChat && !TwitchConfig.SecretUsers.Contains(e.Username))
             {
                 Send(Resources.SecretOfflineChat, $"{e.Username} joined the chat Stare");
             }

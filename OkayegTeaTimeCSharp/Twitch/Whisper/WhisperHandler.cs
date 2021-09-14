@@ -1,19 +1,18 @@
-﻿using OkayegTeaTimeCSharp.Twitch.Bot;
-using TwitchLib.Client.Models;
+﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Twitch.Bot;
 
 namespace OkayegTeaTimeCSharp.Twitch.Whisper
 {
-    public class WhisperHandler : Handler
+    public class WhisperHandler
     {
-        public WhisperMessage WhisperMessage { get; }
+        public TwitchBot TwitchBot { get; }
 
-        public WhisperHandler(TwitchBot twitchBot, WhisperMessage whisperMessage)
-            : base(twitchBot)
+        public WhisperHandler(TwitchBot twitchBot)
         {
-            WhisperMessage = whisperMessage;
+            TwitchBot = twitchBot;
         }
 
-        public override void Handle()
+        public void Handle(ITwitchWhisperMessage whisperMessage)
         {
         }
     }

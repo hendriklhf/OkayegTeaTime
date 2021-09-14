@@ -1,7 +1,9 @@
-﻿using OkayegTeaTimeCSharp.Database;
+﻿using OkayegTeaTimeCSharp.Commands;
+using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Handlers;
+using OkayegTeaTimeCSharp.Messages.Enums;
+using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using OkayegTeaTimeCSharp.Twitch.Commands;
-using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Messages
 {
@@ -9,30 +11,27 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
     {
         public CommandHandler CommandHandler { get; }
 
-        public ChatMessage ChatMessage { get; }
-
-        public MessageHandler(TwitchBot twitchBot, ChatMessage chatMessage)
+        public MessageHandler(TwitchBot twitchBot)
             : base(twitchBot)
         {
-            CommandHandler = new(twitchBot, chatMessage);
-            ChatMessage = chatMessage;
+            CommandHandler = new(twitchBot);
         }
 
-        public override void Handle()
+        public override void Handle(ITwitchChatMessage chatMessage)
         {
-            if (!ChatMessage.Username.IsSpecialUser())
+            if (!chatMessage.UserTags.Contains(UserTag.Special))
             {
-                DataBase.InsertNewUser(ChatMessage.Username);
+                DataBase.InsertNewUser(chatMessage.Username);
 
-                DataBase.LogMessage(ChatMessage);
+                DataBase.LogMessage(chatMessage);
 
-                DataBase.CheckIfAFK(TwitchBot, ChatMessage);
+                DataBase.CheckIfAFK(TwitchBot, chatMessage);
 
-                DataBase.CheckForReminder(TwitchBot, ChatMessage);
+                DataBase.CheckForReminder(TwitchBot, chatMessage);
 
-                CommandHandler.Handle();
+                CommandHandler.Handle(chatMessage);
 
-                DataBase.CheckForNukes(TwitchBot, ChatMessage);
+                DataBase.CheckForNukes(TwitchBot, chatMessage);
             }
         }
     }
