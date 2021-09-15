@@ -496,7 +496,7 @@ namespace OkayegTeaTimeCSharp.Database
             User user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
             string message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].ToSequence() : null;
             user.MessageText = message?.MakeInsertable();
-            user.Type = nameof(type);
+            user.Type = type.ToString();
             user.Time = TimeHelper.Now();
             database.SaveChanges();
             database.SetAfk(chatMessage.Username, true);
