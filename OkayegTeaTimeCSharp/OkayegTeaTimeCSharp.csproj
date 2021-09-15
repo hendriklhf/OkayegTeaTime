@@ -7,7 +7,7 @@
 		<RepositoryUrl>github.com/HLE/OkayegTeaTimeCSharp</RepositoryUrl>
 		<SignAssembly>false</SignAssembly>
 		<Platforms>AnyCPU;x86;ARM64;ARM32</Platforms>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<ApplicationIcon>Resources\Okayeg.ico</ApplicationIcon>
 		<PackageIcon></PackageIcon>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
