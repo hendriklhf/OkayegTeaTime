@@ -3,23 +3,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.HttpRequests.Models;
 using OkayegTeaTimeCSharp.Twitch.API;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Tests
 {
     [TestClass]
     public class ApiTests
     {
-        public const string TestChannel = "strbhlfe";
+        private const string _testChannel = "strbhlfe";
 
         [TestMethod]
         public void Get7TVEmotesTest()
         {
             int emoteCount = 5;
-            List<Emote> emotes = HttpRequest.Get7TVEmotes(TestChannel, emoteCount);
+            List<Emote> emotes = HttpRequest.Get7TVEmotes(_testChannel, emoteCount);
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {
@@ -33,7 +30,7 @@ namespace Tests
         {
             new TwitchAPI().Configure();
             int emoteCount = 5;
-            List<Emote> emotes = HttpRequest.GetBTTVEmotes(TestChannel, emoteCount);
+            List<Emote> emotes = HttpRequest.GetBTTVEmotes(_testChannel, emoteCount);
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {
@@ -45,14 +42,14 @@ namespace Tests
         [TestMethod]
         public void GetChatterCountTest()
         {
-            int chatterCount = HttpRequest.GetChatterCount(TestChannel);
+            int chatterCount = HttpRequest.GetChatterCount(_testChannel);
             Assert.IsNotNull(chatterCount);
         }
 
         [TestMethod]
         public void GetChattersTest()
         {
-            List<Chatter> chatters = HttpRequest.GetChatters(TestChannel);
+            List<Chatter> chatters = HttpRequest.GetChatters(_testChannel);
             chatters.ForEach(c =>
             {
                 bool isMatch = c.Username.IsMatch(@"^\w+$");
@@ -64,7 +61,7 @@ namespace Tests
         public void GetFFZEmotesTest()
         {
             int emoteCount = 5;
-            List<Emote> emotes = HttpRequest.GetFFZEmotes(TestChannel, emoteCount);
+            List<Emote> emotes = HttpRequest.GetFFZEmotes(_testChannel, emoteCount);
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {
