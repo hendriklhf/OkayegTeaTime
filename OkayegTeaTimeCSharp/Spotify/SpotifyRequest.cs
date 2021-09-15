@@ -71,7 +71,7 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static string GetLoginURL()
         {
-            LoginRequest login = new(new("https://example.com/callback"), Resources.SpotifyClientID, LoginRequest.ResponseType.Code)
+            LoginRequest login = new(new("https://example.com/callback"), Settings.SpotifyClientID, LoginRequest.ResponseType.Code)
             {
                 Scope = new[] { Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState }
             };
@@ -80,13 +80,13 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static async Task GetNewAccessToken(string username)
         {
-            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, DataBase.GetRefreshToken(username)));
+            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, DataBase.GetRefreshToken(username)));
             DataBase.UpdateAccessToken(username, response.AccessToken);
         }
 
         public static async Task GetNewAuthTokens(string username, string code)
         {
-            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Resources.SpotifyClientID, Resources.SpotifyClientSecret, code, new("https://example.com/callback")));
+            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, code, new("https://example.com/callback")));
             DataBase.AddNewToken(username, response.AccessToken, response.RefreshToken);
         }
 

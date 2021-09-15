@@ -29,7 +29,7 @@ namespace OkayegTeaTimeCSharp.Logging
 
         private static void LogToFile(string log)
         {
-            File.AppendAllText(Resources.LogsPath, log);
+            File.AppendAllText(Paths.Logs, log);
         }
     }
 }

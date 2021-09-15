@@ -74,17 +74,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="Properties\Resources.Designer.cs">
+		<Compile Update="Properties\Paths.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Paths.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
-			<DependentUpon>Resources.resx</DependentUpon>
+			<DependentUpon>Settings.resx</DependentUpon>
 		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Update="Properties\Resources.resx">
+		<EmbeddedResource Update="Properties\Paths.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>Paths.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Properties\Settings.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
 

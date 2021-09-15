@@ -16,8 +16,8 @@ namespace OkayegTeaTimeCSharp.Twitch.API
 
         public void Configure()
         {
-            _api.Settings.ClientId = Resources.TwitchApiClientID;
-            _api.Settings.Secret = Resources.TwitchApiClientSecret;
+            _api.Settings.ClientId = Settings.TwitchApiClientID;
+            _api.Settings.Secret = Settings.TwitchApiClientSecret;
             _api.Settings.AccessToken = GetAccessToken();
         }
 

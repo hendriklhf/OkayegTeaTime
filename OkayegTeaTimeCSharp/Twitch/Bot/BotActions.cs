@@ -377,7 +377,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static string SendHelp(IChatMessage chatMessage)
         {
             string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
-            return $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {Resources.GitHubRepoLink}";
+            return $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {Settings.GitHubRepoLink}";
         }
 
         public static string SendJoinChannel(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
@@ -434,7 +434,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 List<string> chatters;
                 List<string> chattersToRemove = new(TwitchConfig.SpecialUsers) { chatMessage.Username };
 
-                if (chatMessage.Channel != Resources.SecretOfflineChat)
+                if (chatMessage.Channel != Settings.SecretOfflineChat)
                 {
                     chatters = HttpRequest.GetChatters(chatMessage.Channel).Select(c => c.Username).ToList();
                     chattersToRemove.ForEach(c => chatters.Remove(c));
@@ -446,7 +446,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 else
                 {
                     message = $"OkayegTeaTime {emote}";
-                    chatters = Resources.SecretOfflineChatEmotes.Split().ToList();
+                    chatters = Settings.SecretOfflineChatEmotes.Split().ToList();
                 }
 
                 chatters.ForEach(c => message += $" {c} {emote}");

@@ -125,7 +125,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         private static string GetOnlineCompilerTemplate(string code)
         {
-            return File.ReadAllText(Resources.OnlineCompilerTemplatePath).Replace("{code}", code);
+            return File.ReadAllText(Paths.OnlineCompilerTemplate).Replace("{code}", code);
         }
     }
 }

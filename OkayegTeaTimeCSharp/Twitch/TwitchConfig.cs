@@ -27,8 +27,8 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static List<string> SecretUsers => new JsonController().BotData.UserLists.SecretUsers;
 
-        public static List<string> NotAllowedChannels => Resources.NotAllowedChannels.Split().ToList();
+        public static List<string> NotAllowedChannels => Settings.NotAllowedChannels.Split().ToList();
 
-        public static List<string> NotLoggedChannels => Resources.NotLoggedChannels.Split().ToList();
+        public static List<string> NotLoggedChannels => Settings.NotLoggedChannels.Split().ToList();
     }
 }

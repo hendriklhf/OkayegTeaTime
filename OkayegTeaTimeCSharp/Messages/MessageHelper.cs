@@ -53,7 +53,7 @@ namespace OkayegTeaTimeCSharp.Messages
 
         private static string Prepare(this string input)
         {
-            return input.Remove(Resources.ChatterinoChar).TrimAll();
+            return input.Remove(Settings.ChatterinoChar).TrimAll();
         }
 
         public static string[] SplitNormal(this string input)
