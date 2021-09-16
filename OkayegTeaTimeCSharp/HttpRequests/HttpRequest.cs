@@ -77,7 +77,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 JsonElement chatterList = chatters.GetProperty(p);
                 for (int i = 0; i < chatterList.GetArrayLength(); i++)
                 {
-                    result.Add(new(chatterList[i].GetString(), (ChatRole)i));
+                    result.Add(new(chatterList[i].GetString(), (ChatRole)i)); //error: i needs to be the index of p
                 }
             });
             return result;

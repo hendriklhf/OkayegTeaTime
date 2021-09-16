@@ -187,7 +187,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            Console.WriteLine(e.WhisperMessage.RawIrcMessage);
             WhisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
             ConsoleOut($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         }

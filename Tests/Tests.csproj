@@ -17,8 +17,4 @@
     <ProjectReference Include="..\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="xcopy $(SolutionDir)OkayegTeaTimeCSharp\Resources &quot;$(TargetDir)Resources&quot; /E /Y /I" />
-  </Target>
-
 </Project>
