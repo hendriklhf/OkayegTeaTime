@@ -8,29 +8,25 @@ namespace Tests
     [TestClass]
     public class JsonTests
     {
-        private JsonController _jsonController;
-
-        [TestMethod]
-        public void JsonControllerInitilizationTest()
-        {
-            _jsonController = new();
-            Assert.IsNotNull(_jsonController);
-        }
-
         [TestMethod]
         public void JsonBotDataContentTest()
         {
-            UserLists userLists = _jsonController.BotData.UserLists;
+            JsonController jsonController = new();
+            jsonController.LoadData();
+            UserLists userLists = jsonController.BotData.UserLists;
             Assert.IsTrue(userLists.Moderators.Any());
             Assert.IsTrue(userLists.Owners.Any());
             Assert.IsTrue(userLists.SecretUsers.Any());
             Assert.IsTrue(userLists.SpecialUsers.Any());
         }
 
+        [TestMethod]
         public void JsonCommmandsContentTest()
         {
-            Assert.IsTrue(_jsonController.CommandLists.AfkCommands.Any());
-            Assert.IsTrue(_jsonController.CommandLists.Commands.Any());
+            JsonController jsonController = new();
+            jsonController.LoadData();
+            Assert.IsTrue(jsonController.CommandLists.AfkCommands.Any());
+            Assert.IsTrue(jsonController.CommandLists.Commands.Any());
         }
     }
 }

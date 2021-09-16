@@ -98,7 +98,7 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy $(ProjectDir)Resources &quot;$(TargetDir)Resources&quot; /E /Y /I&#xD;&#xA;xcopy $(ProjectDir)Resources &quot;$(SolutionDir)Tests\bin\Debug\net5.0&quot; /E /Y /I&#xD;&#xA;" />
+	  <Exec Command="xcopy $(ProjectDir)Resources $(TargetDir)Resources /E /Y /I" />
 	</Target>
 
 	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
