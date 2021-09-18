@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTimeCSharp.HttpRequests.Models
+﻿#pragma warning disable CS0659
+
+namespace OkayegTeaTimeCSharp.Models
 {
     public class Emote
     {
@@ -10,6 +12,11 @@
         {
             Index = index;
             Name = name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Emote emote && emote.Name == Name;
         }
 
         public override string ToString()

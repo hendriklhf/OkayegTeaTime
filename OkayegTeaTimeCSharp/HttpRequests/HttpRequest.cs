@@ -1,7 +1,7 @@
 ﻿using HLE.Collections;
 using HLE.HttpRequests;
-using OkayegTeaTimeCSharp.HttpRequests.Enums;
-using OkayegTeaTimeCSharp.HttpRequests.Models;
+using OkayegTeaTimeCSharp.Models;
+using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;

@@ -90,7 +90,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                List<HttpRequests.Models.Emote> emotes;
+                List<Models.Emote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
                     emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel, chatMessage.Split[2].ToInt());
@@ -113,7 +113,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                List<HttpRequests.Models.Emote> emotes;
+                List<Models.Emote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
                     emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel, chatMessage.Split[2].ToInt());
@@ -263,7 +263,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                List<HttpRequests.Models.Emote> emotes;
+                List<Models.Emote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
                     emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel, chatMessage.Split[2].ToInt());

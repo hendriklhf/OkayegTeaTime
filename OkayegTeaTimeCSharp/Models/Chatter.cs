@@ -1,6 +1,8 @@
-using OkayegTeaTimeCSharp.HttpRequests.Enums;
+#pragma warning disable CS0659
 
-namespace OkayegTeaTimeCSharp.HttpRequests.Models
+using OkayegTeaTimeCSharp.Models.Enums;
+
+namespace OkayegTeaTimeCSharp.Models
 {
     public class Chatter
     {
@@ -12,6 +14,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests.Models
         {
             Username = username;
             ChatRole = chatRole;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Chatter chatter && chatter.Username == Username;
         }
 
         public override string ToString()

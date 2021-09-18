@@ -1,4 +1,4 @@
-namespace OkayegTeaTimeCSharp.HttpRequests.Enums
+namespace OkayegTeaTimeCSharp.Models.Enums
 {
     public enum ChatRole
     {
