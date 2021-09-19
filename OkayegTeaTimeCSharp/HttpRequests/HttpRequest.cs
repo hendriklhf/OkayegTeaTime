@@ -16,7 +16,21 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 {
     public static class HttpRequest
     {
-        public static List<Emote> Get7TVEmotes(string channel, int count = 5)
+        public static List<Emote> Get7TVEmotes(string channel, int count)
+        {
+            try
+            {
+                List<Emote> result = Get7TVEmotes(channel);
+                count = result.Count >= count ? count : result.Count;
+                return result.Take(count).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static List<Emote> Get7TVEmotes(string channel)
         {
             try
             {
@@ -27,13 +41,12 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                        new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
                        new("variables", "{}")
                    });
-                int emoteCountInChannel = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
-                for (int i = 0; i <= emoteCountInChannel - 1; i++)
+                JsonElement jEmotes = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes");
+                for (int i = 0; i <= jEmotes.GetArrayLength() - 1; i++)
                 {
-                    emotes.Add(new(i, request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes")[i].GetProperty("name").GetString()));
+                    emotes.Add(new(i, jEmotes[i].GetProperty("name").GetString()));
                 }
-                return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
+                return emotes.OrderByDescending(e => e.Index).ToList();
             }
             catch (Exception)
             {
@@ -41,19 +54,32 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             }
         }
 
-        public static List<Emote> GetBTTVEmotes(string channel, int count = 5)
+        public static List<Emote> GetBTTVEmotes(string channel, int count)
+        {
+            try
+            {
+                List<Emote> result = GetBTTVEmotes(channel);
+                count = result.Count >= count ? count : result.Count;
+                return result.Take(count).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static List<Emote> GetBTTVEmotes(string channel)
         {
             try
             {
                 List<Emote> emotes = new();
                 HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{new TwitchAPI().GetChannelID(channel)}");
                 int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
                     emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
                 }
-                return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
+                return emotes.OrderByDescending(e => e.Index).ToList();
             }
             catch (Exception)
             {
@@ -83,7 +109,21 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             return result;
         }
 
-        public static List<Emote> GetFFZEmotes(string channel, int count = 5)
+        public static List<Emote> GetFFZEmotes(string channel, int count)
+        {
+            try
+            {
+                List<Emote> result = GetFFZEmotes(channel);
+                count = result.Count >= count ? count : result.Count;
+                return result.Take(count).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static List<Emote> GetFFZEmotes(string channel)
         {
             try
             {
@@ -91,12 +131,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag()}");
                 int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
                 int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
-                count = count > emoteCountInChannel ? emoteCountInChannel : (count <= 0 ? 5 : count);
                 for (int i = 0; i <= emoteCountInChannel - 1; i++)
                 {
                     emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty($"{setID}").GetProperty("emoticons")[i].GetProperty("name").GetString()));
                 }
-                return emotes.OrderByDescending(e => e.Index).Take(count).ToList();
+                return emotes.OrderByDescending(e => e.Index).ToList();
             }
             catch (Exception)
             {

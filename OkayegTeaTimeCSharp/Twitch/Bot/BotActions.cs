@@ -20,12 +20,14 @@ using OkayegTeaTimeCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using StrbhRand = HLE.Randoms;
+using Random = HLE.Randoms.Random;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class BotActions
     {
+        private const int _defaultEmoteCount = 5;
+
         public static void AddAfkCooldown(string username)
         {
             if (TwitchBot.AfkCooldowns.Any(c => c.Username == username))
@@ -66,12 +68,12 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static string GetReminderAuthor(string toUser, string fromUser)
+        private static string GetReminderAuthor(string toUser, string fromUser)
         {
             return toUser == fromUser ? "yourself" : fromUser;
         }
 
-        public static string GetReminderTarget(string toUser, string fromUser)
+        private static string GetReminderTarget(string toUser, string fromUser)
         {
             return toUser == fromUser ? "yourself" : toUser;
         }
@@ -97,7 +99,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
                 else
                 {
-                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel);
+                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
@@ -120,7 +122,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
                 else
                 {
-                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel);
+                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
@@ -169,7 +171,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 if (user.IsAfk == true)
                 {
                     string message = $"{chatMessage.Username}, {AfkMessage.Create(user).GoingAway}";
-                    message += user.MessageText.Decode().Length > 0 ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})" : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
+                    message += user.MessageText.Decode().Length > 0
+                        ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})"
+                        : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
                     return message;
                 }
                 else
@@ -216,7 +220,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendCoinFlip(IChatMessage chatMessage)
         {
-            string result = StrbhRand.Random.Int(0, 100) >= 50 ? "yes/heads" : "no/tails";
+            string result = Random.Int(0, 100) >= 50 ? "yes/heads" : "no/tails";
             return $"{chatMessage.Username}, {result} {Emoji.Coin}";
         }
 
@@ -270,7 +274,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 }
                 else
                 {
-                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel);
+                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
