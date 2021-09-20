@@ -97,7 +97,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             TwitchClient.Connect();
 
-            EmoteManagementNotificator = new(this, null);
+            EmoteManagementNotificator = new(this);
             InitializeTimers();
             Restarter.InitializeResartTimer();
 

@@ -1,4 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Models;
+﻿#pragma warning disable CS0659
+
+using OkayegTeaTimeCSharp.Models;
 using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
@@ -22,6 +24,16 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         public NotificatorChannel(string name)
         {
             Name = name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is NotificatorChannel notificatorChannel && notificatorChannel.Name == Name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

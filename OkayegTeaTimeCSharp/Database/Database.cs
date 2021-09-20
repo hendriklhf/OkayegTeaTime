@@ -168,6 +168,11 @@ namespace OkayegTeaTimeCSharp.Database
             return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront?.Decode();
         }
 
+        public static List<string> GetEmoteManagementSubs()
+        {
+            return new OkayegTeaTimeContext().Channels.Where(c => c.EmoteManagementSub == true).Select(c => c.ChannelName).ToList();
+        }
+
         public static Dictionary<string, string> GetEmotesInFront()
         {
             return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.EmoteInFront?.Decode());

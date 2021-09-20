@@ -50,6 +50,11 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .HasMaxLength(100)
                     .HasDefaultValueSql("'NULL'");
 
+                entity.Property(e => e.EmoteManagementSub)
+                    .IsRequired()
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
+
                 entity.Property(e => e.Prefix)
                     .HasMaxLength(50)
                     .HasDefaultValueSql("'NULL'");

@@ -2,9 +2,9 @@
 using HLE.Enums;
 using HLE.Strings;
 using HLE.Time;
+using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Models;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications.Enums;
 using System;
 using System.Collections.Generic;
@@ -17,23 +17,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
     {
         public TwitchBot TwitchBot { get; }
 
-        public List<NotificatorChannel> Channels { get; } = new();
-
+        private readonly List<NotificatorChannel> _channels = new();
         private readonly Timer _timer = new(new Minute().Milliseconds);
 
-        public EmoteManagementNotificator(TwitchBot twitchBot, List<string> channels)
+        public EmoteManagementNotificator(TwitchBot twitchBot)
         {
-            channels ??= new() { Settings.SecretOfflineChat };
             TwitchBot = twitchBot;
-            channels.ForEach(c => Channels.Add(new(c)));
-            InitEmotes();
+            DataBase.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
+            InitChannels();
             _timer.Elapsed += Timer_OnElapsed;
             _timer.Start();
         }
 
-        private void InitEmotes()
+        private void InitChannels()
         {
-            Channels.ForEach(c =>
+            _channels.Where(c => AreEmoteListsNull(c)).ForEach(c =>
             {
                 try
                 {
@@ -59,7 +57,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 
         private void LoadEmotes()
         {
-            Channels.ForEach(c =>
+            _channels.ForEach(c =>
             {
                 try
                 {
@@ -80,7 +78,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 
         private void DetectChange()
         {
-            Channels.ForEach(c =>
+            _channels.ForEach(c =>
             {
                 List<Emote> new7TVEmotes = c.New7TVEmotes.Where(e => c.Old7TVEmotes?.Contains(e) == false).ToList();
                 NotifyChannel(c.Name, new7TVEmotes, NotificationType.NewEmote);
@@ -109,6 +107,24 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         {
             LoadEmotes();
             DetectChange();
+        }
+
+        private bool AreEmoteListsNull(NotificatorChannel channel)
+        {
+            return channel.New7TVEmotes.IsNullOrEmpty() || channel.Old7TVEmotes.IsNullOrEmpty()
+                || channel.NewBTTVEmotes.IsNullOrEmpty() || channel.OldBTTVEmotes.IsNullOrEmpty()
+                || channel.NewFFZEmotes.IsNullOrEmpty() || channel.OldFFZEmotes.IsNullOrEmpty();
+        }
+
+        public void AddChannel(string channel)
+        {
+            _channels.Add(new(channel));
+            InitChannels();
+        }
+
+        public void RemoveChannel(string channel)
+        {
+            _channels.Remove(new(channel));
         }
     }
 }
