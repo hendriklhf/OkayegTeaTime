@@ -80,13 +80,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         {
             _channels.ForEach(c =>
             {
-                List<Emote> new7TVEmotes = c.New7TVEmotes.Where(e => c.Old7TVEmotes?.Contains(e) == false).ToList();
+                List<Emote> new7TVEmotes = c.New7TVEmotes?.Where(e => c.Old7TVEmotes?.Contains(e) == false).ToList();
                 NotifyChannel(c.Name, new7TVEmotes, NotificationType.NewEmote);
 
-                List<Emote> newBTTVEmotes = c.NewBTTVEmotes.Where(e => c.OldBTTVEmotes?.Contains(e) == false).ToList();
+                List<Emote> newBTTVEmotes = c.NewBTTVEmotes?.Where(e => c.OldBTTVEmotes?.Contains(e) == false).ToList();
                 NotifyChannel(c.Name, newBTTVEmotes, NotificationType.NewEmote);
 
-                List<Emote> newFFZEmotes = c.NewFFZEmotes.Where(e => c.OldFFZEmotes?.Contains(e) == false).ToList();
+                List<Emote> newFFZEmotes = c.NewFFZEmotes?.Where(e => c.OldFFZEmotes?.Contains(e) == false).ToList();
                 NotifyChannel(c.Name, newFFZEmotes, NotificationType.NewEmote);
             });
         }
@@ -95,11 +95,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         {
             if (type == NotificationType.NewEmote && !emotes.IsNullOrEmpty())
             {
-                TwitchBot.Send(channel, $"Newly added emote(s): {emotes.Select(e => e.Name).ToSequence()}");
-            }
-            else if (type == NotificationType.RemovedEmote)
-            {
-
+                TwitchBot.Send(channel, $"Newly added emote{(emotes.Count > 1 ? "s" : string.Empty)}: {emotes.Select(e => e.Name).ToSequence()}");
             }
         }
 
