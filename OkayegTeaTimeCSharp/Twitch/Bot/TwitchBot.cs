@@ -5,6 +5,7 @@ using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Whisper;
 using OkayegTeaTimeCSharp.Utils;
@@ -40,6 +41,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public MessageHandler MessageHandler { get; }
 
         public WhisperHandler WhisperHandler { get; }
+
+        public EmoteManagementNotificator EmoteManagementNotificator { get; }
 
         public DottedNumber CommandCount { get; set; } = 1;
 
@@ -94,6 +97,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
             TwitchClient.Connect();
 
+            EmoteManagementNotificator = new(this, null);
             InitializeTimers();
             Restarter.InitializeResartTimer();
 
