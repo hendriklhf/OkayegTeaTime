@@ -1,8 +1,11 @@
-﻿using HLE.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.Messages;
@@ -10,9 +13,6 @@ using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Database
 {
@@ -166,6 +166,11 @@ namespace OkayegTeaTimeCSharp.Database
         public static string GetEmoteInFront(string channel)
         {
             return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront?.Decode();
+        }
+
+        public static List<string> GetEmoteManagementSubs()
+        {
+            return new OkayegTeaTimeContext().Channels.Where(c => c.EmoteManagementSub == true).Select(c => c.ChannelName).ToList();
         }
 
         public static Dictionary<string, string> GetEmotesInFront()
@@ -506,6 +511,13 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront = emote.MakeInsertable();
+            database.SaveChanges();
+        }
+
+        public static void SetEmoteSub(string channel, bool subbed)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteManagementSub = subbed;
             database.SaveChanges();
         }
 

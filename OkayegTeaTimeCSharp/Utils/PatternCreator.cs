@@ -1,5 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Twitch;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using OkayegTeaTimeCSharp.Twitch;
 
 namespace OkayegTeaTimeCSharp.Utils
 {

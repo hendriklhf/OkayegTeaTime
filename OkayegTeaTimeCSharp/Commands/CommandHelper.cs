@@ -1,11 +1,11 @@
-﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+﻿using System.Collections.Generic;
+using System.Linq;
+using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using System.Collections.Generic;
-using System.Linq;
 using JCommand = OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData.Command;
 
 namespace OkayegTeaTimeCSharp.Commands

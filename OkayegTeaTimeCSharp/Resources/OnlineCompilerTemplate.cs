@@ -114,6 +114,6 @@ public static class Program
 
     public static void Out<T>(this T input)
     {
-        Console.WriteLine(input.ToString());
+        Console.Write($"{input} ");
     }
 }

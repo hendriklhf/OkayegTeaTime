@@ -1,7 +1,7 @@
-﻿using HLE.Strings;
+﻿using System.Collections.Generic;
+using HLE.Strings;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Utils;
-using System.Collections.Generic;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {

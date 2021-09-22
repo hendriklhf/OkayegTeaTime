@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
+﻿using System;
+using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
-using System;
 using TwitchLib.Client.Extensions;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses

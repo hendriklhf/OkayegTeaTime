@@ -1,13 +1,13 @@
-﻿using HLE.Strings;
+﻿using System;
+using System.Reflection;
+using HLE.Strings;
 using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.Handlers;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using System;
-using System.Reflection;
 
 namespace OkayegTeaTimeCSharp.Commands
 {

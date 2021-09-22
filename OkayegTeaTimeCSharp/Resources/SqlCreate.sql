@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `Channels` (
   `ChannelName` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `EmoteInFront` varbinary(100) DEFAULT NULL,
   `Prefix` varbinary(50) DEFAULT NULL,
+  `EmoteManagementSub` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`Id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `gachi` (
@@ -26,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `Channel` varchar(50) COLLATE utf8mb4_bin NOT NULL,
   `Time` bigint(20) NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3666337 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=3697798 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 CREATE TABLE IF NOT EXISTS `nukes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `reminder` (
   `Time` bigint(20) NOT NULL DEFAULT 0,
   `ToTime` bigint(20) NOT NULL DEFAULT 0,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1231 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1291 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `spotify` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -77,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `Time` bigint(20) NOT NULL DEFAULT 0,
   `IsAfk` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=34038 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34062 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `yourmom` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `MessageText` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.IO;
+using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.Properties;
-using System.IO;
 
 #nullable disable
 
@@ -49,6 +49,11 @@ namespace OkayegTeaTimeCSharp.Database.Models
                 entity.Property(e => e.EmoteInFront)
                     .HasMaxLength(100)
                     .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.EmoteManagementSub)
+                    .IsRequired()
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValueSql("b'0'");
 
                 entity.Property(e => e.Prefix)
                     .HasMaxLength(50)

@@ -1,6 +1,6 @@
-﻿using HLE.Time;
-using System.Linq;
+﻿using System.Linq;
 using System.Timers;
+using HLE.Time;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {

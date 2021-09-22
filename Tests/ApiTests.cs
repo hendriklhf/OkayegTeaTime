@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Twitch.API;
-using System.Collections.Generic;
 
 namespace Tests
 {

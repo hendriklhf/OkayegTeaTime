@@ -1,11 +1,11 @@
-﻿using HLE.Collections;
+﻿using System.Linq;
+using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 {

@@ -1,11 +1,11 @@
-﻿using HLE.Strings;
+﻿using System.Linq;
+using HLE.Strings;
 using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Messages
 {

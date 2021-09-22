@@ -10,6 +10,7 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public string ChannelName { get; set; }
         public byte[] EmoteInFront { get; set; }
         public byte[] Prefix { get; set; }
+        public bool? EmoteManagementSub { get; set; } = false;
 
         public Channel(string channel, string emote = null, string prefix = null)
         {
@@ -18,12 +19,13 @@ namespace OkayegTeaTimeCSharp.Database.Models
             Prefix = prefix?.Encode();
         }
 
-        public Channel(int id, string channelName, byte[] emoteInFront, byte[] prefix)
+        public Channel(int id, string channelName, byte[] emoteInFront, byte[] prefix, bool? emoteManagementSub = false)
         {
             Id = id;
             ChannelName = channelName;
             EmoteInFront = emoteInFront;
             Prefix = prefix;
+            EmoteManagementSub = emoteManagementSub;
         }
     }
 }

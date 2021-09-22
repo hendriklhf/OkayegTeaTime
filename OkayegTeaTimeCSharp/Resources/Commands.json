@@ -550,6 +550,30 @@
       "Description": [
         "Bans all users that match the regex in a multiline file. Currently restricted to moderators"
       ]
+    },
+    {
+      "CommandName": "sub",
+      "Alias": [
+        "sub"
+      ],
+      "Parameter": [
+        "emotes"
+      ],
+      "Description": [
+        "If subbed, sends the emotes into the chat that were newly added"
+      ]
+    },
+    {
+      "CommandName": "unsub",
+      "Alias": [
+        "unsub"
+      ],
+      "Parameter": [
+        "emotes"
+      ],
+      "Description": [
+        "Unsubs you from the notification of newly added emotes"
+      ]
     }
   ],
   "AfkCommands": [
