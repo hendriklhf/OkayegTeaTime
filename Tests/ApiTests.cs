@@ -81,7 +81,7 @@ namespace Tests
         public void GetOnlineCompilerResultTest()
         {
             string result = HttpRequest.GetOnlineCompilerResult("\"test\".Out();");
-            Assert.AreEqual(result, "test\r\n");
+            Assert.AreEqual(result, "test ");
         }
     }
 }
