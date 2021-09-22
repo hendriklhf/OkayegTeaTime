@@ -1,4 +1,4 @@
-﻿namespace OkayegTeaTimeCSharp.Commands.CommandEnums
+﻿namespace OkayegTeaTimeCSharp.Commands.Enums
 {
     public enum CommandType
     {
@@ -33,9 +33,11 @@
         Skip,
         SongRequest,
         Spotify,
+        Sub,
         Suggest,
         Tuck,
         Unset,
+        Unsub,
         Vanish,
         Yourmom
     }

@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Commands.CommandEnums;
+﻿using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Messages.Interfaces;

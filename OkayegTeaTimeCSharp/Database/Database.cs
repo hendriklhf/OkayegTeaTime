@@ -2,7 +2,7 @@
 using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.Messages;
@@ -511,6 +511,13 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront = emote.MakeInsertable();
+            database.SaveChanges();
+        }
+
+        public static void SetEmoteSub(string channel, bool subbed)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteManagementSub = subbed;
             database.SaveChanges();
         }
 

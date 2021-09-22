@@ -1,15 +1,16 @@
-﻿using HLE.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Timers;
+using HLE.Collections;
 using HLE.Enums;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.HttpRequests;
+using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 {
@@ -33,25 +34,51 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         {
             _channels.Where(c => AreEmoteListsNull(c)).ForEach(c =>
             {
-                try
+                List<Emote> emotes;
+                do
                 {
-                    List<Emote> emotes7TV = HttpRequest.Get7TVEmotes(c.Name);
-                    List<Emote> emotesBTTV = HttpRequest.GetBTTVEmotes(c.Name);
-                    List<Emote> emotesFFZ = HttpRequest.GetFFZEmotes(c.Name);
-
-                    c.New7TVEmotes = emotes7TV;
-                    c.Old7TVEmotes = emotes7TV;
-
-                    c.NewBTTVEmotes = emotesBTTV;
-                    c.OldBTTVEmotes = emotesBTTV;
-
-                    c.NewFFZEmotes = emotesFFZ;
-                    c.NewFFZEmotes = emotesFFZ;
+                    try
+                    {
+                        emotes = HttpRequest.Get7TVEmotes(c.Name);
+                        c.New7TVEmotes = emotes;
+                        c.Old7TVEmotes = emotes;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex);
+                    }
                 }
-                catch (Exception)
+                while (c.New7TVEmotes is null || c.Old7TVEmotes is null);
+
+                do
                 {
-
+                    try
+                    {
+                        emotes = HttpRequest.GetBTTVEmotes(c.Name);
+                        c.NewBTTVEmotes = emotes;
+                        c.OldBTTVEmotes = emotes;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex);
+                    }
                 }
+                while (c.NewBTTVEmotes is null || c.OldBTTVEmotes is null);
+
+                do
+                {
+                    try
+                    {
+                        emotes = HttpRequest.GetFFZEmotes(c.Name);
+                        c.NewFFZEmotes = emotes;
+                        c.OldFFZEmotes = emotes;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex);
+                    }
+                }
+                while (c.NewFFZEmotes is null || c.OldFFZEmotes is null);
             });
         }
 
@@ -69,9 +96,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                     c.NewBTTVEmotes = HttpRequest.GetBTTVEmotes(c.Name);
                     c.NewFFZEmotes = HttpRequest.GetFFZEmotes(c.Name);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    Logger.Log(ex);
                 }
             });
         }
@@ -107,15 +134,18 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 
         private bool AreEmoteListsNull(NotificatorChannel channel)
         {
-            return channel.New7TVEmotes.IsNullOrEmpty() || channel.Old7TVEmotes.IsNullOrEmpty()
-                || channel.NewBTTVEmotes.IsNullOrEmpty() || channel.OldBTTVEmotes.IsNullOrEmpty()
-                || channel.NewFFZEmotes.IsNullOrEmpty() || channel.OldFFZEmotes.IsNullOrEmpty();
+            return channel.New7TVEmotes is null || channel.Old7TVEmotes is null
+                || channel.NewBTTVEmotes is null || channel.OldBTTVEmotes is null
+                || channel.NewFFZEmotes is null || channel.OldFFZEmotes is null;
         }
 
         public void AddChannel(string channel)
         {
-            _channels.Add(new(channel));
-            InitChannels();
+            if (!_channels.Any(c => c.Name == channel))
+            {
+                _channels.Add(new(channel));
+                InitChannels();
+            }
         }
 
         public void RemoveChannel(string channel)

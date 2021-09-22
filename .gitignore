@@ -8,10 +8,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# Properties and Resources
+# Files needed for build and run
 Properties/
-ConnectionString.txt
 Data.json
+ConnectionString.txt
+
+# Optional Files
 DatabaseModels.txt
 todo.txt
 

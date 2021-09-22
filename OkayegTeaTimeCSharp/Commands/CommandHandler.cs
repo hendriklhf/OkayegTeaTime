@@ -1,6 +1,6 @@
 ﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.Handlers;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Interfaces;

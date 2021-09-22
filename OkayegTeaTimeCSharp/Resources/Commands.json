@@ -569,7 +569,7 @@
         "unsub"
       ],
       "Parameter": [
-        "emote"
+        "emotes"
       ],
       "Description": [
         "Unsubs you from the notification of newly added emotes"

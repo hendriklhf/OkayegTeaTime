@@ -6,7 +6,7 @@ using HLE.Strings;
 using HLE.Time;
 using HLE.Time.Enums;
 using OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
@@ -27,6 +27,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
     public static class BotActions
     {
         private const int _defaultEmoteCount = 5;
+        private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
 
         public static void AddAfkCooldown(string username)
         {
@@ -68,16 +69,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        private static string GetReminderAuthor(string toUser, string fromUser)
-        {
-            return toUser == fromUser ? "yourself" : fromUser;
-        }
-
-        private static string GetReminderTarget(string toUser, string fromUser)
-        {
-            return toUser == fromUser ? "yourself" : toUser;
-        }
-
         public static bool IsOnAfkCooldown(string username)
         {
             return TwitchBot.AfkCooldowns.Any(c => c.Username == username && c.Time > TimeHelper.Now());
@@ -108,6 +99,37 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             catch (Exception)
             {
                 return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
+            }
+        }
+
+        public static void SendBanFromFile(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+        {
+            try
+            {
+                if (TwitchConfig.Moderators.Contains(chatMessage.Username))
+                {
+                    List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
+                    string regex = chatMessage.Split[2];
+                    fileContent.Where(f => f.IsMatch(regex)).ForEach(f =>
+                    {
+                        if (f.IsMatch(@"^[\./]ban\s\w+"))
+                        {
+                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, f);
+                        }
+                        else
+                        {
+                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, $"/ban {f}");
+                        }
+                    });
+                }
+                else
+                {
+                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you must be a moderator of the bot");
+                }
+            }
+            catch (Exception)
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, something went wrong");
             }
         }
 
@@ -247,7 +269,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
             }
         }
 
@@ -458,7 +480,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
             }
         }
 
@@ -620,7 +642,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
             }
         }
 
@@ -635,7 +657,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
             }
         }
 
@@ -720,6 +742,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
         }
 
+        public static string SendSubEmotes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+        {
+            if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
+            {
+                twitchBot.EmoteManagementNotificator.AddChannel(chatMessage.Channel);
+                DataBase.SetEmoteSub(chatMessage.Channel, true);
+                return $"{chatMessage.Username}, channel #{chatMessage.Channel} has subscribed to the emote notifications";
+            }
+            else
+            {
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            }
+        }
+
         public static string SendSuggestionNoted(ITwitchChatMessage chatMessage)
         {
             DataBase.AddSugestion(chatMessage, chatMessage.Message[chatMessage.LowerSplit[0].Length..]);
@@ -755,7 +791,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
             }
         }
 
@@ -786,7 +822,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return $"{chatMessage.Username}, you aren't a mod or the broadcaster";
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
             }
         }
 
@@ -807,6 +843,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
+        public static string SendUnsubEmotes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+        {
+            if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
+            {
+                twitchBot.EmoteManagementNotificator.RemoveChannel(chatMessage.Channel);
+                DataBase.SetEmoteSub(chatMessage.Channel, false);
+                return $"{chatMessage.Username}, channel #{chatMessage.Channel} has unsubscribed from the emote notifications";
+            }
+            else
+            {
+                return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            }
+        }
+
         public static string SendUserID(IChatMessage chatMessage)
         {
             try
@@ -819,40 +869,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 return $"{chatMessage.Username}, {ex.Message}";
             }
         }
+
         public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")
         {
             twitchBot.TwitchClient.SendMessage(channel, $"/timeout {username} {time} {reason}".Trim());
         }
 
-        public static void SendBanFromFile(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+        private static string GetReminderAuthor(string toUser, string fromUser)
         {
-            try
-            {
-                if (TwitchConfig.Moderators.Contains(chatMessage.Username))
-                {
-                    List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
-                    string regex = chatMessage.Split[2];
-                    fileContent.Where(f => f.IsMatch(regex)).ForEach(f =>
-                    {
-                        if (f.IsMatch(@"^[\./]ban\s\w+"))
-                        {
-                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, f);
-                        }
-                        else
-                        {
-                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, $"/ban {f}");
-                        }
-                    });
-                }
-                else
-                {
-                    twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you must be a moderator of the bot");
-                }
-            }
-            catch (Exception)
-            {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, something went wrong");
-            }
+            return toUser == fromUser ? "yourself" : fromUser;
+        }
+
+        private static string GetReminderTarget(string toUser, string fromUser)
+        {
+            return toUser == fromUser ? "yourself" : toUser;
         }
     }
 }

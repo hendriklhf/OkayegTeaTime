@@ -1,6 +1,6 @@
 ﻿using HLE.Time;
 using OkayegTeaTimeCSharp.Commands;
-using OkayegTeaTimeCSharp.Commands.CommandEnums;
+using OkayegTeaTimeCSharp.Commands.Enums;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
