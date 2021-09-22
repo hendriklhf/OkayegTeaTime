@@ -1,5 +1,6 @@
 ﻿using HLE.Collections;
 using HLE.HttpRequests;
+using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Properties;
@@ -47,6 +48,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                     emotes.Add(new(i, jEmotes[i].GetProperty("name").GetString()));
                 }
                 return emotes.OrderByDescending(e => e.Index).ToList();
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.Log(ex);
+                return new();
             }
             catch (Exception)
             {
