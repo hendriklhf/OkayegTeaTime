@@ -1,5 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Database;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using OkayegTeaTimeCSharp.Database;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {

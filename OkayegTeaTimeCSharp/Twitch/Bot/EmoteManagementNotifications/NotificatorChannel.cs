@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CS0659
 
-using OkayegTeaTimeCSharp.Models;
 using System.Collections.Generic;
+using OkayegTeaTimeCSharp.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 {

@@ -1,4 +1,8 @@
-﻿using HLE.Strings;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
@@ -6,10 +10,6 @@ using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
 using SpotifyAPI.Web;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {

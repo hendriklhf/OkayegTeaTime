@@ -1,6 +1,6 @@
-﻿using OkayegTeaTimeCSharp.Messages.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using OkayegTeaTimeCSharp.Messages.Enums;
 using TwitchLib.Client.Enums;
 
 namespace OkayegTeaTimeCSharp.Messages.Interfaces

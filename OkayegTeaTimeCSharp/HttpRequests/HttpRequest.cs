@@ -1,4 +1,10 @@
-﻿using HLE.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Web;
+using HLE.Collections;
 using HLE.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
@@ -6,12 +12,6 @@ using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Web;
 
 namespace OkayegTeaTimeCSharp.HttpRequests
 {

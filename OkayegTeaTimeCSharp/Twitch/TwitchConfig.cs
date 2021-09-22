@@ -1,8 +1,8 @@
-﻿using OkayegTeaTimeCSharp.Database;
+﻿using System.Collections.Generic;
+using System.Linq;
+using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Twitch
 {

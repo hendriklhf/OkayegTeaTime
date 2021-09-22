@@ -1,4 +1,7 @@
-﻿using HLE.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HLE.Collections;
 using HLE.Emojis;
 using HLE.HttpRequests;
 using HLE.Numbers;
@@ -17,9 +20,6 @@ using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Random = HLE.Randoms.Random;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot

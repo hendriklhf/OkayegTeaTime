@@ -1,4 +1,7 @@
-﻿using HLE.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +13,6 @@ using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Database
 {

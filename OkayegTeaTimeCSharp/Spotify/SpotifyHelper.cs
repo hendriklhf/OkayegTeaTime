@@ -1,8 +1,8 @@
-﻿using HLE.Strings;
+﻿using System.Collections.Generic;
+using System.Linq;
+using HLE.Strings;
 using OkayegTeaTimeCSharp.Utils;
 using SpotifyAPI.Web;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OkayegTeaTimeCSharp.Spotify
 {

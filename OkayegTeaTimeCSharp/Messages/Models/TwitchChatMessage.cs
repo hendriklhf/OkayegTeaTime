@@ -1,12 +1,12 @@
-﻿using HLE.Strings;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 using TwitchLib = TwitchLib.Client.Models;
