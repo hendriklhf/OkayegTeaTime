@@ -17,7 +17,7 @@ namespace OkayegTeaTimeCSharp.JsonData
 
         public void LoadData()
         {
-            _botData = JsonSerializer.Deserialize<BotData>(File.ReadAllText(Path.DataJson));
+            _botData = JsonSerializer.Deserialize<BotData>(File.ReadAllText(Path.SettingsJson));
             _commandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.CommandsJson));
         }
     }

@@ -10,12 +10,12 @@
 
 # Files needed for build and run
 Properties/
-Data.json
+Settings.json
 ConnectionString.txt
 
 # Optional Files
 DatabaseModels.txt
-todo.txt
+Todo.txt
 
 # User-specific files
 *.rsuser

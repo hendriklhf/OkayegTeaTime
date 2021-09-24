@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Web;
@@ -9,9 +8,9 @@ using HLE.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
+using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
-using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.HttpRequests
 {
@@ -170,7 +169,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         private static string GetOnlineCompilerTemplate(string code)
         {
-            return File.ReadAllText(Path.OnlineCompilerTemplate).Replace("{code}", code);
+            return Resource.OnlineCompilerTemplate.Replace("{code}", code);
         }
     }
 }
