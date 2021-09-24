@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.JsonData

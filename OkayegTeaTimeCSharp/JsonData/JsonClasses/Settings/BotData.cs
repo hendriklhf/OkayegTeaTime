@@ -1,4 +1,4 @@
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Data
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings
 {
     public class BotData
     {

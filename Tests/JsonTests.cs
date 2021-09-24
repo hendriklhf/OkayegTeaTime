@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 
 namespace Tests
 {

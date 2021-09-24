@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Linq;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using TwitchLib.Client.Enums;
