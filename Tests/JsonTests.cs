@@ -9,11 +9,11 @@ namespace Tests
     public class JsonTests
     {
         [TestMethod]
-        public void JsonBotDataContentTest()
+        public void JsonSettingsContentTest()
         {
             JsonController jsonController = new();
             jsonController.LoadData();
-            UserLists userLists = jsonController.BotData.UserLists;
+            UserLists userLists = jsonController.Settings.UserLists;
             Assert.IsTrue(userLists.Moderators.Any());
             Assert.IsTrue(userLists.Owners.Any());
             Assert.IsTrue(userLists.SecretUsers.Any());

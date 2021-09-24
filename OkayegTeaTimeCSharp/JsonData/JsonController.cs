@@ -8,16 +8,16 @@ namespace OkayegTeaTimeCSharp.JsonData
 {
     public class JsonController
     {
-        public BotData BotData => _botData;
+        public Settings Settings => _settings;
 
         public CommandLists CommandLists => _commandLists;
 
-        private static BotData _botData;
+        private static Settings _settings;
         private static CommandLists _commandLists;
 
         public void LoadData()
         {
-            _botData = JsonSerializer.Deserialize<BotData>(File.ReadAllText(Path.SettingsJson));
+            _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.SettingsJson));
             _commandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.CommandsJson));
         }
     }

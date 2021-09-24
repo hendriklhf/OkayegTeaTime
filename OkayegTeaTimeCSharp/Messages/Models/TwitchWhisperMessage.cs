@@ -65,7 +65,7 @@ namespace OkayegTeaTimeCSharp.Messages.Models
         private List<UserTag> GetUserTags()
         {
             List<UserTag> result = new() { UserTag.Normal };
-            UserLists userLists = new JsonController().BotData.UserLists;
+            UserLists userLists = new JsonController().Settings.UserLists;
             if (userLists.Moderators.Contains(Username))
             {
                 result.Add(UserTag.Moderator);
