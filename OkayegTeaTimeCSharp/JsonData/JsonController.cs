@@ -2,7 +2,7 @@
 using System.Text.Json;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Data;
-using OkayegTeaTimeCSharp.Properties;
+using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.JsonData
 {
@@ -17,8 +17,8 @@ namespace OkayegTeaTimeCSharp.JsonData
 
         public void LoadData()
         {
-            _botData = JsonSerializer.Deserialize<BotData>(File.ReadAllText(Paths.DataJson));
-            _commandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Paths.CommandsJson));
+            _botData = JsonSerializer.Deserialize<BotData>(File.ReadAllText(Path.DataJson));
+            _commandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.CommandsJson));
         }
     }
 }

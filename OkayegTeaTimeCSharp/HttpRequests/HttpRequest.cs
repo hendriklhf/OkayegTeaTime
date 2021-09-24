@@ -9,9 +9,9 @@ using HLE.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
 using OkayegTeaTimeCSharp.Utils;
+using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.HttpRequests
 {
@@ -170,7 +170,7 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         private static string GetOnlineCompilerTemplate(string code)
         {
-            return File.ReadAllText(Paths.OnlineCompilerTemplate).Replace("{code}", code);
+            return File.ReadAllText(Path.OnlineCompilerTemplate).Replace("{code}", code);
         }
     }
 }

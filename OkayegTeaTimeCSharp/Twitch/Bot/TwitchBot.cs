@@ -38,11 +38,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public TcpClient TcpClient { get; private set; }
 
-        public MessageHandler MessageHandler { get; }
+        public MessageHandler MessageHandler { get; private set; }
 
-        public WhisperHandler WhisperHandler { get; }
+        public WhisperHandler WhisperHandler { get; private set; }
 
-        public EmoteManagementNotificator EmoteManagementNotificator { get; }
+        public EmoteManagementNotificator EmoteManagementNotificator { get; private set; }
 
         public DottedNumber CommandCount { get; set; } = 1;
 
@@ -92,15 +92,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             TwitchClient.OnReconnected += Client_OnReconnected;
             TwitchClient.OnUserJoined += Client_OnUserJoinedChannel;
 
-            MessageHandler = new(this);
-            WhisperHandler = new(this);
-
             TwitchClient.Connect();
-
-            EmoteManagementNotificator = new(this);
-            InitializeTimers();
-            Restarter.InitializeResartTimer();
-
+            Initlialize();
         }
 
         public void Send(string channel, string message)
@@ -277,6 +270,15 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             EmoteDictionary.FillDictionary();
             LastMessagesDictionary.FillDictionary();
             PrefixDictionary.FillDictionary();
+        }
+
+        private void Initlialize()
+        {
+            MessageHandler = new(this);
+            WhisperHandler = new(this);
+            EmoteManagementNotificator = new(this);
+            InitializeTimers();
+            Restarter.InitializeResartTimer();
         }
     }
 }

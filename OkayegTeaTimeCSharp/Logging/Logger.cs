@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Properties;
+using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.Logging
 {
@@ -29,7 +29,7 @@ namespace OkayegTeaTimeCSharp.Logging
 
         private static void LogToFile(string log)
         {
-            File.AppendAllText(Paths.Logs, log);
+            File.AppendAllText(Path.Logs, log);
         }
     }
 }
