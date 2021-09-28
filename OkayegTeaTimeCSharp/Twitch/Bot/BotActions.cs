@@ -308,24 +308,28 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
         }
 
-        public static string SendFill(IChatMessage chatMessage)
+        public static string SendFill(ITwitchChatMessage chatMessage)
         {
-            string message = string.Empty;
-            string[] emotes = chatMessage.Split[1..];
-            message += emotes.Random();
+            List<string> messageParts = new();
+            string[] split = chatMessage.Split[1..];
+            string emoteInFront = EmoteDictionary.Get(chatMessage.Channel);
+            int maxLength = TwitchConfig.MaxMessageLength - (emoteInFront.Length + 1);
             for (; ; )
             {
-                string emote = emotes.Random();
-                if ($"{message} {emote}".Length <= TwitchConfig.MaxMessageLength)
+                string messagePart = split.Random();
+                int currentMessageLength = messageParts.Sum(m => m.Length) + messageParts.Count + messagePart.Length;
+                if (currentMessageLength <= maxLength)
                 {
-                    message += $" {emote}";
+                    DebugOut($"{nameof(currentMessageLength)}: {currentMessageLength}");
+                    DebugOut($"{nameof(maxLength)}: {maxLength}");
+                    messageParts.Add(messagePart);
                 }
                 else
                 {
                     break;
                 }
             }
-            return message;
+            return string.Join((char)32, messageParts);
         }
 
         public static string SendFirst(ITwitchChatMessage chatMessage)
