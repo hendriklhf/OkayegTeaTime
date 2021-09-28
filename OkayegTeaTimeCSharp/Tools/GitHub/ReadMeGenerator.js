@@ -63,11 +63,11 @@ function generateString() {
     commands.AfkCommands.forEach(cmd => {
         result += `<tr><td>${cmd.CommandName}</td><td><table>`;
         cmd.Alias.forEach(a => result += `<tr><td>${a}</td></tr>`);
-        result += "</table></td";
+        result += "</table></td>";
         for (var i = 0; i <= cmd.Parameter.length - 1; i++) {
             result += `<td>${cmd.Parameter[i]}</td><td>${cmd.Description[i]}</td>`;
         }
-        result += "</td>";
+        result += "</td></tr>";
     });
     result += "</table>";
     return result;
