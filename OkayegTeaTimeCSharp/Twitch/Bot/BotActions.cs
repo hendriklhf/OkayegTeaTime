@@ -320,8 +320,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 int currentMessageLength = messageParts.Sum(m => m.Length) + messageParts.Count + messagePart.Length;
                 if (currentMessageLength <= maxLength)
                 {
-                    DebugOut($"{nameof(currentMessageLength)}: {currentMessageLength}");
-                    DebugOut($"{nameof(maxLength)}: {maxLength}");
                     messageParts.Add(messagePart);
                 }
                 else
