@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using OkayegTeaTimeCSharp.Database.Models;
+﻿using OkayegTeaTimeCSharp.Database.Models;
 
 namespace OkayegTeaTimeCSharp.Database
 {

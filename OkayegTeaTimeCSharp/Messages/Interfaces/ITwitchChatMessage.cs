@@ -1,5 +1,4 @@
-﻿using System;
-using TwitchLib.Client.Enums;
+﻿using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Messages.Interfaces

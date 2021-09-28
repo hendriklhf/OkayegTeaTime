@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData
+﻿namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData
 {
     public class Command
     {

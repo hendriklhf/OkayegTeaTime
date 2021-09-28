@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using TwitchLib.Client.Enums;
 

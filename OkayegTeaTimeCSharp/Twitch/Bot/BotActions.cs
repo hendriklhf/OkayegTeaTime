@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HLE.Collections;
+﻿using HLE.Collections;
 using HLE.Emojis;
 using HLE.HttpRequests;
 using HLE.Numbers;

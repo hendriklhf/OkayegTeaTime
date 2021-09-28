@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 
@@ -29,11 +28,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
             Messages.RemoveAt(0);
             if (Messages.Count > 0)
             {
-                Thread.Sleep(TwitchConfig.MinimumDelayBetweenMessages);
+                Thread.Sleep(TwitchConfig.MinDelayBetweenMessages);
                 Messages.ForEach(str =>
                 {
                     TwitchBot.TwitchClient.SendMessage(Channel, str);
-                    Thread.Sleep(TwitchConfig.MinimumDelayBetweenMessages);
+                    Thread.Sleep(TwitchConfig.MinDelayBetweenMessages);
                 });
             }
         }

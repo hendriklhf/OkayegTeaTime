@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using HLE.Time;
-using static OkayegTeaTimeCSharp.Program;
+﻿using HLE.Time;
 using Timer = System.Timers;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot

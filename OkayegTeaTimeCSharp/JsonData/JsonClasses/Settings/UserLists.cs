@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings
 {
     public class UserLists

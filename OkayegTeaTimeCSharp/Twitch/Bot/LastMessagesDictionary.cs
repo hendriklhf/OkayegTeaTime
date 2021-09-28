@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace OkayegTeaTimeCSharp.Twitch.Bot
+﻿namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class LastMessagesDictionary
     {

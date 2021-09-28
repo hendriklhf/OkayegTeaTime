@@ -1,5 +1,4 @@
-﻿using System;
-using OkayegTeaTimeCSharp.Database;
+﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch.API;
 

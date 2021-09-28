@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OkayegTeaTimeCSharp.Exceptions
+﻿namespace OkayegTeaTimeCSharp.Exceptions
 {
     public class NukeNotFoundException : Exception
     {

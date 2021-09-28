@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Timers;
 using HLE.Numbers;
 using HLE.Time;
@@ -22,7 +20,6 @@ using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static HLE.Time.TimeHelper;
-using static OkayegTeaTimeCSharp.Program;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using HLE.Strings;
+﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Properties;

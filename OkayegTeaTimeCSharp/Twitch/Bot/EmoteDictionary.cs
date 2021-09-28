@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using OkayegTeaTimeCSharp.Database;
+﻿using OkayegTeaTimeCSharp.Database;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
@@ -28,7 +27,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             }
             else
             {
-                return TwitchConfig.EmoteInFront;
+                return TwitchConfig.DefaultEmote;
             }
         }
 

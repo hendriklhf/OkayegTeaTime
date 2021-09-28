@@ -1,5 +1,4 @@
-﻿using System;
-using OkayegTeaTimeCSharp.Messages.Interfaces;
+﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using TwitchLib.Client.Extensions;
 

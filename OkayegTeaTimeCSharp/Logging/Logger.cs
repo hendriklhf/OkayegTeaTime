@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using Path = OkayegTeaTimeCSharp.Properties.Path;
 
