@@ -422,16 +422,17 @@ namespace OkayegTeaTimeCSharp.Database
             }
         }
 
-        public static void InsertNewUser(string username)
+        public static void AddUser(string username)
         {
             OkayegTeaTimeContext database = new();
             if (!database.Users.Any(u => u.Username == username))
             {
-                AddUser(username);
+                database.Users.Add(new User(username));
+                database.SaveChanges();
             }
         }
 
-        public static void LogMessage(ITwitchChatMessage chatMessage)
+        public static void AddMessage(ITwitchChatMessage chatMessage)
         {
             if (!TwitchConfig.NotLoggedChannels.Contains(chatMessage.Channel.Name))
             {
@@ -546,13 +547,6 @@ namespace OkayegTeaTimeCSharp.Database
             Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == username);
             user.AccessToken = accessToken;
             user.Time = TimeHelper.Now();
-            database.SaveChanges();
-        }
-
-        private static void AddUser(string username)
-        {
-            OkayegTeaTimeContext database = new();
-            database.Users.Add(new User(username));
             database.SaveChanges();
         }
 

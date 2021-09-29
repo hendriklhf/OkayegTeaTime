@@ -21,9 +21,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
         {
             if (!chatMessage.UserTags.Contains(UserTag.Special))
             {
-                DatabaseController.InsertNewUser(chatMessage.Username);
+                DatabaseController.AddUser(chatMessage.Username);
 
-                DatabaseController.LogMessage(chatMessage);
+                DatabaseController.AddMessage(chatMessage);
 
                 DatabaseController.CheckIfAFK(TwitchBot, chatMessage);
 
