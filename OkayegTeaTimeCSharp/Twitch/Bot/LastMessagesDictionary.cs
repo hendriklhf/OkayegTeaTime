@@ -3,14 +3,13 @@
     public static class LastMessagesDictionary
     {
         private static Dictionary<string, string> _lastMessages = new();
-        private const string _empty = "";
 
         public static void FillDictionary()
         {
             _lastMessages = TwitchConfig.Channels.ToDictionary(c => c, c => string.Empty);
         }
 
-        public static void Add(string channel, string message = _empty)
+        public static void Add(string channel, string message = "")
         {
             if (!_lastMessages.ContainsKey(channel))
             {

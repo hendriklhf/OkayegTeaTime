@@ -21,7 +21,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         public EmoteManagementNotificator(TwitchBot twitchBot)
         {
             TwitchBot = twitchBot;
-            DataBase.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
+            DatabaseController.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
             InitChannels();
             _timer.Elapsed += Timer_OnElapsed;
             _timer.Start();

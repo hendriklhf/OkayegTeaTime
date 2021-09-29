@@ -83,11 +83,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 List<Models.Emote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
-                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel, chatMessage.Split[2].ToInt());
+                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
                 }
                 else
                 {
-                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel, _defaultEmoteCount);
+                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
@@ -111,11 +111,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                     {
                         if (f.IsMatch(@"^[\./]ban\s\w+"))
                         {
-                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, f);
+                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel.Name, f);
                         }
                         else
                         {
-                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel, $"/ban {f}");
+                            twitchBot.TwitchClient.SendMessage(chatMessage.Channel.Name, $"/ban {f}");
                         }
                     });
                 }
@@ -137,11 +137,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 List<Models.Emote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
-                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel, chatMessage.Split[2].ToInt());
+                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
                 }
                 else
                 {
-                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel, _defaultEmoteCount);
+                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
@@ -165,7 +165,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendChattersCount(ITwitchChatMessage chatMessage)
         {
-            string channel = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Channel;
+            string channel = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Channel.Name;
             DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
             if (chatterCount > 1)
             {
@@ -186,7 +186,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 string username = chatMessage.LowerSplit[2];
-                User user = DataBase.GetUser(username);
+                User user = DatabaseController.GetUser(username);
                 if (user.IsAfk == true)
                 {
                     string message = $"{chatMessage.Username}, {AfkMessage.Create(user).GoingAway}";
@@ -211,7 +211,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 int id = chatMessage.Split[2].ToInt();
-                Message message = DataBase.GetMessage(id);
+                Message message = DatabaseController.GetMessage(id);
                 return $"{chatMessage.Username}, ({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -225,7 +225,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 int id = chatMessage.Split[2].ToInt();
-                Reminder reminder = DataBase.GetReminder(id);
+                Reminder reminder = DatabaseController.GetReminder(id);
                 return $"{chatMessage.Username}, From: {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} || To: {GetReminderTarget(reminder.ToUser, reminder.FromUser)} || " +
                     $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago", ConversionType.YearDayHourMin)} || " +
                     (reminder.ToTime > 0 ? $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, conversionType: ConversionType.YearDayHourMin)} || " : string.Empty) +
@@ -261,7 +261,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 long timeoutTime = TimeHelper.ConvertStringToSeconds(new() { chatMessage.LowerSplit[2] });
                 long duration = TimeHelper.ConvertTimeToMilliseconds(new() { chatMessage.LowerSplit[3] });
                 timeoutTime = timeoutTime > new Week(2).Seconds ? new Week(2).Seconds : timeoutTime;
-                int id = DataBase.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
+                int id = DatabaseController.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
                 return $"{chatMessage.Username}, timeouting \"{word}\" {chatMessage.LowerSplit[2]} for the next {chatMessage.LowerSplit[3]} (ID: {id})";
             }
             else
@@ -289,11 +289,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 List<Models.Emote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
-                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel, chatMessage.Split[2].ToInt());
+                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
                 }
                 else
                 {
-                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel, _defaultEmoteCount);
+                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
@@ -309,8 +309,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             List<string> messageParts = new();
             string[] split = chatMessage.Split[1..];
-            string emoteInFront = EmoteDictionary.Get(chatMessage.Channel);
-            int maxLength = TwitchConfig.MaxMessageLength - (emoteInFront.Length + 1);
+            int maxLength = TwitchConfig.MaxMessageLength - (chatMessage.Channel.Emote.Length + 1);
             for (; ; )
             {
                 string messagePart = split.Random();
@@ -331,7 +330,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                Message message = DataBase.GetFirst(chatMessage);
+                Message message = DatabaseController.GetFirst(chatMessage);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -345,7 +344,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 string channel = chatMessage.LowerSplit[1];
-                Message message = DataBase.GetFirstChannel(chatMessage, channel);
+                Message message = DatabaseController.GetFirstChannel(chatMessage, channel);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -359,7 +358,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 string username = chatMessage.LowerSplit[1];
-                Message message = DataBase.GetFirstUser(username);
+                Message message = DatabaseController.GetFirstUser(username);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -374,7 +373,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 string username = chatMessage.LowerSplit[1];
                 string channel = chatMessage.LowerSplit[2];
-                Message message = DataBase.GetFirstMessageUserChannel(username, channel);
+                Message message = DatabaseController.GetFirstMessageUserChannel(username, channel);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -395,8 +394,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static void SendGoingAfk(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
         {
-            DataBase.SetAfk(chatMessage, type);
-            twitchBot.Send(chatMessage.Channel, AfkMessage.Create(DataBase.GetUser(chatMessage.Username)).GoingAway);
+            DatabaseController.SetAfk(chatMessage, type);
+            twitchBot.Send(chatMessage.Channel, AfkMessage.Create(DatabaseController.GetUser(chatMessage.Username)).GoingAway);
         }
 
         public static string SendHelp(IChatMessage chatMessage)
@@ -423,7 +422,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                Message message = DataBase.GetLastMessage(chatMessage.LowerSplit[1]);
+                Message message = DatabaseController.GetLastMessage(chatMessage.LowerSplit[1]);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (UserNotFoundException ex)
@@ -454,14 +453,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
-                string emote = chatMessage.Split.Length > 1 ? chatMessage.Split[1] : EmoteDictionary.Get(chatMessage.Channel);
+                string emote = chatMessage.Split.Length > 1 ? chatMessage.Split[1] : chatMessage.Channel.Emote;
                 string message = string.Empty;
                 List<string> chatters;
                 List<string> chattersToRemove = new(TwitchConfig.SpecialUsers) { chatMessage.Username };
 
-                if (chatMessage.Channel != Settings.SecretOfflineChat)
+                if (chatMessage.Channel.Name != Settings.SecretOfflineChat)
                 {
-                    chatters = HttpRequest.GetChatters(chatMessage.Channel).Select(c => c.Username).ToList();
+                    chatters = HttpRequest.GetChatters(chatMessage.Channel.Name).Select(c => c.Username).ToList();
                     chattersToRemove.ForEach(c => chatters.Remove(c));
                     if (chatters.Count == 0)
                     {
@@ -500,13 +499,13 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendRandomCookie(IChatMessage chatMessage)
         {
-            Pechkekse keks = DataBase.GetRandomCookie();
+            Pechkekse keks = DatabaseController.GetRandomCookie();
             return $"{chatMessage.Username}, {keks.Message} {Emoji.Cookie}";
         }
 
         public static string SendRandomGachi()
         {
-            Gachi gachi = DataBase.GetRandomGachi();
+            Gachi gachi = DatabaseController.GetRandomGachi();
             return $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS";
         }
 
@@ -516,17 +515,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             {
                 if (chatMessage.Split.Length > 2)
                 {
-                    Message message = DataBase.GetRandomMessage(chatMessage.LowerSplit[1], chatMessage.LowerSplit[2].RemoveHashtag());
+                    Message message = DatabaseController.GetRandomMessage(chatMessage.LowerSplit[1], chatMessage.LowerSplit[2].RemoveHashtag());
                     return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
                 }
                 else if (chatMessage.Split.Length > 1)
                 {
-                    Message message = DataBase.GetRandomMessage(chatMessage.LowerSplit[1]);
+                    Message message = DatabaseController.GetRandomMessage(chatMessage.LowerSplit[1]);
                     return $"({TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
                 }
                 else
                 {
-                    Message message = DataBase.GetRandomMessage(chatMessage);
+                    Message message = DatabaseController.GetRandomMessage(chatMessage);
                     return $"({TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
                 }
             }
@@ -538,7 +537,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendRandomYourmom(IChatMessage chatMessage)
         {
-            Yourmom yourmom = DataBase.GetRandomYourmom();
+            Yourmom yourmom = DatabaseController.GetRandomYourmom();
             string target = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
             return $"{target}, {yourmom.MessageText} YOURMOM";
         }
@@ -573,8 +572,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendResumingAfkStatus(IChatMessage chatMessage)
         {
-            DataBase.ResumeAfkStatus(chatMessage.Username);
-            User user = DataBase.GetUser(chatMessage.Username);
+            DatabaseController.ResumeAfkStatus(chatMessage.Username);
+            User user = DatabaseController.GetUser(chatMessage.Username);
             return AfkMessage.Create(user).Resuming;
         }
 
@@ -582,7 +581,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                Message message = DataBase.GetSearch(keyword);
+                Message message = DatabaseController.GetSearch(keyword);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -595,7 +594,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                Message message = DataBase.GetSearchChannel(keyword, channel);
+                Message message = DatabaseController.GetSearchChannel(keyword, channel);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -608,7 +607,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                Message message = DataBase.GetSearchUser(keyword, username);
+                Message message = DatabaseController.GetSearchUser(keyword, username);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -621,7 +620,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                Message message = DataBase.GetSearchUserChannel(keyword, username, channel);
+                Message message = DatabaseController.GetSearchUserChannel(keyword, username, channel);
                 return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
             }
             catch (MessageNotFoundException ex)
@@ -635,8 +634,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
                 string emote = chatMessage.Split[2][..(chatMessage.Split[2].Length > TwitchConfig.MaxEmoteInFrontLength ? TwitchConfig.MaxEmoteInFrontLength : chatMessage.Split[2].Length)];
-                DataBase.SetEmoteInFront(chatMessage.Channel, emote);
-                EmoteDictionary.Update(chatMessage.Channel);
+                chatMessage.Channel.Emote = emote;
                 return $"{chatMessage.Username}, emote set to: {emote}";
             }
             else
@@ -650,8 +648,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
                 string prefix = chatMessage.LowerSplit[2][..(chatMessage.LowerSplit[2].Length > TwitchConfig.MaxPrefixLength ? TwitchConfig.MaxPrefixLength : chatMessage.LowerSplit[2].Length)];
-                DataBase.SetPrefix(chatMessage.Channel, prefix);
-                PrefixDictionary.Update(chatMessage.Channel);
+                chatMessage.Channel.Prefix = prefix;
                 return $"{chatMessage.Username}, prefix set to: {prefix}";
             }
             else
@@ -665,7 +662,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-                int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
+                int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
                 return $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
             }
             catch (TooManyReminderException ex)
@@ -679,10 +676,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
                 OkayegTeaTimeContext database = new();
-                if (database.Spotify.Any(s => s.Username == chatMessage.Channel))
+                if (database.Spotify.Any(s => s.Username == chatMessage.Channel.Name))
                 {
                     bool state = chatMessage.Split[2].IsMatch(@"(1|true|enabled?)");
-                    database.Spotify.Where(s => s.Username == chatMessage.Channel.RemoveHashtag()).FirstOrDefault().SongRequestEnabled = state;
+                    database.Spotify.Where(s => s.Username == chatMessage.Channel.Name).FirstOrDefault().SongRequestEnabled = state;
                     database.SaveChanges();
                     return $"{chatMessage.Username}, song requests {(state ? "enabled" : "disabled")} for channel {chatMessage.Channel}";
                 }
@@ -702,7 +699,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             try
             {
                 string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-                int id = DataBase.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
+                int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
                 return $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
             }
             catch (TooManyReminderException ex)
@@ -714,14 +711,14 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static string SendSongAddedToQueue(ITwitchChatMessage chatMessage)
         {
             string song = chatMessage.Split[1];
-            return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel, song).Result}";
+            return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel.Name, song).Result}";
         }
 
         public static string SendSongSkipped(ITwitchChatMessage chatMessage)
         {
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
-                return $"{chatMessage.Username}, {SpotifyRequest.SkipToNextSong(chatMessage.Channel).Result}";
+                return $"{chatMessage.Username}, {SpotifyRequest.SkipToNextSong(chatMessage.Channel.Name).Result}";
             }
             else
             {
@@ -731,7 +728,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendSpotifyCurrentlyPlaying(ITwitchChatMessage chatMessage)
         {
-            string username = chatMessage.LowerSplit.Length > 1 ? (chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1]) : chatMessage.Channel;
+            string username = chatMessage.LowerSplit.Length > 1 ? (chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1]) : chatMessage.Channel.Name;
             return $"{chatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}";
         }
 
@@ -745,8 +742,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
             {
-                twitchBot.EmoteManagementNotificator.AddChannel(chatMessage.Channel);
-                DataBase.SetEmoteSub(chatMessage.Channel, true);
+                twitchBot.EmoteManagementNotificator.AddChannel(chatMessage.Channel.Name);
+                chatMessage.Channel.IsEmoteSub = true;
                 return $"{chatMessage.Username}, channel #{chatMessage.Channel} has subscribed to the emote notifications";
             }
             else
@@ -757,7 +754,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendSuggestionNoted(ITwitchChatMessage chatMessage)
         {
-            DataBase.AddSugestion(chatMessage, chatMessage.Message[chatMessage.LowerSplit[0].Length..]);
+            DatabaseController.AddSugestion(chatMessage, chatMessage.Message[chatMessage.LowerSplit[0].Length..]);
             return $"{chatMessage.Username}, your suggestion has been noted";
         }
 
@@ -784,8 +781,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
-                DataBase.UnsetEmoteInFront(chatMessage.Channel);
-                EmoteDictionary.Update(chatMessage.Channel);
+                chatMessage.Channel.Emote = null;
                 return $"{chatMessage.Username}, unset emote";
             }
             else
@@ -798,7 +794,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                DataBase.RemoveNuke(chatMessage);
+                DatabaseController.RemoveNuke(chatMessage);
                 return $"{chatMessage.Username}, the nuke has been unset";
             }
             catch (NukeNotFoundException ex)
@@ -815,8 +811,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
             {
-                DataBase.UnsetPrefix(chatMessage.Channel);
-                PrefixDictionary.Update(chatMessage.Channel);
+                chatMessage.Channel.Prefix = null;
                 return $"{chatMessage.Username}, the prefix has been unset";
             }
             else
@@ -829,7 +824,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                DataBase.RemoveReminder(chatMessage);
+                DatabaseController.RemoveReminder(chatMessage);
                 return $"{chatMessage.Username}, the reminder has been unset";
             }
             catch (NoPermissionException ex)
@@ -846,8 +841,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
             {
-                twitchBot.EmoteManagementNotificator.RemoveChannel(chatMessage.Channel);
-                DataBase.SetEmoteSub(chatMessage.Channel, false);
+                twitchBot.EmoteManagementNotificator.RemoveChannel(chatMessage.Channel.Name);
+                chatMessage.Channel.IsEmoteSub = false;
                 return $"{chatMessage.Username}, channel #{chatMessage.Channel} has unsubscribed from the emote notifications";
             }
             else

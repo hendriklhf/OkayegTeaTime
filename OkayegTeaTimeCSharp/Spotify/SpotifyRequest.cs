@@ -78,23 +78,23 @@ namespace OkayegTeaTimeCSharp.Spotify
 
         public static async Task GetNewAccessToken(string username)
         {
-            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, DataBase.GetRefreshToken(username)));
-            DataBase.UpdateAccessToken(username, response.AccessToken);
+            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, DatabaseController.GetRefreshToken(username)));
+            DatabaseController.UpdateAccessToken(username, response.AccessToken);
         }
 
         public static async Task GetNewAuthTokens(string username, string code)
         {
             AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, code, new("https://example.com/callback")));
-            DataBase.AddNewToken(username, response.AccessToken, response.RefreshToken);
+            DatabaseController.AddNewToken(username, response.AccessToken, response.RefreshToken);
         }
 
         public static async Task<Database.Models.Spotify> GetSpotifyUser(string username)
         {
-            Database.Models.Spotify user = DataBase.GetSpotifyUser(username);
+            Database.Models.Spotify user = DatabaseController.GetSpotifyUser(username);
             if (user.Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(5).Milliseconds)
             {
                 await GetNewAccessToken(username);
-                return DataBase.GetSpotifyUser(username);
+                return DatabaseController.GetSpotifyUser(username);
             }
             else
             {

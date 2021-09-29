@@ -20,11 +20,11 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         public override void Handle()
         {
-            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), Pattern.ReminderInTime)))
+            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime)))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, GetTimedRemindMessage(), GetToTime()));
             }
-            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s\w+(\s\S+)*")))
+            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)*")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetRemindMessage()));
             }

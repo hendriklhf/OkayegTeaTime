@@ -3,7 +3,6 @@ using OkayegTeaTimeCSharp.Commands;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
-using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Messages
@@ -12,17 +11,17 @@ namespace OkayegTeaTimeCSharp.Messages
     {
         public static bool IsAfkCommand(this ITwitchChatMessage chatMessage)
         {
-            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")));
+            return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")));
         }
 
         public static bool IsAnyCommand(this ITwitchChatMessage chatMessage)
         {
-            return CommandHelper.GetAllAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")));
+            return CommandHelper.GetAllAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")));
         }
 
         public static bool IsCommand(this ITwitchChatMessage chatMessage)
         {
-            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")));
+            return CommandHelper.GetCommandAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")));
         }
 
         public static bool IsNotLoggedChannel(this string channel)

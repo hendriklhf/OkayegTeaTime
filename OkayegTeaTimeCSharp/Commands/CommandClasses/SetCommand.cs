@@ -14,15 +14,15 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         public override void Handle()
         {
-            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\sprefix\s\S+")))
+            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix\s\S+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetPrefix(ChatMessage));
             }
-            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\semote\s\S+")))
+            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote\s\S+")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetEmoteInFront(ChatMessage));
             }
-            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel), @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))")))
+            else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))")))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetSongRequestState(ChatMessage));
             }

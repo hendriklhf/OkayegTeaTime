@@ -13,7 +13,7 @@ using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Database
 {
-    public static class DataBase
+    public static class DatabaseController
     {
         public static void AddChannel(string channel)
         {
@@ -101,7 +101,7 @@ namespace OkayegTeaTimeCSharp.Database
                             {
                                 if (chatMessage.Message.IsMatch(n.Word.Decode()))
                                 {
-                                    twitchBot.Timeout(chatMessage.Channel, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
+                                    twitchBot.Timeout(chatMessage.Channel.Name, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
                                 }
                             }
                         }
@@ -433,10 +433,10 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void LogMessage(ITwitchChatMessage chatMessage)
         {
-            if (!TwitchConfig.NotLoggedChannels.Contains(chatMessage.Channel))
+            if (!TwitchConfig.NotLoggedChannels.Contains(chatMessage.Channel.Name))
             {
                 OkayegTeaTimeContext database = new();
-                database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel));
+                database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel.Name));
                 database.SaveChanges();
             }
         }
@@ -445,7 +445,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             int id = chatMessage.Split[2].ToInt();
             OkayegTeaTimeContext database = new();
-            Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.RemoveHashtag()}");
+            Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.Name.RemoveHashtag()}");
             if (nuke is not null)
             {
                 if (chatMessage.IsBroadcaster || chatMessage.IsModerator)

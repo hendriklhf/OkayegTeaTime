@@ -14,7 +14,7 @@ namespace OkayegTeaTimeCSharp.Commands.CommandClasses
 
         public override void Handle()
         {
-            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, PrefixDictionary.Get(ChatMessage.Channel))))
+            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix)))
             {
                 TwitchBot.Send(ChatMessage.Channel, BotActions.SendSongSkipped(ChatMessage));
             }

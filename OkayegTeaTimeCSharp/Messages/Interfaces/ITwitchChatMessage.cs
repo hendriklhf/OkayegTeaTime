@@ -1,4 +1,5 @@
-﻿using TwitchLib.Client.Enums;
+﻿using OkayegTeaTimeCSharp.Models;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Messages.Interfaces
@@ -9,7 +10,7 @@ namespace OkayegTeaTimeCSharp.Messages.Interfaces
 
         public double BitsInDollars { get; }
 
-        public string Channel { get; }
+        public Channel Channel { get; }
 
         public ChatReply ChatReply { get; }
 

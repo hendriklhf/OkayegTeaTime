@@ -8,7 +8,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
     {
         public static void CheckForTimedReminders(TwitchBot twitchBot)
         {
-            DataBase.CheckForTimedReminder(twitchBot);
+            DatabaseController.CheckForTimedReminder(twitchBot);
         }
 
         public static void LoadJsonData()

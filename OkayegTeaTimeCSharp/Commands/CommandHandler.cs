@@ -31,7 +31,7 @@ namespace OkayegTeaTimeCSharp.Commands
                         {
                             foreach (string alias in CommandHelper.GetCommand(type).Alias)
                             {
-                                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")))
+                                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
                                 {
                                     BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
                                     InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
@@ -55,7 +55,7 @@ namespace OkayegTeaTimeCSharp.Commands
                         {
                             foreach (string alias in CommandHelper.GetAfkCommand(type).Alias)
                             {
-                                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, PrefixDictionary.Get(chatMessage.Channel), @"(\s|$)")))
+                                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
                                 {
                                     BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
                                     AfkCommandHandler.Handle(TwitchBot, chatMessage, type);

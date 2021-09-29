@@ -21,17 +21,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
         {
             if (!chatMessage.UserTags.Contains(UserTag.Special))
             {
-                DataBase.InsertNewUser(chatMessage.Username);
+                DatabaseController.InsertNewUser(chatMessage.Username);
 
-                DataBase.LogMessage(chatMessage);
+                DatabaseController.LogMessage(chatMessage);
 
-                DataBase.CheckIfAFK(TwitchBot, chatMessage);
+                DatabaseController.CheckIfAFK(TwitchBot, chatMessage);
 
-                DataBase.CheckForReminder(TwitchBot, chatMessage);
+                DatabaseController.CheckForReminder(TwitchBot, chatMessage);
 
                 CommandHandler.Handle(chatMessage);
 
-                DataBase.CheckForNukes(TwitchBot, chatMessage);
+                DatabaseController.CheckForNukes(TwitchBot, chatMessage);
             }
         }
     }

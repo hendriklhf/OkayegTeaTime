@@ -3,7 +3,6 @@ using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch;
-using OkayegTeaTimeCSharp.Twitch.Bot;
 using JCommand = OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData.Command;
 
 namespace OkayegTeaTimeCSharp.Commands
@@ -56,12 +55,12 @@ namespace OkayegTeaTimeCSharp.Commands
 
         public static bool MatchesAnyAlias(this ITwitchChatMessage chatMessage, CommandType type)
         {
-            return GetCommand(type).Alias.Any(alias => PrefixDictionary.Get(chatMessage.Channel) + alias == chatMessage.LowerSplit[0] || alias + TwitchConfig.Suffix == chatMessage.LowerSplit[0]);
+            return GetCommand(type).Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + TwitchConfig.Suffix == chatMessage.LowerSplit[0]);
         }
 
         public static bool MatchesAnyAlias(this ITwitchChatMessage chatMessage, AfkCommandType type)
         {
-            return GetAfkCommand(type).Alias.Any(alias => PrefixDictionary.Get(chatMessage.Channel) + alias == chatMessage.LowerSplit[0] || alias + TwitchConfig.Suffix == chatMessage.LowerSplit[0]);
+            return GetAfkCommand(type).Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + TwitchConfig.Suffix == chatMessage.LowerSplit[0]);
         }
     }
 }

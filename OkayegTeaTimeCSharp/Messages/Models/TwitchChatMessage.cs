@@ -4,6 +4,7 @@ using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Models;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 using TwitchLib = TwitchLib.Client.Models;
@@ -18,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Messages.Models
 
         public double BitsInDollars { get; }
 
-        public string Channel { get; }
+        public Channel Channel { get; }
 
         public ChatReply ChatReply { get; }
 

@@ -15,7 +15,7 @@ namespace OkayegTeaTimeCSharp.Twitch
         public const short MinDelayBetweenMessages = 1300;
         public const string Suffix = "eg";
 
-        public static List<string> Channels => DataBase.GetChannels();
+        public static List<string> Channels => DatabaseController.GetChannels();
 
         public static List<string> Owners => new JsonController().Settings.UserLists.Owners;
 
