@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 
@@ -14,10 +13,10 @@ namespace Tests
             JsonController jsonController = new();
             jsonController.LoadData();
             UserLists userLists = jsonController.Settings.UserLists;
-            Assert.IsTrue(userLists.Moderators.Any());
-            Assert.IsTrue(userLists.Owners.Any());
-            Assert.IsTrue(userLists.SecretUsers.Any());
-            Assert.IsTrue(userLists.SpecialUsers.Any());
+            Assert.IsTrue(userLists.Moderators is not null);
+            Assert.IsTrue(userLists.Owners is not null);
+            Assert.IsTrue(userLists.SecretUsers is not null);
+            Assert.IsTrue(userLists.SpecialUsers is not null);
         }
 
         [TestMethod]
@@ -25,8 +24,8 @@ namespace Tests
         {
             JsonController jsonController = new();
             jsonController.LoadData();
-            Assert.IsTrue(jsonController.CommandLists.AfkCommands.Any());
-            Assert.IsTrue(jsonController.CommandLists.Commands.Any());
+            Assert.IsTrue(jsonController.CommandLists.AfkCommands is not null);
+            Assert.IsTrue(jsonController.CommandLists.Commands is not null);
         }
     }
 }
