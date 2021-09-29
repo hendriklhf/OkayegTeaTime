@@ -104,14 +104,20 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         {
             _channels.ForEach(c =>
             {
-                List<Emote> new7TVEmotes = c.New7TVEmotes?.Where(e => c.Old7TVEmotes?.Contains(e) == false).ToList();
-                NotifyChannel(c.Name, new7TVEmotes, NotificationType.NewEmote);
-
-                List<Emote> newBTTVEmotes = c.NewBTTVEmotes?.Where(e => c.OldBTTVEmotes?.Contains(e) == false).ToList();
-                NotifyChannel(c.Name, newBTTVEmotes, NotificationType.NewEmote);
-
-                List<Emote> newFFZEmotes = c.NewFFZEmotes?.Where(e => c.OldFFZEmotes?.Contains(e) == false).ToList();
-                NotifyChannel(c.Name, newFFZEmotes, NotificationType.NewEmote);
+                List<Emote> newEmotes = new();
+                if (!c.Old7TVEmotes.IsNullOrEmpty())
+                {
+                    newEmotes = newEmotes.Concat(c.New7TVEmotes?.Where(e => c.Old7TVEmotes?.Contains(e) == false)).ToList();
+                }
+                if (!c.OldBTTVEmotes.IsNullOrEmpty())
+                {
+                    newEmotes = newEmotes.Concat(c.NewBTTVEmotes?.Where(e => c.OldBTTVEmotes?.Contains(e) == false)).ToList();
+                }
+                if (!c.OldFFZEmotes.IsNullOrEmpty())
+                {
+                    newEmotes = newEmotes.Concat(c.NewFFZEmotes?.Where(e => c.OldFFZEmotes?.Contains(e) == false)).ToList();
+                }
+                NotifyChannel(c.Name, newEmotes, NotificationType.NewEmote);
             });
         }
 
