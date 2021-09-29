@@ -19,7 +19,7 @@ namespace OkayegTeaTimeCSharp.Twitch
 
         public static List<string> Owners => new JsonController().Settings.UserLists.Owners;
 
-        public static List<string> Moderators => new JsonController().Settings.UserLists.Moderators;
+        public static List<string> Moderators => new JsonController().Settings.UserLists.Moderators.Concat(Owners).Distinct().ToList();
 
         public static List<string> SpecialUsers => new JsonController().Settings.UserLists.SpecialUsers;
 

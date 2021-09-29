@@ -122,7 +122,7 @@ namespace OkayegTeaTimeCSharp.Database
             {
                 List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username).ToList();
                 twitchBot.SendReminder(chatMessage, listReminder);
-                database.RemoveReminder(listReminder);
+                RemoveReminder(listReminder);
             }
         }
 
@@ -150,7 +150,7 @@ namespace OkayegTeaTimeCSharp.Database
                 twitchBot.SendComingBack(user, chatMessage);
                 if (!chatMessage.IsAfkCommand())
                 {
-                    database.SetAfk(chatMessage.Username, false);
+                    SetAfk(chatMessage.Username, false);
                 }
             }
         }
@@ -427,7 +427,7 @@ namespace OkayegTeaTimeCSharp.Database
             OkayegTeaTimeContext database = new();
             if (!database.Users.Any(u => u.Username == username))
             {
-                database.AddUser(username);
+                AddUser(username);
             }
         }
 
@@ -448,7 +448,7 @@ namespace OkayegTeaTimeCSharp.Database
             Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.Name.RemoveHashtag()}");
             if (nuke is not null)
             {
-                if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
+                if (chatMessage.IsBroadcaster || chatMessage.IsModerator || TwitchConfig.Moderators.Contains(chatMessage.Username))
                 {
                     database.Nukes.Remove(nuke);
                     database.SaveChanges();
@@ -470,7 +470,9 @@ namespace OkayegTeaTimeCSharp.Database
             Reminder reminder = database.Reminders.FirstOrDefault(r => r.Id == chatMessage.Split[2].ToInt());
             if (reminder is not null)
             {
-                if (reminder.FromUser == chatMessage.Username || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0))
+                if (reminder.FromUser == chatMessage.Username
+                    || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0)
+                    || TwitchConfig.Moderators.Contains(chatMessage.Username))
                 {
                     database.Reminders.Remove(reminder);
                     database.SaveChanges();
@@ -488,8 +490,7 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static void ResumeAfkStatus(string username)
         {
-            OkayegTeaTimeContext database = new();
-            database.SetAfk(username, true);
+            SetAfk(username, true);
         }
 
         public static void SetAfk(ITwitchChatMessage chatMessage, AfkCommandType type)
@@ -501,7 +502,7 @@ namespace OkayegTeaTimeCSharp.Database
             user.Type = type.ToString();
             user.Time = TimeHelper.Now();
             database.SaveChanges();
-            database.SetAfk(chatMessage.Username, true);
+            SetAfk(chatMessage.Username, true);
         }
 
         public static void SetEmoteInFront(string channel, string emote)
@@ -545,6 +546,42 @@ namespace OkayegTeaTimeCSharp.Database
             Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == username);
             user.AccessToken = accessToken;
             user.Time = TimeHelper.Now();
+            database.SaveChanges();
+        }
+
+        private static void AddUser(string username)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Users.Add(new User(username));
+            database.SaveChanges();
+        }
+
+        public static int CountChannelMessages(string givenChannel)
+        {
+            return new OkayegTeaTimeContext().Messages.Where(m => m.Channel == givenChannel).Count();
+        }
+
+        public static int CountMessages()
+        {
+            return new OkayegTeaTimeContext().Messages.Count();
+        }
+
+        public static int CountUserMessages(string givenUsername)
+        {
+            return new OkayegTeaTimeContext().Messages.Where(m => m.Username == givenUsername).Count();
+        }
+
+        private static void RemoveReminder(List<Reminder> listReminder)
+        {
+            OkayegTeaTimeContext database = new();
+            listReminder.ForEach(reminder => database.Reminders.Remove(reminder));
+            database.SaveChanges();
+        }
+
+        private static void SetAfk(string username, bool afk)
+        {
+            OkayegTeaTimeContext database = new();
+            database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;
             database.SaveChanges();
         }
     }

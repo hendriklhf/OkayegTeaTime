@@ -434,19 +434,21 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         public static string SendLoggedMessagesChannelCount(ITwitchChatMessage chatMessage)
         {
             string channel = chatMessage.LowerSplit[1];
-            return $"{chatMessage.Username}, logging {new DottedNumber(new OkayegTeaTimeContext().CountChannelMessages(channel))} messages of the channel {channel}";
+            DottedNumber messageCount = DatabaseController.CountChannelMessages(channel);
+            return $"{chatMessage.Username}, logging {messageCount} messages of the channel {channel}";
         }
 
         public static string SendLoggedMessagesCount(ITwitchChatMessage chatMessage)
         {
-            DottedNumber dMessageCount = new OkayegTeaTimeContext().CountMessages();
+            DottedNumber dMessageCount = DatabaseController.CountMessages();
             return $"{chatMessage.Username}, logging {dMessageCount} messages across all channels";
         }
 
         public static string SendLoggedMessagesUserCount(ITwitchChatMessage chatMessage)
         {
             string username = chatMessage.LowerSplit[1];
-            return $"{chatMessage.Username}, logging {new DottedNumber(new OkayegTeaTimeContext().CountUserMessages(username))} messages of {username}";
+            DottedNumber messageCount = DatabaseController.CountUserMessages(username);
+            return $"{chatMessage.Username}, logging {messageCount} messages of {username}";
         }
 
         public static string SendMassping(ITwitchChatMessage chatMessage)
