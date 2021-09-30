@@ -13,7 +13,7 @@ namespace OkayegTeaTimeCSharp.Spotify
             Message = chatMessage.Message;
         }
 
-        public bool FindSpotifyLink(out string uri)
+        public bool TryFindSpotifyLink(out string uri)
         {
             if (Message.IsMatch(Pattern.SpotifyLink))
             {

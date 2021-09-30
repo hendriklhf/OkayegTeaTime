@@ -272,7 +272,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendDetectedSpotifyURI(IChatMessage chatMessage)
         {
-            if (new LinkRecognizer(chatMessage).FindSpotifyLink(out string uri))
+            if (new LinkRecognizer(chatMessage).TryFindSpotifyLink(out string uri))
             {
                 return $"{uri}";
             }
