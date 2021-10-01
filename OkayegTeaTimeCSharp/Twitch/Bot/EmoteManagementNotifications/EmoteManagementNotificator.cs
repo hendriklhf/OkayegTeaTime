@@ -5,6 +5,7 @@ using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.HttpRequests;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications.Enums;
@@ -51,7 +52,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 {
                     try
                     {
-                        emotes = HttpRequest.GetBTTVEmotes(c.Name);
+                        List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBTTVEmotes(c.Name).ToList();
                         c.NewBTTVEmotes = emotes;
                         c.OldBTTVEmotes = emotes;
                     }

@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Web;
 using HLE.Collections;
 using HLE.HttpRequests;
+using HLE.Strings;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
@@ -57,37 +59,14 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             }
         }
 
-        public static List<Emote> GetBTTVEmotes(string channel, int count)
+        public static IEnumerable<BttvSharedEmote> GetBTTVEmotes(string channel, int count)
         {
-            try
-            {
-                List<Emote> result = GetBTTVEmotes(channel);
-                count = result.Count >= count ? count : result.Count;
-                return result.Take(count).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return GetBTTVEmotes(channel)?.Take(count);
         }
 
-        public static List<Emote> GetBTTVEmotes(string channel)
+        public static IEnumerable<BttvSharedEmote> GetBTTVEmotes(string channel)
         {
-            try
-            {
-                List<Emote> emotes = new();
-                HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{new TwitchAPI().GetChannelID(channel)}");
-                int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
-                for (int i = 0; i <= emoteCountInChannel - 1; i++)
-                {
-                    emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
-                }
-                return emotes.OrderByDescending(e => e.Index).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>();
         }
 
         public static int GetChatterCount(string channel)
@@ -168,6 +147,24 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         private static string GetOnlineCompilerTemplate(string code)
         {
             return File.ReadAllText(Path.OnlineCompilerTemplate).Replace("{code}", code);
+        }
+
+        public static BttvRequest GetBttvRequest(string channel)
+        {
+            return GetBttvRequest(new TwitchAPI().GetChannelID(channel).ToInt());
+        }
+
+        public static BttvRequest GetBttvRequest(int channelId)
+        {
+            try
+            {
+                HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{channelId}");
+                return JsonSerializer.Deserialize<BttvRequest>(request.Result);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

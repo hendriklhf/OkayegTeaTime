@@ -11,6 +11,7 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Properties;
@@ -134,7 +135,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                List<Models.Emote> emotes;
+                IEnumerable<BttvSharedEmote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
                     emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
