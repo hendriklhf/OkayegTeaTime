@@ -87,7 +87,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 {
                     c.Old7TVEmotes = c.New7TVEmotes;
                     c.OldBTTVEmotes = c.NewBTTVEmotes;
-                    c.OldFFZEmotes = c.OldFFZEmotes;
+                    c.OldFFZEmotes = c.NewFFZEmotes;
 
                     c.New7TVEmotes = HttpRequest.Get7TVEmotes(c.Name);
                     c.NewBTTVEmotes = HttpRequest.GetBTTVEmotes(c.Name);
