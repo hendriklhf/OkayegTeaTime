@@ -16,6 +16,8 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 {
     public static class HttpRequest
     {
+        public const string FfzSetIdReplacement = "MainEmoteSet";
+
         public static List<Emote> Get7TVEmotes(string channel, int count)
         {
             try
@@ -59,12 +61,12 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             }
         }
 
-        public static IEnumerable<BttvSharedEmote> GetBTTVEmotes(string channel, int count)
+        public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel, int count)
         {
-            return GetBTTVEmotes(channel)?.Take(count);
+            return GetBttvEmotes(channel)?.Take(count);
         }
 
-        public static IEnumerable<BttvSharedEmote> GetBTTVEmotes(string channel)
+        public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel)
         {
             return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>();
         }
@@ -91,37 +93,28 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             return result;
         }
 
-        public static List<Emote> GetFFZEmotes(string channel, int count)
+        public static IEnumerable<FfzEmote> GetFfzEmotes(string channel, int count)
         {
-            try
-            {
-                List<Emote> result = GetFFZEmotes(channel);
-                count = result.Count >= count ? count : result.Count;
-                return result.Take(count).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return GetFfzEmotes(channel)?.Take(count);
         }
 
-        public static List<Emote> GetFFZEmotes(string channel)
+        public static IEnumerable<FfzEmote> GetFfzEmotes(string channel)
+        {
+            return GetFfzRequest(channel)?.Set?.EmoteSet?.Emotes?.Reverse<FfzEmote>();
+        }
+
+        public static FfzRequest GetFfzRequest(string channel)
         {
             try
             {
-                List<Emote> emotes = new();
                 HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag()}");
-                int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
-                int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
-                for (int i = 0; i <= emoteCountInChannel - 1; i++)
-                {
-                    emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty($"{setID}").GetProperty("emoticons")[i].GetProperty("name").GetString()));
-                }
-                return emotes.OrderByDescending(e => e.Index).ToList();
+                int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
+                string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
+                return JsonSerializer.Deserialize<FfzRequest>(result);
             }
             catch (Exception)
             {
-                throw;
+                return null;
             }
         }
 

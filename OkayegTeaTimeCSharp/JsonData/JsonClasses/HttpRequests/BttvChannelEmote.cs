@@ -15,5 +15,15 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
 
         [JsonPropertyName("userId")]
         public string UserId { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BttvChannelEmote emote && emote.Name == Name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -138,11 +138,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
                 IEnumerable<BttvSharedEmote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
-                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
+                    emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
                 }
                 else
                 {
-                    emotes = HttpRequest.GetBTTVEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
+                    emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
                 }
                 string emoteString = string.Empty;
                 emotes.ForEach(e => emoteString += $"{e} | ");
@@ -287,18 +287,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             try
             {
-                List<Models.Emote> emotes;
+                List<FfzEmote> emotes;
                 if (chatMessage.LowerSplit.Length > 2)
                 {
-                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
+                    emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt()).ToList();
                 }
                 else
                 {
-                    emotes = HttpRequest.GetFFZEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
+                    emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, _defaultEmoteCount).ToList();
                 }
-                string emoteString = string.Empty;
-                emotes.ForEach(e => emoteString += $"{e} | ");
-                return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
+                string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
+                return $"{chatMessage.Username}, recently added emotes: {emoteString}";
             }
             catch (Exception)
             {

@@ -52,9 +52,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 {
                     try
                     {
-                        List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBTTVEmotes(c.Name).ToList();
-                        c.NewBTTVEmotes = emotes;
-                        c.OldBTTVEmotes = emotes;
+                        List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBttvEmotes(c.Name).ToList();
+                        c.NewBTTVEmotes = bttvEmotes;
+                        c.OldBTTVEmotes = bttvEmotes;
                     }
                     catch (Exception ex)
                     {
@@ -67,9 +67,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 {
                     try
                     {
-                        emotes = HttpRequest.GetFFZEmotes(c.Name);
-                        c.NewFFZEmotes = emotes;
-                        c.OldFFZEmotes = emotes;
+                        List<FfzEmote> ffzEmotes = HttpRequest.GetFfzEmotes(c.Name).ToList();
+                        c.NewFFZEmotes = ffzEmotes;
+                        c.OldFFZEmotes = ffzEmotes;
                     }
                     catch (Exception ex)
                     {
@@ -88,11 +88,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 {
                     c.Old7TVEmotes = c.New7TVEmotes;
                     c.OldBTTVEmotes = c.NewBTTVEmotes;
-                    c.OldFFZEmotes = c.OldFFZEmotes;
+                    c.OldFFZEmotes = c.NewFFZEmotes;
 
                     c.New7TVEmotes = HttpRequest.Get7TVEmotes(c.Name);
-                    c.NewBTTVEmotes = HttpRequest.GetBTTVEmotes(c.Name);
-                    c.NewFFZEmotes = HttpRequest.GetFFZEmotes(c.Name);
+                    c.NewBTTVEmotes = HttpRequest.GetBttvEmotes(c.Name).ToList();
+                    c.NewFFZEmotes = HttpRequest.GetFfzEmotes(c.Name).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -112,7 +112,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 }
                 if (!c.OldBTTVEmotes.IsNullOrEmpty())
                 {
-                    newEmotes = newEmotes.Concat(c.NewBTTVEmotes?.Where(e => c.OldBTTVEmotes?.Contains(e) == false)).ToList();
+                    newEmotes = newEmotes.Concat(c.NewBTTVEmotes?.Where(e => c.OldBTTVEmotes?.Contains(e) == false));
                 }
                 if (!c.OldFFZEmotes.IsNullOrEmpty())
                 {

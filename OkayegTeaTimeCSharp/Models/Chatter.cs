@@ -1,5 +1,3 @@
-#pragma warning disable CS0659
-
 using OkayegTeaTimeCSharp.Models.Enums;
 
 namespace OkayegTeaTimeCSharp.Models

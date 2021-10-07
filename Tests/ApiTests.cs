@@ -32,7 +32,7 @@ namespace Tests
         {
             new TwitchAPI().Configure();
             int emoteCount = 5;
-            List<BttvSharedEmote> emotes = HttpRequest.GetBTTVEmotes(_testChannel, emoteCount).ToList();
+            List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount).ToList();
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {
@@ -63,7 +63,7 @@ namespace Tests
         public void GetFFZEmotesTest()
         {
             int emoteCount = 5;
-            List<Emote> emotes = HttpRequest.GetFFZEmotes(_testChannel, emoteCount);
+            List<FfzEmote> emotes = HttpRequest.GetFfzEmotes(_testChannel, emoteCount).ToList();
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {
