@@ -15,10 +15,10 @@ namespace Tests
         private const string _testChannel = "strbhlfe";
 
         [TestMethod]
-        public void Get7TVEmotesTest()
+        public void GetSevenTvEmotesTest()
         {
             int emoteCount = 5;
-            List<SevenTvEmote> emotes = HttpRequest.Get7TvEmotes(_testChannel, emoteCount).ToList();
+            List<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(_testChannel, emoteCount).ToList();
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {

@@ -34,7 +34,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                 {
                     try
                     {
-                        List<SevenTvEmote> sevenTvEmotes = HttpRequest.Get7TvEmotes(c.Name).ToList();
+                        List<SevenTvEmote> sevenTvEmotes = HttpRequest.GetSevenTvEmotes(c.Name).ToList();
                         c.New7TVEmotes = sevenTvEmotes;
                         c.Old7TVEmotes = sevenTvEmotes;
                     }
@@ -87,7 +87,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
                     c.OldBTTVEmotes = c.NewBTTVEmotes;
                     c.OldFFZEmotes = c.NewFFZEmotes;
 
-                    c.New7TVEmotes = HttpRequest.Get7TvEmotes(c.Name).ToList();
+                    c.New7TVEmotes = HttpRequest.GetSevenTvEmotes(c.Name).ToList();
                     c.NewBTTVEmotes = HttpRequest.GetBttvEmotes(c.Name).ToList();
                     c.NewFFZEmotes = HttpRequest.GetFfzEmotes(c.Name).ToList();
                 }

@@ -17,9 +17,9 @@ namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
         public int Visibility { get; set; }
 
         [JsonPropertyName("width")]
-        public SevenTvEmoteSize Width { get; set; }
+        public List<int> Width { get; set; }
 
         [JsonPropertyName("height")]
-        public SevenTvEmoteSize Height { get; set; }
+        public List<int> Height { get; set; }
     }
 }

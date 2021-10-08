@@ -26,29 +26,28 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             }
         }
 
-        public static IEnumerable<SevenTvEmote> Get7TvEmotes(string channel, int count)
+        public static IEnumerable<SevenTvEmote> GetSevenTvEmotes(string channel, int count)
         {
-            IEnumerable<SevenTvEmote> emotes = Get7TvEmotes(channel);
+            IEnumerable<SevenTvEmote> emotes = GetSevenTvEmotes(channel);
             NormalizeCount(emotes, ref count);
             return emotes?.Take(count);
         }
 
-        public static IEnumerable<SevenTvEmote> Get7TvEmotes(string channel)
+        public static IEnumerable<SevenTvEmote> GetSevenTvEmotes(string channel)
         {
-            return Get7TvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>();
+            return GetSevenTvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>();
         }
 
-        public static SevenTvRequest Get7TvRequest(string channel)
+        public static SevenTvRequest GetSevenTvRequest(string channel)
         {
             try
             {
-                List<Emote> emotes = new();
                 HttpPost request = new("https://api.7tv.app/v2/gql",
-                   new()
-                   {
-                       new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
-                       new("variables", "{}")
-                   });
+                new()
+                {
+                    new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
+                    new("variables", "{}")
+                });
                 return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
             }
             catch (Exception)

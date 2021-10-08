@@ -84,11 +84,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             IEnumerable<SevenTvEmote> emotes;
             if (chatMessage.LowerSplit.Length > 2)
             {
-                emotes = HttpRequest.Get7TvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
+                emotes = HttpRequest.GetSevenTvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
             }
             else
             {
-                emotes = HttpRequest.Get7TvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
+                emotes = HttpRequest.GetSevenTvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
             }
             if (emotes is not null && emotes.Any())
             {
