@@ -269,7 +269,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             MessageHandler = new(this);
             WhisperHandler = new(this);
-            EmoteManagementNotificator = new(this);
+            //EmoteManagementNotificator = new(this);
             InitializeTimers();
             Restarter.InitializeResartTimer();
         }

@@ -744,7 +744,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
             {
-                twitchBot.EmoteManagementNotificator.AddChannel(chatMessage.Channel.Name);
+                twitchBot.EmoteManagementNotificator?.AddChannel(chatMessage.Channel.Name);
                 chatMessage.Channel.IsEmoteSub = true;
                 return $"{chatMessage.Username}, channel #{chatMessage.Channel} has subscribed to the emote notifications";
             }
@@ -843,7 +843,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         {
             if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
             {
-                twitchBot.EmoteManagementNotificator.RemoveChannel(chatMessage.Channel.Name);
+                twitchBot.EmoteManagementNotificator?.RemoveChannel(chatMessage.Channel.Name);
                 chatMessage.Channel.IsEmoteSub = false;
                 return $"{chatMessage.Username}, channel #{chatMessage.Channel} has unsubscribed from the emote notifications";
             }

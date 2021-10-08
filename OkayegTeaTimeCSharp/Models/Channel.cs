@@ -83,7 +83,7 @@ namespace OkayegTeaTimeCSharp.Models
 
         public static implicit operator Channel(string channel)
         {
-            return new Channel(channel);
+            return new(channel);
         }
     }
 }

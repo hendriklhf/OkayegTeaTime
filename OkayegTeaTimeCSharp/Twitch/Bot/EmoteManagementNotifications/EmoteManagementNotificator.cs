@@ -30,50 +30,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
         {
             _channels.Where(c => AreEmoteListsNull(c)).ForEach(c =>
             {
-                do
-                {
-                    try
-                    {
-                        List<SevenTvEmote> sevenTvEmotes = HttpRequest.GetSevenTvEmotes(c.Name).ToList();
-                        c.New7TVEmotes = sevenTvEmotes;
-                        c.Old7TVEmotes = sevenTvEmotes;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(ex);
-                    }
-                }
-                while (c.New7TVEmotes is null || c.Old7TVEmotes is null);
+                List<SevenTvEmote> sevenTvEmotes = HttpRequest.GetSevenTvEmotes(c.Name)?.ToList();
+                c.New7TVEmotes = sevenTvEmotes ?? new();
+                c.Old7TVEmotes = sevenTvEmotes ?? new();
 
-                do
-                {
-                    try
-                    {
-                        List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBttvEmotes(c.Name).ToList();
-                        c.NewBTTVEmotes = bttvEmotes;
-                        c.OldBTTVEmotes = bttvEmotes;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(ex);
-                    }
-                }
-                while (c.NewBTTVEmotes is null || c.OldBTTVEmotes is null);
+                List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBttvEmotes(c.Name)?.ToList();
+                c.NewBTTVEmotes = bttvEmotes ?? new();
+                c.OldBTTVEmotes = bttvEmotes ?? new();
 
-                do
-                {
-                    try
-                    {
-                        List<FfzEmote> ffzEmotes = HttpRequest.GetFfzEmotes(c.Name).ToList();
-                        c.NewFFZEmotes = ffzEmotes;
-                        c.OldFFZEmotes = ffzEmotes;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(ex);
-                    }
-                }
-                while (c.NewFFZEmotes is null || c.OldFFZEmotes is null);
+                List<FfzEmote> ffzEmotes = HttpRequest.GetFfzEmotes(c.Name)?.ToList();
+                c.NewFFZEmotes = ffzEmotes ?? new();
+                c.OldFFZEmotes = ffzEmotes ?? new();
             });
         }
 
