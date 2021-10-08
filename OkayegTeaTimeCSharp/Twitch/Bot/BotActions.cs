@@ -26,6 +26,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
     {
         private const int _defaultEmoteCount = 5;
         private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
+        private const string _channelEmotesError = "the channel doesn't have the specified amount of " +
+            "emotes enabled or an error occurred";
 
         public static void AddAfkCooldown(string username)
         {
@@ -79,24 +81,23 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string Send7TVEmotes(ITwitchChatMessage chatMessage)
         {
-            try
+            IEnumerable<SevenTvEmote> emotes;
+            if (chatMessage.LowerSplit.Length > 2)
             {
-                List<Models.Emote> emotes;
-                if (chatMessage.LowerSplit.Length > 2)
-                {
-                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
-                }
-                else
-                {
-                    emotes = HttpRequest.Get7TVEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
-                }
-                string emoteString = string.Empty;
-                emotes.ForEach(e => emoteString += $"{e} | ");
-                return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
+                emotes = HttpRequest.Get7TvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
             }
-            catch (Exception)
+            else
             {
-                return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
+                emotes = HttpRequest.Get7TvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
+            }
+            if (emotes is not null && emotes.Any())
+            {
+                string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
+                return $"{chatMessage.Username}, recently added emotes: {emoteString}";
+            }
+            else
+            {
+                return $"{chatMessage.Username}, {_channelEmotesError}";
             }
         }
 
@@ -133,24 +134,23 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendBTTVEmotes(ITwitchChatMessage chatMessage)
         {
-            try
+            IEnumerable<BttvSharedEmote> emotes;
+            if (chatMessage.LowerSplit.Length > 2)
             {
-                IEnumerable<BttvSharedEmote> emotes;
-                if (chatMessage.LowerSplit.Length > 2)
-                {
-                    emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
-                }
-                else
-                {
-                    emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
-                }
-                string emoteString = string.Empty;
-                emotes.ForEach(e => emoteString += $"{e} | ");
-                return $"{chatMessage.Username}, recently added emotes: {emoteString.Trim()[..^2]}";
+                emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
             }
-            catch (Exception)
+            else
             {
-                return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
+                emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
+            }
+            if (emotes is not null && emotes.Any())
+            {
+                string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
+                return $"{chatMessage.Username}, recently added emotes: {emoteString}";
+            }
+            else
+            {
+                return $"{chatMessage.Username}, {_channelEmotesError}";
             }
         }
 
@@ -285,23 +285,23 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public static string SendFFZEmotes(ITwitchChatMessage chatMessage)
         {
-            try
+            IEnumerable<FfzEmote> emotes;
+            if (chatMessage.LowerSplit.Length > 2)
             {
-                List<FfzEmote> emotes;
-                if (chatMessage.LowerSplit.Length > 2)
-                {
-                    emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt()).ToList();
-                }
-                else
-                {
-                    emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, _defaultEmoteCount).ToList();
-                }
+                emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
+            }
+            else
+            {
+                emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
+            }
+            if (emotes is not null && emotes.Any())
+            {
                 string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
                 return $"{chatMessage.Username}, recently added emotes: {emoteString}";
             }
-            catch (Exception)
+            else
             {
-                return $"{chatMessage.Username}, the channel doesn't have the specified amount of emotes enabled";
+                return $"{chatMessage.Username}, {_channelEmotesError}";
             }
         }
 

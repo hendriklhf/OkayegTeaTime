@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
-using OkayegTeaTimeCSharp.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 {
@@ -7,9 +6,9 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
     {
         public string Name { get; }
 
-        public List<Emote> New7TVEmotes { get; set; }
+        public List<SevenTvEmote> New7TVEmotes { get; set; }
 
-        public List<Emote> Old7TVEmotes { get; set; }
+        public List<SevenTvEmote> Old7TVEmotes { get; set; }
 
         public List<BttvSharedEmote> NewBTTVEmotes { get; set; }
 

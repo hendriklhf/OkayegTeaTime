@@ -5,7 +5,6 @@ using HLE.Collections;
 using HLE.HttpRequests;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
-using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Twitch.API;
@@ -16,23 +15,30 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 {
     public static class HttpRequest
     {
-        public const string FfzSetIdReplacement = "MainEmoteSet";
+        public const string FfzSetIdReplacement = "mainSet";
 
-        public static List<Emote> Get7TVEmotes(string channel, int count)
+        private static void NormalizeCount<T>(IEnumerable<T> collection, ref int count)
         {
-            try
+            if (collection is not null)
             {
-                List<Emote> result = Get7TVEmotes(channel);
-                count = result.Count >= count ? count : result.Count;
-                return result.Take(count).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
+                count = Math.Abs(count);
+                count = collection.Count() >= count ? count : collection.Count();
             }
         }
 
-        public static List<Emote> Get7TVEmotes(string channel)
+        public static IEnumerable<SevenTvEmote> Get7TvEmotes(string channel, int count)
+        {
+            IEnumerable<SevenTvEmote> emotes = Get7TvEmotes(channel);
+            NormalizeCount(emotes, ref count);
+            return emotes?.Take(count);
+        }
+
+        public static IEnumerable<SevenTvEmote> Get7TvEmotes(string channel)
+        {
+            return Get7TvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>();
+        }
+
+        public static SevenTvRequest Get7TvRequest(string channel)
         {
             try
             {
@@ -43,21 +49,11 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                        new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
                        new("variables", "{}")
                    });
-                JsonElement jEmotes = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes");
-                for (int i = 0; i <= jEmotes.GetArrayLength() - 1; i++)
-                {
-                    emotes.Add(new(i, jEmotes[i].GetProperty("name").GetString()));
-                }
-                return emotes.OrderByDescending(e => e.Index).ToList();
-            }
-            catch (InvalidOperationException ex)
-            {
-                Logger.Log(ex);
-                return new();
+                return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
             }
             catch (Exception)
             {
-                throw;
+                return null;
             }
         }
 

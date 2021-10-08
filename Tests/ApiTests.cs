@@ -18,7 +18,7 @@ namespace Tests
         public void Get7TVEmotesTest()
         {
             int emoteCount = 5;
-            List<Emote> emotes = HttpRequest.Get7TVEmotes(_testChannel, emoteCount);
+            List<SevenTvEmote> emotes = HttpRequest.Get7TvEmotes(_testChannel, emoteCount).ToList();
             Assert.IsTrue(emotes.Count == emoteCount);
             emotes.ForEach(e =>
             {
