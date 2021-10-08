@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0659
-
-namespace OkayegTeaTimeCSharp.Models
+﻿namespace OkayegTeaTimeCSharp.Models
 {
     public class Emote
     {

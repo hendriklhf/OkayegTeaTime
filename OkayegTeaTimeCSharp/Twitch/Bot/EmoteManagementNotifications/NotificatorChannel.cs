@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0659
-
-using OkayegTeaTimeCSharp.Models;
+﻿using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
 {
@@ -8,17 +6,17 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications
     {
         public string Name { get; }
 
-        public List<Emote> New7TVEmotes { get; set; }
+        public List<SevenTvEmote> New7TVEmotes { get; set; }
 
-        public List<Emote> Old7TVEmotes { get; set; }
+        public List<SevenTvEmote> Old7TVEmotes { get; set; }
 
-        public List<Emote> NewBTTVEmotes { get; set; }
+        public List<BttvSharedEmote> NewBTTVEmotes { get; set; }
 
-        public List<Emote> OldBTTVEmotes { get; set; }
+        public List<BttvSharedEmote> OldBTTVEmotes { get; set; }
 
-        public List<Emote> NewFFZEmotes { get; set; }
+        public List<FfzEmote> NewFFZEmotes { get; set; }
 
-        public List<Emote> OldFFZEmotes { get; set; }
+        public List<FfzEmote> OldFFZEmotes { get; set; }
 
         public NotificatorChannel(string name)
         {

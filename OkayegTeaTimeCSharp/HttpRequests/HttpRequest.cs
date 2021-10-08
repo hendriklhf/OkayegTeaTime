@@ -3,7 +3,8 @@ using System.Text.Json;
 using System.Web;
 using HLE.Collections;
 using HLE.HttpRequests;
-using OkayegTeaTimeCSharp.Logging;
+using HLE.Strings;
+using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Twitch.API;
@@ -14,80 +15,55 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 {
     public static class HttpRequest
     {
-        public static List<Emote> Get7TVEmotes(string channel, int count)
+        public const string FfzSetIdReplacement = "mainSet";
+
+        private static void NormalizeCount<T>(IEnumerable<T> collection, ref int count)
         {
-            try
+            if (collection is not null)
             {
-                List<Emote> result = Get7TVEmotes(channel);
-                count = result.Count >= count ? count : result.Count;
-                return result.Take(count).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
+                count = Math.Abs(count);
+                count = collection.Count() >= count ? count : collection.Count();
             }
         }
 
-        public static List<Emote> Get7TVEmotes(string channel)
+        public static IEnumerable<SevenTvEmote> GetSevenTvEmotes(string channel, int count)
+        {
+            IEnumerable<SevenTvEmote> emotes = GetSevenTvEmotes(channel);
+            NormalizeCount(emotes, ref count);
+            return emotes?.Take(count);
+        }
+
+        public static IEnumerable<SevenTvEmote> GetSevenTvEmotes(string channel)
+        {
+            return GetSevenTvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>();
+        }
+
+        public static SevenTvRequest GetSevenTvRequest(string channel)
         {
             try
             {
-                List<Emote> emotes = new();
                 HttpPost request = new("https://api.7tv.app/v2/gql",
-                   new()
-                   {
-                       new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
-                       new("variables", "{}")
-                   });
-                JsonElement jEmotes = request.Data.GetProperty("data").GetProperty("user").GetProperty("emotes");
-                for (int i = 0; i <= jEmotes.GetArrayLength() - 1; i++)
+                new()
                 {
-                    emotes.Add(new(i, jEmotes[i].GetProperty("name").GetString()));
-                }
-                return emotes.OrderByDescending(e => e.Index).ToList();
-            }
-            catch (InvalidOperationException ex)
-            {
-                Logger.Log(ex);
-                return new();
+                    new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
+                    new("variables", "{}")
+                });
+                return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
             }
             catch (Exception)
             {
-                throw;
+                return null;
             }
         }
 
-        public static List<Emote> GetBTTVEmotes(string channel, int count)
+        public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel, int count)
         {
-            try
-            {
-                List<Emote> result = GetBTTVEmotes(channel);
-                count = result.Count >= count ? count : result.Count;
-                return result.Take(count).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return GetBttvEmotes(channel)?.Take(count);
         }
 
-        public static List<Emote> GetBTTVEmotes(string channel)
+        public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel)
         {
-            try
-            {
-                List<Emote> emotes = new();
-                HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{new TwitchAPI().GetChannelID(channel)}");
-                int emoteCountInChannel = request.Data.GetProperty("sharedEmotes").GetArrayLength();
-                for (int i = 0; i <= emoteCountInChannel - 1; i++)
-                {
-                    emotes.Add(new(i, request.Data.GetProperty("sharedEmotes")[i].GetProperty("code").GetString()));
-                }
-                return emotes.OrderByDescending(e => e.Index).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>();
         }
 
         public static int GetChatterCount(string channel)
@@ -112,37 +88,28 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             return result;
         }
 
-        public static List<Emote> GetFFZEmotes(string channel, int count)
+        public static IEnumerable<FfzEmote> GetFfzEmotes(string channel, int count)
         {
-            try
-            {
-                List<Emote> result = GetFFZEmotes(channel);
-                count = result.Count >= count ? count : result.Count;
-                return result.Take(count).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return GetFfzEmotes(channel)?.Take(count);
         }
 
-        public static List<Emote> GetFFZEmotes(string channel)
+        public static IEnumerable<FfzEmote> GetFfzEmotes(string channel)
+        {
+            return GetFfzRequest(channel)?.Set?.EmoteSet?.Emotes?.Reverse<FfzEmote>();
+        }
+
+        public static FfzRequest GetFfzRequest(string channel)
         {
             try
             {
-                List<Emote> emotes = new();
                 HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag()}");
-                int setID = request.Data.GetProperty("room").GetProperty("set").GetInt32();
-                int emoteCountInChannel = request.Data.GetProperty("sets").GetProperty(setID.ToString()).GetProperty("emoticons").GetArrayLength();
-                for (int i = 0; i <= emoteCountInChannel - 1; i++)
-                {
-                    emotes.Add(new(i, request.Data.GetProperty("sets").GetProperty($"{setID}").GetProperty("emoticons")[i].GetProperty("name").GetString()));
-                }
-                return emotes.OrderByDescending(e => e.Index).ToList();
+                int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
+                string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
+                return JsonSerializer.Deserialize<FfzRequest>(result);
             }
             catch (Exception)
             {
-                throw;
+                return null;
             }
         }
 
@@ -168,6 +135,24 @@ namespace OkayegTeaTimeCSharp.HttpRequests
         private static string GetOnlineCompilerTemplate(string code)
         {
             return File.ReadAllText(Path.OnlineCompilerTemplate).Replace("{code}", code);
+        }
+
+        public static BttvRequest GetBttvRequest(string channel)
+        {
+            return GetBttvRequest(new TwitchAPI().GetChannelID(channel).ToInt());
+        }
+
+        public static BttvRequest GetBttvRequest(int channelId)
+        {
+            try
+            {
+                HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{channelId}");
+                return JsonSerializer.Deserialize<BttvRequest>(request.Result);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

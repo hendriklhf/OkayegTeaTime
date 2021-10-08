@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS0659
-
-using OkayegTeaTimeCSharp.Database;
+﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Utils;
 

@@ -191,19 +191,24 @@
     {
       "CommandName": "emote",
       "Alias": [
-        "emote"
+        "emote",
+        "emotes"
       ],
       "Parameter": [
         "ffz",
         "ffz [number]",
         "bttv",
-        "bttv [number]"
+        "bttv [number]",
+        "7TV",
+        "7TV [number]"
       ],
       "Description": [
         "Sends five of the recently added FFZ emotes",
         "Sends a given amount of recently added FFZ emotes",
         "Sends five of the recently added BTTV emotes",
-        "Sends a given amount of recently added BTTV emotes"
+        "Sends a given amount of recently added BTTV emotes",
+        "Sends five of the 'recently' added 7TV emotes",
+        "Sends a given amount of 'recently' added 7TV emotes"
       ],
       "Cooldown": 15000
     },
