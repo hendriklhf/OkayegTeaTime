@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
 {
     public class SevenTvBroadcast
     {
