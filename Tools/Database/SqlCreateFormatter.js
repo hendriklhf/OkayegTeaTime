@@ -1,6 +1,6 @@
 const file = require("fs");
 
-const sqlFilePath = "../../Resources/SqlCreate.sql";
+const sqlFilePath = "./OkayegTeaTimeCSharp/Resources/SqlCreate.sql";
 const lineEnding = "\r\n";
 const string = {
     "empty": ""

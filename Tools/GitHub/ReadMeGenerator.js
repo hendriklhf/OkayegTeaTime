@@ -1,9 +1,9 @@
 ﻿const file = require("fs");
-const jsonSerializer = require("../../../../JsonSerializerJS/JsonSerializer");
+const jsonSerializer = require("../../../JsonSerializerJS/JsonSerializer");
 
 // Data
-const commands = jsonSerializer.deserialize("../../Resources/Commands.json");
-const readMePath = "../../../README.md";
+const commands = jsonSerializer.deserialize("./OkayegTeaTimeCSharp/Resources/Commands.json");
+const readMePath = "./README.md";
 const title = "OkayegTeaTime";
 const header1 = "Commands";
 const header2 = "AFK-Commands";

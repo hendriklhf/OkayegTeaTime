@@ -1,1 +1,0 @@
-﻿node ..\Database\SqlCreateFormatter.js
