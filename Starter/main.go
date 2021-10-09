@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-const _programPath = "./home/pi/Programs/OkayegTeaTime/OkayegTeaTime"
+const _programPath = "./OkayegTeaTimeCSharp"
 
 func main() {
 	fmt.Println("Starter initialized")

@@ -2,7 +2,7 @@ package starter
 
 import (
 	"fmt"
-	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -50,6 +50,8 @@ func (starter *Starter) IsProgramRunning(programs []string) (running bool) {
 }
 
 func (starter *Starter) StartProgram() {
-	os.StartProcess(starter._programPath, nil, nil)
+	cmd := exec.Command(starter._programPath)
+	cmd.Run()
+	cmd.Start()
 	fmt.Println("Program started")
 }
