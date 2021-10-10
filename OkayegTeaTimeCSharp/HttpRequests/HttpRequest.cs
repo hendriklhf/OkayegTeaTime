@@ -58,7 +58,9 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel, int count)
         {
-            return GetBttvEmotes(channel)?.Take(count);
+            IEnumerable<BttvSharedEmote> emotes = GetBttvEmotes(channel);
+            NormalizeCount(emotes, ref count);
+            return emotes?.Take(count);
         }
 
         public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel)
@@ -90,7 +92,9 @@ namespace OkayegTeaTimeCSharp.HttpRequests
 
         public static IEnumerable<FfzEmote> GetFfzEmotes(string channel, int count)
         {
-            return GetFfzEmotes(channel)?.Take(count);
+            IEnumerable<FfzEmote> emotes = GetFfzEmotes(channel);
+            NormalizeCount(emotes, ref count);
+            return emotes?.Take(count);
         }
 
         public static IEnumerable<FfzEmote> GetFfzEmotes(string channel)
