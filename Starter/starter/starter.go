@@ -32,7 +32,7 @@ func (starter *Starter) Initialize() {
 	}
 }
 
-func (starter *Starter) GetPrograms() (programs []string) {
+func (starter *Starter) GetPrograms() []string {
 	processes, err := ps.Processes()
 	var result []string
 	if err == nil {
@@ -43,7 +43,7 @@ func (starter *Starter) GetPrograms() (programs []string) {
 	return result
 }
 
-func (starter *Starter) IsProgramRunning(programs []string) (running bool) {
+func (starter *Starter) IsProgramRunning(programs []string) bool {
 	return linq.From(programs).AnyWithT(func(p string) bool {
 		return strings.HasPrefix(p, "OkayegTeaTime")
 	})
