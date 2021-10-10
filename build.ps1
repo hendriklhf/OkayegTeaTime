@@ -6,7 +6,10 @@ xcopy .\OkayegTeaTimeCSharp\Resources .\Build\LinuxArm\Resources /E /Y /I
 dotnet test .\Tests\Tests.csproj
 
 node .\Tools\GitHub\ReadMeGenerator.js
-node .\Tools\Database\SqlCreateFormatter.js
+
+cd .\Tools\Database
+go run SqlCreateFormatter.go
+cd ..\..
 
 cd .\Starter
 go env -w GOOS=linux GOARCH=arm
