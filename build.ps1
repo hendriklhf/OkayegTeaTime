@@ -2,9 +2,15 @@ $os = @("win-x64", "linux-arm", "osx-x64")
 $goos = @("windows", "linux", "darwin")
 $goarch = @("amd64", "arm", "amd64")
 
+Write-Output "============="
+Write-Output "BUILD STARTED"
+Write-Output "============="
+
+Remove-Item .\Build -Force -Recurse
+
 for ($i = 0; $i -lt $folder.length; $i++) {
     dotnet publish -o .\Build\$os[$i] -c Release -r $os[$i] -p:PublishSingleFile=true --self-contained true .\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj
-    xcopy .\OkayegTeaTimeCSharp\Resources .\Build\$os[$i]\Resources /E /Y /I
+    Copy-Item .\OkayegTeaTimeCSharp\Resources .\Build\$os[$i]\Resources /E /Y /I
 }
 
 dotnet test .\Tests\Tests.csproj
