@@ -7,6 +7,9 @@ Write-Output "BUILD STARTED"
 Write-Output "============="
 
 Remove-Item .\Build -Force -Recurse
+Remove-Item .\*\bin -Force -Recurse
+Remove-Item .\*\obj -Force -Recurse
+Remove-Item TestResults -Force -Recurse
 
 for ($i = 0; $i -lt $folder.length; $i++) {
     dotnet publish -o .\Build\$os[$i] -c Release -r $os[$i] -p:PublishSingleFile=true --self-contained true .\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj
