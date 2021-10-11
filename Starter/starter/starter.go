@@ -27,7 +27,7 @@ func (starter *Starter) Initialize() {
 		programs := starter.GetPrograms()
 		running := starter.IsProgramRunning(programs)
 		if !running {
-			starter.StartProgram()
+			go starter.StartProgram()
 		}
 	}
 }
