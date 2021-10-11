@@ -27,8 +27,11 @@ func (starter *Starter) Initialize() {
 		programs := starter.GetPrograms()
 		running := starter.IsProgramRunning(programs)
 		if !running {
-			go starter.StartProgram()
+			starter.StartProgram()
+		} else {
+			fmt.Println("Program running")
 		}
+		fmt.Println("wads")
 	}
 }
 
@@ -52,6 +55,5 @@ func (starter *Starter) IsProgramRunning(programs []string) bool {
 func (starter *Starter) StartProgram() {
 	cmd := exec.Command(starter._programPath)
 	cmd.Run()
-	cmd.Start()
 	fmt.Println("Program started")
 }
