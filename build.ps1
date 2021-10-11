@@ -1,9 +1,11 @@
-dotnet publish -o .\Build\win-x64 -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true .\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj
-dotnet publish -o .\Build\linux-arm -c Release -r linux-arm -p:PublishSingleFile=true --self-contained true .\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj
-dotnet publish -o .\Build\macOS -c Release -r osx-x64 -p:PublishSingleFile=true --self-contained true .\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj
-xcopy .\OkayegTeaTimeCSharp\Resources .\Build\win-x64\Resources /E /Y /I
-xcopy .\OkayegTeaTimeCSharp\Resources .\Build\linux-arm\Resources /E /Y /I
-xcopy .\OkayegTeaTimeCSharp\Resources .\Build\macOS\Resources /E /Y /I
+$os = @("win-x64", "linux-arm", "osx-x64")
+$goos = @("windows", "linux", "darwin")
+$goarch = @("amd64", "arm", "amd64")
+
+for ($i = 0; $i -lt $folder.length; $i++) {
+    dotnet publish -o .\Build\$os[$i] -c Release -r $os[$i] -p:PublishSingleFile=true --self-contained true .\OkayegTeaTimeCSharp\OkayegTeaTimeCSharp.csproj
+    xcopy .\OkayegTeaTimeCSharp\Resources .\Build\$os[$i]\Resources /E /Y /I
+}
 
 dotnet test .\Tests\Tests.csproj
 
@@ -14,15 +16,12 @@ go run SqlCreateFormatter.go
 cd ..\..
 
 cd .\Starter
-go env -w GOOS=linux GOARCH=arm
-go build -o ..\Build\linux-arm
-Write-Output "Built Starter for linux-arm"
-go env -w GOOS=darwin GOARCH=amd64
-go build -o ..\build\macOS
-Write-Output "Built Starter for macOS"
-go env -w GOOS=windows
-go build -o ..\Build\win-x64
-Write-Output "Built Starter for win-x64"
+for ($i = 0; $i -lt $goos.length; $i++) {
+    go env -w GOOS=$goos[$i] GOARCH=$goarch[$i]
+    go build -o ..\Build\$os[$i]
+    Write-Output "Built Starter for" + $goos[$i]
+}
+go env -w GOOS=$goos[0] GOARCH=$goarch[0]
 cd ..
 
 Write-Output "=============="
