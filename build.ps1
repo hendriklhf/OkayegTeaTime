@@ -19,7 +19,7 @@ cd .\Starter
 for ($i = 0; $i -lt $goos.length; $i++) {
     go env -w GOOS=$goos[$i] GOARCH=$goarch[$i]
     go build -o ..\Build\$os[$i]
-    Write-Output "Built Starter for" + $goos[$i]
+    Write-Output "Built Starter for $($goos[$i])"
 }
 go env -w GOOS=$goos[0] GOARCH=$goarch[0]
 cd ..
