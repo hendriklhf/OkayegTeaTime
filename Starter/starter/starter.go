@@ -47,7 +47,7 @@ func (starter *Starter) GetPrograms() []string {
 
 func (starter *Starter) IsProgramRunning(programs []string) bool {
 	return linq.From(programs).AnyWithT(func(p string) bool {
-		return strings.HasPrefix(p, "OkayegTeaTime")
+		return strings.HasPrefix(p, "OkayegTeaTimeCS")
 	})
 }
 
