@@ -39,6 +39,7 @@ func main() {
 	jsonController.LoadData()
 	readMe := GenerateReadMe(jsonController)
 	WriteToFile(readMe)
+	fmt.Println("Generated README.md")
 }
 
 func WriteToFile(input string) {
