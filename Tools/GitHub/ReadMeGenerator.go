@@ -84,7 +84,7 @@ func GenerateReadMe(jsonController *Json.JsonController) string {
 		linq.From(c.Alias).ForEachT(func(s string) {
 			builder.WriteString(fmt.Sprintf("<tr><td>%s</td></tr>", s))
 		})
-		builder.WriteString("</table></tr>")
+		builder.WriteString("</table></td>")
 		for i := 0; i < len(c.Parameter); i++ {
 			builder.WriteString(fmt.Sprintf("<td>%s</td><td>%s</td>", c.Parameter[i], c.Description[i]))
 		}
