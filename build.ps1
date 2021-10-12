@@ -14,7 +14,9 @@ for ($i = 0; $i -lt $os.length; $i++)
 
 dotnet test .\Tests\Tests.csproj
 
-node .\Tools\GitHub\ReadMeGenerator.js
+cd .\Tools\GitHub
+go run ReadMeGenerator.go
+cd ..\..
 
 cd .\Tools\Database
 go run SqlCreateFormatter.go
