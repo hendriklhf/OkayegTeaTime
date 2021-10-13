@@ -16,6 +16,7 @@
         First,
         Fuck,
         Gachi,
+        Go,
         Help,
         Id,
         Join,

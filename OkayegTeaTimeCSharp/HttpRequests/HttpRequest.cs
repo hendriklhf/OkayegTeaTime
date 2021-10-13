@@ -5,6 +5,7 @@ using HLE.Collections;
 using HLE.HttpRequests;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
+using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Twitch.API;
@@ -50,8 +51,9 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 });
                 return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Log(ex);
                 return null;
             }
         }
@@ -79,13 +81,15 @@ namespace OkayegTeaTimeCSharp.HttpRequests
             HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
             JsonElement chatters = request.Data.GetProperty("chatters");
             List<Chatter> result = new();
+            byte pIdx = 0;
             new string[] { "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers" }.ForEach(p =>
             {
                 JsonElement chatterList = chatters.GetProperty(p);
                 for (int i = 0; i < chatterList.GetArrayLength(); i++)
                 {
-                    result.Add(new(chatterList[i].GetString(), (ChatRole)i)); //error: i needs to be the index of p
+                    result.Add(new(chatterList[i].GetString(), (ChatRole)pIdx));
                 }
+                pIdx++;
             });
             return result;
         }
@@ -111,8 +115,9 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
                 return JsonSerializer.Deserialize<FfzRequest>(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Log(ex);
                 return null;
             }
         }
@@ -153,10 +158,37 @@ namespace OkayegTeaTimeCSharp.HttpRequests
                 HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{channelId}");
                 return JsonSerializer.Deserialize<BttvRequest>(request.Result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Log(ex);
                 return null;
             }
+        }
+
+        public static string GetGoLangOnlineCompilerResult(string code)
+        {
+            HttpPost request = new("https://play.golang.org/compile",
+                new()
+                {
+                    new("version", "2"),
+                    new("body", GetGoLangOnlineCompilerTemplate(code)),
+                    new("withVet", "true")
+                });
+            string error = request.Data.GetProperty("Errors").GetString();
+            bool hasError = !string.IsNullOrEmpty(error);
+            if (!hasError)
+            {
+                return request.Data.GetProperty("Events")[0].GetProperty("Message").GetString();
+            }
+            else
+            {
+                return error;
+            }
+        }
+
+        private static string GetGoLangOnlineCompilerTemplate(string code)
+        {
+            return File.ReadAllText(Path.GoLangOnlineCompilerTemplate).Replace("{code}", code);
         }
     }
 }

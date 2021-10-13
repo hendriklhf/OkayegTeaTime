@@ -579,6 +579,20 @@
       "Description": [
         "Unsubs you from the notification of newly added emotes"
       ]
+    },
+    {
+      "CommandName": "go",
+      "Alias": [
+        "go",
+        "golang"
+      ],
+      "Parameter": [
+        "[code]"
+      ],
+      "Description": [
+        "Executes the given Go code"
+      ],
+      "Cooldown": 10000
     }
   ],
   "AfkCommands": [

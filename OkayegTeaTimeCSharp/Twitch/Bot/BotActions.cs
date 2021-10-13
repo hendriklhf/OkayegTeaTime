@@ -254,6 +254,11 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             return $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
         }
 
+        public static string SendGoLangCompilerResult(IChatMessage chatMessage)
+        {
+            return $"{chatMessage.Username}, {HttpRequest.GetGoLangOnlineCompilerResult(chatMessage.Message[(chatMessage.Message.Split()[0].Length + 1)..])}";
+        }
+
         public static string SendCreatedNuke(ITwitchChatMessage chatMessage)
         {
             if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
