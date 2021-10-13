@@ -177,57 +177,30 @@ namespace OkayegTeaTimeCSharp.Database
 
         public static Message GetFirst(ITwitchChatMessage chatMessage)
         {
-            try
-            {
-                OkayegTeaTimeContext database = new();
-                return database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username);
-            }
-            catch (Exception)
-            {
-                throw new MessageNotFoundException();
-            }
+            OkayegTeaTimeContext database = new();
+            Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username);
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetFirstChannel(ITwitchChatMessage chatMessage, string channel)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.RemoveHashtag()}");
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetFirstMessageUserChannel(string username, string channel)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == username && channel == $"#{channel.RemoveHashtag()}");
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetFirstUser(string username)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Username == username);
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetLastMessage(string username)
@@ -235,28 +208,14 @@ namespace OkayegTeaTimeCSharp.Database
 
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
+            return message ?? throw new UserNotFoundException();
         }
 
         public static Message GetMessage(int id)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FirstOrDefault(m => m.Id == id);
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static string GetPrefix(string channel)
@@ -285,42 +244,21 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE channel = '#{chatMessage.Channel}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetRandomMessage(string username)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username = '{username.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetRandomMessage(string username, string channel)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username ='{username.MakeQueryable()}' AND channel = '#{channel.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Yourmom GetRandomYourmom()
@@ -337,70 +275,35 @@ namespace OkayegTeaTimeCSharp.Database
         public static Reminder GetReminder(int id)
         {
             Reminder reminder = new OkayegTeaTimeContext().Reminders.FirstOrDefault(r => r.Id == id);
-            if (reminder is not null)
-            {
-                return reminder;
-            }
-            else
-            {
-                throw new ReminderNotFoundException();
-            }
+            return reminder ?? throw new ReminderNotFoundException();
         }
 
         public static Message GetSearch(string keyword)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetSearchChannel(string keyword, string channel)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.RemoveHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetSearchUser(string keyword, string username)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Message GetSearchUserChannel(string keyword, string username, string channel)
         {
             OkayegTeaTimeContext database = new();
             Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' AND Channel = '#{channel.RemoveHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-            if (message is not null)
-            {
-                return message;
-            }
-            else
-            {
-                throw new MessageNotFoundException();
-            }
+            return message ?? throw new MessageNotFoundException();
         }
 
         public static Models.Spotify GetSpotifyUser(string username)
@@ -412,14 +315,7 @@ namespace OkayegTeaTimeCSharp.Database
         {
             OkayegTeaTimeContext database = new();
             User user = database.Users.FirstOrDefault(u => u.Username == username);
-            if (user is not null)
-            {
-                return user;
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
+            return user ?? throw new UserNotFoundException();
         }
 
         public static void AddUser(string username)
