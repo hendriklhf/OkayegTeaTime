@@ -40,6 +40,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         public WhisperHandler WhisperHandler { get; private set; }
 
+        public Restarter Restarter { get; private set; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
+
         public EmoteManagementNotificator EmoteManagementNotificator { get; private set; }
 
         public DottedNumber CommandCount { get; set; } = 1;
@@ -184,19 +186,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
         private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
         {
             ConsoleOut($"CONNECTION-ERROR>{e.Error.Message}", true, ConsoleColor.Red);
-            Environment.Exit(0);
+            Restart();
         }
 
         private void Client_OnError(object sender, OnErrorEventArgs e)
         {
             ConsoleOut($"ERROR>{e.Exception.Message}", true, ConsoleColor.Red);
-            Environment.Exit(0);
+            Restart();
         }
 
         private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
         {
             ConsoleOut($"BOT>DISCONNECTED", true, ConsoleColor.Red);
-            Environment.Exit(0);
+            Restart();
         }
 
         private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
@@ -268,6 +270,7 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
             MessageHandler = new(this);
             WhisperHandler = new(this);
             //EmoteManagementNotificator = new(this);
+            Restarter.InitializeResartTimer();
             InitializeTimers();
         }
     }
