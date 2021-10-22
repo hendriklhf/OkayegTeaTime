@@ -5,20 +5,27 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 {
     public static class Timers
     {
+        private static readonly long[] _timerIntervals =
+        {
+            new Second().Milliseconds,
+            new Second(30).Milliseconds,
+            new Minute().Milliseconds,
+            new Day(10).Milliseconds
+        };
+
         public static void CreateTimers()
         {
-            CreateTimer(new Second().Milliseconds);
-            CreateTimer(new Second(30).Milliseconds);
-            CreateTimer(new Minute().Milliseconds);
-            CreateTimer(new Day(10).Milliseconds);
+            foreach (long interval in _timerIntervals)
+            {
+                CreateTimer(interval);
+            }
         }
 
         private static void CreateTimer(long interval)
         {
-            Timer timer = new()
+            Timer timer = new(interval)
             {
                 Enabled = false,
-                Interval = interval,
                 AutoReset = true
             };
             TwitchBot.Timers.Add(timer);

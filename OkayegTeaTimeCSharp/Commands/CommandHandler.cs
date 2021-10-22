@@ -71,7 +71,7 @@ namespace OkayegTeaTimeCSharp.Commands
             }
         }
 
-        private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+        private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
         {
             Type commandClass = Type.GetType(CommandHelper.GetCommandClassName(type));
             ConstructorInfo constructor = commandClass.GetConstructor(new Type[] { typeof(TwitchBot), typeof(ITwitchChatMessage), typeof(string) });
