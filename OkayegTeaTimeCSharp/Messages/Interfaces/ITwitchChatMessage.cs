@@ -20,6 +20,8 @@ namespace OkayegTeaTimeCSharp.Messages.Interfaces
 
         public Guid Id { get; }
 
+        public bool IsAction { get; }
+
         public bool IsBroadcaster { get; }
 
         public bool IsHighlighted { get; }
