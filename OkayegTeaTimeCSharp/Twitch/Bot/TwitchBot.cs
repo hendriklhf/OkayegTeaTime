@@ -168,6 +168,8 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
+            MessageHandler.CheckForPajaAlert(e.ChatMessage);
+
             MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
             ConsoleOut($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
         }

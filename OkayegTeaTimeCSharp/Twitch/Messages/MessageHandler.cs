@@ -7,6 +7,7 @@ using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Bot;
+using TwitchLib.Client.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Messages
 {
@@ -28,7 +29,6 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
 
         public override void Handle(ITwitchChatMessage chatMessage)
         {
-            HandleSpecificMessages(chatMessage);
             if (!chatMessage.UserTags.Contains(UserTag.Special))
             {
                 DatabaseController.AddUser(chatMessage.Username);
@@ -42,18 +42,19 @@ namespace OkayegTeaTimeCSharp.Twitch.Messages
                 CommandHandler.Handle(chatMessage);
 
                 DatabaseController.CheckForNukes(TwitchBot, chatMessage);
+
+                HandleSpecificMessages(chatMessage);
             }
         }
 
         private void HandleSpecificMessages(ITwitchChatMessage chatMessage)
         {
-            CheckForPajaAlert(chatMessage);
             CheckForSpotifyUri(chatMessage);
         }
 
-        private void CheckForPajaAlert(ITwitchChatMessage chatMessage)
+        public void CheckForPajaAlert(ChatMessage chatMessage)
         {
-            if (chatMessage.Username == _pajaAlertUsername && _pajaAlertPattern.IsMatch(chatMessage.Message) && chatMessage.IsAction)
+            if (chatMessage.Username == _pajaAlertUsername && _pajaAlertPattern.IsMatch(chatMessage.Message))
             {
                 TwitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
             }
