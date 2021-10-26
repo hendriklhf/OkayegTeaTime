@@ -1,11 +1,10 @@
-﻿namespace OkayegTeaTimeCSharp.Messages.Enums
+﻿namespace OkayegTeaTimeCSharp.Messages.Enums;
+
+public enum UserTag
 {
-    public enum UserTag
-    {
-        Normal,
-        Special,
-        Secret,
-        Moderator,
-        Owner
-    }
+    Normal,
+    Special,
+    Secret,
+    Moderator,
+    Owner
 }

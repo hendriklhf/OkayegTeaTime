@@ -2,30 +2,29 @@
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Utils;
 
-namespace OkayegTeaTimeCSharp.Spotify
+namespace OkayegTeaTimeCSharp.Spotify;
+
+public class LinkRecognizer
 {
-    public class LinkRecognizer
+    public string Message { get; set; }
+
+    public LinkRecognizer(IChatMessage chatMessage)
     {
-        public string Message { get; set; }
+        Message = chatMessage.Message;
+    }
 
-        public LinkRecognizer(IChatMessage chatMessage)
+    public bool TryFindSpotifyLink(out string uri)
+    {
+        if (Message.IsMatch(Pattern.SpotifyLink))
         {
-            Message = chatMessage.Message;
+            string uriCode = Message.Match(@"track/\w+\?").Remove("track/").Remove("?");
+            uri = $"spotify:track:{uriCode}";
+            return true;
         }
-
-        public bool TryFindSpotifyLink(out string uri)
+        else
         {
-            if (Message.IsMatch(Pattern.SpotifyLink))
-            {
-                string uriCode = Message.Match(@"track/\w+\?").Remove("track/").Remove("?");
-                uri = $"spotify:track:{uriCode}";
-                return true;
-            }
-            else
-            {
-                uri = null;
-                return false;
-            }
+            uri = null;
+            return false;
         }
     }
 }

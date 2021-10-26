@@ -1,17 +1,16 @@
 ﻿using HLE.Time;
 
-namespace OkayegTeaTimeCSharp.Twitch.Bot
+namespace OkayegTeaTimeCSharp.Twitch.Bot;
+
+public class AfkCooldown
 {
-    public class AfkCooldown
+    public string Username { get; }
+
+    public long Time { get; }
+
+    public AfkCooldown(string username)
     {
-        public string Username { get; }
-
-        public long Time { get; }
-
-        public AfkCooldown(string username)
-        {
-            Username = username;
-            Time = TimeHelper.Now() + TwitchConfig.AfkCooldown;
-        }
+        Username = username;
+        Time = TimeHelper.Now() + TwitchConfig.AfkCooldown;
     }
 }

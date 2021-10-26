@@ -1,9 +1,8 @@
-﻿namespace OkayegTeaTimeCSharp.Messages.Interfaces
-{
-    public interface ITwitchWhisperMessage : ITwitchMessage
-    {
-        public int MessageId { get; }
+﻿namespace OkayegTeaTimeCSharp.Messages.Interfaces;
 
-        public int ThreadId { get; }
-    }
+public interface ITwitchWhisperMessage : ITwitchMessage
+{
+    public int MessageId { get; }
+
+    public int ThreadId { get; }
 }

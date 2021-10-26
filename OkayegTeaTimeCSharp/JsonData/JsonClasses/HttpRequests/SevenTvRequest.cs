@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
+
+public class SevenTvRequest
 {
-    public class SevenTvRequest
-    {
-        [JsonPropertyName("data")]
-        public SevenTvData Data { get; set; }
-    }
+    [JsonPropertyName("data")]
+    public SevenTvData Data { get; set; }
 }

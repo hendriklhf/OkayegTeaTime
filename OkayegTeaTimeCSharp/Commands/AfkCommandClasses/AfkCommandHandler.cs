@@ -2,13 +2,12 @@
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 
-namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses
+namespace OkayegTeaTimeCSharp.Commands.AfkCommandClasses;
+
+public static class AfkCommandHandler
 {
-    public static class AfkCommandHandler
+    public static void Handle(TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
     {
-        public static void Handle(TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
-        {
-            twitchBot.SendGoingAfk(chatMessage, type);
-        }
+        twitchBot.SendGoingAfk(chatMessage, type);
     }
 }

@@ -1,13 +1,12 @@
-namespace OkayegTeaTimeCSharp.Models.Enums
+namespace OkayegTeaTimeCSharp.Models.Enums;
+
+public enum ChatRole
 {
-    public enum ChatRole
-    {
-        Broadcaster,
-        VIP,
-        Moderator,
-        Staff,
-        Admin,
-        GlobalMod,
-        Viewer
-    }
+    Broadcaster,
+    VIP,
+    Moderator,
+    Staff,
+    Admin,
+    GlobalMod,
+    Viewer
 }

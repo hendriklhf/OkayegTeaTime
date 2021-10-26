@@ -1,11 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using OkayegTeaTimeCSharp.HttpRequests;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
+
+public class FfzSets
 {
-    public class FfzSets
-    {
-        [JsonPropertyName(HttpRequest.FfzSetIdReplacement)]
-        public FfzMainSet EmoteSet { get; set; }
-    }
+    [JsonPropertyName(HttpRequest.FfzSetIdReplacement)]
+    public FfzMainSet EmoteSet { get; set; }
 }

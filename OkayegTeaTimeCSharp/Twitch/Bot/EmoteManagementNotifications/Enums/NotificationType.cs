@@ -1,8 +1,8 @@
-﻿namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications.Enums
+﻿namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications.Enums;
+
+public enum NotificationType
 {
-    public enum NotificationType
-    {
-        NewEmote,
-        RemovedEmote
-    }
+    NewEmote,
+    RemovedEmote
 }
+

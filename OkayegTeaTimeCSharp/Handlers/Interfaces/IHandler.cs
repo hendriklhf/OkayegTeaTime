@@ -1,12 +1,11 @@
 ﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 
-namespace OkayegTeaTimeCSharp.Handlers.Interfaces
-{
-    public interface IHandler
-    {
-        public TwitchBot TwitchBot { get; }
+namespace OkayegTeaTimeCSharp.Handlers.Interfaces;
 
-        public void Handle(ITwitchChatMessage chatMessage);
-    }
+public interface IHandler
+{
+    public TwitchBot TwitchBot { get; }
+
+    public void Handle(ITwitchChatMessage chatMessage);
 }

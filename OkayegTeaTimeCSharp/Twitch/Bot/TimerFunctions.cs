@@ -2,28 +2,27 @@
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Twitch.API;
 
-namespace OkayegTeaTimeCSharp.Twitch.Bot
+namespace OkayegTeaTimeCSharp.Twitch.Bot;
+
+public static class TimerFunctions
 {
-    public static class TimerFunctions
+    public static void CheckForTimedReminders(TwitchBot twitchBot)
     {
-        public static void CheckForTimedReminders(TwitchBot twitchBot)
-        {
-            DatabaseController.CheckForTimedReminder(twitchBot);
-        }
+        DatabaseController.CheckForTimedReminder(twitchBot);
+    }
 
-        public static void LoadJsonData()
-        {
-            new JsonController().LoadData();
-        }
+    public static void LoadJsonData()
+    {
+        new JsonController().LoadData();
+    }
 
-        public static void SetConsoleTitle(TwitchBot twitchBot)
-        {
-            Console.Title = $"OkayegTeaTime - {twitchBot.GetSystemInfo()}";
-        }
+    public static void SetConsoleTitle(TwitchBot twitchBot)
+    {
+        Console.Title = $"OkayegTeaTime - {twitchBot.GetSystemInfo()}";
+    }
 
-        public static void TwitchApiRefreshAccessToken()
-        {
-            new TwitchAPI().RefreshAccessToken();
-        }
+    public static void TwitchApiRefreshAccessToken()
+    {
+        new TwitchAPI().RefreshAccessToken();
     }
 }

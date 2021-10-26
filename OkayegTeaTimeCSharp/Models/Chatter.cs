@@ -1,27 +1,26 @@
 using OkayegTeaTimeCSharp.Models.Enums;
 
-namespace OkayegTeaTimeCSharp.Models
+namespace OkayegTeaTimeCSharp.Models;
+
+public class Chatter
 {
-    public class Chatter
+    public string Username { get; }
+
+    public ChatRole ChatRole { get; }
+
+    public Chatter(string username, ChatRole chatRole)
     {
-        public string Username { get; }
+        Username = username;
+        ChatRole = chatRole;
+    }
 
-        public ChatRole ChatRole { get; }
+    public override bool Equals(object obj)
+    {
+        return obj is Chatter chatter && chatter.Username == Username;
+    }
 
-        public Chatter(string username, ChatRole chatRole)
-        {
-            Username = username;
-            ChatRole = chatRole;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Chatter chatter && chatter.Username == Username;
-        }
-
-        public override string ToString()
-        {
-            return Username;
-        }
+    public override string ToString()
+    {
+        return Username;
     }
 }

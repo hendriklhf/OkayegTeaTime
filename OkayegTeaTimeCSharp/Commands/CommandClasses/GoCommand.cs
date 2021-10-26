@@ -3,21 +3,20 @@ using OkayegTeaTimeCSharp.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Utils;
 
-namespace OkayegTeaTimeCSharp.Commands.CommandClasses
-{
-    public class GoCommand : Command
-    {
-        public GoCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
-            : base(twitchBot, chatMessage, alias)
-        {
-        }
+namespace OkayegTeaTimeCSharp.Commands.CommandClasses;
 
-        public override void Handle()
+public class GoCommand : Command
+{
+    public GoCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+        : base(twitchBot, chatMessage, alias)
+    {
+    }
+
+    public override void Handle()
+    {
+        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+")))
         {
-            if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+")))
-            {
-                TwitchBot.Send(ChatMessage.Channel, BotActions.SendGoLangCompilerResult(ChatMessage));
-            }
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendGoLangCompilerResult(ChatMessage));
         }
     }
 }

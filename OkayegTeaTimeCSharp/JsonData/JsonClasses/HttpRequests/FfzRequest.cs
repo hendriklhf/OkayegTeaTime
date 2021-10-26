@@ -1,13 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
-{
-    public class FfzRequest
-    {
-        [JsonPropertyName("room")]
-        public FfzRoom Room { get; set; }
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 
-        [JsonPropertyName("sets")]
-        public FfzSets Set { get; set; }
-    }
+public class FfzRequest
+{
+    [JsonPropertyName("room")]
+    public FfzRoom Room { get; set; }
+
+    [JsonPropertyName("sets")]
+    public FfzSets Set { get; set; }
 }

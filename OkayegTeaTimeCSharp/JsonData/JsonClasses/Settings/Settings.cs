@@ -1,7 +1,6 @@
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
+
+public class Settings
 {
-    public class Settings
-    {
-        public UserLists UserLists { get; set; }
-    }
+    public UserLists UserLists { get; set; }
 }

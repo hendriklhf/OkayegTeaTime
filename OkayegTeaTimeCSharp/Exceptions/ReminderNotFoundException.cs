@@ -1,15 +1,14 @@
-﻿namespace OkayegTeaTimeCSharp.Exceptions
+﻿namespace OkayegTeaTimeCSharp.Exceptions;
+
+public class ReminderNotFoundException : Exception
 {
-    public class ReminderNotFoundException : Exception
+    public override string Message { get; } = "could not find any matching reminder";
+
+    public ReminderNotFoundException() : base()
     {
-        public override string Message { get; } = "could not find any matching reminder";
+    }
 
-        public ReminderNotFoundException() : base()
-        {
-        }
-
-        public ReminderNotFoundException(string message) : base(message)
-        {
-        }
+    public ReminderNotFoundException(string message) : base(message)
+    {
     }
 }

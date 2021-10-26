@@ -7,90 +7,89 @@ using OkayegTeaTimeCSharp.Messages.Interfaces;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Messages.Models
+namespace OkayegTeaTimeCSharp.Messages.Models;
+
+public class TwitchMessage : ITwitchMessage
 {
-    public class TwitchMessage : ITwitchMessage
+    public List<string> Badges { get; }
+
+    public Color Color { get; }
+
+    public string ColorHex { get; }
+
+    public bool IsTurbo { get; }
+
+    public string RawIrcMessage { get; }
+
+    public int UserId { get; }
+
+    public List<UserTag> UserTags { get; }
+
+    public UserType UserType { get; }
+
+    public string DisplayName { get; }
+
+    public string[] LowerSplit { get; }
+
+    public string Message { get; }
+
+    public string[] Split { get; }
+
+    public string Username { get; }
+
+    public TwitchMessage(TwitchLibMessage twitchLibMessage)
     {
-        public List<string> Badges { get; }
+        Badges = twitchLibMessage.Badges.Select(b => b.Key).ToList();
+        Color = twitchLibMessage.Color;
+        ColorHex = twitchLibMessage.ColorHex;
+        DisplayName = twitchLibMessage.DisplayName;
+        IsTurbo = twitchLibMessage.IsTurbo;
+        RawIrcMessage = twitchLibMessage.RawIrcMessage;
+        Message = GetMessage();
+        LowerSplit = GetLowerSplit();
+        Split = GetSplit();
+        UserId = twitchLibMessage.UserId.ToInt();
+        Username = twitchLibMessage.Username;
+        UserTags = GetUserTags();
+        UserType = twitchLibMessage.UserType;
+    }
 
-        public Color Color { get; }
-
-        public string ColorHex { get; }
-
-        public bool IsTurbo { get; }
-
-        public string RawIrcMessage { get; }
-
-        public int UserId { get; }
-
-        public List<UserTag> UserTags { get; }
-
-        public UserType UserType { get; }
-
-        public string DisplayName { get; }
-
-        public string[] LowerSplit { get; }
-
-        public string Message { get; }
-
-        public string[] Split { get; }
-
-        public string Username { get; }
-
-        public TwitchMessage(TwitchLibMessage twitchLibMessage)
+    private List<UserTag> GetUserTags()
+    {
+        List<UserTag> result = new() { UserTag.Normal };
+        UserLists userLists = new JsonController().Settings.UserLists;
+        if (userLists.Moderators.Contains(Username))
         {
-            Badges = twitchLibMessage.Badges.Select(b => b.Key).ToList();
-            Color = twitchLibMessage.Color;
-            ColorHex = twitchLibMessage.ColorHex;
-            DisplayName = twitchLibMessage.DisplayName;
-            IsTurbo = twitchLibMessage.IsTurbo;
-            RawIrcMessage = twitchLibMessage.RawIrcMessage;
-            Message = GetMessage();
-            LowerSplit = GetLowerSplit();
-            Split = GetSplit();
-            UserId = twitchLibMessage.UserId.ToInt();
-            Username = twitchLibMessage.Username;
-            UserTags = GetUserTags();
-            UserType = twitchLibMessage.UserType;
+            result.Add(UserTag.Moderator);
         }
-
-        private List<UserTag> GetUserTags()
+        if (userLists.Owners.Contains(Username))
         {
-            List<UserTag> result = new() { UserTag.Normal };
-            UserLists userLists = new JsonController().Settings.UserLists;
-            if (userLists.Moderators.Contains(Username))
-            {
-                result.Add(UserTag.Moderator);
-            }
-            if (userLists.Owners.Contains(Username))
-            {
-                result.Add(UserTag.Owner);
-            }
-            if (userLists.SpecialUsers.Contains(Username))
-            {
-                result.Add(UserTag.Special);
-            }
-            if (userLists.SecretUsers.Contains(Username))
-            {
-                result.Add(UserTag.Secret);
-            }
-            return result;
+            result.Add(UserTag.Owner);
         }
-
-        private string GetMessage()
+        if (userLists.SpecialUsers.Contains(Username))
         {
-            string message = RawIrcMessage.Match(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$");
-            return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
+            result.Add(UserTag.Special);
         }
-
-        private string[] GetSplit()
+        if (userLists.SecretUsers.Contains(Username))
         {
-            return Message.SplitNormal();
+            result.Add(UserTag.Secret);
         }
+        return result;
+    }
 
-        private string[] GetLowerSplit()
-        {
-            return Message.SplitToLowerCase();
-        }
+    private string GetMessage()
+    {
+        string message = RawIrcMessage.Match(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$");
+        return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
+    }
+
+    private string[] GetSplit()
+    {
+        return Message.SplitNormal();
+    }
+
+    private string[] GetLowerSplit()
+    {
+        return Message.SplitToLowerCase();
     }
 }

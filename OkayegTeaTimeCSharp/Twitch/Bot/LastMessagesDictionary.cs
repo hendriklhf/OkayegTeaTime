@@ -1,44 +1,43 @@
-﻿namespace OkayegTeaTimeCSharp.Twitch.Bot
+﻿namespace OkayegTeaTimeCSharp.Twitch.Bot;
+
+public static class LastMessagesDictionary
 {
-    public static class LastMessagesDictionary
+    private static Dictionary<string, string> _lastMessages = new();
+
+    public static void FillDictionary()
     {
-        private static Dictionary<string, string> _lastMessages = new();
+        _lastMessages = TwitchConfig.Channels.ToDictionary(c => c, c => string.Empty);
+    }
 
-        public static void FillDictionary()
+    public static void Add(string channel, string message = "")
+    {
+        if (!_lastMessages.ContainsKey(channel))
         {
-            _lastMessages = TwitchConfig.Channels.ToDictionary(c => c, c => string.Empty);
+            _lastMessages.Add(channel, message);
         }
+    }
 
-        public static void Add(string channel, string message = "")
+    public static void Set(string channel, string message)
+    {
+        if (_lastMessages.ContainsKey(channel))
         {
-            if (!_lastMessages.ContainsKey(channel))
-            {
-                _lastMessages.Add(channel, message);
-            }
+            _lastMessages[channel] = message;
         }
-
-        public static void Set(string channel, string message)
+        else
         {
-            if (_lastMessages.ContainsKey(channel))
-            {
-                _lastMessages[channel] = message;
-            }
-            else
-            {
-                Add(channel, message);
-            }
+            Add(channel, message);
         }
+    }
 
-        public static string Get(string channel)
+    public static string Get(string channel)
+    {
+        if (_lastMessages.TryGetValue(channel, out string message))
         {
-            if (_lastMessages.TryGetValue(channel, out string message))
-            {
-                return message;
-            }
-            else
-            {
-                return null;
-            }
+            return message;
+        }
+        else
+        {
+            return null;
         }
     }
 }

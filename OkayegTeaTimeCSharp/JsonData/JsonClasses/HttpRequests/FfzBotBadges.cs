@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
+
+public class FfzBotBadges
 {
-    public class FfzBotBadges
-    {
-        [JsonPropertyName("2")]
-        public List<string> Users { get; set; }
-    }
+    [JsonPropertyName("2")]
+    public List<string> Users { get; set; }
 }

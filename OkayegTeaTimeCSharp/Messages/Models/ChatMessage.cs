@@ -2,43 +2,42 @@
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Messages.Models
+namespace OkayegTeaTimeCSharp.Messages.Models;
+
+public class ChatMessage : IChatMessage
 {
-    public class ChatMessage : IChatMessage
+    public string DisplayName { get; }
+
+    public string[] LowerSplit { get; }
+
+    public string Message { get; }
+
+    public string[] Split { get; }
+
+    public string Username { get; }
+
+    public ChatMessage(TwitchLibMessage twitchLibMessage)
     {
-        public string DisplayName { get; }
+        DisplayName = twitchLibMessage.DisplayName;
+        Message = GetMessage(twitchLibMessage).MakeUsable();
+        LowerSplit = GetLowerSplit();
+        Split = GetSplit();
+        Username = twitchLibMessage.Username;
+    }
 
-        public string[] LowerSplit { get; }
+    private string GetMessage(TwitchLibMessage twitchLibMessage)
+    {
+        string message = twitchLibMessage.RawIrcMessage.Match(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$");
+        return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
+    }
 
-        public string Message { get; }
+    private string[] GetSplit()
+    {
+        return Message.SplitNormal();
+    }
 
-        public string[] Split { get; }
-
-        public string Username { get; }
-
-        public ChatMessage(TwitchLibMessage twitchLibMessage)
-        {
-            DisplayName = twitchLibMessage.DisplayName;
-            Message = GetMessage(twitchLibMessage).MakeUsable();
-            LowerSplit = GetLowerSplit();
-            Split = GetSplit();
-            Username = twitchLibMessage.Username;
-        }
-
-        private string GetMessage(TwitchLibMessage twitchLibMessage)
-        {
-            string message = twitchLibMessage.RawIrcMessage.Match(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$");
-            return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
-        }
-
-        private string[] GetSplit()
-        {
-            return Message.SplitNormal();
-        }
-
-        private string[] GetLowerSplit()
-        {
-            return Message.SplitToLowerCase();
-        }
+    private string[] GetLowerSplit()
+    {
+        return Message.SplitToLowerCase();
     }
 }

@@ -1,29 +1,28 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
+
+public class BttvSharedEmote
 {
-    public class BttvSharedEmote
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
+    [JsonPropertyName("code")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("imageType")]
+    public string ImageType { get; set; }
+
+    [JsonPropertyName("user")]
+    public BttvUser User { get; set; }
+
+    public override bool Equals(object obj)
     {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+        return obj is BttvSharedEmote emote && emote.Name == Name;
+    }
 
-        [JsonPropertyName("code")]
-        public string Name { get; set; }
-
-        [JsonPropertyName("imageType")]
-        public string ImageType { get; set; }
-
-        [JsonPropertyName("user")]
-        public BttvUser User { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            return obj is BttvSharedEmote emote && emote.Name == Name;
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+    public override string ToString()
+    {
+        return Name;
     }
 }
