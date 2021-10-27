@@ -4,8 +4,8 @@ using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
-using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Models;
 
 namespace Tests;
 

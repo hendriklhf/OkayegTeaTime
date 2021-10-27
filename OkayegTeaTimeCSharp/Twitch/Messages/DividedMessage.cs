@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using HLE.Strings;
-using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Twitch.Bot;
+using OkayegTeaTimeCSharp.Twitch.Models;
 
 namespace OkayegTeaTimeCSharp.Twitch.Messages;
 

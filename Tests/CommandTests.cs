@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using HLE.Enums;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTimeCSharp.Commands;
-using OkayegTeaTimeCSharp.Commands.Enums;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
+using OkayegTeaTimeCSharp.Twitch.Commands;
+using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 using JCommand = OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData.Command;
 
 namespace Tests;

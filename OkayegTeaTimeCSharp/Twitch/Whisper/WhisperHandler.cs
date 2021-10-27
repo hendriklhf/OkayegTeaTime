@@ -1,5 +1,5 @@
-﻿using OkayegTeaTimeCSharp.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Twitch.Bot;
+using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
 
 namespace OkayegTeaTimeCSharp.Twitch.Whisper;
 

@@ -6,9 +6,9 @@ using HLE.HttpRequests;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
-using OkayegTeaTimeCSharp.Models;
-using OkayegTeaTimeCSharp.Models.Enums;
 using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Models;
+using OkayegTeaTimeCSharp.Twitch.Models.Enums;
 using OkayegTeaTimeCSharp.Utils;
 using Path = OkayegTeaTimeCSharp.Properties.Path;
 
