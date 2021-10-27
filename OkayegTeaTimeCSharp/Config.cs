@@ -2,9 +2,9 @@
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Properties;
 
-namespace OkayegTeaTimeCSharp.Twitch;
+namespace OkayegTeaTimeCSharp;
 
-public static class TwitchConfig
+public static class Config
 {
     public const short AfkCooldown = 10000;
     public const string DefaultEmote = "Okayeg";
@@ -21,11 +21,9 @@ public static class TwitchConfig
 
     public static List<string> Moderators => new JsonController().Settings.UserLists.Moderators.Concat(Owners).Distinct().ToList();
 
-    public static List<string> SpecialUsers => new JsonController().Settings.UserLists.SpecialUsers;
+    public static List<string> SpecialUsers => new JsonController().Settings.UserLists.IgnoredUsers;
 
     public static List<string> SecretUsers => new JsonController().Settings.UserLists.SecretUsers;
-
-    public static List<string> NotAllowedChannels => Settings.NotAllowedChannels.Split().ToList();
 
     public static List<string> NotLoggedChannels => Settings.NotLoggedChannels.Split().ToList();
 }

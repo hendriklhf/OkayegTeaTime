@@ -11,6 +11,6 @@ public class AfkCooldown
     public AfkCooldown(string username)
     {
         Username = username;
-        Time = TimeHelper.Now() + TwitchConfig.AfkCooldown;
+        Time = TimeHelper.Now() + Config.AfkCooldown;
     }
 }

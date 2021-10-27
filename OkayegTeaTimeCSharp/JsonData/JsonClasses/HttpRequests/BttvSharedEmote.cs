@@ -18,7 +18,7 @@ public class BttvSharedEmote
 
     public override bool Equals(object obj)
     {
-        return obj is BttvSharedEmote emote && emote.Name == Name;
+        return obj is BttvSharedEmote emote && emote.Id == Id;
     }
 
     public override string ToString()

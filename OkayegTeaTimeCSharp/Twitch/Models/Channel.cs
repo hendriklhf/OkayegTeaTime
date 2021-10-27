@@ -18,7 +18,7 @@ public class Channel
 
     public string Emote
     {
-        get => _emote ?? TwitchConfig.DefaultEmote;
+        get => _emote ?? Config.DefaultEmote;
         set
         {
             _emote = value;

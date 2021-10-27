@@ -20,7 +20,7 @@ public class DividedMessage
         TwitchBot = twitchBot;
         Channel = channel;
         EmoteInFront = emoteInFront;
-        Messages = message.Split(TwitchConfig.MaxMessageLength - (EmoteInFront.Length + 1));
+        Messages = message.Split(Config.MaxMessageLength - (EmoteInFront.Length + 1));
     }
 
     public void StartSending()
@@ -29,11 +29,11 @@ public class DividedMessage
         Messages.RemoveAt(0);
         if (Messages.Count > 0)
         {
-            Thread.Sleep(TwitchConfig.MinDelayBetweenMessages);
+            Thread.Sleep(Config.MinDelayBetweenMessages);
             Messages.ForEach(str =>
             {
                 TwitchBot.TwitchClient.SendMessage(Channel.Name, str);
-                Thread.Sleep(TwitchConfig.MinDelayBetweenMessages);
+                Thread.Sleep(Config.MinDelayBetweenMessages);
             });
         }
     }

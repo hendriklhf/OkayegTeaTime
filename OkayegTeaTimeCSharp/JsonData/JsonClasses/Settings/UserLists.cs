@@ -6,7 +6,7 @@ public class UserLists
 
     public List<string> Moderators { get; set; }
 
-    public List<string> SpecialUsers { get; set; }
+    public List<string> IgnoredUsers { get; set; }
 
     public List<string> SecretUsers { get; set; }
 }

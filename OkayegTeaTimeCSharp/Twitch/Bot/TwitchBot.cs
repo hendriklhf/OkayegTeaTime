@@ -9,7 +9,6 @@ using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Models;
 using OkayegTeaTimeCSharp.Twitch.Whisper;
-using OkayegTeaTimeCSharp.Utils;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -94,19 +93,16 @@ public class TwitchBot
 
     public void Send(Channel channel, string message)
     {
-        if (!TwitchConfig.NotAllowedChannels.Contains(channel.Name.RemoveHashtag()))
+        if ($"{channel.Emote} {message} {Settings.ChatterinoChar}".Length <= Config.MaxMessageLength)
         {
-            if ($"{channel.Emote} {message} {Settings.ChatterinoChar}".Length <= TwitchConfig.MaxMessageLength)
-            {
-                message = message == LastMessagesDictionary.Get(channel.Name) ? $"{message} {Settings.ChatterinoChar}" : message;
-                message = $"{channel.Emote} {message}";
-                TwitchClient.SendMessage(channel.Name, message);
-                LastMessagesDictionary.Set(channel.Name, message);
-            }
-            else
-            {
-                new DividedMessage(this, channel, channel.Emote, message).StartSending();
-            }
+            message = message == LastMessagesDictionary.Get(channel.Name) ? $"{message} {Settings.ChatterinoChar}" : message;
+            message = $"{channel.Emote} {message}";
+            TwitchClient.SendMessage(channel.Name, message);
+            LastMessagesDictionary.Set(channel.Name, message);
+        }
+        else
+        {
+            new DividedMessage(this, channel, channel.Emote, message).StartSending();
         }
     }
 
@@ -140,7 +136,7 @@ public class TwitchBot
         return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
     }
 
-    private static string GetMemoryUsage()
+    private string GetMemoryUsage()
     {
         return $"{Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100}MB / 8000MB";
     }
@@ -208,7 +204,7 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
-        if (e.Channel == Settings.SecretOfflineChat && !TwitchConfig.SecretUsers.Contains(e.Username))
+        if (e.Channel == Settings.SecretOfflineChat && !Config.SecretUsers.Contains(e.Username))
         {
             Send(Settings.SecretOfflineChat, $"{e.Username} joined the chat Stare");
         }
@@ -269,9 +265,7 @@ public class TwitchBot
     {
         MessageHandler = new(this);
         WhisperHandler = new(this);
-#if DEBUG
         EmoteManagementNotificator = new(this);
-#endif
         Restarter.InitializeResartTimer();
         InitializeTimers();
     }

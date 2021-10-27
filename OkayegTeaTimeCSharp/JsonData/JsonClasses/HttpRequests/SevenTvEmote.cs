@@ -21,4 +21,14 @@ public class SevenTvEmote
 
     [JsonPropertyName("height")]
     public List<int> Height { get; set; }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SevenTvEmote emote && emote.Id == Id;
+    }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

@@ -53,11 +53,11 @@ public static class CommandHelper
 
     public static bool MatchesAnyAlias(this ITwitchChatMessage chatMessage, CommandType type)
     {
-        return GetCommand(type).Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + TwitchConfig.Suffix == chatMessage.LowerSplit[0]);
+        return GetCommand(type).Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + Config.Suffix == chatMessage.LowerSplit[0]);
     }
 
     public static bool MatchesAnyAlias(this ITwitchChatMessage chatMessage, AfkCommandType type)
     {
-        return GetAfkCommand(type).Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + TwitchConfig.Suffix == chatMessage.LowerSplit[0]);
+        return GetAfkCommand(type).Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + Config.Suffix == chatMessage.LowerSplit[0]);
     }
 }

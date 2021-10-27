@@ -17,6 +17,7 @@ public class EmoteManagementNotificator
     private readonly List<NotificatorChannel> _channels = new();
     private readonly Timer _timer = new(new Minute().Milliseconds);
 
+
     public EmoteManagementNotificator(TwitchBot twitchBot)
     {
         TwitchBot = twitchBot;

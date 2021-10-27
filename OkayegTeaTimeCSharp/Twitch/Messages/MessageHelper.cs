@@ -25,12 +25,12 @@ public static class MessageHelper
 
     public static bool IsNotLoggedChannel(this string channel)
     {
-        return TwitchConfig.NotLoggedChannels.Contains(channel);
+        return Config.NotLoggedChannels.Contains(channel);
     }
 
     public static bool IsSpecialUser(this string username)
     {
-        return TwitchConfig.SpecialUsers.Contains(username);
+        return Config.SpecialUsers.Contains(username);
     }
 
     public static byte[] MakeInsertable(this string input)

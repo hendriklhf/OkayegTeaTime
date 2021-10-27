@@ -16,7 +16,7 @@ public class JsonTests
         Assert.IsTrue(userLists.Moderators is not null);
         Assert.IsTrue(userLists.Owners is not null);
         Assert.IsTrue(userLists.SecretUsers is not null);
-        Assert.IsTrue(userLists.SpecialUsers is not null);
+        Assert.IsTrue(userLists.IgnoredUsers is not null);
     }
 
     [TestMethod]

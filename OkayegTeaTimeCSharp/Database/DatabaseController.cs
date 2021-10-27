@@ -4,7 +4,6 @@ using HLE.Time;
 using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
-using OkayegTeaTimeCSharp.Twitch;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages;
@@ -58,14 +57,14 @@ public static class DatabaseController
         OkayegTeaTimeContext database = new();
         if (reminder.ToTime == 0)
         {
-            if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= TwitchConfig.MaxReminders)
+            if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
             {
                 throw new TooManyReminderException();
             }
         }
         else
         {
-            if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= TwitchConfig.MaxReminders)
+            if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
             {
                 throw new TooManyReminderException();
             }
@@ -330,7 +329,7 @@ public static class DatabaseController
 
     public static void AddMessage(ITwitchChatMessage chatMessage)
     {
-        if (!TwitchConfig.NotLoggedChannels.Contains(chatMessage.Channel.Name))
+        if (!Config.NotLoggedChannels.Contains(chatMessage.Channel.Name))
         {
             OkayegTeaTimeContext database = new();
             database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel.Name));
@@ -345,7 +344,7 @@ public static class DatabaseController
         Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.Name.RemoveHashtag()}");
         if (nuke is not null)
         {
-            if (chatMessage.IsBroadcaster || chatMessage.IsModerator || TwitchConfig.Moderators.Contains(chatMessage.Username))
+            if (chatMessage.IsBroadcaster || chatMessage.IsModerator || Config.Moderators.Contains(chatMessage.Username))
             {
                 database.Nukes.Remove(nuke);
                 database.SaveChanges();
@@ -369,7 +368,7 @@ public static class DatabaseController
         {
             if (reminder.FromUser == chatMessage.Username
                 || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0)
-                || TwitchConfig.Moderators.Contains(chatMessage.Username))
+                || Config.Moderators.Contains(chatMessage.Username))
             {
                 database.Reminders.Remove(reminder);
                 database.SaveChanges();

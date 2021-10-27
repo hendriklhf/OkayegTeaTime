@@ -134,7 +134,7 @@ public class TwitchChatMessage : ITwitchChatMessage
         {
             result.Add(UserTag.Owner);
         }
-        if (userLists.SpecialUsers.Contains(Username))
+        if (userLists.IgnoredUsers.Contains(Username))
         {
             result.Add(UserTag.Special);
         }

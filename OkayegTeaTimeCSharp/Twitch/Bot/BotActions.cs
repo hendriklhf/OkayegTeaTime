@@ -49,7 +49,7 @@ public static class BotActions
 
     public static void AddUserToAfkCooldownDictionary(string username)
     {
-        if (!TwitchConfig.Moderators.Contains(username))
+        if (!Config.Moderators.Contains(username))
         {
             if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
             {
@@ -60,7 +60,7 @@ public static class BotActions
 
     public static void AddUserToCooldownDictionary(string username, CommandType type)
     {
-        if (!TwitchConfig.Moderators.Contains(username))
+        if (!Config.Moderators.Contains(username))
         {
             if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
             {
@@ -105,7 +105,7 @@ public static class BotActions
     {
         try
         {
-            if (TwitchConfig.Moderators.Contains(chatMessage.Username))
+            if (Config.Moderators.Contains(chatMessage.Username))
             {
                 List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
                 string regex = chatMessage.Split[2];
@@ -314,7 +314,7 @@ public static class BotActions
     {
         List<string> messageParts = new();
         string[] split = chatMessage.Split[1..];
-        int maxLength = TwitchConfig.MaxMessageLength - (chatMessage.Channel.Emote.Length + 1);
+        int maxLength = Config.MaxMessageLength - (chatMessage.Channel.Emote.Length + 1);
         for (; ; )
         {
             string messagePart = split.Random();
@@ -411,7 +411,7 @@ public static class BotActions
 
     public static string SendJoinChannel(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        if (TwitchConfig.Moderators.Contains(chatMessage.Username))
+        if (Config.Moderators.Contains(chatMessage.Username))
         {
             string channel = chatMessage.LowerSplit[1];
             string response = twitchBot.JoinChannel(channel.RemoveHashtag());
@@ -463,7 +463,7 @@ public static class BotActions
             string emote = chatMessage.Split.Length > 1 ? chatMessage.Split[1] : chatMessage.Channel.Emote;
             string message = string.Empty;
             List<string> chatters;
-            List<string> chattersToRemove = new(TwitchConfig.SpecialUsers) { chatMessage.Username };
+            List<string> chattersToRemove = new(Config.SpecialUsers) { chatMessage.Username };
 
             if (chatMessage.Channel.Name != Settings.SecretOfflineChat)
             {
@@ -639,7 +639,7 @@ public static class BotActions
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
-            string emote = chatMessage.Split[2][..(chatMessage.Split[2].Length > TwitchConfig.MaxEmoteInFrontLength ? TwitchConfig.MaxEmoteInFrontLength : chatMessage.Split[2].Length)];
+            string emote = chatMessage.Split[2][..(chatMessage.Split[2].Length > Config.MaxEmoteInFrontLength ? Config.MaxEmoteInFrontLength : chatMessage.Split[2].Length)];
             chatMessage.Channel.Emote = emote;
             return $"{chatMessage.Username}, emote set to: {emote}";
         }
@@ -653,7 +653,7 @@ public static class BotActions
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
-            string prefix = chatMessage.LowerSplit[2][..(chatMessage.LowerSplit[2].Length > TwitchConfig.MaxPrefixLength ? TwitchConfig.MaxPrefixLength : chatMessage.LowerSplit[2].Length)];
+            string prefix = chatMessage.LowerSplit[2][..(chatMessage.LowerSplit[2].Length > Config.MaxPrefixLength ? Config.MaxPrefixLength : chatMessage.LowerSplit[2].Length)];
             chatMessage.Channel.Prefix = prefix;
             return $"{chatMessage.Username}, prefix set to: {prefix}";
         }
