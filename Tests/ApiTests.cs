@@ -4,7 +4,7 @@ using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
-using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Models;
 
 namespace Tests;
@@ -30,7 +30,7 @@ public class ApiTests
     [TestMethod]
     public void GetBTTVEmotesTest()
     {
-        new TwitchAPI().Configure();
+        new TwitchApi().Configure();
         int emoteCount = 5;
         List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount).ToList();
         Assert.IsTrue(emotes.Count == emoteCount);

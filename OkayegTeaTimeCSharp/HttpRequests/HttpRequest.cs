@@ -6,7 +6,7 @@ using HLE.HttpRequests;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
-using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Models;
 using OkayegTeaTimeCSharp.Twitch.Models.Enums;
 using OkayegTeaTimeCSharp.Utils;
@@ -148,7 +148,7 @@ public static class HttpRequest
 
     public static BttvRequest GetBttvRequest(string channel)
     {
-        return GetBttvRequest(new TwitchAPI().GetChannelID(channel).ToInt());
+        return GetBttvRequest(new TwitchApi().GetChannelID(channel).ToInt());
     }
 
     public static BttvRequest GetBttvRequest(int channelId)

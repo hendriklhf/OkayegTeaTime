@@ -2,7 +2,7 @@
 using System.Threading;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.Logging;
-using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 
 namespace OkayegTeaTimeCSharp;
@@ -16,7 +16,7 @@ public static class Program
         Console.Title = "OkayegTeaTime";
 
         new JsonController().LoadData();
-        new TwitchAPI().Configure();
+        new TwitchApi().Configure();
         _ = new TwitchBot();
 
         while (_running)

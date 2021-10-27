@@ -5,9 +5,9 @@ using OkayegTeaTimeCSharp.Properties;
 using TwitchLib.Api.V5.Models.Channels;
 using TwitchLibAPI = TwitchLib.Api.TwitchAPI;
 
-namespace OkayegTeaTimeCSharp.Twitch.API;
+namespace OkayegTeaTimeCSharp.Twitch.Api;
 
-public class TwitchAPI
+public class TwitchApi
 {
     private static readonly TwitchLibAPI _api = new();
 

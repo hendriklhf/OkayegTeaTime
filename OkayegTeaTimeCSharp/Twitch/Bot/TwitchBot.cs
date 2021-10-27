@@ -4,7 +4,7 @@ using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Properties;
-using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Models;
@@ -112,7 +112,7 @@ public class TwitchBot
 
     public string JoinChannel(string channel)
     {
-        if (new TwitchAPI().GetChannelByName(channel)?.Name == channel)
+        if (new TwitchApi().GetChannelByName(channel)?.Name == channel)
         {
             DatabaseController.AddChannel(channel);
             LastMessagesDictionary.Add(channel);

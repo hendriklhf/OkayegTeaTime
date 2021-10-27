@@ -12,7 +12,7 @@ using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
-using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages;
@@ -860,7 +860,7 @@ public static class BotActions
         try
         {
             string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
-            return $"{chatMessage.Username}, {new TwitchAPI().GetChannelID(username)}";
+            return $"{chatMessage.Username}, {new TwitchApi().GetChannelID(username)}";
         }
         catch (UserNotFoundException ex)
         {

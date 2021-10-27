@@ -1,6 +1,6 @@
 ﻿using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.Twitch.API;
+using OkayegTeaTimeCSharp.Twitch.Api;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot;
 
@@ -23,6 +23,6 @@ public static class TimerFunctions
 
     public static void TwitchApiRefreshAccessToken()
     {
-        new TwitchAPI().RefreshAccessToken();
+        new TwitchApi().RefreshAccessToken();
     }
 }
