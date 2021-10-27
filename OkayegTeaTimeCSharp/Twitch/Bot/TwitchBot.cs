@@ -4,7 +4,6 @@ using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Messages;
-using OkayegTeaTimeCSharp.Messages.Models;
 using OkayegTeaTimeCSharp.Models;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.API;
@@ -271,7 +270,9 @@ public class TwitchBot
     {
         MessageHandler = new(this);
         WhisperHandler = new(this);
-        //EmoteManagementNotificator = new(this);
+#if DEBUG
+        EmoteManagementNotificator = new(this);
+#endif
         Restarter.InitializeResartTimer();
         InitializeTimers();
     }

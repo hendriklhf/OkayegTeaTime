@@ -3,14 +3,14 @@ using System.Text.RegularExpressions;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Models;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 using TwitchLib = TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Messages.Models;
+namespace OkayegTeaTimeCSharp.Models;
 
 public class TwitchChatMessage : ITwitchChatMessage
 {

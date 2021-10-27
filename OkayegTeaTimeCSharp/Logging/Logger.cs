@@ -8,26 +8,26 @@ public static class Logger
 {
     public static void Log(string text)
     {
-        LogToFile(CreateLog(text));
+        LogToFile(text);
     }
 
     public static void Log(ITwitchChatMessage chatMessage)
     {
-        LogToFile(CreateLog($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}"));
+        LogToFile($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}");
     }
 
     public static void Log(Exception ex)
     {
-        LogToFile(CreateLog($"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}"));
+        LogToFile($"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}");
     }
 
     private static string CreateLog(string input)
     {
-        return $"{DateTime.Now:dd:MM:yy HH:mm:ss} | {input}\n";
+        return $"{DateTime.Now:dd:MM:yy HH:mm:ss} | {input}{Environment.NewLine}";
     }
 
     private static void LogToFile(string log)
     {
-        File.AppendAllText(Path.Logs, log);
+        File.AppendAllText(Path.Logs, CreateLog(log));
     }
 }

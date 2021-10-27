@@ -474,4 +474,20 @@ public static class DatabaseController
         database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;
         database.SaveChanges();
     }
+
+    public static bool DoesSpotifyUserExist(string username)
+    {
+        return new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username.ToLower());
+    }
+
+    public static void SetSongRequestEnabledState(string channel, bool enabled)
+    {
+        OkayegTeaTimeContext database = new();
+        Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == channel.ToLower());
+        if (user is not null)
+        {
+            user.SongRequestEnabled = enabled;
+            database.SaveChanges();
+        }
+    }
 }

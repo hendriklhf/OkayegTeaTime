@@ -476,11 +476,10 @@ public static class BotActions
             }
             else
             {
-                message = $"OkayegTeaTime {emote}";
+                message = $"OkayegTeaTime {emote} ";
                 chatters = Settings.SecretOfflineChatEmotes.Split().ToList();
             }
-
-            chatters.ForEach(c => message += $" {c} {emote}");
+            message += string.Join($" {emote} ", chatters);
             return message;
         }
         else
@@ -682,12 +681,10 @@ public static class BotActions
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
-            OkayegTeaTimeContext database = new();
-            if (database.Spotify.Any(s => s.Username == chatMessage.Channel.Name))
+            if (DatabaseController.DoesSpotifyUserExist(chatMessage.Channel.Name))
             {
                 bool state = chatMessage.Split[2].IsMatch(@"(1|true|enabled?)");
-                database.Spotify.Where(s => s.Username == chatMessage.Channel.Name).FirstOrDefault().SongRequestEnabled = state;
-                database.SaveChanges();
+                DatabaseController.SetSongRequestEnabledState(chatMessage.Channel.Name, state);
                 return $"{chatMessage.Username}, song requests {(state ? "enabled" : "disabled")} for channel {chatMessage.Channel}";
             }
             else

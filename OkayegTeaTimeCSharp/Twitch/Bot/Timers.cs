@@ -11,7 +11,7 @@ public static class Timers
             new Second(30).Milliseconds,
             new Minute().Milliseconds,
             new Day(10).Milliseconds
-        };
+    };
 
     public static void CreateTimers()
     {

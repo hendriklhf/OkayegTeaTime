@@ -3,7 +3,6 @@ using System.Web;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch;
@@ -20,7 +19,7 @@ public static class SpotifyRequest
         {
             return "this isn't a valid track link";
         }
-        if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == channel))
+        if (DatabaseController.DoesSpotifyUserExist(channel))
         {
             Database.Models.Spotify user = await GetSpotifyUser(channel);
             if (user.SongRequestEnabled == true)
@@ -55,7 +54,7 @@ public static class SpotifyRequest
 
     public static async Task<string> GetCurrentlyPlaying(string username)
     {
-        if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username))
+        if (DatabaseController.DoesSpotifyUserExist(username))
         {
             Database.Models.Spotify user = await GetSpotifyUser(username);
             CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
@@ -119,7 +118,7 @@ public static class SpotifyRequest
 
     public static async Task<string> SkipToNextSong(string channel)
     {
-        if (new OkayegTeaTimeContext().Spotify.Any(s => s.Username == channel))
+        if (DatabaseController.DoesSpotifyUserExist(channel))
         {
             Database.Models.Spotify user = await GetSpotifyUser(channel);
             if (user.SongRequestEnabled == true)

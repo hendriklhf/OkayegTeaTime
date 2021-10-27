@@ -2,12 +2,13 @@
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Enums;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Messages.Models;
+namespace OkayegTeaTimeCSharp.Models;
 
 public class TwitchWhisperMessage : ITwitchWhisperMessage
 {

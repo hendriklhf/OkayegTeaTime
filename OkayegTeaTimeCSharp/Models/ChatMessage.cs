@@ -1,8 +1,9 @@
 ﻿using HLE.Strings;
+using OkayegTeaTimeCSharp.Messages;
 using OkayegTeaTimeCSharp.Messages.Interfaces;
 using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Messages.Models;
+namespace OkayegTeaTimeCSharp.Models;
 
 public class ChatMessage : IChatMessage
 {
