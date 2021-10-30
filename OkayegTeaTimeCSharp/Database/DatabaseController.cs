@@ -489,4 +489,9 @@ public static class DatabaseController
             database.SaveChanges();
         }
     }
+
+    public static bool IsEmoteManagementSub(string channel)
+    {
+        return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel.ToLower()).EmoteManagementSub == true;
+    }
 }

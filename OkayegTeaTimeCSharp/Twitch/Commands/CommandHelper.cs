@@ -43,7 +43,7 @@ public static class CommandHelper
 
     public static string GetCommandClassName(CommandType type)
     {
-        return $"OkayegTeaTimeCSharp.Commands.CommandClasses.{type}Command";
+        return $"OkayegTeaTimeCSharp.Twitch.Commands.CommandClasses.{type}Command";
     }
 
     public static long GetCoolDown(CommandType type)

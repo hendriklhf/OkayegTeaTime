@@ -13,6 +13,7 @@ public class Channel
             _name = value;
             _emote = DatabaseController.GetEmoteInFront(Name);
             _prefix = DatabaseController.GetPrefix(Name);
+            _isEmoteSub = DatabaseController.IsEmoteManagementSub(Name);
         }
     }
 
@@ -67,7 +68,7 @@ public class Channel
 
     public Channel(string name)
     {
-        Name = name.RemoveHashtag();
+        Name = name.ToLower().RemoveHashtag();
     }
 
     public override string ToString()

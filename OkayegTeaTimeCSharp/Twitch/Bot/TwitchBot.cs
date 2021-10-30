@@ -70,11 +70,13 @@ public class TwitchBot
         {
             AutoReListenOnException = true
         };
+
 #if DEBUG
         TwitchClient.Initialize(ConnectionCredentials, Settings.DebugChannel);
 #else
-            TwitchClient.Initialize(ConnectionCredentials, TwitchConfig.Channels);
+        TwitchClient.Initialize(ConnectionCredentials, Config.Channels);
 #endif
+
         TwitchClient.OnLog += Client_OnLog;
         TwitchClient.OnConnected += Client_OnConnected;
         TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
