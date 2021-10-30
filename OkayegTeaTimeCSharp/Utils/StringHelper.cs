@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Strings;
+﻿using HLE.Strings;
 
 namespace OkayegTeaTimeCSharp.Utils;
 
@@ -18,8 +17,8 @@ public static class StringHelper
         return str.Remove("@");
     }
 
-    public static List<string> WordArrayStringToList(this string input)
+    public static string Antiping(this string value)
     {
-        return Regex.Matches(input, @"\w+", RegexOptions.IgnoreCase).Select(m => m.Value).ToList();
+        return value.Insert(value.Length >> 1, "󠀀");
     }
 }
