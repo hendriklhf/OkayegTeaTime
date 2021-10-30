@@ -16,7 +16,7 @@ public class MessageHandler : Handler
     public CommandHandler CommandHandler { get; }
 
     private const string _pajaAlertUsername = "pajbot";
-    private static readonly Regex _pajaAlertPattern = new($@"^pajaS\s+{Emoji.RotatingLight}\s+ALERT$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private const string _pajaAlertChannel = "pajlada";
     private const string _pajaAlertEmote = "pajaStare";
     private const string _pajaAlertMessage = $"/me {_pajaAlertEmote} {Emoji.RotatingLight} OBACHT";

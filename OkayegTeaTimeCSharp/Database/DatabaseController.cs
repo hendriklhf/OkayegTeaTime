@@ -14,6 +14,9 @@ namespace OkayegTeaTimeCSharp.Database;
 
 public static class DatabaseController
 {
+    private const string _noPermissionToDeleteReminderMessage = "you have no permission to delete the reminder of someone else";
+    private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
+
     public static void AddChannel(string channel)
     {
         OkayegTeaTimeContext database = new();
@@ -351,7 +354,7 @@ public static class DatabaseController
             }
             else
             {
-                throw new NoPermissionException("you aren't a mod or the broadcaster");
+                throw new NoPermissionException(_noModOrStreamerMessage);
             }
         }
         else
@@ -375,7 +378,7 @@ public static class DatabaseController
             }
             else
             {
-                throw new NoPermissionException("you have no permission to delete the reminder of someone else");
+                throw new NoPermissionException(_noPermissionToDeleteReminderMessage);
             }
         }
         else
