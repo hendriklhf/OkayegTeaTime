@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Twitch.Models;
 

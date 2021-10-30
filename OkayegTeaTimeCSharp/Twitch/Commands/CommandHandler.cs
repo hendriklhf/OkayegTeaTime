@@ -6,7 +6,6 @@ using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 using OkayegTeaTimeCSharp.Twitch.Handlers;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Twitch.Commands;
 

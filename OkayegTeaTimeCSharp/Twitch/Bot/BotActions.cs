@@ -17,7 +17,6 @@ using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Utils;
 using Random = HLE.Randoms.Random;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot;

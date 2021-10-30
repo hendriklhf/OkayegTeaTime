@@ -2,7 +2,6 @@
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Commands;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Twitch.Messages;
 

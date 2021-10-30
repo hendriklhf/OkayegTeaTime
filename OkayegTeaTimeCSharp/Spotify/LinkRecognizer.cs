@@ -1,6 +1,5 @@
 ﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Spotify;
 

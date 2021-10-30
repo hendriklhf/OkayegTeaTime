@@ -9,7 +9,6 @@ using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Models;
 using OkayegTeaTimeCSharp.Twitch.Models.Enums;
-using OkayegTeaTimeCSharp.Utils;
 using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.HttpRequests;

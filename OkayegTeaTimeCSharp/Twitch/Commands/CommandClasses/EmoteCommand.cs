@@ -1,7 +1,6 @@
 ﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Utils;
 
 namespace OkayegTeaTimeCSharp.Twitch.Commands.CommandClasses;
 
