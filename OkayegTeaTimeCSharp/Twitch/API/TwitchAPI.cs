@@ -1,8 +1,6 @@
-﻿using System.Web;
-using HLE.HttpRequests;
-using OkayegTeaTimeCSharp.Exceptions;
+﻿using HLE.HttpRequests;
 using OkayegTeaTimeCSharp.Properties;
-using TwitchLib.Api.V5.Models.Channels;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibAPI = TwitchLib.Api.TwitchAPI;
 
 namespace OkayegTeaTimeCSharp.Twitch.Api;
@@ -18,7 +16,7 @@ public static class TwitchApi
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public static string GetAccessToken()
+    private static string GetAccessToken()
     {
         HttpPost request = new("https://id.twitch.tv/oauth2/token",
             new()
@@ -36,29 +34,39 @@ public static class TwitchApi
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public static Channel GetChannelByName(string channel)
+    public static User GetUserByName(string username)
     {
-        List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 20).Result.Channels.ToList();
-        try
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new() { username }).Result;
+        if (response?.Users?.Length > 0)
         {
-            return channels.FirstOrDefault(c => c.Name == channel) ?? channels[0];
+            return response.Users[0];
         }
-        catch (Exception)
+        else
         {
             return null;
         }
     }
 
-    public static string GetChannelID(string channel)
+    public static User GetUserById(int id)
     {
-        string id = GetChannelByName(channel)?.Id;
-        if (id is not null)
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { $"{id}" }).Result;
+        if (response?.Users?.Length > 0)
         {
-            return id;
+            return response.Users[0];
         }
         else
         {
-            throw new UserNotFoundException();
+            return null;
         }
+    }
+
+    public static string GetUserId(string username)
+    {
+        return GetUserByName(username)?.Id;
+    }
+
+    public static bool DoesUserExsist(string username)
+    {
+        return GetUserByName(username) is not null;
     }
 }

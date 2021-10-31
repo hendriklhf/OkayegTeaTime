@@ -859,7 +859,7 @@ public static class BotActions
         try
         {
             string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
-            return $"{chatMessage.Username}, {TwitchApi.GetChannelID(username)}";
+            return $"{chatMessage.Username}, {TwitchApi.GetUserId(username)}";
         }
         catch (UserNotFoundException ex)
         {
