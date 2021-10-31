@@ -30,7 +30,7 @@ public class ApiTests
     [TestMethod]
     public void GetBTTVEmotesTest()
     {
-        new TwitchApi().Configure();
+        TwitchApi.Configure();
         int emoteCount = 5;
         List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount).ToList();
         Assert.IsTrue(emotes.Count == emoteCount);

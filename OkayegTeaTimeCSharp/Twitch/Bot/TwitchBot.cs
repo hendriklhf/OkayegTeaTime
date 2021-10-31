@@ -110,7 +110,7 @@ public class TwitchBot
 
     public string JoinChannel(string channel)
     {
-        if (new TwitchApi().GetChannelByName(channel)?.Name == channel)
+        if (TwitchApi.GetChannelByName(channel)?.Name == channel)
         {
             DatabaseController.AddChannel(channel);
             LastMessagesDictionary.Add(channel);

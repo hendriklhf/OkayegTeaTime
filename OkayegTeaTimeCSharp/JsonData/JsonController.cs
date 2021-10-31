@@ -6,18 +6,15 @@ using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.JsonData;
 
-public class JsonController
+public static class JsonController
 {
-    public Settings Settings => _settings;
+    public static Settings Settings { get; private set; }
 
-    public CommandLists CommandLists => _commandLists;
+    public static CommandLists CommandLists { get; private set; }
 
-    private static Settings _settings;
-    private static CommandLists _commandLists;
-
-    public void LoadData()
+    public static void LoadData()
     {
-        _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.SettingsJson));
-        _commandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.CommandsJson));
+        Settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.SettingsJson));
+        CommandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.CommandsJson));
     }
 }

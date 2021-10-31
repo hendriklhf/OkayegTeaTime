@@ -17,13 +17,13 @@ public static class Config
 
     public static List<string> Channels => DatabaseController.GetChannels();
 
-    public static List<string> Owners => new JsonController().Settings.UserLists.Owners;
+    public static List<string> Owners => JsonController.Settings.UserLists.Owners;
 
-    public static List<string> Moderators => new JsonController().Settings.UserLists.Moderators.Concat(Owners).Distinct().ToList();
+    public static List<string> Moderators => JsonController.Settings.UserLists.Moderators.Concat(Owners).Distinct().ToList();
 
-    public static List<string> SpecialUsers => new JsonController().Settings.UserLists.IgnoredUsers;
+    public static List<string> SpecialUsers => JsonController.Settings.UserLists.IgnoredUsers;
 
-    public static List<string> SecretUsers => new JsonController().Settings.UserLists.SecretUsers;
+    public static List<string> SecretUsers => JsonController.Settings.UserLists.SecretUsers;
 
     public static List<string> NotLoggedChannels => Settings.NotLoggedChannels.Split().ToList();
 }

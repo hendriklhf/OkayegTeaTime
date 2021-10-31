@@ -9,18 +9,18 @@ public static class CommandHelper
 {
     public static AfkCommand GetAfkCommand(AfkCommandType type)
     {
-        return new JsonController().CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
+        return JsonController.CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
     }
 
     public static AfkCommand GetAfkCommand(string name)
     {
-        return new JsonController().CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == name);
+        return JsonController.CommandLists.AfkCommands.FirstOrDefault(cmd => cmd.CommandName == name);
     }
 
     public static List<string> GetAfkCommandAliases()
     {
         List<string> listAlias = new();
-        new JsonController().CommandLists.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
+        JsonController.CommandLists.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
         return listAlias;
     }
 
@@ -31,13 +31,13 @@ public static class CommandHelper
 
     public static JCommand GetCommand(CommandType type)
     {
-        return new JsonController().CommandLists.Commands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
+        return JsonController.CommandLists.Commands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
     }
 
     public static List<string> GetCommandAliases()
     {
         List<string> listAlias = new();
-        new JsonController().CommandLists.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
+        JsonController.CommandLists.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
         return listAlias;
     }
 

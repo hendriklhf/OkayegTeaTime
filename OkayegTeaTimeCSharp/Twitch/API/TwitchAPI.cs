@@ -7,18 +7,18 @@ using TwitchLibAPI = TwitchLib.Api.TwitchAPI;
 
 namespace OkayegTeaTimeCSharp.Twitch.Api;
 
-public class TwitchApi
+public static class TwitchApi
 {
     private static readonly TwitchLibAPI _api = new();
 
-    public void Configure()
+    public static void Configure()
     {
         _api.Settings.ClientId = Settings.TwitchApiClientID;
         _api.Settings.Secret = Settings.TwitchApiClientSecret;
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public string GetAccessToken()
+    public static string GetAccessToken()
     {
         HttpPost request = new("https://id.twitch.tv/oauth2/token",
             new()
@@ -31,12 +31,12 @@ public class TwitchApi
         return request.Data.GetProperty("access_token").GetString();
     }
 
-    public void RefreshAccessToken()
+    public static void RefreshAccessToken()
     {
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public Channel GetChannelByName(string channel)
+    public static Channel GetChannelByName(string channel)
     {
         List<Channel> channels = _api.V5.Search.SearchChannelsAsync(HttpUtility.UrlEncode(channel), 20).Result.Channels.ToList();
         try
@@ -49,7 +49,7 @@ public class TwitchApi
         }
     }
 
-    public string GetChannelID(string channel)
+    public static string GetChannelID(string channel)
     {
         string id = GetChannelByName(channel)?.Id;
         if (id is not null)

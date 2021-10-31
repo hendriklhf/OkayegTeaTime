@@ -15,8 +15,8 @@ public static class Program
     {
         Console.Title = "OkayegTeaTime";
 
-        new JsonController().LoadData();
-        new TwitchApi().Configure();
+        JsonController.LoadData();
+        TwitchApi.Configure();
         _ = new TwitchBot();
 
         while (_running)

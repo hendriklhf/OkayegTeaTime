@@ -58,7 +58,7 @@ public class TwitchMessage : ITwitchMessage
     private List<UserTag> GetUserTags()
     {
         List<UserTag> result = new() { UserTag.Normal };
-        UserLists userLists = new JsonController().Settings.UserLists;
+        UserLists userLists = JsonController.Settings.UserLists;
         if (userLists.Moderators.Contains(Username))
         {
             result.Add(UserTag.Moderator);

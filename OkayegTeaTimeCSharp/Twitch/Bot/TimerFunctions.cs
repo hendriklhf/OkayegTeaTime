@@ -13,7 +13,7 @@ public static class TimerFunctions
 
     public static void LoadJsonData()
     {
-        new JsonController().LoadData();
+        JsonController.LoadData();
     }
 
     public static void SetConsoleTitle(TwitchBot twitchBot)
@@ -23,6 +23,6 @@ public static class TimerFunctions
 
     public static void TwitchApiRefreshAccessToken()
     {
-        new TwitchApi().RefreshAccessToken();
+        TwitchApi.RefreshAccessToken();
     }
 }

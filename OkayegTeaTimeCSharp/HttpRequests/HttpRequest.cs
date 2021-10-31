@@ -147,7 +147,7 @@ public static class HttpRequest
 
     public static BttvRequest GetBttvRequest(string channel)
     {
-        return GetBttvRequest(new TwitchApi().GetChannelID(channel).ToInt());
+        return GetBttvRequest(TwitchApi.GetChannelID(channel).ToInt());
     }
 
     public static BttvRequest GetBttvRequest(int channelId)
