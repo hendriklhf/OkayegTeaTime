@@ -109,7 +109,7 @@ public static class HttpRequest
     {
         try
         {
-            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag()}");
+            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag().ToLower()}");
             int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
             string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
             return JsonSerializer.Deserialize<FfzRequest>(result);

@@ -3,6 +3,7 @@
 public enum CommandType
 {
     BanFromFile,
+    Bttv,
     Chatterino7,
     Chatterino,
     Chatters,
@@ -11,7 +12,7 @@ public enum CommandType
     Cookie,
     Count,
     CSharp,
-    Emote,
+    Ffz,
     Fill,
     First,
     Fuck,
@@ -31,6 +32,7 @@ public enum CommandType
     Remind,
     Search,
     Set,
+    SevenTv,
     Skip,
     SongRequest,
     Spotify,

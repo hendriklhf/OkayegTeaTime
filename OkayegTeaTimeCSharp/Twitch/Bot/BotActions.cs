@@ -79,17 +79,9 @@ public static class BotActions
         return TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
     }
 
-    public static string Send7TVEmotes(ITwitchChatMessage chatMessage)
+    public static string SendSevenTvEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
     {
-        IEnumerable<SevenTvEmote> emotes;
-        if (chatMessage.LowerSplit.Length > 2)
-        {
-            emotes = HttpRequest.GetSevenTvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
-        }
-        else
-        {
-            emotes = HttpRequest.GetSevenTvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
-        }
+        IEnumerable<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(channel ?? chatMessage.Channel.Name, count);
         if (emotes is not null && emotes.Any())
         {
             string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
@@ -132,17 +124,9 @@ public static class BotActions
         }
     }
 
-    public static string SendBTTVEmotes(ITwitchChatMessage chatMessage)
+    public static string SendBttvEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
     {
-        IEnumerable<BttvSharedEmote> emotes;
-        if (chatMessage.LowerSplit.Length > 2)
-        {
-            emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
-        }
-        else
-        {
-            emotes = HttpRequest.GetBttvEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
-        }
+        IEnumerable<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(channel ?? chatMessage.Channel.Name, count);
         if (emotes is not null && emotes.Any())
         {
             string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
@@ -288,17 +272,9 @@ public static class BotActions
         }
     }
 
-    public static string SendFFZEmotes(ITwitchChatMessage chatMessage)
+    public static string SendFfzEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
     {
-        IEnumerable<FfzEmote> emotes;
-        if (chatMessage.LowerSplit.Length > 2)
-        {
-            emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, chatMessage.Split[2].ToInt());
-        }
-        else
-        {
-            emotes = HttpRequest.GetFfzEmotes(chatMessage.Channel.Name, _defaultEmoteCount);
-        }
+        IEnumerable<FfzEmote> emotes = HttpRequest.GetFfzEmotes(channel ?? chatMessage.Channel.Name, count);
         if (emotes is not null && emotes.Any())
         {
             string emoteString = string.Join(" | ", emotes.Select(e => e.Name));

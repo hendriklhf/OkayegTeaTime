@@ -189,30 +189,6 @@
       "Cooldown": 5000
     },
     {
-      "CommandName": "emote",
-      "Alias": [
-        "emote",
-        "emotes"
-      ],
-      "Parameter": [
-        "ffz",
-        "ffz [number]",
-        "bttv",
-        "bttv [number]",
-        "7TV",
-        "7TV [number]"
-      ],
-      "Description": [
-        "Sends five of the recently added FFZ emotes",
-        "Sends a given amount of recently added FFZ emotes",
-        "Sends five of the recently added BTTV emotes",
-        "Sends a given amount of recently added BTTV emotes",
-        "Sends five of the 'recently' added 7TV emotes",
-        "Sends a given amount of 'recently' added 7TV emotes"
-      ],
-      "Cooldown": 15000
-    },
-    {
       "CommandName": "check",
       "Alias": [
         "check"
@@ -521,8 +497,7 @@
       "CommandName": "chatterino7",
       "Alias": [
         "chatterino7",
-        "c7",
-        "7tv"
+        "c7"
       ],
       "Parameter": [
         "(none)"
@@ -593,6 +568,64 @@
         "Executes the given Go code"
       ],
       "Cooldown": 10000
+    },
+    {
+      "CommandName": "seventv",
+      "Alias": [
+        "seventv",
+        "7tv"
+      ],
+      "Parameter": [
+        "(none)",
+        "[count]",
+        "[channel]",
+        "[channel] [count]"
+      ],
+      "Description": [
+        "Sends 5 lately added 7TV emotes",
+        "Sends a given amount of lately added 7TV emotes",
+        "Sends 5 lately added 7TV emotes of the given channel",
+        "Sends a given amount of lately added 7TV emotes of the given channel"
+      ],
+      "Cooldown": 15000
+    },
+    {
+      "CommandName": "ffz",
+      "Alias": [
+        "ffz"
+      ],
+      "Parameter": [
+        "(none)",
+        "[count]",
+        "[channel]",
+        "[channel] [count]"
+      ],
+      "Description": [
+        "Sends 5 lately added FFZ emotes",
+        "Sends a given amount of lately added FFZ emotes",
+        "Sends 5 lately added FFZ emotes of the given channel",
+        "Sends a given amount of lately added FFZ emotes of the given channel"
+      ],
+      "Cooldown": 15000
+    },
+    {
+      "CommandName": "bttv",
+      "Alias": [
+        "bttv"
+      ],
+      "Parameter": [
+        "(none)",
+        "[count]",
+        "[channel]",
+        "[channel] [count]"
+      ],
+      "Description": [
+        "Sends 5 lately added BTTV emotes",
+        "Sends a given amount of lately added BTTV emotes",
+        "Sends 5 lately added BTTV emotes of the given channel",
+        "Sends a given amount of lately added BTTV emotes of the given channel"
+      ],
+      "Cooldown": 15000
     }
   ],
   "AfkCommands": [
