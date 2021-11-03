@@ -27,6 +27,7 @@ public static class BotActions
     private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
     private const string _channelEmotesError = "the channel doesn't have the specified amount of " +
         "emotes enabled or an error occurred";
+    private const string _twitchUserDoesntExistMessage = "Twitch user doesn't exist";
 
     public static void AddAfkCooldown(string username)
     {
@@ -52,7 +53,7 @@ public static class BotActions
         {
             if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
             {
-                TwitchBot.AfkCooldowns.Add(new AfkCooldown(username));
+                TwitchBot.AfkCooldowns.Add(new(username));
             }
         }
     }
@@ -63,7 +64,7 @@ public static class BotActions
         {
             if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
             {
-                TwitchBot.Cooldowns.Add(new Cooldown(username, type));
+                TwitchBot.Cooldowns.Add(new(username, type));
             }
         }
     }
@@ -859,7 +860,7 @@ public static class BotActions
         try
         {
             string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
-            return $"{chatMessage.Username}, {TwitchApi.GetUserId(username)}";
+            return $"{chatMessage.Username}, {TwitchApi.GetUserId(username) ?? _twitchUserDoesntExistMessage}";
         }
         catch (UserNotFoundException ex)
         {

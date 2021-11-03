@@ -1,8 +1,7 @@
 ﻿using HLE.Time;
-using OkayegTeaTimeCSharp.Twitch.Commands;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 
-namespace OkayegTeaTimeCSharp.Twitch.Bot;
+namespace OkayegTeaTimeCSharp.Twitch.Commands;
 
 public class Cooldown
 {

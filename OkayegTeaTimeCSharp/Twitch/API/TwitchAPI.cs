@@ -1,18 +1,26 @@
 ﻿using HLE.HttpRequests;
 using OkayegTeaTimeCSharp.Properties;
+using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
-using TwitchLibAPI = TwitchLib.Api.TwitchAPI;
+using TwitchLibApi = TwitchLib.Api.TwitchAPI;
 
 namespace OkayegTeaTimeCSharp.Twitch.Api;
 
 public static class TwitchApi
 {
-    private static readonly TwitchLibAPI _api = new();
+    private static readonly TwitchLibApi _api = new();
 
     public static void Configure()
     {
         _api.Settings.ClientId = Settings.TwitchApiClientID;
         _api.Settings.Secret = Settings.TwitchApiClientSecret;
+        _api.Settings.Scopes = new()
+        {
+            AuthScopes.Channel_Check_Subscription,
+            AuthScopes.Channel_Subscriptions,
+            AuthScopes.Helix_Channel_Read_Subscriptions,
+            AuthScopes.User_Subscriptions
+        };
         _api.Settings.AccessToken = GetAccessToken();
     }
 
@@ -23,8 +31,7 @@ public static class TwitchApi
             {
                 new("client_id", _api.Settings.ClientId),
                 new("client_secret", _api.Settings.Secret),
-                new("grant_type", "client_credentials"),
-                new("scope", "user_subscriptions")
+                new("grant_type", "client_credentials")
             });
         return request.Data.GetProperty("access_token").GetString();
     }

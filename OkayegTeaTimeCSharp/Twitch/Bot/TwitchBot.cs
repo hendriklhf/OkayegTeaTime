@@ -6,6 +6,7 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
+using OkayegTeaTimeCSharp.Twitch.Commands;
 using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Models;
 using OkayegTeaTimeCSharp.Twitch.Whisper;

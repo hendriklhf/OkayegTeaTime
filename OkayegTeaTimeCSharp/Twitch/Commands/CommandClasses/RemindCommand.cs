@@ -63,17 +63,14 @@ public class RemindCommand : Command
         }
         else
         {
-            string message = string.Empty;
-            ChatMessage.Split[(_startIndex + ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList().Count)..]
-                .ForEach(str => message += $"{str} ");
-            return message.MakeInsertable();
+            string[] messageSplit = ChatMessage.Split[(_startIndex + ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList().Count)..];
+            return messageSplit.ToSequence().MakeInsertable();
         }
     }
 
     private byte[] GetRemindMessage()
     {
-        string message = string.Empty;
-        ChatMessage.Split[2..].ForEach(str => message += $"{str} ");
-        return message.MakeInsertable();
+        string[] messageSplit = ChatMessage.Split[2..];
+        return messageSplit.ToSequence().MakeInsertable();
     }
 }
