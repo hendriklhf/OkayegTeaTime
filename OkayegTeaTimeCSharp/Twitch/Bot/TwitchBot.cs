@@ -3,6 +3,7 @@ using System.Timers;
 using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
@@ -38,6 +39,8 @@ public class TwitchBot
 
     public WhisperHandler WhisperHandler { get; private set; }
 
+    public LastMessagesDictionary LastMessagesDictionary { get; private set; } = new();
+
     public Restarter Restarter { get; private set; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
 
     public EmoteManagementNotificator EmoteManagementNotificator { get; private set; }
@@ -56,8 +59,6 @@ public class TwitchBot
 
     public TwitchBot()
     {
-        FillDictionaries();
-
         ConnectionCredentials = new(Settings.Username, Settings.OAuthToken);
         ClientOptions = new()
         {
@@ -98,10 +99,10 @@ public class TwitchBot
     {
         if ($"{channel.Emote} {message} {Settings.ChatterinoChar}".Length <= Config.MaxMessageLength)
         {
-            message = message == LastMessagesDictionary.Get(channel.Name) ? $"{message} {Settings.ChatterinoChar}" : message;
+            message = message == LastMessagesDictionary[channel.Name] ? $"{message} {Settings.ChatterinoChar}" : message;
             message = $"{channel.Emote} {message}";
             TwitchClient.SendMessage(channel.Name, message);
-            LastMessagesDictionary.Set(channel.Name, message);
+            LastMessagesDictionary[channel.Name] = message;
         }
         else
         {
@@ -121,8 +122,9 @@ public class TwitchBot
                 Send(channel, "I'm online");
                 return $"successfully joined #{channel}";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Log(ex);
                 return $"unable to join #{channel}";
             }
         }
@@ -258,11 +260,6 @@ public class TwitchBot
     }
 
     #endregion Timer
-
-    private void FillDictionaries()
-    {
-        LastMessagesDictionary.FillDictionary();
-    }
 
     private void Initlialize()
     {

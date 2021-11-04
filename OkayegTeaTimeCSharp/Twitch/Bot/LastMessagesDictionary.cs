@@ -1,23 +1,34 @@
 ﻿namespace OkayegTeaTimeCSharp.Twitch.Bot;
 
-public static class LastMessagesDictionary
+public class LastMessagesDictionary
 {
-    private static Dictionary<string, string> _lastMessages = new();
+    private Dictionary<string, string> _lastMessages = new();
 
-    public static void FillDictionary()
+    public LastMessagesDictionary()
+    {
+        FillDictionary();
+    }
+
+    public string this[string channel]
+    {
+        get => Get(channel);
+        set => Set(channel, value);
+    }
+
+    private void FillDictionary()
     {
         _lastMessages = Config.Channels.ToDictionary(c => c, c => string.Empty);
     }
 
-    public static void Add(string channel, string message = "")
+    public void Add(string channel, string message = null)
     {
         if (!_lastMessages.ContainsKey(channel))
         {
-            _lastMessages.Add(channel, message);
+            _lastMessages.Add(channel, message ?? string.Empty);
         }
     }
 
-    public static void Set(string channel, string message)
+    private void Set(string channel, string message)
     {
         if (_lastMessages.ContainsKey(channel))
         {
@@ -29,7 +40,7 @@ public static class LastMessagesDictionary
         }
     }
 
-    public static string Get(string channel)
+    private string Get(string channel)
     {
         if (_lastMessages.TryGetValue(channel, out string message))
         {
