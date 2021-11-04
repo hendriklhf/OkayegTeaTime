@@ -23,7 +23,7 @@ public static class Logger
 
     private static string CreateLog(string input)
     {
-        return $"{DateTime.Now:dd:MM:yy HH:mm:ss} | {input}{Environment.NewLine}";
+        return $"{DateTime.Now:dd.MM.yyyy HH:mm:ss} | {input}{Environment.NewLine}";
     }
 
     private static void LogToFile(string log)
