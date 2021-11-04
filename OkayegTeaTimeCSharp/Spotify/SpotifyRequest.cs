@@ -28,15 +28,16 @@ public static class SpotifyRequest
                     SpotifyClient client = new(user.AccessToken);
                     await client.Player.AddToQueue(new(song));
                     FullTrack item = await client.Tracks.Get(song.Remove("spotify:track:"));
-                    return $"{item.Name} by {item.Artists.GetArtistString()} has been added to the queue";
+                    return $"{item.Name} by {item.Artists.GetArtists()} has been added to the queue";
                 }
                 catch (APIException ex)
                 {
                     Logger.Log(ex);
                     return $"no music playing on any device, {channel} has to start their playback first";
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Logger.Log(ex);
                     return $"that song id doesn't match any song";
                 }
             }
@@ -107,7 +108,7 @@ public static class SpotifyRequest
         if (response.Tracks.Items.Count > 0)
         {
             FullTrack track = SpotifyHelper.GetExcactTrackFromSearch(response.Tracks.Items, query.Split().ToList());
-            return $"{track.Name} by {track.Artists.GetArtistString()} || {track.Uri}";
+            return $"{track.Name} by {track.Artists.GetArtists()} || {track.Uri}";
         }
         else
         {
@@ -127,8 +128,9 @@ public static class SpotifyRequest
                     await new SpotifyClient(user.AccessToken).Player.SkipNext(new());
                     return $"skipped to the next song in queue";
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Logger.Log(ex);
                     return $"couldn't skip to the next song";
                 }
             }

@@ -7,7 +7,7 @@ public class Track : PlayingItem
 {
     public Track(FullTrack track)
     {
-        Artist = track.Artists.GetArtistString();
+        Artist = track.Artists.GetArtists();
         Title = track.Name;
         URI = track.Uri.IsMatch("local") ? "local file" : track.Uri;
         Message = $"{Title} by {Artist} || {URI}";

@@ -5,11 +5,9 @@ namespace OkayegTeaTimeCSharp.Spotify;
 
 public static class SpotifyHelper
 {
-    public static string GetArtistString(this List<SimpleArtist> artist)
+    public static string GetArtists(this List<SimpleArtist> artist)
     {
-        string result = string.Empty;
-        artist.ForEach(artist => result += $"{artist.Name}, ");
-        return result.Trim()[..^1];
+        return string.Join(", ", artist.Select(a => a.Name));
     }
 
     public static FullTrack GetExcactTrackFromSearch(List<FullTrack> tracks, List<string> query)
