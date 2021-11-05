@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Text.RegularExpressions;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
@@ -35,8 +34,6 @@ public class TwitchChatMessage : ITwitchChatMessage
     public string DisplayName { get; }
 
     public Guid Id { get; }
-
-    public bool IsAction { get; }
 
     public bool IsBroadcaster { get; }
 
@@ -82,8 +79,6 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public UserType UserType { get; }
 
-    private static readonly Regex _actionPattern = new(@":\SACTION\s.+$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
     {
         Badges = chatMessage.Badges.Select(b => b.Key).ToList();
@@ -97,7 +92,6 @@ public class TwitchChatMessage : ITwitchChatMessage
         CustomRewardId = chatMessage.CustomRewardId;
         DisplayName = chatMessage.DisplayName;
         Id = new(chatMessage.Id);
-        IsAction = _actionPattern.IsMatch(chatMessage.RawIrcMessage);
         IsBroadcaster = chatMessage.IsBroadcaster;
         IsHighlighted = chatMessage.IsHighlighted;
         IsMe = chatMessage.IsMe;

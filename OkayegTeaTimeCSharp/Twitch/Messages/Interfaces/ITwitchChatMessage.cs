@@ -20,8 +20,6 @@ public interface ITwitchChatMessage : ITwitchMessage
 
     public Guid Id { get; }
 
-    public bool IsAction { get; }
-
     public bool IsBroadcaster { get; }
 
     public bool IsHighlighted { get; }

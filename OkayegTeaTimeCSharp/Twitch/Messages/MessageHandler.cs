@@ -21,6 +21,8 @@ public class MessageHandler : Handler
     private const string _pajaAlertEmote = "pajaStare";
     private const string _pajaAlertMessage = $"/me {_pajaAlertEmote} {Emoji.RotatingLight} OBACHT";
 
+    private static readonly Regex _forgottenPrefixPattern = new($@"^@?{Settings.Username},?\s(pre|suf)fix(\s|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
     {
@@ -50,6 +52,7 @@ public class MessageHandler : Handler
     private void HandleSpecificMessages(ITwitchChatMessage chatMessage)
     {
         CheckForSpotifyUri(chatMessage);
+        CheckForForgottenPrefix(chatMessage);
     }
 
     public void CheckForPajaAlert(ChatMessage chatMessage)
@@ -68,6 +71,21 @@ public class MessageHandler : Handler
             if (!string.IsNullOrEmpty(uri))
             {
                 TwitchBot.Send(Settings.SecretOfflineChat, uri);
+            }
+        }
+    }
+
+    private void CheckForForgottenPrefix(ITwitchChatMessage chatMessage)
+    {
+        if (_forgottenPrefixPattern.IsMatch(chatMessage.Message))
+        {
+            if (string.IsNullOrEmpty(chatMessage.Channel.Prefix))
+            {
+                TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {Config.Suffix}");
+            }
+            else
+            {
+                TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {chatMessage.Channel.Prefix}");
             }
         }
     }
