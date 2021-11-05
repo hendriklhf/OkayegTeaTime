@@ -29,6 +29,7 @@ public enum CommandType
     Ping,
     Rafk,
     Rand,
+    RandomWord,
     Remind,
     Search,
     Set,

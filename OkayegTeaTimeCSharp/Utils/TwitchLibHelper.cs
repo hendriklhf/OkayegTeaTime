@@ -1,6 +1,6 @@
 ﻿using TwitchLib.Client.Models;
 
-namespace OkayegTeaTimeCSharp.Twitch.Messages;
+namespace OkayegTeaTimeCSharp.Utils;
 
 public static class TwitchLibHelper
 {

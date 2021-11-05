@@ -4,7 +4,7 @@ using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
 using JCommand = OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData.Command;
 
-namespace OkayegTeaTimeCSharp.Twitch.Commands;
+namespace OkayegTeaTimeCSharp.Utils;
 public static class CommandHelper
 {
     public static AfkCommand GetAfkCommand(AfkCommandType type)

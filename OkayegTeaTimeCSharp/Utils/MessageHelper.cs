@@ -1,9 +1,9 @@
 ﻿using HLE.Strings;
 using OkayegTeaTimeCSharp.Properties;
-using OkayegTeaTimeCSharp.Twitch.Commands;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
+using OkayegTeaTimeCSharp.Twitch.Models;
 
-namespace OkayegTeaTimeCSharp.Twitch.Messages;
+namespace OkayegTeaTimeCSharp.Utils;
 
 public static class MessageHelper
 {
@@ -60,5 +60,15 @@ public static class MessageHelper
     public static string[] SplitToLowerCase(this string input)
     {
         return input.Prepare().ToLower().Split();
+    }
+
+    public static bool IsMessageTooLong(string message, string channel)
+    {
+        return IsMessageTooLong(message, new Channel(channel));
+    }
+
+    public static bool IsMessageTooLong(string message, Channel channel)
+    {
+        return $"{channel.Emote} {message} {Settings.ChatterinoChar}".Length > Config.MaxMessageLength;
     }
 }
