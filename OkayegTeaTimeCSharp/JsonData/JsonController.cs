@@ -13,12 +13,13 @@ public static class JsonController
 
     public static CommandLists CommandLists { get; private set; }
 
-    public static Connection Connection { get; private set; }
+    public static Connection Connection { get; private set; } = JsonSerializer.Deserialize<Connection>(File.ReadAllText(Path.ConnectionString));
+
+    public static List<string> RandomWords { get; private set; } = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Path.RandomWords));
 
     public static void LoadData()
     {
         Settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.SettingsJson));
         CommandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.CommandsJson));
-        Connection = JsonSerializer.Deserialize<Connection>(File.ReadAllText(Path.ConnectionString));
     }
 }

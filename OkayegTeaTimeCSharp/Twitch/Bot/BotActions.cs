@@ -9,6 +9,7 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
+using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
@@ -860,8 +861,12 @@ public static class BotActions
 
     public static string SendRandomWords(ITwitchChatMessage chatMessage, int count = 1)
     {
-        string words = Random.Word(count).ToSequence();
-        string message = $"{chatMessage.Username}, {words}";
+        List<string> words = new();
+        for (int i = 0; i < count; i++)
+        {
+            words.Add(JsonController.RandomWords.Random());
+        }
+        string message = $"{chatMessage.Username}, {words.ToSequence()}";
         if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
         {
             return $"{message[..(Config.MaxMessageLength - (3 + chatMessage.Channel.Emote.Length + 1))]}...";
