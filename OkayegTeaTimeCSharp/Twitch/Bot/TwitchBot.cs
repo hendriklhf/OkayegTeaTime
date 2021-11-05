@@ -97,7 +97,7 @@ public class TwitchBot
 
     public void Send(Channel channel, string message)
     {
-        if ($"{channel.Emote} {message} {Settings.ChatterinoChar}".Length <= Config.MaxMessageLength)
+        if (!MessageHelper.IsMessageTooLong(message, channel))
         {
             message = message == LastMessagesDictionary[channel.Name] ? $"{message} {Settings.ChatterinoChar}" : message;
             message = $"{channel.Emote} {message}";

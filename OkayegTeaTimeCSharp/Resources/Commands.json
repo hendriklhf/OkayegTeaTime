@@ -626,6 +626,22 @@
         "Sends a given amount of lately added BTTV emotes of the given channel"
       ],
       "Cooldown": 15000
+    },
+    {
+      "CommandName": "randomword",
+      "Alias": [
+        "randomword",
+        "rw"
+      ],
+      "Parameter": [
+        "(none)",
+        "[count]"
+      ],
+      "Description": [
+        "Sends a random word",
+        "Sends the given amount of random words"
+      ],
+      "Cooldown": 10000
     }
   ],
   "AfkCommands": [

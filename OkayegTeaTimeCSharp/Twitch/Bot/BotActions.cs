@@ -15,9 +15,8 @@ using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
-using OkayegTeaTimeCSharp.Twitch.Messages;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using Random = HLE.Randoms.Random;
+using Random = HLE.Random.Random;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot;
 
@@ -857,5 +856,19 @@ public static class BotActions
     private static string GetReminderTarget(string toUser, string fromUser)
     {
         return toUser == fromUser ? "yourself" : toUser;
+    }
+
+    public static string SendRandomWords(ITwitchChatMessage chatMessage, int count = 1)
+    {
+        string words = Random.Word(count).ToSequence();
+        string message = $"{chatMessage.Username}, {words}";
+        if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
+        {
+            return $"{message[..(Config.MaxMessageLength - (3 + chatMessage.Channel.Emote.Length + 1))]}...";
+        }
+        else
+        {
+            return message;
+        }
     }
 }
