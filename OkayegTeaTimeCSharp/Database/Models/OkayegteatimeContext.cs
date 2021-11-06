@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OkayegTeaTimeCSharp.JsonData;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -26,7 +27,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
         public virtual DbSet<Suggestion> Suggestions { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Yourmom> Yourmom { get; set; }
-        public virtual DbSet<Variable> Variables { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -231,19 +231,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Variable>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(100);
-
-                entity.Property(e => e.Value)
-                    .IsRequired()
-                    .HasMaxLength(5000);
             });
 
             modelBuilder.Entity<Yourmom>(entity =>

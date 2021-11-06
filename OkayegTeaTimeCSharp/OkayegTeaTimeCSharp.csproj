@@ -63,6 +63,8 @@
 	<ItemGroup>
 	  <Content Remove="..\..\..\..\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\app.config.transform" />
 	  <Content Remove="..\..\..\..\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\web.config.transform" />
+	  <Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.27\contentFiles\any\netstandard2.1\app.config.transform" />
+	  <Content Remove="C:\Users\Hendrik\.nuget\packages\mysql.data.entityframework\8.0.27\contentFiles\any\netstandard2.1\web.config.transform" />
 	</ItemGroup>
 
 	<ItemGroup>

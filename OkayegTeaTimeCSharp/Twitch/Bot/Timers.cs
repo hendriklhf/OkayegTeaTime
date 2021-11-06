@@ -7,10 +7,10 @@ public static class Timers
 {
     private static readonly long[] _timerIntervals =
     {
-            new Second().Milliseconds,
-            new Second(30).Milliseconds,
-            new Minute().Milliseconds,
-            new Day(10).Milliseconds
+        new Second().Milliseconds,
+        new Second(30).Milliseconds,
+        new Minute().Milliseconds,
+        new Day(10).Milliseconds
     };
 
     public static void CreateTimers()
