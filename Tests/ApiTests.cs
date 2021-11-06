@@ -82,7 +82,7 @@ public class ApiTests
     [TestMethod]
     public void GetOnlineCompilerResultTest()
     {
-        string result = HttpRequest.GetOnlineCompilerResult("\"test\".Out();");
+        string result = HttpRequest.GetCSharpOnlineCompilerResult("\"test\".Out();");
         Assert.AreEqual(result, "test ");
     }
 }

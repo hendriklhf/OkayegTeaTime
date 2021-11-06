@@ -4,7 +4,6 @@ using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Logging;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTimeCSharp.Twitch.Commands;
@@ -59,7 +58,7 @@ public class TwitchBot
 
     public TwitchBot()
     {
-        ConnectionCredentials = new(Settings.Username, Settings.OAuthToken);
+        ConnectionCredentials = new(Settings.Twitch.Username, Settings.Twitch.OAuthToken);
         ClientOptions = new()
         {
             ClientType = ClientType.Chat,
@@ -175,7 +174,7 @@ public class TwitchBot
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
-        ConsoleOut($"#{e.SentMessage.Channel}>{Settings.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
+        ConsoleOut($"#{e.SentMessage.Channel}>{Settings.Twitch.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
     }
 
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
@@ -209,7 +208,7 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
-        if (e.Channel == Settings.SecretOfflineChat && !Config.SecretUsers.Contains(e.Username))
+        if (e.Channel == Settings.SecretOfflineChat && !Settings.UserLists.SecretUsers.Contains(e.Username))
         {
             Send(Settings.SecretOfflineChat, $"{e.Username} joined the chat Stare");
         }

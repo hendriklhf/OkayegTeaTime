@@ -14,7 +14,7 @@ Build/
 # Files needed for build and run
 OkayegTeaTimeCSharp/Properties/
 OkayegTeaTimeCSharp/Resources/Settings.json
-OkayegTeaTimeCSharp/Resources/ConnectionString.*
+OkayegTeaTimeCSharp/Resources/ConnectionString.json
 
 # Optional Files
 OkayegTeaTimeCSharp/Resources/DatabaseModels.*

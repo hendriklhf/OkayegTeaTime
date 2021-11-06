@@ -4,7 +4,6 @@ using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Logging;
-using OkayegTeaTimeCSharp.Properties;
 using SpotifyAPI.Web;
 
 namespace OkayegTeaTimeCSharp.Spotify;
@@ -68,7 +67,7 @@ public static class SpotifyRequest
 
     public static string GetLoginURL()
     {
-        LoginRequest login = new(new("https://example.com/callback"), Settings.SpotifyClientID, LoginRequest.ResponseType.Code)
+        LoginRequest login = new(new("https://example.com/callback"), Settings.Spotify.ClientId, LoginRequest.ResponseType.Code)
         {
             Scope = new[] { Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState }
         };
@@ -77,13 +76,13 @@ public static class SpotifyRequest
 
     public static async Task GetNewAccessToken(string username)
     {
-        AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, DatabaseController.GetRefreshToken(username)));
+        AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(Settings.Spotify.ClientId, Settings.Spotify.ClientSecret, DatabaseController.GetRefreshToken(username)));
         DatabaseController.UpdateAccessToken(username, response.AccessToken);
     }
 
     public static async Task GetNewAuthTokens(string username, string code)
     {
-        AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Settings.SpotifyClientID, Settings.SpotifyClientSecret, code, new("https://example.com/callback")));
+        AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(Settings.Spotify.ClientId, Settings.Spotify.ClientSecret, code, new("https://example.com/callback")));
         DatabaseController.AddNewToken(username, response.AccessToken, response.RefreshToken);
     }
 
@@ -103,7 +102,7 @@ public static class SpotifyRequest
 
     public static async Task<string> Search(string query)
     {
-        Database.Models.Spotify user = await GetSpotifyUser(Config.Owners.First());
+        Database.Models.Spotify user = await GetSpotifyUser(Settings.UserLists.Owners.First());
         SearchResponse response = await new SpotifyClient(user.AccessToken).Search.Item(new(SearchRequest.Types.Track, query));
         if (response.Tracks.Items.Count > 0)
         {

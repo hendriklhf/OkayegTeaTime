@@ -1,5 +1,4 @@
 ﻿using HLE.Strings;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
 using OkayegTeaTimeCSharp.Twitch.Models;
 
@@ -24,12 +23,12 @@ public static class MessageHelper
 
     public static bool IsNotLoggedChannel(this string channel)
     {
-        return Config.NotLoggedChannels.Contains(channel);
+        return Settings.NotLoggedChannels.Contains(channel);
     }
 
-    public static bool IsSpecialUser(this string username)
+    public static bool IsIgnoredUser(this string username)
     {
-        return Config.SpecialUsers.Contains(username);
+        return Settings.UserLists.IgnoredUsers.Contains(username);
     }
 
     public static byte[] MakeInsertable(this string input)

@@ -11,7 +11,6 @@ using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
-using OkayegTeaTimeCSharp.Properties;
 using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
@@ -49,7 +48,7 @@ public static class BotActions
 
     public static void AddUserToAfkCooldownDictionary(string username)
     {
-        if (!Config.Moderators.Contains(username))
+        if (!Settings.UserLists.Moderators.Contains(username))
         {
             if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
             {
@@ -60,7 +59,7 @@ public static class BotActions
 
     public static void AddUserToCooldownDictionary(string username, CommandType type)
     {
-        if (!Config.Moderators.Contains(username))
+        if (!Settings.UserLists.Moderators.Contains(username))
         {
             if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
             {
@@ -97,7 +96,7 @@ public static class BotActions
     {
         try
         {
-            if (Config.Moderators.Contains(chatMessage.Username))
+            if (Settings.UserLists.Moderators.Contains(chatMessage.Username))
             {
                 List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
                 string regex = chatMessage.Split[2];
@@ -235,7 +234,7 @@ public static class BotActions
 
     public static string SendCompilerResult(IChatMessage chatMessage)
     {
-        return $"{chatMessage.Username}, {HttpRequest.GetOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
+        return $"{chatMessage.Username}, {HttpRequest.GetCSharpOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
     }
 
     public static string SendGoLangCompilerResult(IChatMessage chatMessage)
@@ -382,12 +381,12 @@ public static class BotActions
     public static string SendHelp(IChatMessage chatMessage)
     {
         string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
-        return $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {Settings.GitHubRepoLink}";
+        return $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {Settings.RepositoryUrl}";
     }
 
     public static string SendJoinChannel(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        if (Config.Moderators.Contains(chatMessage.Username))
+        if (Settings.UserLists.Moderators.Contains(chatMessage.Username))
         {
             string channel = chatMessage.LowerSplit[1];
             string response = twitchBot.JoinChannel(channel.RemoveHashtag());
@@ -439,7 +438,7 @@ public static class BotActions
             string emote = chatMessage.Split.Length > 1 ? chatMessage.Split[1] : chatMessage.Channel.Emote;
             string message = string.Empty;
             List<string> chatters;
-            List<string> chattersToRemove = new(Config.SpecialUsers) { chatMessage.Username };
+            List<string> chattersToRemove = new(Settings.UserLists.IgnoredUsers) { chatMessage.Username };
 
             if (chatMessage.Channel.Name != Settings.SecretOfflineChat)
             {
@@ -453,7 +452,7 @@ public static class BotActions
             else
             {
                 message = $"OkayegTeaTime {emote} ";
-                chatters = Settings.SecretOfflineChatEmotes.Split().ToList();
+                chatters = Settings.SecretOfflineChatEmotes;
             }
             message += string.Join($" {emote} ", chatters);
             return message;

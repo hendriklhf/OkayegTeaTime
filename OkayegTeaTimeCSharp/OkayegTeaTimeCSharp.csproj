@@ -91,30 +91,6 @@
 		<PackageReference Include="TwitchLib" Version="3.3.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="Properties\Path.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>Path.resx</DependentUpon>
-		</Compile>
-		<Compile Update="Properties\Settings.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Settings.resx</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Update="Properties\Path.resx">
-		  <Generator>ResXFileCodeGenerator</Generator>
-		  <LastGenOutput>Path.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Update="Properties\Settings.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-	</ItemGroup>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command="xcopy $(ProjectDir)Resources $(TargetDir)Resources /E /Y /I" />
 	</Target>

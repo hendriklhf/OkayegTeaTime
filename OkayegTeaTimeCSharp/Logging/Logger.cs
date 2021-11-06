@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.Logging;
 

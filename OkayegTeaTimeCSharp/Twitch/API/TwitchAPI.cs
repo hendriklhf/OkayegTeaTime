@@ -1,5 +1,4 @@
 ﻿using HLE.HttpRequests;
-using OkayegTeaTimeCSharp.Properties;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibApi = TwitchLib.Api.TwitchAPI;
@@ -12,8 +11,8 @@ public static class TwitchApi
 
     public static void Configure()
     {
-        _api.Settings.ClientId = Settings.TwitchApiClientID;
-        _api.Settings.Secret = Settings.TwitchApiClientSecret;
+        _api.Settings.ClientId = Settings.Twitch.ApiClientId;
+        _api.Settings.Secret = Settings.Twitch.ApiClientSecret;
         _api.Settings.Scopes = new()
         {
             AuthScopes.Channel_Check_Subscription,

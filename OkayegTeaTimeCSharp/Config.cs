@@ -1,8 +1,4 @@
-﻿using OkayegTeaTimeCSharp.Database;
-using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.Properties;
-
-namespace OkayegTeaTimeCSharp;
+﻿namespace OkayegTeaTimeCSharp;
 
 public static class Config
 {
@@ -14,16 +10,4 @@ public static class Config
     public const byte MaxReminders = 10;
     public const short MinDelayBetweenMessages = 1300;
     public const string Suffix = "eg";
-
-    public static List<string> Channels => DatabaseController.GetChannels();
-
-    public static List<string> Owners => JsonController.Settings.UserLists.Owners;
-
-    public static List<string> Moderators => JsonController.Settings.UserLists.Moderators.Concat(Owners).Distinct().ToList();
-
-    public static List<string> SpecialUsers => JsonController.Settings.UserLists.IgnoredUsers;
-
-    public static List<string> SecretUsers => JsonController.Settings.UserLists.SecretUsers;
-
-    public static List<string> NotLoggedChannels => Settings.NotLoggedChannels.Split().ToList();
 }

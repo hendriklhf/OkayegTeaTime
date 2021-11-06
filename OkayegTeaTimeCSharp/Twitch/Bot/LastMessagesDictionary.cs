@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTimeCSharp.Twitch.Bot;
+﻿using OkayegTeaTimeCSharp.Database;
+
+namespace OkayegTeaTimeCSharp.Twitch.Bot;
 
 public class LastMessagesDictionary
 {
@@ -17,7 +19,7 @@ public class LastMessagesDictionary
 
     private void FillDictionary()
     {
-        _lastMessages = Config.Channels.ToDictionary(c => c, c => string.Empty);
+        _lastMessages = DatabaseController.GetChannels().ToDictionary(c => c, c => string.Empty);
     }
 
     public void Add(string channel, string message = null)

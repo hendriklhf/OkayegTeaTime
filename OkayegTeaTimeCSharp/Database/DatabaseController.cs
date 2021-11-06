@@ -330,7 +330,7 @@ public static class DatabaseController
 
     public static void AddMessage(ITwitchChatMessage chatMessage)
     {
-        if (!Config.NotLoggedChannels.Contains(chatMessage.Channel.Name))
+        if (!Settings.NotLoggedChannels.Contains(chatMessage.Channel.Name))
         {
             OkayegTeaTimeContext database = new();
             database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel.Name));
@@ -345,7 +345,7 @@ public static class DatabaseController
         Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.Name.RemoveHashtag()}");
         if (nuke is not null)
         {
-            if (chatMessage.IsBroadcaster || chatMessage.IsModerator || Config.Moderators.Contains(chatMessage.Username))
+            if (chatMessage.IsBroadcaster || chatMessage.IsModerator || Settings.UserLists.Moderators.Contains(chatMessage.Username))
             {
                 database.Nukes.Remove(nuke);
                 database.SaveChanges();
@@ -369,7 +369,7 @@ public static class DatabaseController
         {
             if (reminder.FromUser == chatMessage.Username
                 || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0)
-                || Config.Moderators.Contains(chatMessage.Username))
+                || Settings.UserLists.Moderators.Contains(chatMessage.Username))
             {
                 database.Reminders.Remove(reminder);
                 database.SaveChanges();

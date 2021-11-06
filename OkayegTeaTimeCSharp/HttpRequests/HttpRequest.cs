@@ -9,7 +9,6 @@ using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Models;
 using OkayegTeaTimeCSharp.Twitch.Models.Enums;
-using Path = OkayegTeaTimeCSharp.Properties.Path;
 
 namespace OkayegTeaTimeCSharp.HttpRequests;
 
@@ -127,12 +126,12 @@ public static class HttpRequest
         return request.ValidJsonData ? request.Data.GetRawText() : request.Result;
     }
 
-    public static string GetOnlineCompilerResult(string input)
+    public static string GetCSharpOnlineCompilerResult(string input)
     {
         HttpPost request = new("https://dotnetfiddle.net/Home/Run",
             new()
             {
-                new("CodeBlock", HttpUtility.HtmlEncode(GetOnlineCompilerTemplate(input))),
+                new("CodeBlock", HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input))),
                 new("Compiler", "NetCore22"),
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
@@ -140,9 +139,9 @@ public static class HttpRequest
         return request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
     }
 
-    private static string GetOnlineCompilerTemplate(string code)
+    private static string GetCSharpOnlineCompilerTemplate(string code)
     {
-        return File.ReadAllText(Path.OnlineCompilerTemplate).Replace("{code}", code);
+        return File.ReadAllText(Path.CSharpOnlineCompilerTemplate).Replace("{code}", code);
     }
 
     public static BttvRequest GetBttvRequest(string channel)
