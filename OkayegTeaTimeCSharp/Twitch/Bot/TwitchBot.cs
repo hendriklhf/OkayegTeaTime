@@ -75,7 +75,7 @@ public class TwitchBot
 #if DEBUG
         TwitchClient.Initialize(ConnectionCredentials, Settings.DebugChannel);
 #else
-        TwitchClient.Initialize(ConnectionCredentials, Config.Channels);
+        TwitchClient.Initialize(ConnectionCredentials, DatabaseController.GetChannels());
 #endif
 
         TwitchClient.OnLog += Client_OnLog;
