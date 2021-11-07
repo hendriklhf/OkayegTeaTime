@@ -76,13 +76,20 @@ public class ApiTests
     public void GetMatchResultTest()
     {
         string result = HttpRequest.GetMathResult("2^8");
-        Assert.AreEqual(result, "256");
+        Assert.AreEqual("256", result);
     }
 
     [TestMethod]
-    public void GetOnlineCompilerResultTest()
+    public void GetCSharpOnlineCompilerResultTest()
     {
         string result = HttpRequest.GetCSharpOnlineCompilerResult("\"test\".Out();");
-        Assert.AreEqual(result, "test ");
+        Assert.AreEqual("test ", result);
+    }
+
+    [TestMethod]
+    public void GetGoLangOnlineCompilerTemplate()
+    {
+        string result = HttpRequest.GetGoLangOnlineCompilerResult("fmt.Println(\"test\");");
+        Assert.AreEqual("test\n", result);
     }
 }
