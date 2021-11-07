@@ -111,7 +111,7 @@ public class TwitchBot
 
     public string JoinChannel(string channel)
     {
-        if (TwitchApi.DoesUserExsist(channel))
+        if (TwitchApi.DoesUserExist(channel))
         {
             DatabaseController.AddChannel(channel);
             LastMessagesDictionary.Add(channel);

@@ -71,8 +71,13 @@ public static class TwitchApi
         return GetUserByName(username)?.Id;
     }
 
-    public static bool DoesUserExsist(string username)
+    public static bool DoesUserExist(string username)
     {
         return GetUserByName(username) is not null;
+    }
+
+    public static bool DoesUserExist(int id)
+    {
+        return GetUserById(id) is not null;
     }
 }
