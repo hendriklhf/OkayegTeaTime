@@ -58,14 +58,14 @@ public static class DatabaseController
         OkayegTeaTimeContext database = new();
         if (reminder.ToTime == 0)
         {
-            if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
+            if ((database.Reminders as IQueryable<Reminder>).Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= Config.MaxReminders)
             {
                 throw new TooManyReminderException();
             }
         }
         else
         {
-            if (database.Reminders.Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
+            if ((database.Reminders as IQueryable<Reminder>).Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= Config.MaxReminders)
             {
                 throw new TooManyReminderException();
             }
@@ -93,7 +93,7 @@ public static class DatabaseController
             OkayegTeaTimeContext database = new();
             if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
             {
-                database.Nukes.Where(n => n.Channel == $"#{chatMessage.Channel}").ForEach(n =>
+                (database.Nukes as IQueryable<Nuke>).Where(n => n.Channel == $"#{chatMessage.Channel}").ForEach(n =>
                 {
                     if (n.ForTime > TimeHelper.Now())
                     {
@@ -120,7 +120,7 @@ public static class DatabaseController
         OkayegTeaTimeContext database = new();
         if (database.Reminders.Any(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username))
         {
-            List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username).ToList();
+            List<Reminder> listReminder = (database.Reminders as IQueryable<Reminder>).Where(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username).ToList();
             twitchBot.SendReminder(chatMessage, listReminder);
             RemoveReminder(listReminder);
         }
@@ -131,7 +131,7 @@ public static class DatabaseController
         OkayegTeaTimeContext database = new();
         if (database.Reminders.Any(reminder => reminder.ToTime != 0))
         {
-            List<Reminder> listReminder = database.Reminders.Where(reminder => reminder.ToTime != 0 && reminder.ToTime <= TimeHelper.Now()).ToList();
+            List<Reminder> listReminder = (database.Reminders as IQueryable<Reminder>).Where(reminder => reminder.ToTime != 0 && reminder.ToTime <= TimeHelper.Now()).ToList();
             listReminder.ForEach(reminder =>
             {
                 twitchBot.SendTimedReminder(reminder);
@@ -157,7 +157,7 @@ public static class DatabaseController
 
     public static List<string> GetChannels()
     {
-        return new OkayegTeaTimeContext().Channels.Select(c => c.ChannelName).ToList();
+        return (new OkayegTeaTimeContext().Channels as IQueryable<Channel>).Select(c => c.ChannelName).ToList();
     }
 
     public static string GetEmoteInFront(string channel)
@@ -167,7 +167,7 @@ public static class DatabaseController
 
     public static List<string> GetEmoteManagementSubs()
     {
-        return new OkayegTeaTimeContext().Channels.Where(c => c.EmoteManagementSub == true).Select(c => c.ChannelName).ToList();
+        return (new OkayegTeaTimeContext().Channels as IQueryable<Channel>).Where(c => c.EmoteManagementSub == true).Select(c => c.ChannelName).ToList();
     }
 
     public static Dictionary<string, string> GetEmotesInFront()
@@ -207,7 +207,7 @@ public static class DatabaseController
     {
 
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
+        Message message = (database.Messages as IQueryable<Message>).Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
         return message ?? throw new UserNotFoundException();
     }
 
@@ -448,7 +448,7 @@ public static class DatabaseController
 
     public static int CountChannelMessages(string givenChannel)
     {
-        return new OkayegTeaTimeContext().Messages.Where(m => m.Channel == givenChannel).Count();
+        return (new OkayegTeaTimeContext().Messages as IQueryable<Message>).Where(m => m.Channel == givenChannel).Count();
     }
 
     public static int CountMessages()
@@ -458,7 +458,7 @@ public static class DatabaseController
 
     public static int CountUserMessages(string givenUsername)
     {
-        return new OkayegTeaTimeContext().Messages.Where(m => m.Username == givenUsername).Count();
+        return (new OkayegTeaTimeContext().Messages as IQueryable<Message>).Where(m => m.Username == givenUsername).Count();
     }
 
     private static void RemoveReminder(List<Reminder> listReminder)
@@ -471,7 +471,7 @@ public static class DatabaseController
     private static void SetAfk(string username, bool afk)
     {
         OkayegTeaTimeContext database = new();
-        database.Users.Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;
+        (database.Users as IQueryable<User>).Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;
         database.SaveChanges();
     }
 
