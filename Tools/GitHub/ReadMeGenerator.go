@@ -63,15 +63,17 @@ func GenerateReadMe(jsonController *Json.JsonController) string {
 	linq.From(jsonController.JsonCommands.Commands).SortT(func(c1 Json.Command, c2 Json.Command) bool {
 		return c1.CommandName < c2.CommandName
 	}).ForEachT(func(c Json.Command) {
-		builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td><table>", c.CommandName))
-		linq.From(c.Alias).ForEachT(func(a string) {
-			builder.WriteString(fmt.Sprintf("<tr><td>%s</td></tr>", a))
-		})
-		builder.WriteString("</table></td><td><table>")
-		for i := 0; i < len(c.Parameter); i++ {
-			builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", c.Parameter[i], c.Description[i]))
+		if c.Document {
+			builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td><table>", c.CommandName))
+			linq.From(c.Alias).ForEachT(func(a string) {
+				builder.WriteString(fmt.Sprintf("<tr><td>%s</td></tr>", a))
+			})
+			builder.WriteString("</table></td><td><table>")
+			for i := 0; i < len(c.Parameter); i++ {
+				builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", c.Parameter[i], c.Description[i]))
+			}
+			builder.WriteString("</table></td></tr>")
 		}
-		builder.WriteString("</table></td></tr>")
 	})
 	builder.WriteString(fmt.Sprintf("</table><h2>%s</h2><table><tr>", _header2))
 	linq.From(_afkCmdTableHeader).ForEachT(func(s string) {

@@ -13,7 +13,7 @@ public static class TimerFunctions
 
     public static void LoadJsonData()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
     }
 
     public static void SetConsoleTitle(TwitchBot twitchBot)

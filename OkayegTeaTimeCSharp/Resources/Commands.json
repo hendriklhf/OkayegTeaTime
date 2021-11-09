@@ -12,7 +12,8 @@
       "Description": [
         "Sends a link to the GitHub repository, where all commands are listed"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "ping",
@@ -26,7 +27,8 @@
       "Description": [
         "Sends a ping message, if the bot is online"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "rand",
@@ -47,7 +49,8 @@
         "Sends a random message sent across all channels of the given user",
         "Sends a random message sent in the given channel of the given user"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": false
     },
     {
       "CommandName": "first",
@@ -64,7 +67,8 @@
         "Sends the first logged message of yourself",
         "Sends the first logged message of the given user"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": false
     },
     {
       "CommandName": "last",
@@ -80,7 +84,8 @@
       "Description": [
         "Sends the last logged message of the given user"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": false
     },
     {
       "CommandName": "search",
@@ -94,7 +99,8 @@
       "Description": [
         "Sends a message that includes the given text"
       ],
-      "Cooldown": 30000
+      "Cooldown": 30000,
+      "Document": false
     },
     {
       "CommandName": "cookie",
@@ -108,7 +114,8 @@
       "Description": [
         "Sends a friendly fortune cookie message :) (currently only in German)"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": false
     },
     {
       "CommandName": "count",
@@ -125,7 +132,8 @@
         "Sends the amount of logged messages sent by the given user",
         "Sends the amount of logged messages in the given channel"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": false
     },
     {
       "CommandName": "suggest",
@@ -141,7 +149,8 @@
         "Suggest a new feature",
         "Report a bug"
       ],
-      "Cooldown": 30000
+      "Cooldown": 30000,
+      "Document": true
     },
     {
       "CommandName": "fuck",
@@ -156,7 +165,8 @@
         "Fucks the given user",
         "Fucks the given user and adds a given emote"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "remind",
@@ -172,7 +182,8 @@
         "Sets a reminder for the given user",
         "Sets a reminder for the given user, that will be triggered after the given time"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": true
     },
     {
       "CommandName": "rafk",
@@ -186,7 +197,8 @@
       "Description": [
         "Resumes your last status"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "check",
@@ -203,7 +215,8 @@
         "Sends information about the reminder. Must be a running reminder",
         "Sends the message with a matching id"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "yourmom",
@@ -218,7 +231,8 @@
         "Sends a \u0022your mom\u0022 joke",
         "Sends a \u0022your mom\u0022 joke to the given user"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "tuck",
@@ -231,7 +245,8 @@
       "Description": [
         "Tucks the given user to bed"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "gachi",
@@ -244,7 +259,8 @@
       "Description": [
         "Sends a random gachi song"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "massping",
@@ -259,7 +275,8 @@
         "Pings all users in the current channel",
         "Pings all users in the current channel and adds the custom emote between each name"
       ],
-      "Cooldown": 30000
+      "Cooldown": 30000,
+      "Document": true
     },
     {
       "CommandName": "nuke",
@@ -272,7 +289,8 @@
       "Description": [
         "Will timeout every user using the specified word for the given timeout time in the given time"
       ],
-      "Cooldown": 30000
+      "Cooldown": 30000,
+      "Document": true
     },
     {
       "CommandName": "set",
@@ -287,7 +305,8 @@
         "Will set the channel\u0027s command prefix to the given prefix. A prefix can be as long as 10 chars",
         "Will set the emote in front message to the given one. An emote can be as long as 20 chars"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "unset",
@@ -304,7 +323,8 @@
         "Unsets the reminder with the given ID",
         "Unsets the emote in front in the current channel"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "math",
@@ -318,7 +338,8 @@
       "Description": [
         "Will calculate the solution of the given mathematical expression"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "coinflip",
@@ -333,7 +354,8 @@
       "Description": [
         "Sends the result of a coinflip"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "spotify",
@@ -351,7 +373,8 @@
         "Sends your current playing spotify song, if registered",
         "Sends the current playing spotify song of the given user, if registered"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "chatters",
@@ -372,7 +395,8 @@
         "Sends the amount of chatters in the current channel",
         "Sends the amount of chatters in the given channel"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "join",
@@ -386,7 +410,8 @@
       "Description": [
         "Joins the given channel. Only available for owners."
       ],
-      "Cooldown": 0
+      "Cooldown": 10000,
+      "Document": false
     },
     {
       "CommandName": "csharp",
@@ -400,7 +425,8 @@
       "Description": [
         "Executes the given C# code. Use \".Out()\" for easy output"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "fill",
@@ -415,7 +441,8 @@
         "Sends a message that only contains the given emote up to its maximum length",
         "Sends a message that contains random chars up to its maximum length"
       ],
-      "Cooldown": 30000
+      "Cooldown": 30000,
+      "Document": true
     },
     {
       "CommandName": "vanish",
@@ -429,7 +456,8 @@
       "Description": [
         "Timeouts the sender for 1s"
       ],
-      "Cooldown": 3000
+      "Cooldown": 3000,
+      "Document": true
     },
     {
       "CommandName": "songrequest",
@@ -447,7 +475,8 @@
         "Adds the Spotify song of the URI to the broadcaster's queue, if registered and enabled",
         "Adds the Spotify song of the ID to the broadcaster's queue, if registered and enabled"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": true
     },
     {
       "CommandName": "skip",
@@ -460,7 +489,8 @@
       "Description": [
         "Skips to the next song in the broadcaster's queue, if registered and enabled"
       ],
-      "Cooldown": 5000
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "id",
@@ -478,7 +508,8 @@
         "Sends your Twitch user ID",
         "Sends the Twitch user ID of the given user"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "chatterino",
@@ -491,7 +522,9 @@
       ],
       "Description": [
         "Sends usefull Chatterino links, e.g. for download"
-      ]
+      ],
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "chatterino7",
@@ -504,7 +537,9 @@
       ],
       "Description": [
         "Sends usefull Chatterino7 links, e.g. for download"
-      ]
+      ],
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "pick",
@@ -517,7 +552,9 @@
       ],
       "Description": [
         "Sends one item picked from all provided ones"
-      ]
+      ],
+      "Cooldown": 5000,
+      "Document": true
     },
     {
       "CommandName": "banfromfile",
@@ -529,7 +566,9 @@
       ],
       "Description": [
         "Bans all users that match the regex in a multiline file. Currently restricted to moderators"
-      ]
+      ],
+      "Cooldown": 10000,
+      "Document": false
     },
     {
       "CommandName": "sub",
@@ -541,7 +580,9 @@
       ],
       "Description": [
         "If subbed, sends the emotes into the chat that were newly added"
-      ]
+      ],
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "unsub",
@@ -553,7 +594,9 @@
       ],
       "Description": [
         "Unsubs you from the notification of newly added emotes"
-      ]
+      ],
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "go",
@@ -567,7 +610,8 @@
       "Description": [
         "Executes the given Go code"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     },
     {
       "CommandName": "seventv",
@@ -587,7 +631,8 @@
         "Sends 5 lately added 7TV emotes of the given channel",
         "Sends a given amount of lately added 7TV emotes of the given channel"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": true
     },
     {
       "CommandName": "ffz",
@@ -606,7 +651,8 @@
         "Sends 5 lately added FFZ emotes of the given channel",
         "Sends a given amount of lately added FFZ emotes of the given channel"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": true
     },
     {
       "CommandName": "bttv",
@@ -625,7 +671,8 @@
         "Sends 5 lately added BTTV emotes of the given channel",
         "Sends a given amount of lately added BTTV emotes of the given channel"
       ],
-      "Cooldown": 15000
+      "Cooldown": 15000,
+      "Document": true
     },
     {
       "CommandName": "randomword",
@@ -641,7 +688,8 @@
         "Sends a random word",
         "Sends the given amount of random words"
       ],
-      "Cooldown": 10000
+      "Cooldown": 10000,
+      "Document": true
     }
   ],
   "AfkCommands": [

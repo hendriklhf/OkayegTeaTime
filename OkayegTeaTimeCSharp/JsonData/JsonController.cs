@@ -16,7 +16,7 @@ public static class JsonController
 
     public static List<string> RandomWords { get; private set; } = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(Path.RandomWords));
 
-    public static void LoadData()
+    public static void LoadJsonData()
     {
         Settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.Settings));
         CommandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.Commands));

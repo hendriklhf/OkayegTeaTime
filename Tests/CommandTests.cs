@@ -15,7 +15,7 @@ public class CommandTests
     [TestMethod]
     public void CommandCompletenessTestFromEnum()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
         typeof(CommandType).ToList<CommandType>().ForEach(type =>
         {
             JCommand command = CommandHelper.GetCommand(type);
@@ -26,7 +26,7 @@ public class CommandTests
     [TestMethod]
     public void CommandCompletenessTestFromJson()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
         JsonController.CommandLists.Commands.ForEach(cmd =>
         {
             CommandType type = typeof(CommandType).ToList<CommandType>().SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName.ToLower());
@@ -37,7 +37,7 @@ public class CommandTests
     [TestMethod]
     public void AfkCommandCompletenessTestFromEnum()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
         typeof(AfkCommandType).ToList<AfkCommandType>().ForEach(type =>
         {
             AfkCommand command = CommandHelper.GetAfkCommand(type);
@@ -48,7 +48,7 @@ public class CommandTests
     [TestMethod]
     public void AfkCommandCompletenessTestFromJson()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
         JsonController.CommandLists.AfkCommands.ForEach(cmd =>
         {
             AfkCommandType type = typeof(AfkCommandType).ToList<AfkCommandType>().SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName);

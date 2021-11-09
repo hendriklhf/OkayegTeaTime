@@ -6,4 +6,5 @@ type Command struct {
 	Parameter   []string
 	Description []string
 	Cooldown    int
+	Document    bool
 }

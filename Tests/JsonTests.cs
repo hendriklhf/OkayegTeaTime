@@ -10,7 +10,7 @@ public class JsonTests
     [TestMethod]
     public void JsonSettingsContentTest()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
         UserLists userLists = JsonController.Settings.UserLists;
         Assert.IsTrue(userLists.Moderators is not null);
         Assert.IsTrue(userLists.Owners is not null);
@@ -21,7 +21,7 @@ public class JsonTests
     [TestMethod]
     public void JsonCommmandsContentTest()
     {
-        JsonController.LoadData();
+        JsonController.LoadJsonData();
         Assert.IsTrue(JsonController.CommandLists.AfkCommands is not null);
         Assert.IsTrue(JsonController.CommandLists.Commands is not null);
     }
