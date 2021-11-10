@@ -151,41 +151,40 @@ public class TwitchBot
 
     private void Client_OnLog(object sender, OnLogArgs e)
     {
-        //ConsoleOut($"LOG>{e.Data}");
+        //ConsoleOut($"TWITCH>{e.Data}");
     }
 
     private void Client_OnConnected(object sender, OnConnectedArgs e)
     {
-        ConsoleOut("BOT>CONNECTED", true, ConsoleColor.Red);
+        ConsoleOut("TWITCH>CONNECTED", true, ConsoleColor.Red);
     }
 
     private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
     {
-        ConsoleOut($"BOT>Joined channel: {e.Channel}", fontColor: ConsoleColor.Red);
+        ConsoleOut($"TWITCH>Joined channel: {e.Channel}", fontColor: ConsoleColor.Red);
     }
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
+        ConsoleOut($"TWITCH>#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
         MessageHandler.CheckForPajaAlert(e.ChatMessage);
-
         MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
-        ConsoleOut($"#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
     }
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
-        ConsoleOut($"#{e.SentMessage.Channel}>{Settings.Twitch.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
+        ConsoleOut($"TWITCH>#{e.SentMessage.Channel}>{Settings.Twitch.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
     }
 
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
+        ConsoleOut($"TWITCH-WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         WhisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
-        ConsoleOut($"WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
     }
 
     private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
     {
-        ConsoleOut($"CONNECTION-ERROR>{e.Error.Message}", true, ConsoleColor.Red);
+        ConsoleOut($"TWITCH-CONNECTION-ERROR>{e.Error.Message}", true, ConsoleColor.Red);
         Restart();
     }
 
