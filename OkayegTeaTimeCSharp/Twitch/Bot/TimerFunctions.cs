@@ -18,7 +18,7 @@ public static class TimerFunctions
 
     public static void SetConsoleTitle(TwitchBot twitchBot)
     {
-        Console.Title = $"OkayegTeaTime - {twitchBot.GetSystemInfo()}";
+        Console.Title = $"OkayegTeaTime - {twitchBot.SystemInfo}";
     }
 
     public static void TwitchApiRefreshAccessToken()

@@ -46,6 +46,10 @@ public class TwitchBot
 
     public DottedNumber CommandCount { get; set; } = 1;
 
+    public string SystemInfo => GetSystemInfo();
+
+    public string MemoryUsage => GetMemoryUsage();
+
     public string Runtime => ConvertUnixTimeToTimeStamp(_runtime);
 
     public static List<Timer> Timers { get; } = new();
@@ -135,7 +139,7 @@ public class TwitchBot
 
     #region SystemInfo
 
-    public string GetSystemInfo()
+    private string GetSystemInfo()
     {
         return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
     }

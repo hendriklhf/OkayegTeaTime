@@ -9,7 +9,6 @@ using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Database.Models;
 using OkayegTeaTimeCSharp.Exceptions;
 using OkayegTeaTimeCSharp.HttpRequests;
-using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Spotify;
 using OkayegTeaTimeCSharp.Twitch.Api;
@@ -433,7 +432,7 @@ public static class BotActions
 
     public static string SendMassping(ITwitchChatMessage chatMessage)
     {
-        if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
+        if (chatMessage.IsModerator || chatMessage.IsBroadcaster && chatMessage.Channel.Name != "moondye7")
         {
             string emote = chatMessage.Split.Length > 1 ? chatMessage.Split[1] : chatMessage.Channel.Emote;
             string message = string.Empty;
@@ -475,7 +474,7 @@ public static class BotActions
 
     public static string SendPing(TwitchBot twitchBot)
     {
-        return $"Pongeg, I'm here! {twitchBot.GetSystemInfo()}";
+        return $"Pongeg, I'm here! {twitchBot.SystemInfo}";
     }
 
     public static string SendRandomCookie(IChatMessage chatMessage)
@@ -863,7 +862,7 @@ public static class BotActions
         List<string> words = new();
         for (int i = 0; i < count; i++)
         {
-            words.Add(JsonController.RandomWords.Random());
+            words.Add(RandomWords.Random());
         }
         string message = $"{chatMessage.Username}, {words.ToSequence()}";
         if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
