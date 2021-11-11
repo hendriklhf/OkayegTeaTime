@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
+﻿using System.Text.Json.Serialization;
+
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 
 public class Twitch
 {
@@ -6,6 +8,7 @@ public class Twitch
 
     public string OAuthToken { get; set; }
 
+    [JsonPropertyName("ApiClientId")]
     public string ApiClientId { get; set; }
 
     public string ApiClientSecret { get; set; }

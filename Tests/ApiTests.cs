@@ -28,7 +28,7 @@ public class ApiTests
     }
 
     [TestMethod]
-    public void GetBTTVEmotesTest()
+    public void GetBttvEmotesTest()
     {
         TwitchApi.Configure();
         int emoteCount = 5;
