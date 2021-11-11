@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTimeCSharp.JsonData;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
-using OkayegTeaTimeCSharp.Utils;
 using JCommand = OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData.Command;
 
 namespace Tests;
@@ -18,7 +17,7 @@ public class CommandTests
         JsonController.LoadJsonData();
         typeof(CommandType).ToList<CommandType>().ForEach(type =>
         {
-            JCommand command = CommandHelper.GetCommand(type);
+            JCommand command = JsonController.CommandList[type];
             Assert.IsNotNull(command);
         });
     }
@@ -27,7 +26,7 @@ public class CommandTests
     public void CommandCompletenessTestFromJson()
     {
         JsonController.LoadJsonData();
-        JsonController.CommandLists.Commands.ForEach(cmd =>
+        JsonController.CommandList.Commands.ForEach(cmd =>
         {
             CommandType type = typeof(CommandType).ToList<CommandType>().SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName.ToLower());
             Assert.IsNotNull(type);
@@ -40,7 +39,7 @@ public class CommandTests
         JsonController.LoadJsonData();
         typeof(AfkCommandType).ToList<AfkCommandType>().ForEach(type =>
         {
-            AfkCommand command = CommandHelper.GetAfkCommand(type);
+            AfkCommand command = JsonController.CommandList[type];
             Assert.IsNotNull(command);
         });
     }
@@ -49,7 +48,7 @@ public class CommandTests
     public void AfkCommandCompletenessTestFromJson()
     {
         JsonController.LoadJsonData();
-        JsonController.CommandLists.AfkCommands.ForEach(cmd =>
+        JsonController.CommandList.AfkCommands.ForEach(cmd =>
         {
             AfkCommandType type = typeof(AfkCommandType).ToList<AfkCommandType>().SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName);
             Assert.IsNotNull(type);

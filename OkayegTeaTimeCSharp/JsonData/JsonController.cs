@@ -10,7 +10,7 @@ public static class JsonController
 {
     public static Settings Settings { get; private set; }
 
-    public static CommandLists CommandLists { get; private set; }
+    public static CommandList CommandList { get; private set; }
 
     public static Connection Connection { get; private set; } = JsonSerializer.Deserialize<Connection>(File.ReadAllText(Path.ConnectionString));
 
@@ -19,6 +19,6 @@ public static class JsonController
     public static void LoadJsonData()
     {
         Settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(Path.Settings));
-        CommandLists = JsonSerializer.Deserialize<CommandLists>(File.ReadAllText(Path.Commands));
+        CommandList = JsonSerializer.Deserialize<CommandList>(File.ReadAllText(Path.Commands));
     }
 }

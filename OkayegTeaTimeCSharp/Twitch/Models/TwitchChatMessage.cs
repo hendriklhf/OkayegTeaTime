@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
 using HLE.Strings;
-using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
 using OkayegTeaTimeCSharp.Twitch.Messages.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
 using TwitchLib.Client.Enums;
@@ -78,6 +76,18 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public UserType UserType { get; }
 
+    public bool IsAfkCommmand => CommandList.AfkCommandAliases.Any(alias => Message.IsMatch(PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)")));
+
+    public bool IsAnyCommand => CommandList.AllAliases.Any(alias => Message.IsMatch(PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)")));
+
+    public bool IsCommand => CommandList.CommandAliases.Any(alias => Message.IsMatch(PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)")));
+
+    public bool IsNotLoggedChannel => Settings.NotLoggedChannels.Contains(Channel.Name);
+
+    public bool IsIgnoredUser => Settings.UserLists.IgnoredUsers.Contains(Username);
+
+    public string QueryableMessage => Message.RemoveSQLChars();
+
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
     {
         Badges = chatMessage.Badges.Select(b => b.Key).ToList();
@@ -101,12 +111,12 @@ public class TwitchChatMessage : ITwitchChatMessage
         IsSubscriber = chatMessage.IsSubscriber;
         IsTurbo = chatMessage.IsTurbo;
         IsVip = chatMessage.IsVip;
-        LowerSplit = chatMessage.GetLowerSplit();
-        Message = chatMessage.GetMessage();
+        Message = chatMessage.Message.RemoveChatterinoChar();
+        LowerSplit = Message.ToLower().Split();
         Noisy = chatMessage.Noisy;
         RawIrcMessage = chatMessage.RawIrcMessage;
         RoomId = chatMessage.RoomId.ToInt();
-        Split = chatMessage.GetSplit();
+        Split = Message.Split();
         SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
         TmiSentTs = chatMessage.TmiSentTs.ToLong();
         UserId = chatMessage.UserId.ToInt();
@@ -118,20 +128,19 @@ public class TwitchChatMessage : ITwitchChatMessage
     private List<UserTag> GetUserTags()
     {
         List<UserTag> result = new() { UserTag.Normal };
-        UserLists userLists = JsonController.Settings.UserLists;
-        if (userLists.Moderators.Contains(Username))
+        if (Settings.UserLists.Moderators.Contains(Username))
         {
             result.Add(UserTag.Moderator);
         }
-        if (userLists.Owners.Contains(Username))
+        if (Settings.UserLists.Owners.Contains(Username))
         {
             result.Add(UserTag.Owner);
         }
-        if (userLists.IgnoredUsers.Contains(Username))
+        if (Settings.UserLists.IgnoredUsers.Contains(Username))
         {
             result.Add(UserTag.Special);
         }
-        if (userLists.SecretUsers.Contains(Username))
+        if (Settings.UserLists.SecretUsers.Contains(Username))
         {
             result.Add(UserTag.Secret);
         }

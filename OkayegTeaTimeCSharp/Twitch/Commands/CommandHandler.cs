@@ -19,15 +19,15 @@ public class CommandHandler : Handler
 
     public override void Handle(ITwitchChatMessage chatMessage)
     {
-        if (chatMessage.IsCommand())
+        if (chatMessage.IsCommand)
         {
             foreach (CommandType type in (CommandType[])Enum.GetValues(typeof(CommandType)))
             {
-                if (chatMessage.MatchesAnyAlias(type))
+                if (CommandList.MatchesAnyAlias(chatMessage, type))
                 {
                     if (!BotActions.IsOnCooldown(chatMessage.Username, type))
                     {
-                        foreach (string alias in CommandHelper.GetCommand(type).Alias)
+                        foreach (string alias in CommandList[type].Alias)
                         {
                             if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
                             {
@@ -43,15 +43,15 @@ public class CommandHandler : Handler
             }
             TwitchBot.CommandCount++;
         }
-        else if (chatMessage.IsAfkCommand())
+        else if (chatMessage.IsAfkCommmand)
         {
             foreach (AfkCommandType type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
             {
-                if (chatMessage.MatchesAnyAlias(type))
+                if (CommandList.MatchesAnyAlias(chatMessage, type))
                 {
                     if (!BotActions.IsOnAfkCooldown(chatMessage.Username))
                     {
-                        foreach (string alias in CommandHelper.GetAfkCommand(type).Alias)
+                        foreach (string alias in CommandList[type].Alias)
                         {
                             if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
                             {
@@ -71,7 +71,7 @@ public class CommandHandler : Handler
 
     private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
     {
-        Type commandClass = Type.GetType(CommandHelper.GetCommandClassName(type));
+        Type commandClass = Type.GetType(CommandList.GetCommandClassName(type));
         ConstructorInfo constructor = commandClass.GetConstructor(new Type[] { typeof(TwitchBot), typeof(ITwitchChatMessage), typeof(string) });
         commandClass.GetMethod(_handleName).Invoke(constructor.Invoke(new object[] { twitchBot, chatMessage, alias }), null);
     }

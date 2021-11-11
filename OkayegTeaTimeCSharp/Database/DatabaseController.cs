@@ -82,13 +82,13 @@ public static class DatabaseController
     public static void AddSugestion(ITwitchChatMessage chatMessage, string suggestion)
     {
         OkayegTeaTimeContext database = new();
-        database.Suggestions.Add(new(chatMessage.Username, suggestion.MakeInsertable(), $"#{chatMessage.Channel}"));
+        database.Suggestions.Add(new(chatMessage.Username, suggestion.Encode(), $"#{chatMessage.Channel}"));
         database.SaveChanges();
     }
 
     public static void CheckForNukes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        if (!chatMessage.IsAnyCommand())
+        if (!chatMessage.IsAnyCommand)
         {
             OkayegTeaTimeContext database = new();
             if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
@@ -148,7 +148,7 @@ public static class DatabaseController
         if (user.IsAfk == true)
         {
             twitchBot.SendComingBack(user, chatMessage);
-            if (!chatMessage.IsAfkCommand())
+            if (!chatMessage.IsAfkCommmand)
             {
                 SetAfk(chatMessage.Username, false);
             }
@@ -250,14 +250,14 @@ public static class DatabaseController
     public static Message GetRandomMessage(string username)
     {
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username = '{username.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username = '{username.RemoveSQLChars()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         return message ?? throw new MessageNotFoundException();
     }
 
     public static Message GetRandomMessage(string username, string channel)
     {
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username ='{username.MakeQueryable()}' AND channel = '#{channel.MakeQueryable()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username ='{username.RemoveSQLChars()}' AND channel = '#{channel.RemoveSQLChars()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         return message ?? throw new MessageNotFoundException();
     }
 
@@ -281,28 +281,28 @@ public static class DatabaseController
     public static Message GetSearch(string keyword)
     {
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         return message ?? throw new MessageNotFoundException();
     }
 
     public static Message GetSearchChannel(string keyword, string channel)
     {
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Channel = '#{channel.RemoveHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' AND Channel = '#{channel.RemoveHashtag().RemoveSQLChars().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         return message ?? throw new MessageNotFoundException();
     }
 
     public static Message GetSearchUser(string keyword, string username)
     {
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' AND Username = '{username.RemoveSQLChars().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         return message ?? throw new MessageNotFoundException();
     }
 
     public static Message GetSearchUserChannel(string keyword, string username, string channel)
     {
         OkayegTeaTimeContext database = new();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.MakeQueryable()}%' AND Username = '{username.MakeQueryable().ToLower()}' AND Channel = '#{channel.RemoveHashtag().MakeQueryable().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
+        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' AND Username = '{username.RemoveSQLChars().ToLower()}' AND Channel = '#{channel.RemoveHashtag().RemoveSQLChars().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
         return message ?? throw new MessageNotFoundException();
     }
 
@@ -333,7 +333,7 @@ public static class DatabaseController
         if (!Settings.NotLoggedChannels.Contains(chatMessage.Channel.Name))
         {
             OkayegTeaTimeContext database = new();
-            database.Messages.Add(new(chatMessage.Username, chatMessage.Message.MakeInsertable(), chatMessage.Channel.Name));
+            database.Messages.Add(new(chatMessage.Username, chatMessage.Message.Encode(), chatMessage.Channel.Name));
             database.SaveChanges();
         }
     }
@@ -395,7 +395,7 @@ public static class DatabaseController
         OkayegTeaTimeContext database = new();
         User user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
         string message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].ToSequence() : null;
-        user.MessageText = message?.MakeInsertable();
+        user.MessageText = message?.Encode();
         user.Type = type.ToString();
         user.Time = TimeHelper.Now();
         database.SaveChanges();
@@ -405,7 +405,7 @@ public static class DatabaseController
     public static void SetEmoteInFront(string channel, string emote)
     {
         OkayegTeaTimeContext database = new();
-        database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront = emote.MakeInsertable();
+        database.Channels.FirstOrDefault(c => c.ChannelName == channel).EmoteInFront = emote.Encode();
         database.SaveChanges();
     }
 
@@ -419,7 +419,7 @@ public static class DatabaseController
     public static void SetPrefix(string channel, string prefix)
     {
         OkayegTeaTimeContext database = new();
-        database.Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix = prefix.MakeUsable().Encode();
+        database.Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix = prefix.RemoveChatterinoChar().TrimAll().Encode();
         database.SaveChanges();
     }
 

@@ -58,18 +58,18 @@ public class RemindCommand : Command
         int messageStartIdx = GetMessageStartIdx();
         if (messageStartIdx == _noMessageIndex)
         {
-            return string.Empty.MakeInsertable();
+            return string.Empty.Encode();
         }
         else
         {
             string[] messageSplit = ChatMessage.Split[(_startIndex + ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList().Count)..];
-            return messageSplit.ToSequence().MakeInsertable();
+            return messageSplit.ToSequence().Encode();
         }
     }
 
     private byte[] GetRemindMessage()
     {
         string[] messageSplit = ChatMessage.Split[2..];
-        return messageSplit.ToSequence().MakeInsertable();
+        return messageSplit.ToSequence().Encode();
     }
 }

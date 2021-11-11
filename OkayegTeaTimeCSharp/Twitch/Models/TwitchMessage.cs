@@ -80,16 +80,16 @@ public class TwitchMessage : ITwitchMessage
     private string GetMessage()
     {
         string message = RawIrcMessage.Match(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$");
-        return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
+        return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "").RemoveChatterinoChar().TrimAll();
     }
 
     private string[] GetSplit()
     {
-        return Message.SplitNormal();
+        return Message.Split();
     }
 
     private string[] GetLowerSplit()
     {
-        return Message.SplitToLowerCase();
+        return Message.ToLower().Split();
     }
 }

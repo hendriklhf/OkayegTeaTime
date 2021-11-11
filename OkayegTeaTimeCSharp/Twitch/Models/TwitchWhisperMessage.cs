@@ -48,11 +48,11 @@ public class TwitchWhisperMessage : ITwitchWhisperMessage
         ColorHex = whisperMessage.ColorHex;
         DisplayName = whisperMessage.DisplayName;
         IsTurbo = whisperMessage.IsTurbo;
-        LowerSplit = whisperMessage.GetLowerSplit();
-        Message = whisperMessage.GetMessage();
+        Message = whisperMessage.Message.RemoveChatterinoChar().TrimAll();
+        LowerSplit = Message.ToLower().Split();
         MessageId = whisperMessage.MessageId.ToInt();
         RawIrcMessage = whisperMessage.RawIrcMessage;
-        Split = whisperMessage.GetSplit();
+        Split = Message.Split();
         ThreadId = whisperMessage.ThreadId.ToInt();
         UserId = whisperMessage.UserId.ToInt();
         Username = whisperMessage.Username;

@@ -22,7 +22,7 @@ public class JsonTests
     public void JsonCommmandsContentTest()
     {
         JsonController.LoadJsonData();
-        Assert.IsTrue(JsonController.CommandLists.AfkCommands is not null);
-        Assert.IsTrue(JsonController.CommandLists.Commands is not null);
+        Assert.IsTrue(JsonController.CommandList.AfkCommands is not null);
+        Assert.IsTrue(JsonController.CommandList.Commands is not null);
     }
 }

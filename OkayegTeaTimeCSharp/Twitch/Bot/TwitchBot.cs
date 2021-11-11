@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Timers;
 using HLE.Numbers;
+using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
 using OkayegTeaTimeCSharp.Logging;
@@ -170,7 +171,7 @@ public class TwitchBot
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
-        ConsoleOut($"TWITCH>#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.GetMessage()}");
+        ConsoleOut($"TWITCH>#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.Message.RemoveChatterinoChar().TrimAll()}");
         MessageHandler.CheckForPajaAlert(e.ChatMessage);
         MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
     }

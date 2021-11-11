@@ -1,66 +1,9 @@
-﻿using HLE.Strings;
-using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
-using OkayegTeaTimeCSharp.Twitch.Models;
+﻿using OkayegTeaTimeCSharp.Twitch.Models;
 
 namespace OkayegTeaTimeCSharp.Utils;
 
 public static class MessageHelper
 {
-    public static bool IsAfkCommand(this ITwitchChatMessage chatMessage)
-    {
-        return CommandHelper.GetAfkCommandAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")));
-    }
-
-    public static bool IsAnyCommand(this ITwitchChatMessage chatMessage)
-    {
-        return CommandHelper.GetAllAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")));
-    }
-
-    public static bool IsCommand(this ITwitchChatMessage chatMessage)
-    {
-        return CommandHelper.GetCommandAliases().Any(alias => chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")));
-    }
-
-    public static bool IsNotLoggedChannel(this string channel)
-    {
-        return Settings.NotLoggedChannels.Contains(channel);
-    }
-
-    public static bool IsIgnoredUser(this string username)
-    {
-        return Settings.UserLists.IgnoredUsers.Contains(username);
-    }
-
-    public static byte[] MakeInsertable(this string input)
-    {
-        return input.Prepare().Encode();
-    }
-
-    public static string MakeQueryable(this string input)
-    {
-        return input.Prepare().RemoveSQLChars();
-    }
-
-    public static string MakeUsable(this string input)
-    {
-        return input.Prepare();
-    }
-
-    private static string Prepare(this string input)
-    {
-        return input.Remove(Settings.ChatterinoChar).TrimAll();
-    }
-
-    public static string[] SplitNormal(this string input)
-    {
-        return input.Prepare().Split();
-    }
-
-    public static string[] SplitToLowerCase(this string input)
-    {
-        return input.Prepare().ToLower().Split();
-    }
-
     public static bool IsMessageTooLong(string message, string channel)
     {
         return IsMessageTooLong(message, new Channel(channel));

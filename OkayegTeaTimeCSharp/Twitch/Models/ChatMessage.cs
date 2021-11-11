@@ -19,7 +19,7 @@ public class ChatMessage : IChatMessage
     public ChatMessage(TwitchLibMessage twitchLibMessage)
     {
         DisplayName = twitchLibMessage.DisplayName;
-        Message = GetMessage(twitchLibMessage).MakeUsable();
+        Message = GetMessage(twitchLibMessage).RemoveChatterinoChar().TrimAll();
         LowerSplit = GetLowerSplit();
         Split = GetSplit();
         Username = twitchLibMessage.Username;
@@ -33,11 +33,11 @@ public class ChatMessage : IChatMessage
 
     private string[] GetSplit()
     {
-        return Message.SplitNormal();
+        return Message.Split();
     }
 
     private string[] GetLowerSplit()
     {
-        return Message.SplitToLowerCase();
+        return Message.ToLower().Split();
     }
 }

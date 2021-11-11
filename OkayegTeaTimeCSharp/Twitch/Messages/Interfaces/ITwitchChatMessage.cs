@@ -45,4 +45,16 @@ public interface ITwitchChatMessage : ITwitchMessage
     public int SubcsribedMonthCount { get; }
 
     public long TmiSentTs { get; }
+
+    public bool IsAfkCommmand { get; }
+
+    public bool IsAnyCommand { get; }
+
+    public bool IsCommand { get; }
+
+    public bool IsNotLoggedChannel { get; }
+
+    public bool IsIgnoredUser { get; }
+
+    public string QueryableMessage { get; }
 }

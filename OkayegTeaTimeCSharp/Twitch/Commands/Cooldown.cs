@@ -15,6 +15,6 @@ public class Cooldown
     {
         Username = username;
         Type = type;
-        Time = TimeHelper.Now() + CommandHelper.GetCoolDown(type);
+        Time = TimeHelper.Now() + CommandList[type].Cooldown;
     }
 }

@@ -172,7 +172,7 @@ public static class BotActions
             User user = DatabaseController.GetUser(username);
             if (user.IsAfk == true)
             {
-                string message = $"{chatMessage.Username}, {AfkMessage.Create(user).GoingAway}";
+                string message = $"{chatMessage.Username}, {new AfkMessage(user).GoingAway}";
                 message += user.MessageText.Decode().Length > 0
                     ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})"
                     : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
@@ -228,7 +228,7 @@ public static class BotActions
 
     public static void SendComingBack(this TwitchBot twitchBot, User user, ITwitchChatMessage chatMessage)
     {
-        twitchBot.Send(chatMessage.Channel, AfkMessage.Create(user).ComingBack);
+        twitchBot.Send(chatMessage.Channel, new AfkMessage(user).ComingBack);
     }
 
     public static string SendCompilerResult(IChatMessage chatMessage)
@@ -249,7 +249,7 @@ public static class BotActions
             long timeoutTime = TimeHelper.ConvertStringToSeconds(new() { chatMessage.LowerSplit[2] });
             long duration = TimeHelper.ConvertTimeToMilliseconds(new() { chatMessage.LowerSplit[3] });
             timeoutTime = timeoutTime > new Week(2).Seconds ? new Week(2).Seconds : timeoutTime;
-            int id = DatabaseController.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.MakeInsertable(), timeoutTime, duration + TimeHelper.Now()));
+            int id = DatabaseController.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.Encode(), timeoutTime, duration + TimeHelper.Now()));
             return $"{chatMessage.Username}, timeouting \"{word}\" {chatMessage.LowerSplit[2]} for the next {chatMessage.LowerSplit[3]} (ID: {id})";
         }
         else
@@ -374,7 +374,7 @@ public static class BotActions
     public static void SendGoingAfk(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
     {
         DatabaseController.SetAfk(chatMessage, type);
-        twitchBot.Send(chatMessage.Channel, AfkMessage.Create(DatabaseController.GetUser(chatMessage.Username)).GoingAway);
+        twitchBot.Send(chatMessage.Channel, new AfkMessage(DatabaseController.GetUser(chatMessage.Username)).GoingAway);
     }
 
     public static string SendHelp(IChatMessage chatMessage)
@@ -554,7 +554,7 @@ public static class BotActions
     {
         DatabaseController.ResumeAfkStatus(chatMessage.Username);
         User user = DatabaseController.GetUser(chatMessage.Username);
-        return AfkMessage.Create(user).Resuming;
+        return new AfkMessage(user).Resuming;
     }
 
     public static string SendSearch(IChatMessage chatMessage, string keyword)

@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.DatabaseConnection;
+﻿using System.Text.Json.Serialization;
+
+namespace OkayegTeaTimeCSharp.JsonData.JsonClasses.DatabaseConnection;
 
 public class Connection
 {
@@ -10,5 +12,6 @@ public class Connection
 
     public string Password { get; set; }
 
+    [JsonIgnore]
     public string ConnectionString => $"Data Source={Hostname};DataBase={Database};User ID={Username};Password={Password};";
 }
