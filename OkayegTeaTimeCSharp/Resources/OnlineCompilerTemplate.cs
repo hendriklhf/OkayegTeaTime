@@ -112,7 +112,19 @@ public static class Program
         {code}
     }
 
-    public static void Out<T>(this T input)
+    public static void print<T>(T input)
+    {
+        Console.Write($"{input} ");
+    }
+    public static void write<T>(T input)
+    {
+        Console.Write($"{input} ");
+    }
+    public static void Print<T>(T input)
+    {
+        Console.Write($"{input} ");
+    }
+    public static void Write<T>(T input)
     {
         Console.Write($"{input} ");
     }
