@@ -136,7 +136,15 @@ public static class HttpRequest
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
             });
-        return request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
+        string result = request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
+        if (!result.IsNullOrEmptyOrWhitespace())
+        {
+            return string.Concat(result.Take(500)).NewLinesToSpaces();
+        }
+        else
+        {
+            return "compiled successfully";
+        }
     }
 
     private static string GetCSharpOnlineCompilerTemplate(string code)
