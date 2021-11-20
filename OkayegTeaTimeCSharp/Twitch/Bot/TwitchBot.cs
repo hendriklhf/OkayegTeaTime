@@ -156,58 +156,58 @@ public class TwitchBot
 
     private void Client_OnLog(object sender, OnLogArgs e)
     {
-        //ConsoleOut($"TWITCH>{e.Data}");
+        //ConsoleOut($"[TWITCH] {e.Data}");
     }
 
     private void Client_OnConnected(object sender, OnConnectedArgs e)
     {
-        ConsoleOut("TWITCH>CONNECTED", true, ConsoleColor.Red);
+        ConsoleOut("[TWITCH] CONNECTED", true, ConsoleColor.Red);
     }
 
     private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
     {
-        ConsoleOut($"TWITCH>Joined channel: {e.Channel}", fontColor: ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", fontColor: ConsoleColor.Red);
     }
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
-        ConsoleOut($"TWITCH>#{e.ChatMessage.Channel}>{e.ChatMessage.Username}: {e.ChatMessage.Message.RemoveChatterinoChar().TrimAll()}");
+        ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.RemoveChatterinoChar().TrimAll()}");
         MessageHandler.CheckForPajaAlert(e.ChatMessage);
         MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
     }
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
-        ConsoleOut($"TWITCH>#{e.SentMessage.Channel}>{Settings.Twitch.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
+        ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {Settings.Twitch.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
     }
 
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
-        ConsoleOut($"TWITCH-WHISPER>{e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
+        ConsoleOut($"[TWITCH] <WHISPER> {e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         WhisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
     }
 
     private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
     {
-        ConsoleOut($"TWITCH-CONNECTION-ERROR>{e.Error.Message}", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] <CONNECTION-ERROR> {e.Error.Message}", true, ConsoleColor.Red);
         Restart();
     }
 
     private void Client_OnError(object sender, OnErrorEventArgs e)
     {
-        ConsoleOut($"ERROR>{e.Exception.Message}", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] <ERROR> {e.Exception.Message}", true, ConsoleColor.Red);
         Restart();
     }
 
     private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
     {
-        ConsoleOut($"BOT>DISCONNECTED", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] DISCONNECTED", true, ConsoleColor.Red);
         Restart();
     }
 
     private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
     {
-        ConsoleOut($"BOT>RECONNECTED", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] RECONNECTED", true, ConsoleColor.Red);
     }
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)

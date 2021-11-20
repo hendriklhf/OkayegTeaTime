@@ -46,7 +46,7 @@ public static class Program
 
     public static void Restart()
     {
-        ConsoleOut($"BOT>RESTARTED", true, ConsoleColor.Red);
+        ConsoleOut($"[SYSTEM] RESTARTED", true, ConsoleColor.Red);
         Process.Start($"./OkayegTeaTimeCSharp");
         _running = false;
         Environment.Exit(0);
