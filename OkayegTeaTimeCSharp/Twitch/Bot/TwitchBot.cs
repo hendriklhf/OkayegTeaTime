@@ -94,7 +94,10 @@ public class TwitchBot
         TwitchClient.OnDisconnected += Client_OnDisconnect;
         TwitchClient.OnReconnected += Client_OnReconnected;
         TwitchClient.OnUserJoined += Client_OnUserJoinedChannel;
+    }
 
+    public void Connect()
+    {
         TwitchClient.Connect();
         Initlialize();
     }
@@ -112,6 +115,11 @@ public class TwitchBot
         {
             new DividedMessage(this, channel, channel.Emote, message).StartSending();
         }
+    }
+
+    public void Send(string channel, string message)
+    {
+        Send(new Channel(channel), message);
     }
 
     public string JoinChannel(string channel)

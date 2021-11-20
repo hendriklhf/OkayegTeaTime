@@ -51,7 +51,7 @@ public class ApiTests
     [TestMethod]
     public void GetChattersTest()
     {
-        List<Chatter> chatters = HttpRequest.GetChatters(_testChannel);
+        List<Chatter> chatters = HttpRequest.GetChatters(_testChannel).ToList();
         chatters.ForEach(c =>
         {
             bool isMatch = c.Username.IsMatch(@"^\w+$");

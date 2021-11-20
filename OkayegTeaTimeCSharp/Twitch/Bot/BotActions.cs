@@ -442,7 +442,7 @@ public static class BotActions
             if (chatMessage.Channel.Name != Settings.SecretOfflineChat)
             {
                 chatters = HttpRequest.GetChatters(chatMessage.Channel.Name).Select(c => c.Username).ToList();
-                chattersToRemove.ForEach(c => chatters.Remove(c));
+                chatters = chattersToRemove.Except(chattersToRemove).ToList();
                 if (chatters.Count == 0)
                 {
                     return string.Empty;

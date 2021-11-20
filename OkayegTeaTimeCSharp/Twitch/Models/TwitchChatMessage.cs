@@ -93,7 +93,7 @@ public class TwitchChatMessage : ITwitchChatMessage
         Badges = chatMessage.Badges.Select(b => b.Key).ToList();
         Bits = chatMessage.Bits;
         BitsInDollars = chatMessage.BitsInDollars;
-        Channel = chatMessage.Channel;
+        Channel = new(chatMessage.Channel);
         ChatReply = chatMessage.ChatReply;
         CheerBadge = chatMessage.CheerBadge;
         Color = chatMessage.Color;

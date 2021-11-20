@@ -79,9 +79,4 @@ public class Channel
     {
         return obj is Channel channel && channel.Name == Name;
     }
-
-    public static implicit operator Channel(string channel)
-    {
-        return new(channel);
-    }
 }

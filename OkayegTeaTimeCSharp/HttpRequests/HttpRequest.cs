@@ -74,7 +74,7 @@ public static class HttpRequest
         return request.Data.GetProperty("chatter_count").GetInt32();
     }
 
-    public static List<Chatter> GetChatters(string channel)
+    public static IEnumerable<Chatter> GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
         JsonElement chatters = request.Data.GetProperty("chatters");

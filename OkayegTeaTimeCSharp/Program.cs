@@ -16,7 +16,8 @@ public static class Program
 
         LoadJsonData();
         TwitchApi.Configure();
-        _ = new TwitchBot();
+        TwitchBot twitchBot = new();
+        twitchBot.Connect();
 
         while (_running)
         {
