@@ -20,7 +20,7 @@ public class MessageHandler : Handler
     private const string _pajaAlertEmote = "pajaStare";
     private const string _pajaAlertMessage = $"/me {_pajaAlertEmote} {Emoji.RotatingLight} OBACHT";
 
-    private static readonly Regex _forgottenPrefixPattern = new($@"^@?{Settings.Twitch.Username},?\s(pre|suf)fix(\s|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _forgottenPrefixPattern = new($@"^@?{Settings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
