@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.JsonData;
 
 #nullable disable
@@ -242,10 +242,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .IsRequired()
                     .HasMaxLength(500);
             });
-
-            OnModelCreatingPartial(modelBuilder);
         }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
