@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class Gachi
+    public class Gachi
     {
         public int Id { get; set; }
         public byte[] Title { get; set; }

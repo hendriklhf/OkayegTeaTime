@@ -5,7 +5,7 @@ using OkayegTeaTimeCSharp.JsonData;
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class OkayegTeaTimeContext : DbContext
+    public class OkayegTeaTimeContext : DbContext
     {
         public OkayegTeaTimeContext()
         {
@@ -242,10 +242,6 @@ namespace OkayegTeaTimeCSharp.Database.Models
                     .IsRequired()
                     .HasMaxLength(500);
             });
-
-            OnModelCreatingPartial(modelBuilder);
         }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

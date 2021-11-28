@@ -18,6 +18,7 @@ public class ApiTests
     public void GetSevenTvEmotesTest()
     {
         int emoteCount = 5;
+        // FIXME: making HTTP call from tests. Should be mocked out to remove external dependency
         List<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(_testChannel, emoteCount).ToList();
         Assert.IsTrue(emotes.Count == emoteCount);
         emotes.ForEach(e =>

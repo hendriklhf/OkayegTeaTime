@@ -61,14 +61,25 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Remove="..\..\..\..\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\app.config.transform" />
-	  <Content Remove="..\..\..\..\.nuget\packages\mysql.data.entityframework\8.0.25\contentFiles\any\netstandard2.1\web.config.transform" />
-	  <Content Remove="..\..\..\..\.nuget\packages\mysql.data.entityframework\8.0.27\contentFiles\any\netstandard2.1\app.config.transform" />
-	  <Content Remove="..\..\..\..\.nuget\packages\mysql.data.entityframework\8.0.27\contentFiles\any\netstandard2.1\web.config.transform" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="Resources\OnlineCompilerTemplate.cs" />
+	  <None Update="Resources\Commands.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\Okayeg.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <Compile Remove="Resources\OnelineCompilerTemplate.cs" />
+	  <None Include="Resources\OnlineCompilerTemplate.cs">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\OnlineCompilerTemplate.go">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\RandomWords.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\SqlCreate.sql">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -91,11 +102,5 @@
 		<PackageReference Include="SpotifyAPI.Web" Version="6.2.2" />
 		<PackageReference Include="TwitchLib" Version="3.3.0" />
 	</ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy $(ProjectDir)Resources $(TargetDir)Resources /E /Y /I" />
-	</Target>
-
-	<ProjectExtensions><VisualStudio><UserProperties resources_4commands_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
