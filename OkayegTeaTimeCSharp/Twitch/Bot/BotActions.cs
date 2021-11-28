@@ -642,8 +642,16 @@ public static class BotActions
         try
         {
             string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-            int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-            return $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
+            bool targetExists = TwitchApi.DoesUserExist(target);
+            if (targetExists)
+            {
+                int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
+                return $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
+            }
+            else
+            {
+                return $"{chatMessage.Username}, the target user does not exist";
+            }
         }
         catch (TooManyReminderException ex)
         {
@@ -677,8 +685,16 @@ public static class BotActions
         try
         {
             string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-            int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
-            return $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
+            bool targetExists = TwitchApi.DoesUserExist(target);
+            if (targetExists)
+            {
+                int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
+                return $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
+            }
+            else
+            {
+                return $"{chatMessage.Username}, the target user does not exist";
+            }
         }
         catch (TooManyReminderException ex)
         {
