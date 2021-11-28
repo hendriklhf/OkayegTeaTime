@@ -17,6 +17,9 @@ public static class DatabaseController
 
     public static void AddChannel(string channel)
     {
+        // FIXME: all operations create a Context, act on it and dispose straight away
+        // Would be better to make this class non-static (treat as a Repository) & pool connections (see the following:
+        // https://docs.microsoft.com/en-us/ef/core/performance/advanced-performance-topics#dbcontext-pooling)
         using OkayegTeaTimeContext database = new();
         database.Channels.Add(new(channel));
         database.SaveChanges();
