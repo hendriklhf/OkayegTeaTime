@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class Channel
+    public class Channel
     {
         public int Id { get; set; }
         public string ChannelName { get; set; }

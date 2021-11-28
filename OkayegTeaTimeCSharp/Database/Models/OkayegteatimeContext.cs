@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OkayegTeaTimeCSharp.JsonData;
 
 #nullable disable
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class OkayegTeaTimeContext : DbContext
+    public class OkayegTeaTimeContext : DbContext
     {
         public OkayegTeaTimeContext()
         {

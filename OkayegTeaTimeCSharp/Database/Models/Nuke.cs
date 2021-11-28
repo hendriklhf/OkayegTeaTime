@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class Nuke
+    public class Nuke
     {
         public int Id { get; set; }
         public string Username { get; set; }

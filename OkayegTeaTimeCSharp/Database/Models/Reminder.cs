@@ -4,7 +4,7 @@ using HLE.Time;
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class Reminder
+    public class Reminder
     {
         public int Id { get; set; }
         public string FromUser { get; set; }

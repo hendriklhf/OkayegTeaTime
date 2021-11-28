@@ -4,7 +4,7 @@ using HLE.Time;
 
 namespace OkayegTeaTimeCSharp.Database.Models
 {
-    public partial class Spotify
+    public class Spotify
     {
         public int Id { get; set; }
         public string Username { get; set; }
