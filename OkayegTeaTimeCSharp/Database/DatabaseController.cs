@@ -94,9 +94,11 @@ public static class DatabaseController
         if (!chatMessage.IsAnyCommand)
         {
             using var database = new OkayegTeaTimeContext();
-            if (database.Nukes.Any(n => n.Channel == $"#{chatMessage.Channel}"))
+            var prefixedChannel = $"#{chatMessage.Channel}";
+
+            if (database.Nukes.Any(n => n.Channel == prefixedChannel))
             {
-                database.Nukes.AsQueryable().Where(n => n.Channel == $"#{chatMessage.Channel}").ForEach(n =>
+                database.Nukes.AsQueryable().Where(n => n.Channel == prefixedChannel).ForEach(n =>
                 {
                     if (n.ForTime > TimeHelper.Now())
                     {
