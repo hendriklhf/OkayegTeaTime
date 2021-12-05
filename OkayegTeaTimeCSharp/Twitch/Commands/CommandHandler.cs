@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
@@ -21,51 +21,66 @@ public class CommandHandler : Handler
     {
         if (chatMessage.IsCommand)
         {
-            foreach (CommandType type in (CommandType[])Enum.GetValues(typeof(CommandType)))
-            {
-                if (CommandList.MatchesAnyAlias(chatMessage, type))
-                {
-                    if (!BotActions.IsOnCooldown(chatMessage.Username, type))
-                    {
-                        foreach (string alias in CommandList[type].Alias)
-                        {
-                            if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
-                            {
-                                BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
-                                InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
-                                BotActions.AddCooldown(chatMessage.Username, type);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
+            HandleCommand(chatMessage);
             TwitchBot.CommandCount++;
         }
         else if (chatMessage.IsAfkCommmand)
         {
-            foreach (AfkCommandType type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
+            HandleAfkCommand(chatMessage);
+            TwitchBot.CommandCount++;
+        }
+    }
+
+    private void HandleCommand(ITwitchChatMessage chatMessage)
+    {
+        foreach (var type in (CommandType[])Enum.GetValues(typeof(CommandType)))
+        {
+            if (!CommandList.MatchesAnyAlias(chatMessage, type))
+                continue;
+            if (BotActions.IsOnCooldown(chatMessage.Username, type))
+                continue;
+
+            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+            foreach (var alias in CommandList[type].Alias)
             {
-                if (CommandList.MatchesAnyAlias(chatMessage, type))
+                // ReSharper disable once InvertIf
+                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
                 {
-                    if (!BotActions.IsOnAfkCooldown(chatMessage.Username))
-                    {
-                        foreach (string alias in CommandList[type].Alias)
-                        {
-                            if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
-                            {
-                                BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
-                                AfkCommandHandler.Handle(TwitchBot, chatMessage, type);
-                                BotActions.AddAfkCooldown(chatMessage.Username);
-                                break;
-                            }
-                        }
-                        break;
-                    }
+                    BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
+                    InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
+                    BotActions.AddCooldown(chatMessage.Username, type);
+                    break;
                 }
             }
-            TwitchBot.CommandCount++;
+
+            // Handled, we can jump out now
+            break;
+        }
+    }
+
+    private void HandleAfkCommand(ITwitchChatMessage chatMessage)
+    {
+        foreach (var type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
+        {
+            if (!CommandList.MatchesAnyAlias(chatMessage, type))
+                continue;
+            if (BotActions.IsOnAfkCooldown(chatMessage.Username))
+                continue;
+
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+            foreach (var alias in CommandList[type].Alias)
+            {
+                // ReSharper disable once InvertIf
+                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
+                {
+                    BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
+                    AfkCommandHandler.Handle(TwitchBot, chatMessage, type);
+                    BotActions.AddAfkCooldown(chatMessage.Username);
+                    break;
+                }
+            }
+
+            break;
         }
     }
 
