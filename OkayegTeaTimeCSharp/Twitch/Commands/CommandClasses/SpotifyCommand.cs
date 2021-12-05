@@ -13,11 +13,15 @@ public class SpotifyCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\ssearch\s.+")))
+        var searchPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\ssearch\s.+");
+        if (searchPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSpotifySearch(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"(\s\w+)?")))
+
+        var currentPlayingPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"(\s\w+)?");
+        if (currentPlayingPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSpotifyCurrentlyPlaying(ChatMessage));
         }

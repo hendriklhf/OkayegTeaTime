@@ -14,19 +14,29 @@ public class SearchCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(Pattern.SearchUserParameter) && ChatMessage.Message.IsMatch(Pattern.SearchChannelParameter))
+        var searchUserPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.SearchUserParameter);
+        var searchChannelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.SearchChannelParameter);
+
+        if (searchUserPattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearchUserChannel(ChatMessage, GetKeyWord(), GetUsername(), GetChannel()));
-        }
-        else if (ChatMessage.Message.IsMatch(Pattern.SearchUserParameter))
-        {
+            if (searchChannelPattern.IsMatch(ChatMessage.Message))
+            {
+                TwitchBot.Send(ChatMessage.Channel,
+                    BotActions.SendSearchUserChannel(ChatMessage, GetKeyWord(), GetUsername(), GetChannel()));
+                return;
+            }
+
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearchUser(ChatMessage, GetKeyWord(), GetUsername()));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(Pattern.SearchChannelParameter))
+
+        if (searchChannelPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearchChannel(ChatMessage, GetKeyWord(), GetChannel()));
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+")))
+
+        var genericSearchPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
+        if (genericSearchPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSearch(ChatMessage, GetKeyWord()));
         }

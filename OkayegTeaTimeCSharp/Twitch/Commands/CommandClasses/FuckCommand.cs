@@ -13,7 +13,8 @@ public class FuckCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)?")))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)?");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFuck(ChatMessage));
         }

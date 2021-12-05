@@ -13,7 +13,9 @@ public class NukeCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+\s" + Pattern.TimeSplit + @"\s" + Pattern.TimeSplit + @"(\s|$)")))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix,
+            @"\s\S+\s" + Pattern.TimeSplit + @"\s" + Pattern.TimeSplit + @"(\s|$)");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendCreatedNuke(ChatMessage));
         }

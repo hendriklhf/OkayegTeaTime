@@ -13,7 +13,8 @@ public class UnsubCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semotes?")))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semotes?");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsubEmotes(TwitchBot, ChatMessage));
         }

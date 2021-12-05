@@ -13,15 +13,22 @@ public class CountCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#\w+")))
+        var countForChannelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#\w+");
+        if (countForChannelPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendLoggedMessagesChannelCount(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+")))
+
+        var countForUserPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
+        if (countForUserPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendLoggedMessagesUserCount(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix)))
+
+        var totalMessagesPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
+        if (totalMessagesPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendLoggedMessagesCount(ChatMessage));
         }

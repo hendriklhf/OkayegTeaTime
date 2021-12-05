@@ -13,15 +13,23 @@ public class SetCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix\s\S+")))
+        var prefixPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix\s\S+");
+        if (prefixPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetPrefix(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote\s\S+")))
+
+        var emotePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote\s\S+");
+        if (emotePattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetEmoteInFront(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))")))
+
+        var songRequestPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix,
+            @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
+        if (songRequestPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetSongRequestState(ChatMessage));
         }

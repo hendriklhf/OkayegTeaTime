@@ -13,19 +13,29 @@ public class FirstCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s#?\w+")))
+        var firstForUserInChannelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s#?\w+");
+        if (firstForUserInChannelPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstUserChannel(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#\w+")))
+
+        var firstInChannelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#\w+");
+        if (firstInChannelPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstChannel(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+")))
+
+        var firstForUserPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
+        if (firstForUserPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirstUser(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix)))
+
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFirst(ChatMessage));
         }

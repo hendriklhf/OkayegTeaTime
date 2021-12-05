@@ -13,21 +13,27 @@ public class FfzCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\d+")))
+        var channelWithCountPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\d+");
+        if (channelWithCountPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFfzEmotes(ChatMessage, ChatMessage.Split[1], ChatMessage.Split[2].ToInt()));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+")))
+
+        var channelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
+        if (channelPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFfzEmotes(ChatMessage, ChatMessage.Split[1]));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\d+")))
+
+        var countPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\d+");
+        if (countPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFfzEmotes(ChatMessage, count: ChatMessage.Split[1].ToInt()));
+            return;
         }
-        else
-        {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendFfzEmotes(ChatMessage));
-        }
+
+        TwitchBot.Send(ChatMessage.Channel, BotActions.SendFfzEmotes(ChatMessage));
     }
 }

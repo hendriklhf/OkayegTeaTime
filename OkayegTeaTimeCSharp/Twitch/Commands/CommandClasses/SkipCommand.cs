@@ -13,7 +13,8 @@ public class SkipCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix)))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendSongSkipped(ChatMessage));
         }

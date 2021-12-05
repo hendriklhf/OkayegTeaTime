@@ -13,13 +13,13 @@ public class RandomWordCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\d+")))
+        var countPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\d+");
+        if (countPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendRandomWords(ChatMessage, ChatMessage.Split[1].ToInt()));
+            return;
         }
-        else
-        {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendRandomWords(ChatMessage));
-        }
+
+        TwitchBot.Send(ChatMessage.Channel, BotActions.SendRandomWords(ChatMessage));
     }
 }

@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;
@@ -43,8 +43,10 @@ public class CommandHandler : Handler
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (var alias in CommandList[type].Alias)
             {
+                var pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
+
                 // ReSharper disable once InvertIf
-                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
+                if (pattern.IsMatch(chatMessage.Message))
                 {
                     BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
                     InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
@@ -70,8 +72,10 @@ public class CommandHandler : Handler
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var alias in CommandList[type].Alias)
             {
+                var pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
+
                 // ReSharper disable once InvertIf
-                if (chatMessage.Message.IsMatch(PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)")))
+                if (pattern.IsMatch(chatMessage.Message))
                 {
                     BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
                     AfkCommandHandler.Handle(TwitchBot, chatMessage, type);

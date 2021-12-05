@@ -13,7 +13,8 @@ public class CSharpCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+")))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendCompilerResult(ChatMessage));
         }
