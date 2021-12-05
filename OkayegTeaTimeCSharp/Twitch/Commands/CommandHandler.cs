@@ -84,6 +84,14 @@ public class CommandHandler : Handler
         }
     }
 
+    /// <summary>
+    /// Attempts to handle a command through a handler via reflection
+    /// </summary>
+    /// <param name="type">The command handler class type</param>
+    /// <param name="twitchBot">The currently running bot that received this command</param>
+    /// <param name="chatMessage">The chat message to handle</param>
+    /// <param name="alias">A command alias</param>
+    /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
     private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage,
         string alias)
     {
