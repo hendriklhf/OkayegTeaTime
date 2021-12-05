@@ -13,7 +13,7 @@ public class TuckCommand : Command
 
     public override void Handle()
     {
-        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s@?\w+");
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
         if (!pattern.IsMatch(ChatMessage.Message))
             return;
 
