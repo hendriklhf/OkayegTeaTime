@@ -20,7 +20,9 @@ public static class PatternCreator
         if (cachedPattern is not null)
             return cachedPattern;
 
-        _cachedPatterns.Add(patternKey, new Regex(patternKey, RegexOptions.Compiled | RegexOptions.Singleline));
-        return _cachedPatterns[patternKey];
+        var compiledRegex = new Regex(patternKey, RegexOptions.Compiled | RegexOptions.Singleline);
+        _cachedPatterns.Add(patternKey, compiledRegex);
+
+        return compiledRegex;
     }
 }
