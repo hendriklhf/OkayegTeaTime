@@ -84,10 +84,25 @@ public class CommandHandler : Handler
         }
     }
 
-    private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage,
+        string alias)
     {
-        Type commandClass = Type.GetType(CommandList.GetCommandClassName(type));
-        ConstructorInfo constructor = commandClass.GetConstructor(new Type[] { typeof(TwitchBot), typeof(ITwitchChatMessage), typeof(string) });
-        commandClass.GetMethod(_handleName).Invoke(constructor.Invoke(new object[] { twitchBot, chatMessage, alias }), null);
+        var commandClassName = CommandList.GetCommandClassName(type);
+
+        var commandClass = Type.GetType(commandClassName);
+        if (commandClass is null)
+            throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
+
+        var constructor = commandClass.GetConstructor(new[] { typeof(TwitchBot), typeof(ITwitchChatMessage), typeof(string) });
+        if (constructor is null)
+            throw new InvalidOperationException($"Could not instantiate command class {commandClassName}");
+
+        var handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
+
+        var handleMethod = commandClass.GetMethod(_handleName);
+        if (handleMethod is null)
+            throw new InvalidOperationException($"Could not get handler method for command class {commandClassName}");
+
+        handleMethod.Invoke(handlerInstance, null);
     }
 }
