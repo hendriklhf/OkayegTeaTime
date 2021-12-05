@@ -5,7 +5,7 @@ namespace OkayegTeaTimeCSharp.Utils;
 
 public static class PatternCreator
 {
-    private static readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
+    private static readonly IDictionary<string, Regex> CachedPatterns = new ConcurrentDictionary<string, Regex>();
 
     public static Regex Create(string alias, string prefix, string addition = "")
     {
@@ -16,12 +16,12 @@ public static class PatternCreator
 
         var patternKey = patternPrefix + addition;
 
-        var cachedPattern = _cachedPatterns[patternKey];
+        var cachedPattern = CachedPatterns[patternKey];
         if (cachedPattern is not null)
             return cachedPattern;
 
         var compiledRegex = new Regex(patternKey, RegexOptions.Compiled | RegexOptions.Singleline);
-        _cachedPatterns.Add(patternKey, compiledRegex);
+        CachedPatterns.Add(patternKey, compiledRegex);
 
         return compiledRegex;
     }
