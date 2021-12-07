@@ -1,4 +1,3 @@
-using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Bot;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
 
