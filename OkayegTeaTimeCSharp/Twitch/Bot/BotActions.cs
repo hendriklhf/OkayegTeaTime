@@ -438,8 +438,7 @@ public static class BotActions
             string message = string.Empty;
             List<string> chatters;
             List<string> chattersToRemove = new(Settings.UserLists.IgnoredUsers) { chatMessage.Username };
-
-            if (chatMessage.Channel.Name != Settings.SecretOfflineChat)
+            if (chatMessage.Channel.Name != Settings.SecretOfflineChatChannel)
             {
                 chatters = HttpRequest.GetChatters(chatMessage.Channel.Name).Select(c => c.Username).ToList();
                 chatters = chattersToRemove.Except(chattersToRemove).ToList();

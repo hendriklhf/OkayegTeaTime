@@ -64,12 +64,12 @@ public class MessageHandler : Handler
 
     private void CheckForSpotifyUri(ITwitchChatMessage chatMessage)
     {
-        if (chatMessage.Channel.Name == Settings.SecretOfflineChat)
+        if (chatMessage.Channel.Name == Settings.SecretOfflineChatChannel)
         {
             string uri = BotActions.SendDetectedSpotifyURI(chatMessage);
             if (!string.IsNullOrEmpty(uri))
             {
-                TwitchBot.Send(Settings.SecretOfflineChat, uri);
+                TwitchBot.Send(Settings.SecretOfflineChatChannel, uri);
             }
         }
     }

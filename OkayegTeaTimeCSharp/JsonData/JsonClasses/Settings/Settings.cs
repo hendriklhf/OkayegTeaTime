@@ -18,7 +18,7 @@ public class Settings
 
     public string DebugChannel { get; set; }
 
-    public string SecretOfflineChat { get; set; }
+    public string SecretOfflineChatChannel { get; set; }
 
     public List<string> NotLoggedChannels { get; set; }
 }

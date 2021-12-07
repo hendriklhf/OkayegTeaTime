@@ -220,9 +220,9 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
-        if (e.Channel == Settings.SecretOfflineChat && !Settings.UserLists.SecretUsers.Contains(e.Username))
+        if (e.Channel == Settings.SecretOfflineChatChannel && !Settings.UserLists.SecretUsers.Contains(e.Username))
         {
-            Send(Settings.SecretOfflineChat, $"{e.Username} joined the chat Stare");
+            Send(Settings.SecretOfflineChatChannel, $"{e.Username} joined the chat Stare");
         }
     }
 
