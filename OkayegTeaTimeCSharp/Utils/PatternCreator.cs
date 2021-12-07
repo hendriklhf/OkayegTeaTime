@@ -21,7 +21,7 @@ public static class PatternCreator
             return cachedPattern;
         }
 
-        var compiledRegex = new Regex(patternKey, RegexOptions.Compiled | RegexOptions.Singleline);
+        var compiledRegex = new Regex(patternKey, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
         _cachedPatterns.Add(patternKey, compiledRegex);
 
         return compiledRegex;
