@@ -13,7 +13,8 @@ public class FillCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+")))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendFill(ChatMessage));
         }

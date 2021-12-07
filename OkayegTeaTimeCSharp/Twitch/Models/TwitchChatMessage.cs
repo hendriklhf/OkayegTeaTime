@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Text.RegularExpressions;
 using HLE.Strings;
 using OkayegTeaTimeCSharp.Twitch.Messages.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
@@ -76,11 +77,12 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public UserType UserType { get; }
 
-    public bool IsAfkCommmand => CommandList.AfkCommandAliases.Any(alias => Message.IsMatch(PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)")));
+    private Regex CommandPattern(string alias) => PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");
+    public bool IsAfkCommmand => CommandList.AfkCommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
 
-    public bool IsAnyCommand => CommandList.AllAliases.Any(alias => Message.IsMatch(PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)")));
+    public bool IsAnyCommand => CommandList.AllAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
 
-    public bool IsCommand => CommandList.CommandAliases.Any(alias => Message.IsMatch(PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)")));
+    public bool IsCommand => CommandList.CommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
 
     public bool IsNotLoggedChannel => Settings.NotLoggedChannels.Contains(Channel.Name);
 

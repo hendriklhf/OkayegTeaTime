@@ -13,19 +13,29 @@ public class UnsetCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix")))
+        var prefixPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix");
+        if (prefixPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetPrefix(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sreminder\s\d+")))
+
+        var reminderPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sreminder\s\d+");
+        if (reminderPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetReminder(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote")))
+
+        var emotePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote");
+        if (emotePattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetEmoteInFront(ChatMessage));
+            return;
         }
-        else if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\snuke\s\d+")))
+
+        var nukePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\snuke\s\d+");
+        if (nukePattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetNuke(ChatMessage));
         }

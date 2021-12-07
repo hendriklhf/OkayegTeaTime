@@ -13,9 +13,10 @@ public class TuckCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)?")))
-        {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendTuckedToBed(ChatMessage));
-        }
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
+        if (!pattern.IsMatch(ChatMessage.Message))
+            return;
+
+        TwitchBot.Send(ChatMessage.Channel, BotActions.SendTuckedToBed(ChatMessage));
     }
 }

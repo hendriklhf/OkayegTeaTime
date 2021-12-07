@@ -13,7 +13,8 @@ public class BanFromFileCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.Message.IsMatch(PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+\s\S+")))
+        var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+\s\S+");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             BotActions.SendBanFromFile(TwitchBot, ChatMessage);
         }
