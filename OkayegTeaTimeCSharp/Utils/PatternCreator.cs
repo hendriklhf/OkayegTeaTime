@@ -16,9 +16,10 @@ public static class PatternCreator
 
         var patternKey = patternPrefix + addition;
 
-        var cachedPattern = _cachedPatterns[patternKey];
-        if (cachedPattern is not null)
+        if (_cachedPatterns.TryGetValue(patternKey, out Regex cachedPattern))
+        {
             return cachedPattern;
+        }
 
         var compiledRegex = new Regex(patternKey, RegexOptions.Compiled | RegexOptions.Singleline);
         _cachedPatterns.Add(patternKey, compiledRegex);
