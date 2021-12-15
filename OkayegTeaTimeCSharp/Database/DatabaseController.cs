@@ -12,8 +12,8 @@ namespace OkayegTeaTimeCSharp.Database;
 
 public static class DatabaseController
 {
-    private const string _noPermissionToDeleteReminderMessage = "you have no permission to delete the reminder of someone else";
     private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
+    private const string _noPermissionToDeleteReminderMessage = "you have no permission to delete the reminder of someone else";
 
     public static void AddChannel(string channel)
     {
@@ -23,6 +23,16 @@ public static class DatabaseController
         using var database = new OkayegTeaTimeContext();
         database.Channels.Add(new(channel));
         database.SaveChanges();
+    }
+
+    public static void AddMessage(ITwitchChatMessage chatMessage)
+    {
+        if (!Settings.NotLoggedChannels.Contains(chatMessage.Channel.Name))
+        {
+            using var database = new OkayegTeaTimeContext();
+            database.Messages.Add(new(chatMessage.Username, chatMessage.Message.Encode(), chatMessage.Channel.Name));
+            database.SaveChanges();
+        }
     }
 
     public static void AddNewToken(string username, string accessToken, string refreshToken)
@@ -87,6 +97,16 @@ public static class DatabaseController
         using var database = new OkayegTeaTimeContext();
         database.Suggestions.Add(new(chatMessage.Username, suggestion.Encode(), $"#{chatMessage.Channel}"));
         database.SaveChanges();
+    }
+
+    public static void AddUser(string username)
+    {
+        using var database = new OkayegTeaTimeContext();
+        if (!database.Users.Any(u => u.Username == username))
+        {
+            database.Users.Add(new User(username));
+            database.SaveChanges();
+        }
     }
 
     public static void CheckForNukes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
@@ -158,6 +178,26 @@ public static class DatabaseController
                 SetAfk(chatMessage.Username, false);
             }
         }
+    }
+
+    public static int CountChannelMessages(string givenChannel)
+    {
+        return new OkayegTeaTimeContext().Messages.AsQueryable().Where(m => m.Channel == givenChannel).Count();
+    }
+
+    public static int CountMessages()
+    {
+        return new OkayegTeaTimeContext().Messages.Count();
+    }
+
+    public static int CountUserMessages(string givenUsername)
+    {
+        return new OkayegTeaTimeContext().Messages.AsQueryable().Where(m => m.Username == givenUsername).Count();
+    }
+
+    public static bool DoesSpotifyUserExist(string username)
+    {
+        return new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username.ToLower());
     }
 
     public static List<string> GetChannels()
@@ -323,24 +363,9 @@ public static class DatabaseController
         return user ?? throw new UserNotFoundException();
     }
 
-    public static void AddUser(string username)
+    public static bool IsEmoteManagementSub(string channel)
     {
-        using var database = new OkayegTeaTimeContext();
-        if (!database.Users.Any(u => u.Username == username))
-        {
-            database.Users.Add(new User(username));
-            database.SaveChanges();
-        }
-    }
-
-    public static void AddMessage(ITwitchChatMessage chatMessage)
-    {
-        if (!Settings.NotLoggedChannels.Contains(chatMessage.Channel.Name))
-        {
-            using var database = new OkayegTeaTimeContext();
-            database.Messages.Add(new(chatMessage.Username, chatMessage.Message.Encode(), chatMessage.Channel.Name));
-            database.SaveChanges();
-        }
+        return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel.ToLower()).EmoteManagementSub == true;
     }
 
     public static void RemoveNuke(ITwitchChatMessage chatMessage)
@@ -428,6 +453,17 @@ public static class DatabaseController
         database.SaveChanges();
     }
 
+    public static void SetSongRequestEnabledState(string channel, bool enabled)
+    {
+        using var database = new OkayegTeaTimeContext();
+        Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == channel.ToLower());
+        if (user is not null)
+        {
+            user.SongRequestEnabled = enabled;
+            database.SaveChanges();
+        }
+    }
+
     public static void UnsetEmoteInFront(string channel)
     {
         using var database = new OkayegTeaTimeContext();
@@ -451,21 +487,6 @@ public static class DatabaseController
         database.SaveChanges();
     }
 
-    public static int CountChannelMessages(string givenChannel)
-    {
-        return new OkayegTeaTimeContext().Messages.AsQueryable().Where(m => m.Channel == givenChannel).Count();
-    }
-
-    public static int CountMessages()
-    {
-        return new OkayegTeaTimeContext().Messages.Count();
-    }
-
-    public static int CountUserMessages(string givenUsername)
-    {
-        return new OkayegTeaTimeContext().Messages.AsQueryable().Where(m => m.Username == givenUsername).Count();
-    }
-
     private static void RemoveReminder(List<Reminder> listReminder)
     {
         using var database = new OkayegTeaTimeContext();
@@ -478,26 +499,5 @@ public static class DatabaseController
         using var database = new OkayegTeaTimeContext();
         database.Users.AsQueryable().Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;
         database.SaveChanges();
-    }
-
-    public static bool DoesSpotifyUserExist(string username)
-    {
-        return new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username.ToLower());
-    }
-
-    public static void SetSongRequestEnabledState(string channel, bool enabled)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == channel.ToLower());
-        if (user is not null)
-        {
-            user.SongRequestEnabled = enabled;
-            database.SaveChanges();
-        }
-    }
-
-    public static bool IsEmoteManagementSub(string channel)
-    {
-        return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel.ToLower()).EmoteManagementSub == true;
     }
 }

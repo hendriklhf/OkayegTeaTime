@@ -21,10 +21,10 @@ namespace OkayegTeaTimeCSharp.Twitch.Bot;
 
 public static class BotActions
 {
-    private const int _defaultEmoteCount = 5;
-    private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
     private const string _channelEmotesError = "the channel doesn't have the specified amount of " +
         "emotes enabled or an error occurred";
+    private const byte _defaultEmoteCount = 5;
+    private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
     private const string _twitchUserDoesntExistMessage = "Twitch user doesn't exist";
 
     public static void AddAfkCooldown(string username)
@@ -75,20 +75,6 @@ public static class BotActions
     public static bool IsOnCooldown(string username, CommandType type)
     {
         return TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
-    }
-
-    public static string SendSevenTvEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
-    {
-        IEnumerable<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(channel ?? chatMessage.Channel.Name, count);
-        if (emotes is not null && emotes.Any())
-        {
-            string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
-            return $"{chatMessage.Username}, recently added emotes: {emoteString}";
-        }
-        else
-        {
-            return $"{chatMessage.Username}, {_channelEmotesError}";
-        }
     }
 
     public static void SendBanFromFile(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
@@ -236,11 +222,6 @@ public static class BotActions
         return $"{chatMessage.Username}, {HttpRequest.GetCSharpOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
     }
 
-    public static string SendGoLangCompilerResult(IChatMessage chatMessage)
-    {
-        return $"{chatMessage.Username}, {HttpRequest.GetGoLangOnlineCompilerResult(chatMessage.Message[(chatMessage.Message.Split()[0].Length + 1)..])}";
-    }
-
     public static string SendCreatedNuke(ITwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
@@ -377,6 +358,11 @@ public static class BotActions
         twitchBot.Send(chatMessage.Channel, new AfkMessage(DatabaseController.GetUser(chatMessage.Username)).GoingAway);
     }
 
+    public static string SendGoLangCompilerResult(IChatMessage chatMessage)
+    {
+        return $"{chatMessage.Username}, {HttpRequest.GetGoLangOnlineCompilerResult(chatMessage.Message[(chatMessage.Message.Split()[0].Length + 1)..])}";
+    }
+
     public static string SendHelp(IChatMessage chatMessage)
     {
         string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
@@ -511,6 +497,24 @@ public static class BotActions
         catch (MessageNotFoundException ex)
         {
             return $"{chatMessage.Username}, {ex.Message}";
+        }
+    }
+
+    public static string SendRandomWords(ITwitchChatMessage chatMessage, int count = 1)
+    {
+        List<string> words = new();
+        for (int i = 0; i < count; i++)
+        {
+            words.Add(RandomWords.Random());
+        }
+        string message = $"{chatMessage.Username}, {words.ToSequence()}";
+        if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
+        {
+            return $"{message[..(Config.MaxMessageLength - (3 + chatMessage.Channel.Emote.Length + 1))]}...";
+        }
+        else
+        {
+            return message;
         }
     }
 
@@ -701,6 +705,19 @@ public static class BotActions
         }
     }
 
+    public static string SendSevenTvEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
+    {
+        IEnumerable<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(channel ?? chatMessage.Channel.Name, count);
+        if (emotes is not null && emotes.Any())
+        {
+            string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
+            return $"{chatMessage.Username}, recently added emotes: {emoteString}";
+        }
+        else
+        {
+            return $"{chatMessage.Username}, {_channelEmotesError}";
+        }
+    }
     public static string SendSongAddedToQueue(ITwitchChatMessage chatMessage)
     {
         string song = chatMessage.Split[1];
@@ -870,23 +887,5 @@ public static class BotActions
     private static string GetReminderTarget(string toUser, string fromUser)
     {
         return toUser == fromUser ? "yourself" : toUser;
-    }
-
-    public static string SendRandomWords(ITwitchChatMessage chatMessage, int count = 1)
-    {
-        List<string> words = new();
-        for (int i = 0; i < count; i++)
-        {
-            words.Add(RandomWords.Random());
-        }
-        string message = $"{chatMessage.Username}, {words.ToSequence()}";
-        if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
-        {
-            return $"{message[..(Config.MaxMessageLength - (3 + chatMessage.Channel.Emote.Length + 1))]}...";
-        }
-        else
-        {
-            return message;
-        }
     }
 }
