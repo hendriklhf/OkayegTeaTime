@@ -1,4 +1,4 @@
-﻿using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
+﻿using OkayegTeaTimeCSharp.Files.JsonClasses.HttpRequests;
 
 namespace OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications;
 

@@ -3,8 +3,8 @@ using HLE.Collections;
 using HLE.Enums;
 using HLE.Time;
 using OkayegTeaTimeCSharp.Database;
+using OkayegTeaTimeCSharp.Files.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.HttpRequests;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Twitch.Bot.EmoteManagementNotifications.Enums;
 

@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OkayegTeaTimeCSharp.Files.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.HttpRequests;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Twitch.Api;
 using OkayegTeaTimeCSharp.Twitch.Models;
 

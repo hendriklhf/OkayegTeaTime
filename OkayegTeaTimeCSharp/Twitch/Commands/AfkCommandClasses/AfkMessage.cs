@@ -3,8 +3,8 @@ using HLE.Strings;
 using HLE.Time;
 using HLE.Time.Enums;
 using OkayegTeaTimeCSharp.Database.Models;
-using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.CommandData;
+using OkayegTeaTimeCSharp.Files;
+using OkayegTeaTimeCSharp.Files.JsonClasses.CommandData;
 using OkayegTeaTimeCSharp.Twitch.Commands.Enums;
 
 namespace OkayegTeaTimeCSharp.Twitch.Commands.AfkCommandClasses;

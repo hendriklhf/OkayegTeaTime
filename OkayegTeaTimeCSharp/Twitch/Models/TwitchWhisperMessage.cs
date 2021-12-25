@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using HLE.Strings;
-using OkayegTeaTimeCSharp.JsonData;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.Settings;
+using OkayegTeaTimeCSharp.Files;
+using OkayegTeaTimeCSharp.Files.JsonClasses.Settings;
 using OkayegTeaTimeCSharp.Twitch.Messages.Enums;
 using OkayegTeaTimeCSharp.Twitch.Messages.Interfaces;
 using TwitchLib.Client.Enums;
