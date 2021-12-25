@@ -1,4 +1,5 @@
 ﻿using HLE.HttpRequests;
+using HLE.Strings;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibApi = TwitchLib.Api.TwitchAPI;
@@ -40,7 +41,7 @@ public static class TwitchApi
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public static User GetUserByName(string username)
+    public static User? GetUser(string username)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new() { username }).Result;
         if (response?.Users?.Length > 0)
@@ -53,7 +54,18 @@ public static class TwitchApi
         }
     }
 
-    public static User GetUserById(int id)
+    public static Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
+    {
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: usernames.ToList()).Result;
+        Dictionary<string, User?> result = new();
+        foreach (string username in usernames)
+        {
+            result.Add(username, response.Users.FirstOrDefault(u => u.DisplayName.ToLower() == username.ToLower()));
+        }
+        return result;
+    }
+
+    public static User? GetUser(int id)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { $"{id}" }).Result;
         if (response?.Users?.Length > 0)
@@ -66,18 +78,43 @@ public static class TwitchApi
         }
     }
 
-    public static string GetUserId(string username)
+    public static Dictionary<int, User?> GetUsers(IEnumerable<int> ids)
     {
-        return GetUserByName(username)?.Id;
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: ids.Select(i => i.ToString()).ToList()).Result;
+        Dictionary<int, User?> result = new();
+        foreach (int id in ids)
+        {
+            result.Add(id, response.Users.FirstOrDefault(u => u.Id.ToInt() == id));
+        }
+        return result;
+    }
+
+    public static int? GetUserId(string username)
+    {
+        return GetUser(username)?.Id?.ToInt();
     }
 
     public static bool DoesUserExist(string username)
     {
-        return GetUserByName(username) is not null;
+        return GetUser(username) is not null;
+    }
+
+    public static Dictionary<string, bool> DoUsersExist(IEnumerable<string> usernames)
+    {
+        Dictionary<string, User?> users = GetUsers(usernames);
+        IEnumerable<KeyValuePair<string, bool>> result = users.Select(u => new KeyValuePair<string, bool>(u.Key, u.Value is not null));
+        return new(result);
     }
 
     public static bool DoesUserExist(int id)
     {
-        return GetUserById(id) is not null;
+        return GetUser(id) is not null;
+    }
+
+    public static Dictionary<int, bool> DoUsersExist(IEnumerable<int> ids)
+    {
+        Dictionary<int, User?> users = GetUsers(ids);
+        IEnumerable<KeyValuePair<int, bool>> result = users.Select(u => new KeyValuePair<int, bool>(u.Key, u.Value is not null));
+        return new(result);
     }
 }

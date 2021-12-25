@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using HLE.Strings;
 using HLE.Time;
 
 namespace OkayegTeaTimeCSharp.Database.Models
@@ -25,17 +26,22 @@ namespace OkayegTeaTimeCSharp.Database.Models
             ToTime = toTime;
         }
 
-        public Reminder(string fromUser, string toUser, byte[] message, string channel)
+        public Reminder(string fromUser, string toUser, byte[] message, string channel, long toTime = 0)
         {
             FromUser = fromUser;
             ToUser = toUser;
             Message = message;
             Channel = channel;
+            ToTime = toTime;
         }
 
-        public Reminder(string fromUser, string toUser, byte[] message, string channel, long toTime) : this(fromUser, toUser, message, channel)
+        public Reminder((string FromUser, string ToUser, string Message, string Channel, long ToTime) values)
         {
-            ToTime = toTime;
+            FromUser = values.FromUser;
+            ToUser = values.ToUser;
+            Message = values.Message.Encode();
+            Channel = values.Channel;
+            ToTime = values.ToTime;
         }
     }
 }

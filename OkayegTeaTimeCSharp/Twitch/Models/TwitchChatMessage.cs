@@ -77,7 +77,6 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public UserType UserType { get; }
 
-    private Regex CommandPattern(string alias) => PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");
     public bool IsAfkCommmand => CommandList.AfkCommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
 
     public bool IsAnyCommand => CommandList.AllAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
@@ -89,6 +88,8 @@ public class TwitchChatMessage : ITwitchChatMessage
     public bool IsIgnoredUser => Settings.UserLists.IgnoredUsers.Contains(Username);
 
     public string QueryableMessage => Message.RemoveSQLChars();
+
+    private Regex CommandPattern(string alias) => PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");
 
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
     {

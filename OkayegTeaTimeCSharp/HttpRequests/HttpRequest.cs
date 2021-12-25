@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Web;
 using HLE.Collections;
 using HLE.HttpRequests;
-using HLE.Strings;
 using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
 using OkayegTeaTimeCSharp.Logging;
 using OkayegTeaTimeCSharp.Twitch.Api;
@@ -154,7 +153,12 @@ public static class HttpRequest
 
     public static BttvRequest GetBttvRequest(string channel)
     {
-        return GetBttvRequest(TwitchApi.GetUserId(channel).ToInt());
+        int? id = TwitchApi.GetUserId(channel);
+        if (id.HasValue)
+        {
+            return GetBttvRequest(id.Value);
+        }
+        return null;
     }
 
     public static BttvRequest GetBttvRequest(int channelId)
