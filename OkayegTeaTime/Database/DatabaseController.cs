@@ -2,6 +2,7 @@
 using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Exceptions;
 using OkayegTeaTime.Twitch.Bot;
@@ -73,7 +74,6 @@ public static class DatabaseController
 
         if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0))
         {
-<<<<<<< HEAD:OkayegTeaTimeCSharp/Database/DatabaseController.cs
             return null;
         }
 
@@ -91,9 +91,6 @@ public static class DatabaseController
         {
             Reminder r = new(reminders.ElementAt(i));
             if (HasTooManyRemindersSet(r.ToUser, r.ToTime > 0))
-=======
-            if (database.Reminders.AsQueryable().Where(r => r.ToUser == reminder.ToUser && r.ToTime == 0).Count() >= AppSettings.MaxReminders)
->>>>>>> 557bd641205c3cde39be63c19c096bc8d2d5ac39:OkayegTeaTime/Database/DatabaseController.cs
             {
                 result[i] = null;
             }
@@ -112,18 +109,11 @@ public static class DatabaseController
         using OkayegTeaTimeContext database = new();
         if (!isTimedReminder)
         {
-            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime == 0) >= Config.MaxReminders;
+            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime == 0) >= AppSettings.MaxReminders;
         }
         else
         {
-<<<<<<< HEAD:OkayegTeaTimeCSharp/Database/DatabaseController.cs
-            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime > 0) >= Config.MaxReminders;
-=======
-            if (database.Reminders.AsQueryable().Where(r => r.ToUser == reminder.ToUser && r.ToTime != 0).Count() >= AppSettings.MaxReminders)
-            {
-                throw new TooManyReminderException();
-            }
->>>>>>> 557bd641205c3cde39be63c19c096bc8d2d5ac39:OkayegTeaTime/Database/DatabaseController.cs
+            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime > 0) >= AppSettings.MaxReminders;
         }
     }
 
