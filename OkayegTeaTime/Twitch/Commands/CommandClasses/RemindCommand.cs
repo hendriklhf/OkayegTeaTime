@@ -23,7 +23,7 @@ public class RemindCommand : Command
         Regex timedPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime);
         if (timedPattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, GetTargets(), GetMessage(), GetToTime()));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetTargets(), GetMessage(), GetToTime()));
             return;
         }
 

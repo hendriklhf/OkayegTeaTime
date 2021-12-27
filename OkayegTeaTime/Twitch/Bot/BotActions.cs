@@ -642,27 +642,56 @@ public static class BotActions
         }
     }
 
-    public static string SendSetReminder(ITwitchChatMessage chatMessage, string[] targets, string message)
+    public static string SendSetReminder(ITwitchChatMessage chatMessage, string[] targets, string message, long toTime = 0)
     {
-        return "no";
-        //try
-        //{
-        //    string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-        //    bool targetExists = TwitchApi.DoesUserExist(target);
-        //    if (targetExists)
-        //    {
-        //        int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-        //        return $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
-        //    }
-        //    else
-        //    {
-        //        return $"{chatMessage.Username}, the target user does not exist";
-        //    }
-        //}
-        //catch (TooManyReminderException ex)
-        //{
-        //    return $"{chatMessage.Username}, {ex.Message}";
-        //}
+        if (targets.Length == 1)
+        {
+            bool targetExists = TwitchApi.DoesUserExist(targets[0]);
+            if (!targetExists)
+            {
+                return $"{chatMessage.Username}, the target user does not exist";
+            }
+
+            int? id = DatabaseController.AddReminder(chatMessage.Username, targets[0], message, chatMessage.Channel.Name, toTime);
+            if (!id.HasValue)
+            {
+                return $"{chatMessage.Username}, {_tooManyRemindersMessage}";
+            }
+
+            return $"{chatMessage.Username}, set a {(toTime == 0 ? string.Empty : "timed ")}reminder for {GetReminderTarget(targets[0], chatMessage.Username)} (ID: {id.Value})";
+        }
+        else
+        {
+            Dictionary<string, bool> exist = TwitchApi.DoUsersExist(targets);
+
+            (string, string, string, string, long)[] values = targets
+                .Where(t => exist[t])
+                .Select<string, (string, string, string, string, long)>(t => new(chatMessage.Username, t, message, chatMessage.Channel.Name, toTime))
+                .ToArray();
+
+            int?[] ids = DatabaseController.AddReminders(values);
+
+            StringBuilder builder = new($"{chatMessage.Username}, ");
+            bool multi = ids.Count(i => i != default) > 1;
+            if (!multi)
+            {
+                builder.Append(_tooManyRemindersMessage);
+                return builder.ToString();
+            }
+
+            builder.Append($"set{(multi ? string.Empty : " a")} {(toTime == 0 ? string.Empty : "timed ")}reminder{(multi ? 's' : string.Empty)} for ");
+            List<string> responses = new();
+            for (int i = 0; i < ids.Length; i++)
+            {
+                if (ids[i] != default && exist[targets[i]])
+                {
+                    responses.Add($"{targets[i]} ({ids[i]})");
+                }
+            }
+
+            builder.Append(string.Join(", ", responses));
+            return builder.ToString();
+        }
     }
 
     public static string SendSetSongRequestState(ITwitchChatMessage chatMessage)
@@ -683,58 +712,6 @@ public static class BotActions
         else
         {
             return $"{chatMessage.Username}, you have to be a mod or the broadcaster to set song request settings";
-        }
-    }
-
-    public static string SendSetTimedReminder(ITwitchChatMessage chatMessage, string[] targets, string message, long toTime)
-    {
-        if (targets.Length == 1)
-        {
-            bool targetExists = TwitchApi.DoesUserExist(targets[0]);
-            if (!targetExists)
-            {
-                return $"{chatMessage.Username}, the target user does not exist";
-            }
-
-            int? id = DatabaseController.AddReminder(chatMessage.Username, targets[0], message, chatMessage.Channel.Name, toTime);
-            if (!id.HasValue)
-            {
-                return $"{chatMessage.Username}, {_tooManyRemindersMessage}";
-            }
-
-            return $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(targets[0], chatMessage.Username)} (ID: {id.Value})";
-        }
-        else
-        {
-            Dictionary<string, bool> exist = TwitchApi.DoUsersExist(targets);
-
-            (string, string, string, string, long)[] values = targets
-                .Where(t => exist[t])
-                .Select<string, (string, string, string, string, long)>(t => new(chatMessage.Username, t, message, chatMessage.Channel.Name, toTime))
-                .ToArray();
-
-            int?[] ids = DatabaseController.AddReminders(values);
-
-            StringBuilder builder = new($"{chatMessage.Username}, ");
-            bool multi = ids.Count(i => i != default) > 1;
-            if (!multi)
-            {
-                builder.Append("the target user doesn't exist or has to many reminders set for them");
-                return builder.ToString();
-            }
-
-            builder.Append($"set{(multi ? string.Empty : " a")} timed reminder{(multi ? 's' : string.Empty)} for ");
-            List<string> responses = new();
-            for (int i = 0; i < ids.Length; i++)
-            {
-                if (ids[i] != default && exist[targets[i]])
-                {
-                    responses.Add($"{targets[i]} ({ids[i]})");
-                }
-            }
-
-            builder.Append(string.Join(", ", responses));
-            return builder.ToString();
         }
     }
 

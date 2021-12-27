@@ -35,6 +35,14 @@ namespace OkayegTeaTime.Database.Models
             ToTime = toTime;
         }
 
+        public Reminder((string FromUser, string ToUser, string Message, string Channel) values)
+        {
+            FromUser = values.FromUser;
+            ToUser = values.ToUser;
+            Message = values.Message.Encode();
+            Channel = values.Channel;
+        }
+
         public Reminder((string FromUser, string ToUser, string Message, string Channel, long ToTime) values)
         {
             FromUser = values.FromUser;

@@ -103,6 +103,27 @@ public static class DatabaseController
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
+    public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel)> reminders)
+    {
+        int count = reminders.Count();
+        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        using OkayegTeaTimeContext database = new();
+        reminders.ForEach((v, i) =>
+        {
+            Reminder r = new(v);
+            if (HasTooManyRemindersSet(r.ToUser, r.ToTime > 0, database))
+            {
+                entities[i] = null;
+            }
+            else
+            {
+                entities[i] = database.Reminders.Add(r);
+            }
+        });
+        database.SaveChanges();
+        return entities.Select(e => e?.Entity?.Id).ToArray();
+    }
+
     public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext? database = null)
     {
         database ??= new();
