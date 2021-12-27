@@ -529,30 +529,30 @@ public static class BotActions
 
     public static void SendReminder(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, List<Reminder> reminders)
     {
-        string message;
+        if (!reminders.Any())
+        {
+            return;
+        }
+
+        string message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")})";
+        StringBuilder builder = new(message);
         if (reminders[0].Message.Length > 0)
         {
-            message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")}): {reminders[0].Message.Decode()}";
+            builder.Append($": {reminders[0].Message.Decode()}");
         }
-        else
-        {
-            message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")})";
-        }
+
         if (reminders.Count > 1)
         {
             reminders.Skip(1).ForEach(r =>
             {
+                builder.Append($" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time, "ago")})");
                 if (r.Message.Length > 0)
                 {
-                    message += $" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time, "ago")}): {r.Message.Decode()}";
-                }
-                else
-                {
-                    message += $" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time, "ago")})";
+                    builder.Append($": {r.Message.Decode()}");
                 }
             });
         }
-        twitchBot.Send(chatMessage.Channel, message);
+        twitchBot.Send(chatMessage.Channel, builder.ToString());
     }
 
     public static string SendResumingAfkStatus(IChatMessage chatMessage)
@@ -806,14 +806,13 @@ public static class BotActions
 
     public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
     {
-        if (reminder.Message.Length > 0)
+        string message = $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago")})";
+        string reminderMessage = reminder.Message.Decode();
+        if (!string.IsNullOrEmpty(reminderMessage))
         {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago")}): {reminder.Message.Decode()}");
+            message += $": {reminderMessage}";
         }
-        else
-        {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago")})");
-        }
+        twitchBot.Send(reminder.Channel, message);
     }
 
     public static string SendTuckedToBed(IChatMessage chatMessage)

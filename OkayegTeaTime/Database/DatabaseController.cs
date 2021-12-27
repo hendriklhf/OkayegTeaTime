@@ -87,10 +87,10 @@ public static class DatabaseController
         int count = reminders.Count();
         EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
         using OkayegTeaTimeContext database = new();
-        for (int i = 0; i < count; i++)
+        reminders.ForEach((v, i) =>
         {
-            Reminder r = new(reminders.ElementAt(i));
-            if (HasTooManyRemindersSet(r.ToUser, r.ToTime > 0))
+            Reminder r = new(v);
+            if (HasTooManyRemindersSet(r.ToUser, r.ToTime > 0, database))
             {
                 entities[i] = null;
             }
@@ -98,14 +98,14 @@ public static class DatabaseController
             {
                 entities[i] = database.Reminders.Add(r);
             }
-        }
+        });
         database.SaveChanges();
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
-    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder)
+    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext? database = null)
     {
-        using OkayegTeaTimeContext database = new();
+        database ??= new();
         if (!isTimedReminder)
         {
             return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime == 0) >= AppSettings.MaxReminders;
@@ -167,27 +167,19 @@ public static class DatabaseController
     public static void CheckForReminder(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
         using var database = new OkayegTeaTimeContext();
-        if (database.Reminders.Any(reminder => reminder.ToTime == 0 && reminder.ToUser == chatMessage.Username))
-        {
-            List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime == 0 && r.ToUser == chatMessage.Username).ToList();
-            twitchBot.SendReminder(chatMessage, reminders);
-            RemoveReminder(reminders);
-        }
+        List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime == 0 && r.ToUser == chatMessage.Username).ToList();
+        twitchBot.SendReminder(chatMessage, reminders);
+        database.Reminders.RemoveRange(reminders);
+        database.SaveChanges();
     }
 
     public static void CheckForTimedReminder(TwitchBot twitchBot)
     {
         using var database = new OkayegTeaTimeContext();
-        if (database.Reminders.Any(reminder => reminder.ToTime != 0))
-        {
-            List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now()).ToList();
-            reminders.ForEach(r =>
-            {
-                twitchBot.SendTimedReminder(r);
-                database.Reminders.Remove(r);
-            });
-            database.SaveChanges();
-        }
+        List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now()).ToList();
+        reminders.ForEach(r => twitchBot.SendTimedReminder(r));
+        database.Reminders.RemoveRange(reminders);
+        database.SaveChanges();
     }
 
     public static void CheckIfAFK(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
@@ -274,7 +266,6 @@ public static class DatabaseController
 
     public static Message GetLastMessage(string username)
     {
-
         using var database = new OkayegTeaTimeContext();
         Message message = database.Messages.AsQueryable().Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
         return message ?? throw new UserNotFoundException();
@@ -508,13 +499,6 @@ public static class DatabaseController
         Models.Spotify user = database.Spotify.FirstOrDefault(s => s.Username == username);
         user.AccessToken = accessToken;
         user.Time = TimeHelper.Now();
-        database.SaveChanges();
-    }
-
-    private static void RemoveReminder(List<Reminder> listReminder)
-    {
-        using var database = new OkayegTeaTimeContext();
-        listReminder.ForEach(reminder => database.Reminders.Remove(reminder));
         database.SaveChanges();
     }
 
