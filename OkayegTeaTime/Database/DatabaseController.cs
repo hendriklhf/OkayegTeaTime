@@ -124,19 +124,6 @@ public static class DatabaseController
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
-    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext? database = null)
-    {
-        database ??= new();
-        if (!isTimedReminder)
-        {
-            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime == 0) >= AppSettings.MaxReminders;
-        }
-        else
-        {
-            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime > 0) >= AppSettings.MaxReminders;
-        }
-    }
-
     public static void AddSugestion(ITwitchChatMessage chatMessage, string suggestion)
     {
         using var database = new OkayegTeaTimeContext();
@@ -235,6 +222,12 @@ public static class DatabaseController
     public static bool DoesSpotifyUserExist(string username)
     {
         return new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username.ToLower());
+    }
+
+    public static Channel GetChannel(string channel)
+    {
+        using OkayegTeaTimeContext database = new();
+        return database.Channels.FirstOrDefault(c => c.ChannelName == channel);
     }
 
     public static List<string> GetChannels()

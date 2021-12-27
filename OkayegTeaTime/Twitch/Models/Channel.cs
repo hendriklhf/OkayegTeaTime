@@ -1,4 +1,5 @@
-﻿using OkayegTeaTime.Database;
+﻿using HLE.Strings;
+using OkayegTeaTime.Database;
 
 namespace OkayegTeaTime.Twitch.Models;
 
@@ -10,9 +11,10 @@ public class Channel
         set
         {
             _name = value;
-            _emote = DatabaseController.GetEmoteInFront(Name);
-            _prefix = DatabaseController.GetPrefix(Name);
-            _isEmoteSub = DatabaseController.IsEmoteManagementSub(Name);
+            Database.Models.Channel channel = DatabaseController.GetChannel(value);
+            _emote = channel.EmoteInFront?.Decode();
+            _prefix = channel.Prefix?.Decode();
+            _isEmoteSub = channel.EmoteManagementSub == true;
         }
     }
 
