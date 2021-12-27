@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTimeCSharp.HttpRequests;
-using OkayegTeaTimeCSharp.JsonData.JsonClasses.HttpRequests;
-using OkayegTeaTimeCSharp.Twitch.Api;
-using OkayegTeaTimeCSharp.Twitch.Models;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests;
+using OkayegTeaTime.HttpRequests;
+using OkayegTeaTime.Twitch.Api;
+using OkayegTeaTime.Twitch.Models;
 
 namespace Tests;
 
@@ -31,7 +31,7 @@ public class ApiTests
     [TestMethod]
     public void GetBttvEmotesTest()
     {
-        TwitchApi.Configure();
+        TwitchApi.Initialize();
         int emoteCount = 5;
         List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount).ToList();
         Assert.IsTrue(emotes.Count == emoteCount);

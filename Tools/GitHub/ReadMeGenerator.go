@@ -10,7 +10,7 @@ import (
 )
 
 const _readMePath = "../../README.md"
-const _jsonPath = "../../OkayegTeaTimeCSharp/Resources/Commands.json"
+const _jsonPath = "../../OkayegTeaTime/Resources/Commands.json"
 const _title = "OkayegTeaTime"
 const _header1 = "Commands"
 const _header2 = "AFK-Commands"
