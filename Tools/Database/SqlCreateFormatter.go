@@ -9,7 +9,7 @@ import (
 	linq "github.com/ahmetb/go-linq"
 )
 
-const _sqlFilePath = "../../OkayegTeaTimeCSharp/Resources/SqlCreate.sql"
+const _sqlFilePath = "../../OkayegTeaTime/Resources/SqlCreate.sql"
 
 func main() {
 	FormatSqCreate()
