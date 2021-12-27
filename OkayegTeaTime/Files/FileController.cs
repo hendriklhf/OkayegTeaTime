@@ -9,11 +9,11 @@ public static class FileController
     private const string _resourceFolder = "Resources";
     private static readonly string[] _fileNames =
     {
-        $"{AppSettings.AssemblyName}.{_resourceFolder}.Commands.json",
-        $"{AppSettings.AssemblyName}.{_resourceFolder}.ConnectionString.json",
-        $"{AppSettings.AssemblyName}.{_resourceFolder}.OnlineCompilerTemplate.cs",
-        $"{AppSettings.AssemblyName}.{_resourceFolder}.OnlineCompilerTemplate.go",
-        $"{AppSettings.AssemblyName}.{_resourceFolder}.RandomWords.json",
+        NewFile("Commands.json"),
+        NewFile("ConnectionString.json"),
+        NewFile("OnlineCompilerTemplate.cs"),
+        NewFile("OnlineCompilerTemplate.go"),
+        NewFile("RandomWords.json")
     };
 
     public static string Commands { get; private set; } = Read(_fileNames[0]);
@@ -32,5 +32,10 @@ public static class FileController
         using StreamReader reader = new(stream);
         string content = reader.ReadToEnd();
         return content;
+    }
+
+    private static string NewFile(string fileName)
+    {
+        return string.Join('.', AppSettings.AssemblyName, _resourceFolder, fileName);
     }
 }
