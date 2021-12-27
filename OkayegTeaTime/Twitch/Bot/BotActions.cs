@@ -1,4 +1,5 @@
-﻿using HLE.Collections;
+﻿using System.Text;
+using HLE.Collections;
 using HLE.Emojis;
 using HLE.HttpRequests;
 using HLE.Numbers;
@@ -26,6 +27,7 @@ public static class BotActions
     private const byte _defaultEmoteCount = 5;
     private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
     private const string _twitchUserDoesntExistMessage = "Twitch user doesn't exist";
+    private const string _tooManyRemindersMessage = "that person has too many reminders set for them";
 
     public static void AddAfkCooldown(string username)
     {
@@ -507,7 +509,7 @@ public static class BotActions
         {
             words.Add(AppSettings.RandomWords.Random());
         }
-        string message = $"{chatMessage.Username}, {words.ToSequence()}";
+        string message = $"{chatMessage.Username}, {words.JoinToString(' ')}";
         if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
         {
             return $"{message[..(AppSettings.MaxMessageLength - (3 + chatMessage.Channel.Emote.Length + 1))]}...";
@@ -527,30 +529,30 @@ public static class BotActions
 
     public static void SendReminder(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, List<Reminder> reminders)
     {
-        string message;
+        if (!reminders.Any())
+        {
+            return;
+        }
+
+        string message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")})";
+        StringBuilder builder = new(message);
         if (reminders[0].Message.Length > 0)
         {
-            message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")}): {reminders[0].Message.Decode()}";
+            builder.Append($": {reminders[0].Message.Decode()}");
         }
-        else
-        {
-            message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")})";
-        }
+
         if (reminders.Count > 1)
         {
             reminders.Skip(1).ForEach(r =>
             {
+                builder.Append($" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time, "ago")})");
                 if (r.Message.Length > 0)
                 {
-                    message += $" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time, "ago")}): {r.Message.Decode()}";
-                }
-                else
-                {
-                    message += $" || {GetReminderAuthor(chatMessage.Username, r.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time, "ago")})";
+                    builder.Append($": {r.Message.Decode()}");
                 }
             });
         }
-        twitchBot.Send(chatMessage.Channel, message);
+        twitchBot.Send(chatMessage.Channel, builder.ToString());
     }
 
     public static string SendResumingAfkStatus(IChatMessage chatMessage)
@@ -640,25 +642,55 @@ public static class BotActions
         }
     }
 
-    public static string SendSetReminder(ITwitchChatMessage chatMessage, byte[] message)
+    public static string SendSetReminder(ITwitchChatMessage chatMessage, string[] targets, string message, long toTime = 0)
     {
-        try
+        if (targets.Length == 1)
         {
-            string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-            bool targetExists = TwitchApi.DoesUserExist(target);
-            if (targetExists)
-            {
-                int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}"));
-                return $"{chatMessage.Username}, set a reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
-            }
-            else
+            bool targetExists = TwitchApi.DoesUserExist(targets[0]);
+            if (!targetExists)
             {
                 return $"{chatMessage.Username}, the target user does not exist";
             }
+
+            int? id = DatabaseController.AddReminder(chatMessage.Username, targets[0], message, chatMessage.Channel.Name, toTime);
+            if (!id.HasValue)
+            {
+                return $"{chatMessage.Username}, {_tooManyRemindersMessage}";
+            }
+
+            return $"{chatMessage.Username}, set a {(toTime == 0 ? string.Empty : "timed ")}reminder for {GetReminderTarget(targets[0], chatMessage.Username)} (ID: {id.Value})";
         }
-        catch (TooManyReminderException ex)
+        else
         {
-            return $"{chatMessage.Username}, {ex.Message}";
+            Dictionary<string, bool> exist = TwitchApi.DoUsersExist(targets);
+
+            (string, string, string, string, long)[] values = targets
+                .Where(t => exist[t])
+                .Select<string, (string, string, string, string, long)>(t => new(chatMessage.Username, t, message, chatMessage.Channel.Name, toTime))
+                .ToArray();
+
+            int?[] ids = DatabaseController.AddReminders(values);
+
+            StringBuilder builder = new($"{chatMessage.Username}, ");
+            bool multi = ids.Count(i => i != default) > 1;
+            if (!multi)
+            {
+                builder.Append(_tooManyRemindersMessage);
+                return builder.ToString();
+            }
+
+            builder.Append($"set{(multi ? string.Empty : " a")} {(toTime == 0 ? string.Empty : "timed ")}reminder{(multi ? 's' : string.Empty)} for ");
+            List<string> responses = new();
+            for (int i = 0; i < ids.Length; i++)
+            {
+                if (ids[i] != default && exist[targets[i]])
+                {
+                    responses.Add($"{targets[i]} ({ids[i]})");
+                }
+            }
+
+            builder.Append(string.Join(", ", responses));
+            return builder.ToString();
         }
     }
 
@@ -680,28 +712,6 @@ public static class BotActions
         else
         {
             return $"{chatMessage.Username}, you have to be a mod or the broadcaster to set song request settings";
-        }
-    }
-
-    public static string SendSetTimedReminder(ITwitchChatMessage chatMessage, byte[] message, long toTime)
-    {
-        try
-        {
-            string target = chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1];
-            bool targetExists = TwitchApi.DoesUserExist(target);
-            if (targetExists)
-            {
-                int id = DatabaseController.AddReminder(new(chatMessage.Username, target, message, $"#{chatMessage.Channel}", toTime + TimeHelper.Now()));
-                return $"{chatMessage.Username}, set a timed reminder for {GetReminderTarget(target, chatMessage.Username)} (ID: {id})";
-            }
-            else
-            {
-                return $"{chatMessage.Username}, the target user does not exist";
-            }
-        }
-        catch (TooManyReminderException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
         }
     }
 
@@ -744,7 +754,7 @@ public static class BotActions
 
     public static string SendSpotifySearch(IChatMessage chatMessage)
     {
-        string query = chatMessage.Split.Skip(2).ToSequence();
+        string query = chatMessage.Split.Skip(2).JoinToString(' ');
         return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
     }
 
@@ -770,14 +780,13 @@ public static class BotActions
 
     public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
     {
-        if (reminder.Message.Length > 0)
+        string message = $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago")})";
+        string reminderMessage = reminder.Message.Decode();
+        if (!string.IsNullOrEmpty(reminderMessage))
         {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago")}): {reminder.Message.Decode()}");
+            message += $": {reminderMessage}";
         }
-        else
-        {
-            twitchBot.Send(reminder.Channel, $"{reminder.ToUser}, reminder from {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago")})");
-        }
+        twitchBot.Send(reminder.Channel, message);
     }
 
     public static string SendTuckedToBed(IChatMessage chatMessage)
@@ -863,15 +872,8 @@ public static class BotActions
 
     public static string SendUserID(IChatMessage chatMessage)
     {
-        try
-        {
-            string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
-            return $"{chatMessage.Username}, {TwitchApi.GetUserId(username) ?? _twitchUserDoesntExistMessage}";
-        }
-        catch (UserNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
+        string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
+        return $"{chatMessage.Username}, {TwitchApi.GetUserId(username)?.ToString() ?? _twitchUserDoesntExistMessage}";
     }
 
     public static void Timeout(this TwitchBot twitchBot, string channel, string username, long time, string reason = "")

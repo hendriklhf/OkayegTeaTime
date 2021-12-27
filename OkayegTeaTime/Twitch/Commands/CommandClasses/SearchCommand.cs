@@ -44,7 +44,7 @@ public class SearchCommand : Command
 
     private string GetKeyWord()
     {
-        return ChatMessage.Message.Split()[1..].ToSequence().ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
+        return ChatMessage.Message.Split()[1..].JoinToString(' ').ReplacePattern(Pattern.SearchUserParameter, "").ReplacePattern(Pattern.SearchChannelParameter, "").Trim();
     }
 
     private string GetUsername()

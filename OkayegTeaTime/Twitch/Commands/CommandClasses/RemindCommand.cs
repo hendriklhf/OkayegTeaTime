@@ -1,4 +1,5 @@
-﻿using HLE.Collections;
+﻿using System.Text.RegularExpressions;
+using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Twitch.Bot;
@@ -8,8 +9,9 @@ namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
 public class RemindCommand : Command
 {
-    private const int _startIndex = 3;
-    private const int _noMessageIndex = -1;
+    private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleReminderTargets}", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _timeSplitPattern = new(Pattern.TimeSplit, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _exceptMessagePattern = new($@"{_targetPattern}\s(in\s({Pattern.TimeSplit}\s)+)?", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public RemindCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
@@ -18,62 +20,42 @@ public class RemindCommand : Command
 
     public override void Handle()
     {
-        var timedPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime);
+        Regex timedPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime);
         if (timedPattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, GetTimedRemindMessage(), GetToTime()));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetTargets(), GetMessage(), GetToTime()));
             return;
         }
 
-        var nextMessagePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)*");
+        Regex nextMessagePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)*");
         if (nextMessagePattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetRemindMessage()));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetTargets(), GetMessage()));
         }
     }
 
-    private int GetMessageStartIdx()
+    private string GetMessage()
     {
-        for (int i = _startIndex; i <= ChatMessage.LowerSplit.Length - 1; i++)
-        {
-            if (!ChatMessage.LowerSplit[i].IsMatch(Pattern.TimeSplit))
-            {
-                return i;
-            }
-        }
-        return _noMessageIndex;
+        return _exceptMessagePattern.Replace(ChatMessage.Message, string.Empty);
     }
+
 
     private long GetToTime()
     {
-        int messageStartIdx = GetMessageStartIdx();
-        if (messageStartIdx == _noMessageIndex)
-        {
-            return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.LowerSplit[_startIndex..].ToList());
-        }
-        else
-        {
-            return TimeHelper.ConvertTimeToMilliseconds(ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList());
-        }
+        MatchCollection matches = _timeSplitPattern.Matches(ChatMessage.Message);
+        List<string> captures = matches.Select(m => m.Value).ToList();
+        return TimeHelper.ConvertTimeToMilliseconds(captures) + TimeHelper.Now();
     }
 
-    private byte[] GetTimedRemindMessage()
+    private string[] GetTargets()
     {
-        int messageStartIdx = GetMessageStartIdx();
-        if (messageStartIdx == _noMessageIndex)
-        {
-            return string.Empty.Encode();
-        }
-        else
-        {
-            string[] messageSplit = ChatMessage.Split[(_startIndex + ChatMessage.LowerSplit[_startIndex..GetMessageStartIdx()].ToList().Count)..];
-            return messageSplit.ToSequence().Encode();
-        }
-    }
-
-    private byte[] GetRemindMessage()
-    {
-        string[] messageSplit = ChatMessage.Split[2..];
-        return messageSplit.ToSequence().Encode();
+        Match match = _targetPattern.Match(ChatMessage.Message);
+        int firstWordLength = match.Value.Split()[0].Length + 1;
+        string[] targets = match.Value[firstWordLength..].Remove(" ").Split(',');
+        return targets.Replace(t => t.ToLower() == "me", ChatMessage.Username)
+            .Select(t => t.ToLower())
+            .Distinct()
+            .Take(5)
+            .ToArray();
     }
 }
