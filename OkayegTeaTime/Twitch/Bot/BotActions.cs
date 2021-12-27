@@ -509,7 +509,7 @@ public static class BotActions
         {
             words.Add(AppSettings.RandomWords.Random());
         }
-        string message = $"{chatMessage.Username}, {words.ToSequence()}";
+        string message = $"{chatMessage.Username}, {words.JoinToString(' ')}";
         if (MessageHelper.IsMessageTooLong(message, chatMessage.Channel))
         {
             return $"{message[..(AppSettings.MaxMessageLength - (3 + chatMessage.Channel.Emote.Length + 1))]}...";
@@ -780,7 +780,7 @@ public static class BotActions
 
     public static string SendSpotifySearch(IChatMessage chatMessage)
     {
-        string query = chatMessage.Split.Skip(2).ToSequence();
+        string query = chatMessage.Split.Skip(2).JoinToString(' ');
         return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
     }
 

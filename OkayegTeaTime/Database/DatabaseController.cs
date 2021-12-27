@@ -85,23 +85,22 @@ public static class DatabaseController
     public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel, long ToTime)> reminders)
     {
         int count = reminders.Count();
-        int?[] result = new int?[count];
+        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
         using OkayegTeaTimeContext database = new();
         for (int i = 0; i < count; i++)
         {
             Reminder r = new(reminders.ElementAt(i));
             if (HasTooManyRemindersSet(r.ToUser, r.ToTime > 0))
             {
-                result[i] = null;
+                entities[i] = null;
             }
             else
             {
-                EntityEntry<Reminder> entity = database.Reminders.Add(r);
-                result[i] = entity.Entity.Id;
+                entities[i] = database.Reminders.Add(r);
             }
         }
         database.SaveChanges();
-        return result;
+        return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
     public static bool HasTooManyRemindersSet(string target, bool isTimedReminder)
@@ -449,7 +448,7 @@ public static class DatabaseController
     {
         using var database = new OkayegTeaTimeContext();
         User user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
-        string message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].ToSequence() : null;
+        string message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].JoinToString(' ') : null;
         user.MessageText = message?.Encode();
         user.Type = type.ToString();
         user.Time = TimeHelper.Now();

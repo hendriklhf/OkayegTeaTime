@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Twitch.Bot;
@@ -22,21 +23,17 @@ public class RemindCommand : Command
 
     public override void Handle()
     {
-        string[] targets = GetTargets();
-        string message = GetMessage();
-
         Regex timedPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime);
         if (timedPattern.IsMatch(ChatMessage.Message))
         {
-            long toTime = GetToTime();
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, targets, message, toTime));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetTimedReminder(ChatMessage, GetTargets(), GetMessage(), GetToTime()));
             return;
         }
 
         Regex nextMessagePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)*");
         if (nextMessagePattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, targets, message));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSetReminder(ChatMessage, GetTargets(), GetMessage()));
         }
     }
 
@@ -55,20 +52,13 @@ public class RemindCommand : Command
 
     private string[] GetTargets()
     {
-        string[] targets = Array.Empty<string>();
         Match match = _targetPattern.Match(ChatMessage.Message);
-        if (!string.IsNullOrEmpty(match.Value))
-        {
-            int firstWordLength = match.Value.Split()[0].Length + 1;
-            targets = match.Value[firstWordLength..].Remove(" ").Split(',');
-            for (int i = 0; i < targets.Length; i++)
-            {
-                if (targets[i].ToLower() == "me")
-                {
-                    targets[i] = ChatMessage.Username;
-                }
-            }
-        }
-        return targets.Take(5).ToArray();
+        int firstWordLength = match.Value.Split()[0].Length + 1;
+        string[] targets = match.Value[firstWordLength..].Remove(" ").Split(',');
+        return targets.Replace(t => t.ToLower() == "me", ChatMessage.Username)
+            .Select(t => t.ToLower())
+            .Distinct()
+            .Take(5)
+            .ToArray();
     }
 }
