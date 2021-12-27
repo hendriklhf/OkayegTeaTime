@@ -176,7 +176,7 @@ public static class DatabaseController
     public static void CheckForTimedReminder(TwitchBot twitchBot)
     {
         using var database = new OkayegTeaTimeContext();
-        List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now()).ToList();
+        IEnumerable<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now());
         reminders.ForEach(r => twitchBot.SendTimedReminder(r));
         database.Reminders.RemoveRange(reminders);
         database.SaveChanges();

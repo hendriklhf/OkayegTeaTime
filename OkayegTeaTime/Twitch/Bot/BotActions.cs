@@ -710,10 +710,7 @@ public static class BotActions
 
             (string, string, string, string, long)[] values = targets
                 .Where(t => exist[t])
-                .Select<string, (string, string, string, string, long)>(t =>
-                {
-                    return new(chatMessage.Username, t, message, chatMessage.Channel.Name, toTime);
-                })
+                .Select<string, (string, string, string, string, long)>(t => new(chatMessage.Username, t, message, chatMessage.Channel.Name, toTime))
                 .ToArray();
 
             int?[] ids = DatabaseController.AddReminders(values);
