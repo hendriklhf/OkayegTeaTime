@@ -399,6 +399,19 @@ public static class DatabaseController
         return user ?? throw new UserNotFoundException();
     }
 
+    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext? database = null)
+    {
+        database ??= new();
+        if (!isTimedReminder)
+        {
+            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime == 0) >= AppSettings.MaxReminders;
+        }
+        else
+        {
+            return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime > 0) >= AppSettings.MaxReminders;
+        }
+    }
+
     public static bool IsEmoteManagementSub(string channel)
     {
         return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel.ToLower()).EmoteManagementSub == true;
