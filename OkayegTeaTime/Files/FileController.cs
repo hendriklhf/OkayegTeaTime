@@ -10,7 +10,6 @@ public static class FileController
     private static readonly string[] _fileNames =
     {
         NewFile("Commands.json"),
-        NewFile("ConnectionString.json"),
         NewFile("OnlineCompilerTemplate.cs"),
         NewFile("OnlineCompilerTemplate.go"),
         NewFile("RandomWords.json")
@@ -18,13 +17,11 @@ public static class FileController
 
     public static string Commands { get; private set; } = Read(_fileNames[0]);
 
-    public static string ConnectionString { get; private set; } = Read(_fileNames[1]);
+    public static string OnlineCompilerTemplateCSharp { get; private set; } = Read(_fileNames[1]);
 
-    public static string OnlineCompilerTemplateCSharp { get; private set; } = Read(_fileNames[2]);
+    public static string OnlineCompilerTemplateGo { get; private set; } = Read(_fileNames[2]);
 
-    public static string OnlineCompilerTemplateGo { get; private set; } = Read(_fileNames[3]);
-
-    public static string RandomWords { get; private set; } = Read(_fileNames[4]);
+    public static string RandomWords { get; private set; } = Read(_fileNames[3]);
 
     private static string Read(string resourcePath)
     {

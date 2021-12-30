@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OkayegTeaTime.Files.JsonClasses.DatabaseConnection;
+namespace OkayegTeaTime.Files.JsonClasses.Settings;
 
 public class DbConnection
 {
