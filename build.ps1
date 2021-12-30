@@ -1,4 +1,4 @@
-$os = @("win-x64", "linux-arm", "osx-x64")
+$os = @("win-x64", "linux-arm")
 
 Write-Output "============="
 Write-Output "BUILD STARTED"
