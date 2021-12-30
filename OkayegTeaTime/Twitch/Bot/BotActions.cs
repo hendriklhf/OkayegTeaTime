@@ -9,7 +9,6 @@ using HLE.Time.Enums;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Exceptions;
-using OkayegTeaTime.Files.JsonClasses.HttpRequests;
 using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Api;
@@ -36,6 +35,12 @@ public static class BotActions
             TwitchBot.AfkCooldowns.Remove(TwitchBot.AfkCooldowns.FirstOrDefault(c => c.Username == username));
             AddUserToAfkCooldownDictionary(username);
         }
+    }
+
+    public static string SendSongAddedToQueue(ITwitchChatMessage chatMessage)
+    {
+        string song = chatMessage.Split[1];
+        return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel.Name, song).Result}";
     }
 
     public static void AddCooldown(string username, CommandType type)
@@ -110,20 +115,6 @@ public static class BotActions
         }
     }
 
-    public static string SendBttvEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
-    {
-        IEnumerable<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(channel ?? chatMessage.Channel.Name, count);
-        if (emotes is not null && emotes.Any())
-        {
-            string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
-            return $"{chatMessage.Username}, recently added emotes: {emoteString}";
-        }
-        else
-        {
-            return $"{chatMessage.Username}, {_channelEmotesError}";
-        }
-    }
-
     public static string SendChatterino2Links()
     {
         return $"Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases";
@@ -138,6 +129,7 @@ public static class BotActions
     {
         string channel = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Channel.Name;
         DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
+
         if (chatterCount > 1)
         {
             return $"{chatMessage.Username}, there are {chatterCount} chatters in the channel of {channel}";
@@ -177,20 +169,6 @@ public static class BotActions
         }
     }
 
-    public static string SendCheckMessage(IChatMessage chatMessage)
-    {
-        try
-        {
-            int id = chatMessage.Split[2].ToInt();
-            Message message = DatabaseController.GetMessage(id);
-            return $"{chatMessage.Username}, ({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
     public static string SendCheckReminder(IChatMessage chatMessage)
     {
         try
@@ -224,24 +202,7 @@ public static class BotActions
         return $"{chatMessage.Username}, {HttpRequest.GetCSharpOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
     }
 
-    public static string SendCreatedNuke(ITwitchChatMessage chatMessage)
-    {
-        if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
-        {
-            string word = chatMessage.LowerSplit[1];
-            long timeoutTime = TimeHelper.ConvertStringToSeconds(new() { chatMessage.LowerSplit[2] });
-            long duration = TimeHelper.ConvertTimeToMilliseconds(new() { chatMessage.LowerSplit[3] });
-            timeoutTime = timeoutTime > new Week(2).Seconds ? new Week(2).Seconds : timeoutTime;
-            int id = DatabaseController.AddNuke(new(chatMessage.Username, $"#{chatMessage.Channel}", word.Encode(), timeoutTime, duration + TimeHelper.Now()));
-            return $"{chatMessage.Username}, timeouting \"{word}\" {chatMessage.LowerSplit[2]} for the next {chatMessage.LowerSplit[3]} (ID: {id})";
-        }
-        else
-        {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
-        }
-    }
-
-    public static string SendDetectedSpotifyURI(IChatMessage chatMessage)
+    public static string SendDetectedSpotifyUri(IChatMessage chatMessage)
     {
         if (new LinkRecognizer(chatMessage).TryFindSpotifyLink(out string uri))
         {
@@ -250,20 +211,6 @@ public static class BotActions
         else
         {
             return null;
-        }
-    }
-
-    public static string SendFfzEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
-    {
-        IEnumerable<FfzEmote> emotes = HttpRequest.GetFfzEmotes(channel ?? chatMessage.Channel.Name, count);
-        if (emotes is not null && emotes.Any())
-        {
-            string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
-            return $"{chatMessage.Username}, recently added emotes: {emoteString}";
-        }
-        else
-        {
-            return $"{chatMessage.Username}, {_channelEmotesError}";
         }
     }
 
@@ -286,62 +233,6 @@ public static class BotActions
             }
         }
         return string.Join((char)32, messageParts);
-    }
-
-    public static string SendFirst(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            Message message = DatabaseController.GetFirst(chatMessage);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendFirstChannel(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            string channel = chatMessage.LowerSplit[1];
-            Message message = DatabaseController.GetFirstChannel(chatMessage, channel);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendFirstUser(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            string username = chatMessage.LowerSplit[1];
-            Message message = DatabaseController.GetFirstUser(username);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendFirstUserChannel(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            string username = chatMessage.LowerSplit[1];
-            string channel = chatMessage.LowerSplit[2];
-            Message message = DatabaseController.GetFirstMessageUserChannel(username, channel);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
     }
 
     public static string SendFuck(IChatMessage chatMessage)
@@ -376,46 +267,13 @@ public static class BotActions
         if (AppSettings.UserLists.Moderators.Contains(chatMessage.Username))
         {
             string channel = chatMessage.LowerSplit[1];
-            string response = twitchBot.JoinChannel(channel.RemoveHashtag());
+            string response = twitchBot.JoinChannel(channel.Remove("#"));
             return $"{chatMessage.Username}, {response}";
         }
         else
         {
             return $"{chatMessage.Username}, you are not a moderator of the bot";
         }
-    }
-
-    public static string SendLastMessage(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            Message message = DatabaseController.GetLastMessage(chatMessage.LowerSplit[1]);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago")}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (UserNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendLoggedMessagesChannelCount(ITwitchChatMessage chatMessage)
-    {
-        string channel = chatMessage.LowerSplit[1];
-        DottedNumber messageCount = DatabaseController.CountChannelMessages(channel);
-        return $"{chatMessage.Username}, logging {messageCount} messages of the channel {channel}";
-    }
-
-    public static string SendLoggedMessagesCount(ITwitchChatMessage chatMessage)
-    {
-        DottedNumber dMessageCount = DatabaseController.CountMessages();
-        return $"{chatMessage.Username}, logging {dMessageCount} messages across all channels";
-    }
-
-    public static string SendLoggedMessagesUserCount(ITwitchChatMessage chatMessage)
-    {
-        string username = chatMessage.LowerSplit[1];
-        DottedNumber messageCount = DatabaseController.CountUserMessages(username);
-        return $"{chatMessage.Username}, logging {messageCount} messages of {username}";
     }
 
     public static string SendMassping(ITwitchChatMessage chatMessage)
@@ -464,42 +322,10 @@ public static class BotActions
         return $"Pongeg, I'm here! {twitchBot.SystemInfo}";
     }
 
-    public static string SendRandomCookie(IChatMessage chatMessage)
-    {
-        Pechkekse keks = DatabaseController.GetRandomCookie();
-        return $"{chatMessage.Username}, {keks.Message} {Emoji.Cookie}";
-    }
-
     public static string SendRandomGachi()
     {
         Gachi gachi = DatabaseController.GetRandomGachi();
         return $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS";
-    }
-
-    public static string SendRandomMessage(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            if (chatMessage.Split.Length > 2)
-            {
-                Message message = DatabaseController.GetRandomMessage(chatMessage.LowerSplit[1], chatMessage.LowerSplit[2].RemoveHashtag());
-                return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-            }
-            else if (chatMessage.Split.Length > 1)
-            {
-                Message message = DatabaseController.GetRandomMessage(chatMessage.LowerSplit[1]);
-                return $"({TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-            }
-            else
-            {
-                Message message = DatabaseController.GetRandomMessage(chatMessage);
-                return $"({TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-            }
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
     }
 
     public static string SendRandomWords(ITwitchChatMessage chatMessage, int count = 1)
@@ -560,58 +386,6 @@ public static class BotActions
         DatabaseController.ResumeAfkStatus(chatMessage.Username);
         User user = DatabaseController.GetUser(chatMessage.Username);
         return new AfkMessage(user).Resuming;
-    }
-
-    public static string SendSearch(IChatMessage chatMessage, string keyword)
-    {
-        try
-        {
-            Message message = DatabaseController.GetSearch(keyword);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendSearchChannel(IChatMessage chatMessage, string keyword, string channel)
-    {
-        try
-        {
-            Message message = DatabaseController.GetSearchChannel(keyword, channel);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendSearchUser(IChatMessage chatMessage, string keyword, string username)
-    {
-        try
-        {
-            Message message = DatabaseController.GetSearchUser(keyword, username);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
-    public static string SendSearchUserChannel(IChatMessage chatMessage, string keyword, string username, string channel)
-    {
-        try
-        {
-            Message message = DatabaseController.GetSearchUserChannel(keyword, username, channel);
-            return $"({message.Channel} | {TimeHelper.ConvertUnixTimeToTimeStamp(message.Time, "ago", ConversionType.YearDayHour)}) {message.Username}: {message.MessageText.Decode()}";
-        }
-        catch (MessageNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
     }
 
     public static string SendSetEmoteInFront(ITwitchChatMessage chatMessage)
@@ -715,25 +489,6 @@ public static class BotActions
         }
     }
 
-    public static string SendSevenTvEmotes(ITwitchChatMessage chatMessage, string channel = null, int count = _defaultEmoteCount)
-    {
-        IEnumerable<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(channel ?? chatMessage.Channel.Name, count);
-        if (emotes is not null && emotes.Any())
-        {
-            string emoteString = string.Join(" | ", emotes.Select(e => e.Name));
-            return $"{chatMessage.Username}, recently added emotes: {emoteString}";
-        }
-        else
-        {
-            return $"{chatMessage.Username}, {_channelEmotesError}";
-        }
-    }
-    public static string SendSongAddedToQueue(ITwitchChatMessage chatMessage)
-    {
-        string song = chatMessage.Split[1];
-        return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel.Name, song).Result}";
-    }
-
     public static string SendSongSkipped(ITwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
@@ -758,7 +513,7 @@ public static class BotActions
         return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
     }
 
-    public static string SendSubEmotes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static string SendSubbedToEmotes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
         if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
         {
@@ -809,23 +564,6 @@ public static class BotActions
         }
     }
 
-    public static string SendUnsetNuke(ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            DatabaseController.RemoveNuke(chatMessage);
-            return $"{chatMessage.Username}, the nuke has been unset";
-        }
-        catch (NukeNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-        catch (NoPermissionException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-    }
-
     public static string SendUnsetPrefix(ITwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
@@ -870,7 +608,7 @@ public static class BotActions
         }
     }
 
-    public static string SendUserID(IChatMessage chatMessage)
+    public static string SendUserId(IChatMessage chatMessage)
     {
         string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
         return $"{chatMessage.Username}, {TwitchApi.GetUserId(username)?.ToString() ?? _twitchUserDoesntExistMessage}";

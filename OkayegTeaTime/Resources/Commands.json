@@ -31,111 +31,6 @@
       "Document": true
     },
     {
-      "CommandName": "rand",
-      "Alias": [
-        "rand",
-        "rl",
-        "randomline",
-        "randomquote",
-        "rq"
-      ],
-      "Parameter": [
-        "(none)",
-        "[username]",
-        "[username] #[channel]"
-      ],
-      "Description": [
-        "Sends a random message of any user in the current channel",
-        "Sends a random message sent across all channels of the given user",
-        "Sends a random message sent in the given channel of the given user"
-      ],
-      "Cooldown": 15000,
-      "Document": false
-    },
-    {
-      "CommandName": "first",
-      "Alias": [
-        "first",
-        "fl",
-        "firstline"
-      ],
-      "Parameter": [
-        "(none)",
-        "[username]"
-      ],
-      "Description": [
-        "Sends the first logged message of yourself",
-        "Sends the first logged message of the given user"
-      ],
-      "Cooldown": 15000,
-      "Document": false
-    },
-    {
-      "CommandName": "last",
-      "Alias": [
-        "last",
-        "lastline",
-        "ll",
-        "stalk"
-      ],
-      "Parameter": [
-        "(none)"
-      ],
-      "Description": [
-        "Sends the last logged message of the given user"
-      ],
-      "Cooldown": 15000,
-      "Document": false
-    },
-    {
-      "CommandName": "search",
-      "Alias": [
-        "search",
-        "find"
-      ],
-      "Parameter": [
-        "[text]"
-      ],
-      "Description": [
-        "Sends a message that includes the given text"
-      ],
-      "Cooldown": 30000,
-      "Document": false
-    },
-    {
-      "CommandName": "cookie",
-      "Alias": [
-        "cookie",
-        "keks"
-      ],
-      "Parameter": [
-        "(none)"
-      ],
-      "Description": [
-        "Sends a friendly fortune cookie message :) (currently only in German)"
-      ],
-      "Cooldown": 5000,
-      "Document": false
-    },
-    {
-      "CommandName": "count",
-      "Alias": [
-        "count"
-      ],
-      "Parameter": [
-        "(none)",
-        "[username]",
-        "#[channel]"
-      ],
-      "Description": [
-        "Sends the amount of logged messages of all channels",
-        "Sends the amount of logged messages sent by the given user",
-        "Sends the amount of logged messages in the given channel"
-      ],
-      "Cooldown": 15000,
-      "Document": false
-    },
-    {
       "CommandName": "suggest",
       "Alias": [
         "suggest",
@@ -207,13 +102,11 @@
       ],
       "Parameter": [
         "afk [username]",
-        "reminder [id]",
-        "message [id]"
+        "reminder [id]"
       ],
       "Description": [
         "Checks the afk status of the given user",
-        "Sends information about the reminder. Must be a running reminder",
-        "Sends the message with a matching id"
+        "Sends information about the reminder. Must be a running reminder"
       ],
       "Cooldown": 10000,
       "Document": true
@@ -274,20 +167,6 @@
       "Description": [
         "Pings all users in the current channel",
         "Pings all users in the current channel and adds the custom emote between each name"
-      ],
-      "Cooldown": 30000,
-      "Document": true
-    },
-    {
-      "CommandName": "nuke",
-      "Alias": [
-        "nuke"
-      ],
-      "Parameter": [
-        "[word] [timeout time] [duration]"
-      ],
-      "Description": [
-        "Will timeout every user using the specified word for the given timeout time in the given time"
       ],
       "Cooldown": 30000,
       "Document": true
@@ -611,67 +490,6 @@
         "Executes the given Go code"
       ],
       "Cooldown": 10000,
-      "Document": true
-    },
-    {
-      "CommandName": "seventv",
-      "Alias": [
-        "seventv",
-        "7tv"
-      ],
-      "Parameter": [
-        "(none)",
-        "[count]",
-        "[channel]",
-        "[channel] [count]"
-      ],
-      "Description": [
-        "Sends 5 lately added 7TV emotes",
-        "Sends a given amount of lately added 7TV emotes",
-        "Sends 5 lately added 7TV emotes of the given channel",
-        "Sends a given amount of lately added 7TV emotes of the given channel"
-      ],
-      "Cooldown": 15000,
-      "Document": true
-    },
-    {
-      "CommandName": "ffz",
-      "Alias": [
-        "ffz"
-      ],
-      "Parameter": [
-        "(none)",
-        "[count]",
-        "[channel]",
-        "[channel] [count]"
-      ],
-      "Description": [
-        "Sends 5 lately added FFZ emotes",
-        "Sends a given amount of lately added FFZ emotes",
-        "Sends 5 lately added FFZ emotes of the given channel",
-        "Sends a given amount of lately added FFZ emotes of the given channel"
-      ],
-      "Cooldown": 15000,
-      "Document": true
-    },
-    {
-      "CommandName": "bttv",
-      "Alias": [
-        "bttv"
-      ],
-      "Parameter": [
-        "(none)",
-        "[count]",
-        "[channel]",
-        "[channel] [count]"
-      ],
-      "Description": [
-        "Sends 5 lately added BTTV emotes",
-        "Sends a given amount of lately added BTTV emotes",
-        "Sends 5 lately added BTTV emotes of the given channel",
-        "Sends a given amount of lately added BTTV emotes of the given channel"
-      ],
-      "Cooldown": 15000,
       "Document": true
     },
     {

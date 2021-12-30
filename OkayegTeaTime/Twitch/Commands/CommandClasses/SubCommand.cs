@@ -15,7 +15,7 @@ public class SubCommand : Command
         var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semotes?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSubEmotes(TwitchBot, ChatMessage));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSubbedToEmotes(TwitchBot, ChatMessage));
         }
     }
 }

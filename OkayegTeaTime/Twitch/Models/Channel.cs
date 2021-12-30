@@ -69,7 +69,7 @@ public class Channel
 
     public Channel(string name)
     {
-        Name = name.ToLower().RemoveHashtag();
+        Name = name.ToLower().Remove("#");
     }
 
     public override string ToString()

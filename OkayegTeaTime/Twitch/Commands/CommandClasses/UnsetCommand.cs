@@ -32,11 +32,5 @@ public class UnsetCommand : Command
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetEmoteInFront(ChatMessage));
             return;
         }
-
-        var nukePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\snuke\s\d+");
-        if (nukePattern.IsMatch(ChatMessage.Message))
-        {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsetNuke(ChatMessage));
-        }
     }
 }

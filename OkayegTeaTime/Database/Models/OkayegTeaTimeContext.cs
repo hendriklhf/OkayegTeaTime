@@ -17,7 +17,6 @@ namespace OkayegTeaTime.Database.Models
 
         public virtual DbSet<Gachi> Gachi { get; set; }
         public virtual DbSet<Channel> Channels { get; set; }
-        public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Nuke> Nukes { get; set; }
         public virtual DbSet<Pechkekse> Pechkekse { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
@@ -71,27 +70,6 @@ namespace OkayegTeaTime.Database.Models
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(100);
-            });
-
-            modelBuilder.Entity<Message>(entity =>
-            {
-                entity.ToTable("messages");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Channel)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.MessageText)
-                    .IsRequired()
-                    .HasMaxLength(2000);
-
-                entity.Property(e => e.Time).HasColumnType("bigint(20)");
-
-                entity.Property(e => e.Username)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Nuke>(entity =>

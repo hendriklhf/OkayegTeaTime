@@ -34,15 +34,11 @@ public class MessageHandler : Handler
         {
             DatabaseController.AddUser(chatMessage.Username);
 
-            DatabaseController.AddMessage(chatMessage);
-
-            DatabaseController.CheckIfAFK(TwitchBot, chatMessage);
+            DatabaseController.CheckIfAfk(TwitchBot, chatMessage);
 
             DatabaseController.CheckForReminder(TwitchBot, chatMessage);
 
             CommandHandler.Handle(chatMessage);
-
-            DatabaseController.CheckForNukes(TwitchBot, chatMessage);
 
             HandleSpecificMessages(chatMessage);
         }
@@ -66,7 +62,7 @@ public class MessageHandler : Handler
     {
         if (chatMessage.Channel.Name == AppSettings.SecretOfflineChatChannel)
         {
-            string uri = BotActions.SendDetectedSpotifyURI(chatMessage);
+            string uri = BotActions.SendDetectedSpotifyUri(chatMessage);
             if (!string.IsNullOrEmpty(uri))
             {
                 TwitchBot.Send(AppSettings.SecretOfflineChatChannel, uri);

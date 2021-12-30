@@ -15,7 +15,7 @@ public class IdCommand : Command
         var pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"(\s\w+)?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendUserID(ChatMessage));
+            TwitchBot.Send(ChatMessage.Channel, BotActions.SendUserId(ChatMessage));
         }
     }
 }

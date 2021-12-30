@@ -13,7 +13,6 @@ namespace OkayegTeaTime.Database;
 
 public static class DatabaseController
 {
-    private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
     private const string _noPermissionToDeleteReminderMessage = "you have no permission to delete the reminder of someone else";
 
     public static void AddChannel(string channel)
@@ -24,16 +23,6 @@ public static class DatabaseController
         using var database = new OkayegTeaTimeContext();
         database.Channels.Add(new(channel));
         database.SaveChanges();
-    }
-
-    public static void AddMessage(ITwitchChatMessage chatMessage)
-    {
-        if (!AppSettings.NotLoggedChannels.Contains(chatMessage.Channel.Name))
-        {
-            using var database = new OkayegTeaTimeContext();
-            database.Messages.Add(new(chatMessage.Username, chatMessage.Message.Encode(), chatMessage.Channel.Name));
-            database.SaveChanges();
-        }
     }
 
     public static void AddNewToken(string username, string accessToken, string refreshToken)
@@ -52,19 +41,6 @@ public static class DatabaseController
             database.Spotify.Add(new(username, accessToken, refreshToken));
             database.SaveChanges();
         }
-    }
-
-    public static int AddNuke(Nuke nuke)
-    {
-        using var database = new OkayegTeaTimeContext();
-        database.Nukes.Add(nuke);
-        database.SaveChanges();
-        return database.Nukes.FirstOrDefault(n =>
-            n.Channel == nuke.Channel
-            && n.ForTime == nuke.ForTime
-            && n.TimeoutTime == nuke.TimeoutTime
-            && n.Username == nuke.Username
-            && n.Word == nuke.Word).Id;
     }
 
     public static int? AddReminder(string fromUser, string toUser, string message, string channel, long toTime = 0)
@@ -141,37 +117,6 @@ public static class DatabaseController
         }
     }
 
-    public static void CheckForNukes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
-    {
-        if (!chatMessage.IsAnyCommand)
-        {
-            using var database = new OkayegTeaTimeContext();
-            var prefixedChannel = $"#{chatMessage.Channel}";
-
-            if (database.Nukes.Any(n => n.Channel == prefixedChannel))
-            {
-                database.Nukes.AsQueryable().Where(n => n.Channel == prefixedChannel).ForEach(n =>
-                {
-                    if (n.ForTime > TimeHelper.Now())
-                    {
-                        if (!chatMessage.IsModerator || !chatMessage.IsBroadcaster)
-                        {
-                            if (chatMessage.Message.IsMatch(n.Word.Decode()))
-                            {
-                                twitchBot.Timeout(chatMessage.Channel.Name, chatMessage.Username, n.TimeoutTime, Nuke.Reason);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        database.Nukes.Remove(n);
-                        database.SaveChanges();
-                    }
-                });
-            }
-        }
-    }
-
     public static void CheckForReminder(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
         using var database = new OkayegTeaTimeContext();
@@ -190,7 +135,7 @@ public static class DatabaseController
         database.SaveChanges();
     }
 
-    public static void CheckIfAFK(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static void CheckIfAfk(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
         using var database = new OkayegTeaTimeContext();
         User user = database.Users.FirstOrDefault(user => user.Username == chatMessage.Username);
@@ -199,24 +144,9 @@ public static class DatabaseController
             twitchBot.SendComingBack(user, chatMessage);
             if (!chatMessage.IsAfkCommmand)
             {
-                SetAfk(chatMessage.Username, false);
+                SetAfkStatus(chatMessage.Username, false);
             }
         }
-    }
-
-    public static int CountChannelMessages(string givenChannel)
-    {
-        return new OkayegTeaTimeContext().Messages.AsQueryable().Where(m => m.Channel == givenChannel).Count();
-    }
-
-    public static int CountMessages()
-    {
-        return new OkayegTeaTimeContext().Messages.Count();
-    }
-
-    public static int CountUserMessages(string givenUsername)
-    {
-        return new OkayegTeaTimeContext().Messages.AsQueryable().Where(m => m.Username == givenUsername).Count();
     }
 
     public static bool DoesSpotifyUserExist(string username)
@@ -250,48 +180,6 @@ public static class DatabaseController
         return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.EmoteInFront?.Decode());
     }
 
-    public static Message GetFirst(ITwitchChatMessage chatMessage)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username);
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetFirstChannel(ITwitchChatMessage chatMessage, string channel)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FirstOrDefault(m => m.Username == chatMessage.Username && m.Channel == $"#{channel.RemoveHashtag()}");
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetFirstMessageUserChannel(string username, string channel)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FirstOrDefault(m => m.Username == username && channel == $"#{channel.RemoveHashtag()}");
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetFirstUser(string username)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FirstOrDefault(m => m.Username == username);
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetLastMessage(string username)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.AsQueryable().Where(m => m.Username == username).OrderByDescending(m => m.Id).FirstOrDefault();
-        return message ?? throw new UserNotFoundException();
-    }
-
-    public static Message GetMessage(int id)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FirstOrDefault(m => m.Id == id);
-        return message ?? throw new MessageNotFoundException();
-    }
-
     public static string GetPrefix(string channel)
     {
         return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel).Prefix?.Decode();
@@ -302,37 +190,10 @@ public static class DatabaseController
         return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.Prefix?.Decode());
     }
 
-    public static Pechkekse GetRandomCookie()
-    {
-        using var database = new OkayegTeaTimeContext();
-        return database.Pechkekse.FromSqlRaw($"SELECT * FROM pechkekse ORDER BY RAND() LIMIT 1").FirstOrDefault();
-    }
-
     public static Gachi GetRandomGachi()
     {
         using var database = new OkayegTeaTimeContext();
         return database.Gachi.FromSqlRaw($"SELECT * FROM gachi ORDER BY RAND() LIMIT 1").FirstOrDefault();
-    }
-
-    public static Message GetRandomMessage(ITwitchChatMessage chatMessage)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE channel = '#{chatMessage.Channel}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetRandomMessage(string username)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username = '{username.RemoveSQLChars()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetRandomMessage(string username, string channel)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE username ='{username.RemoveSQLChars()}' AND channel = '#{channel.RemoveSQLChars()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
     }
 
     public static Yourmom GetRandomYourmom()
@@ -350,34 +211,6 @@ public static class DatabaseController
     {
         Reminder reminder = new OkayegTeaTimeContext().Reminders.FirstOrDefault(r => r.Id == id);
         return reminder ?? throw new ReminderNotFoundException();
-    }
-
-    public static Message GetSearch(string keyword)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetSearchChannel(string keyword, string channel)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' AND Channel = '#{channel.RemoveHashtag().RemoveSQLChars().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetSearchUser(string keyword, string username)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' AND Username = '{username.RemoveSQLChars().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
-    }
-
-    public static Message GetSearchUserChannel(string keyword, string username, string channel)
-    {
-        using var database = new OkayegTeaTimeContext();
-        Message message = database.Messages.FromSqlRaw($"SELECT * FROM messages WHERE CONVERT(MessageText USING latin1) LIKE '%{keyword.RemoveSQLChars()}%' AND Username = '{username.RemoveSQLChars().ToLower()}' AND Channel = '#{channel.RemoveHashtag().RemoveSQLChars().ToLower()}' ORDER BY RAND() LIMIT 1").FirstOrDefault();
-        return message ?? throw new MessageNotFoundException();
     }
 
     public static Models.Spotify GetSpotifyUser(string username)
@@ -410,29 +243,6 @@ public static class DatabaseController
         return new OkayegTeaTimeContext().Channels.FirstOrDefault(c => c.ChannelName == channel.ToLower()).EmoteManagementSub == true;
     }
 
-    public static void RemoveNuke(ITwitchChatMessage chatMessage)
-    {
-        int id = chatMessage.Split[2].ToInt();
-        using var database = new OkayegTeaTimeContext();
-        Nuke nuke = database.Nukes.FirstOrDefault(n => n.Id == id && n.Channel == $"#{chatMessage.Channel.Name.RemoveHashtag()}");
-        if (nuke is not null)
-        {
-            if (chatMessage.IsBroadcaster || chatMessage.IsModerator || AppSettings.UserLists.Moderators.Contains(chatMessage.Username))
-            {
-                database.Nukes.Remove(nuke);
-                database.SaveChanges();
-            }
-            else
-            {
-                throw new NoPermissionException(_noModOrStreamerMessage);
-            }
-        }
-        else
-        {
-            throw new NukeNotFoundException();
-        }
-    }
-
     public static void RemoveReminder(ITwitchChatMessage chatMessage)
     {
         using var database = new OkayegTeaTimeContext();
@@ -459,7 +269,7 @@ public static class DatabaseController
 
     public static void ResumeAfkStatus(string username)
     {
-        SetAfk(username, true);
+        SetAfkStatus(username, true);
     }
 
     public static void SetAfk(ITwitchChatMessage chatMessage, AfkCommandType type)
@@ -471,7 +281,7 @@ public static class DatabaseController
         user.Type = type.ToString();
         user.Time = TimeHelper.Now();
         database.SaveChanges();
-        SetAfk(chatMessage.Username, true);
+        SetAfkStatus(chatMessage.Username, true);
     }
 
     public static void SetEmoteInFront(string channel, string emote)
@@ -529,7 +339,7 @@ public static class DatabaseController
         database.SaveChanges();
     }
 
-    private static void SetAfk(string username, bool afk)
+    private static void SetAfkStatus(string username, bool afk)
     {
         using var database = new OkayegTeaTimeContext();
         database.Users.AsQueryable().Where(u => u.Username == username).FirstOrDefault().IsAfk = afk;

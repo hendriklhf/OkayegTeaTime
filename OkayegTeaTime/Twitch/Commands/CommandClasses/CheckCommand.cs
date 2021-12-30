@@ -25,11 +25,5 @@ public class CheckCommand : Command
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckReminder(ChatMessage));
             return;
         }
-
-        var messagesPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\smessages?\s\d+");
-        if (messagesPattern.IsMatch(ChatMessage.Message))
-        {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendCheckMessage(ChatMessage));
-        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Reflection;
+using HLE.Collections;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime;
 using OkayegTeaTime.Files;
 
@@ -23,5 +25,16 @@ public class JsonTests
         JsonController.Initialize();
         Assert.IsTrue(AppSettings.CommandList.AfkCommands is not null);
         Assert.IsTrue(AppSettings.CommandList.Commands is not null);
+    }
+
+    [TestMethod]
+    public void AppSettingsCompletePropertiesTest()
+    {
+        JsonController.Initialize();
+        PropertyInfo[] properties = typeof(AppSettings).GetProperties();
+        properties.ForEach(p =>
+        {
+            Assert.IsNotNull(p.GetValue(null, null));
+        });
     }
 }

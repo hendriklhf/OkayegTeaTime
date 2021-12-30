@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using HLE.Strings;
 using HLE.Time;
 
 namespace OkayegTeaTime.Database.Models
@@ -27,7 +28,7 @@ namespace OkayegTeaTime.Database.Models
         {
             Username = username;
             Suggestion1 = suggestion;
-            Channel = $"#{channel.RemoveHashtag()}";
+            Channel = $"#{channel.Remove("#")}";
         }
     }
 }

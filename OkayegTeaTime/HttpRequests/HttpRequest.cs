@@ -2,6 +2,7 @@
 using System.Web;
 using HLE.Collections;
 using HLE.HttpRequests;
+using HLE.Strings;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.JsonClasses.HttpRequests;
 using OkayegTeaTime.Logging;
@@ -69,13 +70,13 @@ public static class HttpRequest
 
     public static int GetChatterCount(string channel)
     {
-        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
+        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
         return request.Data.GetProperty("chatter_count").GetInt32();
     }
 
     public static IEnumerable<Chatter> GetChatters(string channel)
     {
-        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.RemoveHashtag()}/chatters");
+        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
         JsonElement chatters = request.Data.GetProperty("chatters");
         List<Chatter> result = new();
         byte pIdx = 0;
@@ -107,7 +108,7 @@ public static class HttpRequest
     {
         try
         {
-            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.RemoveHashtag().ToLower()}");
+            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.Remove("#").ToLower()}");
             int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
             string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
             return JsonSerializer.Deserialize<FfzRequest>(result);
