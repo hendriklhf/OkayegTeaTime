@@ -17,8 +17,6 @@ namespace OkayegTeaTime.Database.Models
 
         public virtual DbSet<Gachi> Gachi { get; set; }
         public virtual DbSet<Channel> Channels { get; set; }
-        public virtual DbSet<Nuke> Nukes { get; set; }
-        public virtual DbSet<Pechkekse> Pechkekse { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
@@ -70,40 +68,6 @@ namespace OkayegTeaTime.Database.Models
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(100);
-            });
-
-            modelBuilder.Entity<Nuke>(entity =>
-            {
-                entity.ToTable("nukes");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Channel)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.ForTime).HasColumnType("bigint(20)");
-
-                entity.Property(e => e.TimeoutTime).HasColumnType("bigint(20)");
-
-                entity.Property(e => e.Username)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Word)
-                    .IsRequired()
-                    .HasMaxLength(1000);
-            });
-
-            modelBuilder.Entity<Pechkekse>(entity =>
-            {
-                entity.ToTable("pechkekse");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Message)
-                    .IsRequired()
-                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<Reminder>(entity =>
