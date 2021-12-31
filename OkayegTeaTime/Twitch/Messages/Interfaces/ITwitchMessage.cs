@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using OkayegTeaTime.Twitch.Messages.Enums;
 using TwitchLib.Client.Enums;
 
 namespace OkayegTeaTime.Twitch.Messages.Interfaces;
@@ -17,8 +16,6 @@ public interface ITwitchMessage : IChatMessage
     public string RawIrcMessage { get; }
 
     public int UserId { get; }
-
-    public List<UserTag> UserTags { get; }
 
     public UserType UserType { get; }
 }

@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
 using HLE.Strings;
-using OkayegTeaTime.Files.JsonClasses.Settings;
-using OkayegTeaTime.Twitch.Messages.Enums;
 using OkayegTeaTime.Twitch.Messages.Interfaces;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
@@ -21,8 +19,6 @@ public class TwitchMessage : ITwitchMessage
     public string RawIrcMessage { get; }
 
     public int UserId { get; }
-
-    public List<UserTag> UserTags { get; }
 
     public UserType UserType { get; }
 
@@ -49,31 +45,7 @@ public class TwitchMessage : ITwitchMessage
         Split = GetSplit();
         UserId = twitchLibMessage.UserId.ToInt();
         Username = twitchLibMessage.Username;
-        UserTags = GetUserTags();
         UserType = twitchLibMessage.UserType;
-    }
-
-    private List<UserTag> GetUserTags()
-    {
-        List<UserTag> result = new() { UserTag.Normal };
-        UserLists userLists = AppSettings.UserLists;
-        if (userLists.Moderators.Contains(Username))
-        {
-            result.Add(UserTag.Moderator);
-        }
-        if (userLists.Owners.Contains(Username))
-        {
-            result.Add(UserTag.Owner);
-        }
-        if (userLists.IgnoredUsers.Contains(Username))
-        {
-            result.Add(UserTag.Special);
-        }
-        if (userLists.SecretUsers.Contains(Username))
-        {
-            result.Add(UserTag.Secret);
-        }
-        return result;
     }
 
     private string GetMessage()

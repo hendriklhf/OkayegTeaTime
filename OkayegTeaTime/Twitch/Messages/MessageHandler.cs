@@ -4,7 +4,6 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
-using OkayegTeaTime.Twitch.Messages.Enums;
 using OkayegTeaTime.Twitch.Messages.Interfaces;
 using TwitchLib.Client.Models;
 
@@ -30,7 +29,7 @@ public class MessageHandler : Handler
 
     public override void Handle(ITwitchChatMessage chatMessage)
     {
-        if (!chatMessage.UserTags.Contains(UserTag.Special))
+        if (!AppSettings.UserLists.IgnoredUsers.Contains(chatMessage.UserId))
         {
             DatabaseController.AddUser(chatMessage.Username);
 

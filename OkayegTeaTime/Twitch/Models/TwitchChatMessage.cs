@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.Text.RegularExpressions;
 using HLE.Strings;
-using OkayegTeaTime.Twitch.Messages.Enums;
 using OkayegTeaTime.Twitch.Messages.Interfaces;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
@@ -73,8 +72,6 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public string Username { get; }
 
-    public List<UserTag> UserTags { get; }
-
     public UserType UserType { get; }
 
     public bool IsAfkCommmand => AppSettings.CommandList.AfkCommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
@@ -85,11 +82,14 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public bool IsNotLoggedChannel => AppSettings.NotLoggedChannels.Contains(Channel.Name);
 
-    public bool IsIgnoredUser => AppSettings.UserLists.IgnoredUsers.Contains(Username);
+    public bool IsIgnoredUser => AppSettings.UserLists.IgnoredUsers.Contains(UserId);
 
     public string QueryableMessage => Message.RemoveSQLChars();
 
-    private Regex CommandPattern(string alias) => PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");
+    private Regex CommandPattern(string alias)
+    {
+        return PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");
+    }
 
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
     {
@@ -124,29 +124,6 @@ public class TwitchChatMessage : ITwitchChatMessage
         TmiSentTs = chatMessage.TmiSentTs.ToLong();
         UserId = chatMessage.UserId.ToInt();
         Username = chatMessage.Username;
-        UserTags = GetUserTags();
         UserType = chatMessage.UserType;
-    }
-
-    private List<UserTag> GetUserTags()
-    {
-        List<UserTag> result = new() { UserTag.Normal };
-        if (AppSettings.UserLists.Moderators.Contains(Username))
-        {
-            result.Add(UserTag.Moderator);
-        }
-        if (AppSettings.UserLists.Owners.Contains(Username))
-        {
-            result.Add(UserTag.Owner);
-        }
-        if (AppSettings.UserLists.IgnoredUsers.Contains(Username))
-        {
-            result.Add(UserTag.Special);
-        }
-        if (AppSettings.UserLists.SecretUsers.Contains(Username))
-        {
-            result.Add(UserTag.Secret);
-        }
-        return result;
     }
 }
