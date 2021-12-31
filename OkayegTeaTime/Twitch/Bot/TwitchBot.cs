@@ -11,6 +11,7 @@ using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Whisper;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -64,6 +65,7 @@ public class TwitchBot
     public TwitchBot()
     {
         TwitchApi.Initialize();
+
         ConnectionCredentials = new(AppSettings.Twitch.Username, AppSettings.Twitch.OAuthToken);
         ClientOptions = new()
         {
@@ -220,7 +222,13 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
-        if (e.Channel == AppSettings.SecretOfflineChatChannel && !AppSettings.UserLists.SecretUsers.Contains(e.Username))
+        User user = TwitchApi.GetUser(e.Username);
+        if (user is null)
+        {
+            return;
+        }
+
+        if (e.Channel == AppSettings.SecretOfflineChatChannel && !AppSettings.UserLists.SecretUsers.Contains(user.Id.ToInt()))
         {
             Send(AppSettings.SecretOfflineChatChannel, $"{e.Username} joined the chat Stare");
         }

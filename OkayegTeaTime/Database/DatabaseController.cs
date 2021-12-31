@@ -251,7 +251,7 @@ public static class DatabaseController
         {
             if (reminder.FromUser == chatMessage.Username
                 || (reminder.ToUser == chatMessage.Username && reminder.ToTime != 0)
-                || AppSettings.UserLists.Moderators.Contains(chatMessage.Username))
+                || AppSettings.UserLists.Moderators.Contains(chatMessage.UserId))
             {
                 database.Reminders.Remove(reminder);
                 database.SaveChanges();

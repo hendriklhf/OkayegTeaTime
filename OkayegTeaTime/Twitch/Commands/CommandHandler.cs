@@ -35,7 +35,7 @@ public class CommandHandler : Handler
         {
             if (!AppSettings.CommandList.MatchesAnyAlias(chatMessage, type))
                 continue;
-            if (BotActions.IsOnCooldown(chatMessage.Username, type))
+            if (BotActions.IsOnCooldown(chatMessage.UserId, type))
                 continue;
 
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
@@ -46,9 +46,9 @@ public class CommandHandler : Handler
                 // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
                 {
-                    BotActions.AddUserToCooldownDictionary(chatMessage.Username, type);
+                    BotActions.AddUserToCooldownDictionary(chatMessage.UserId, type);
                     InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
-                    BotActions.AddCooldown(chatMessage.Username, type);
+                    BotActions.AddCooldown(chatMessage.UserId, type);
                     break;
                 }
             }
@@ -64,7 +64,7 @@ public class CommandHandler : Handler
         {
             if (!AppSettings.CommandList.MatchesAnyAlias(chatMessage, type))
                 continue;
-            if (BotActions.IsOnAfkCooldown(chatMessage.Username))
+            if (BotActions.IsOnAfkCooldown(chatMessage.UserId))
                 continue;
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
@@ -75,9 +75,9 @@ public class CommandHandler : Handler
                 // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
                 {
-                    BotActions.AddUserToAfkCooldownDictionary(chatMessage.Username);
+                    BotActions.AddUserToAfkCooldownDictionary(chatMessage.UserId);
                     AfkCommandHandler.Handle(TwitchBot, chatMessage, type);
-                    BotActions.AddAfkCooldown(chatMessage.Username);
+                    BotActions.AddAfkCooldown(chatMessage.UserId);
                     break;
                 }
             }

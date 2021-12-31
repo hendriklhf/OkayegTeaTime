@@ -28,12 +28,12 @@ public static class BotActions
     private const string _twitchUserDoesntExistMessage = "Twitch user doesn't exist";
     private const string _tooManyRemindersMessage = "that person has too many reminders set for them";
 
-    public static void AddAfkCooldown(string username)
+    public static void AddAfkCooldown(int userId)
     {
-        if (TwitchBot.AfkCooldowns.Any(c => c.Username == username))
+        if (TwitchBot.AfkCooldowns.Any(c => c.UserId == userId))
         {
-            TwitchBot.AfkCooldowns.Remove(TwitchBot.AfkCooldowns.FirstOrDefault(c => c.Username == username));
-            AddUserToAfkCooldownDictionary(username);
+            TwitchBot.AfkCooldowns.Remove(TwitchBot.AfkCooldowns.FirstOrDefault(c => c.UserId == userId));
+            AddUserToAfkCooldownDictionary(userId);
         }
     }
 
@@ -43,52 +43,52 @@ public static class BotActions
         return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel.Name, song).Result}";
     }
 
-    public static void AddCooldown(string username, CommandType type)
+    public static void AddCooldown(int userId, CommandType type)
     {
-        if (TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
+        if (TwitchBot.Cooldowns.Any(c => c.UserId == userId && c.Type == type))
         {
-            TwitchBot.Cooldowns.Remove(TwitchBot.Cooldowns.FirstOrDefault(c => c.Username == username && c.Type == type));
-            AddUserToCooldownDictionary(username, type);
+            TwitchBot.Cooldowns.Remove(TwitchBot.Cooldowns.FirstOrDefault(c => c.UserId == userId && c.Type == type));
+            AddUserToCooldownDictionary(userId, type);
         }
     }
 
-    public static void AddUserToAfkCooldownDictionary(string username)
+    public static void AddUserToAfkCooldownDictionary(int userId)
     {
-        if (!AppSettings.UserLists.Moderators.Contains(username))
+        if (!AppSettings.UserLists.Moderators.Contains(userId))
         {
-            if (!TwitchBot.AfkCooldowns.Any(c => c.Username == username))
+            if (!TwitchBot.AfkCooldowns.Any(c => c.UserId == userId))
             {
-                TwitchBot.AfkCooldowns.Add(new(username));
+                TwitchBot.AfkCooldowns.Add(new(userId));
             }
         }
     }
 
-    public static void AddUserToCooldownDictionary(string username, CommandType type)
+    public static void AddUserToCooldownDictionary(int userId, CommandType type)
     {
-        if (!AppSettings.UserLists.Moderators.Contains(username))
+        if (!AppSettings.UserLists.Moderators.Contains(userId))
         {
-            if (!TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type))
+            if (!TwitchBot.Cooldowns.Any(c => c.UserId == userId && c.Type == type))
             {
-                TwitchBot.Cooldowns.Add(new(username, type));
+                TwitchBot.Cooldowns.Add(new(userId, type));
             }
         }
     }
 
-    public static bool IsOnAfkCooldown(string username)
+    public static bool IsOnAfkCooldown(int userId)
     {
-        return TwitchBot.AfkCooldowns.Any(c => c.Username == username && c.Time > TimeHelper.Now());
+        return TwitchBot.AfkCooldowns.Any(c => c.UserId == userId && c.Time > TimeHelper.Now());
     }
 
-    public static bool IsOnCooldown(string username, CommandType type)
+    public static bool IsOnCooldown(int userId, CommandType type)
     {
-        return TwitchBot.Cooldowns.Any(c => c.Username == username && c.Type == type && c.Time > TimeHelper.Now());
+        return TwitchBot.Cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > TimeHelper.Now());
     }
 
     public static void SendBanFromFile(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
         try
         {
-            if (AppSettings.UserLists.Moderators.Contains(chatMessage.Username))
+            if (AppSettings.UserLists.Moderators.Contains(chatMessage.UserId))
             {
                 List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
                 string regex = chatMessage.Split[2];
@@ -264,7 +264,7 @@ public static class BotActions
 
     public static string SendJoinChannel(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        if (AppSettings.UserLists.Moderators.Contains(chatMessage.Username))
+        if (AppSettings.UserLists.Moderators.Contains(chatMessage.UserId))
         {
             string channel = chatMessage.LowerSplit[1];
             string response = twitchBot.JoinChannel(channel.Remove("#"));
@@ -283,11 +283,9 @@ public static class BotActions
             string emote = chatMessage.Split.Length > 1 ? chatMessage.Split[1] : chatMessage.Channel.Emote;
             string message = string.Empty;
             List<string> chatters;
-            List<string> chattersToRemove = new(AppSettings.UserLists.IgnoredUsers) { chatMessage.Username };
             if (chatMessage.Channel.Name != AppSettings.SecretOfflineChatChannel)
             {
                 chatters = HttpRequest.GetChatters(chatMessage.Channel.Name).Select(c => c.Username).ToList();
-                chatters = chattersToRemove.Except(chattersToRemove).ToList();
                 if (chatters.Count == 0)
                 {
                     return string.Empty;

@@ -5,15 +5,15 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class Cooldown
 {
-    public string Username { get; }
+    public int UserId { get; }
 
     public CommandType Type { get; }
 
     public long Time { get; private set; }
 
-    public Cooldown(string username, CommandType type)
+    public Cooldown(int userId, CommandType type)
     {
-        Username = username;
+        UserId = userId;
         Type = type;
         Time = TimeHelper.Now() + AppSettings.CommandList[type].Cooldown;
     }

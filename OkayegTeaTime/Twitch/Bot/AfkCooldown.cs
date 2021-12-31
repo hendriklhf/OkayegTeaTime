@@ -4,13 +4,13 @@ namespace OkayegTeaTime.Twitch.Bot;
 
 public class AfkCooldown
 {
-    public string Username { get; }
+    public int UserId { get; }
 
     public long Time { get; }
 
-    public AfkCooldown(string username)
+    public AfkCooldown(int userId)
     {
-        Username = username;
+        UserId = userId;
         Time = TimeHelper.Now() + AppSettings.AfkCooldown;
     }
 }
