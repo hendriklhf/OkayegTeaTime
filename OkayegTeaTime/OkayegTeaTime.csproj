@@ -39,17 +39,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Discord.Net" Version="2.4.0" />
+		<PackageReference Include="Discord.Net" Version="3.1.0" />
 		<PackageReference Include="HLE" Version="1.2.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.11" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="5.0.11" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.11">
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.11" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.11">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
