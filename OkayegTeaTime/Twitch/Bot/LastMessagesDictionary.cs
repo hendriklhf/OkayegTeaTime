@@ -22,11 +22,11 @@ public class LastMessagesDictionary
         _lastMessages = DatabaseController.GetChannels().ToDictionary(c => c, c => string.Empty);
     }
 
-    public void Add(string channel, string message = null)
+    public void Add(string channel, string message = "")
     {
         if (!_lastMessages.ContainsKey(channel))
         {
-            _lastMessages.Add(channel, message ?? string.Empty);
+            _lastMessages.Add(channel, message);
         }
     }
 
@@ -44,13 +44,14 @@ public class LastMessagesDictionary
 
     private string Get(string channel)
     {
-        if (_lastMessages.TryGetValue(channel, out string message))
+        if (_lastMessages.TryGetValue(channel, out string? message))
         {
             return message;
         }
         else
         {
-            return null;
+            Add(channel);
+            return string.Empty;
         }
     }
 }

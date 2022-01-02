@@ -1,5 +1,6 @@
 ﻿using HLE.HttpRequests;
 using HLE.Strings;
+using OkayegTeaTime.Logging;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibApi = TwitchLib.Api.TwitchAPI;
@@ -21,10 +22,17 @@ public static class TwitchApi
             AuthScopes.Helix_Channel_Read_Subscriptions,
             AuthScopes.User_Subscriptions
         };
-        _api.Settings.AccessToken = GetAccessToken();
+        string? accessToken = GetAccessToken();
+        if (accessToken is null)
+        {
+            ArgumentNullException ex = new("Twitch API access token was null");
+            Logger.Log(ex);
+            throw ex;
+        }
+        _api.Settings.AccessToken = accessToken;
     }
 
-    private static string GetAccessToken()
+    private static string? GetAccessToken()
     {
         HttpPost request = new("https://id.twitch.tv/oauth2/token",
             new()

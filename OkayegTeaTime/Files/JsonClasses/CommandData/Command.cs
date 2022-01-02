@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTime.Files.JsonClasses.CommandData;
+﻿#nullable disable
+
+namespace OkayegTeaTime.Files.JsonClasses.CommandData;
 
 public class Command
 {

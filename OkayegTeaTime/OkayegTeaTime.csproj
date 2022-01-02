@@ -15,7 +15,7 @@
 		<NeutralLanguage>en</NeutralLanguage>
 		<NoWin32Manifest>true</NoWin32Manifest>
 		<DebugType>embedded</DebugType>
-		<Nullable>disable</Nullable>
+		<Nullable>enable</Nullable>
 		<RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>

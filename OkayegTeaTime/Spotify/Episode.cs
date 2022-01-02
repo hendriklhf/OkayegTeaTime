@@ -8,7 +8,7 @@ public class Episode : PlayingItem
     {
         Artist = episode.Show.Publisher;
         Title = episode.Name;
-        URI = episode.Uri;
-        Message = $"{Title} by {Artist} || {URI}";
+        Uri = episode.Uri;
+        Message = $"{Title} by {Artist} || {Uri}";
     }
 }

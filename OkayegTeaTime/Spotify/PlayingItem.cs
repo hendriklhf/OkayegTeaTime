@@ -1,4 +1,6 @@
-﻿namespace OkayegTeaTime.Spotify;
+﻿#nullable disable
+
+namespace OkayegTeaTime.Spotify;
 
 public abstract class PlayingItem
 {
@@ -6,7 +8,7 @@ public abstract class PlayingItem
 
     public string Artist { get; protected set; }
 
-    public string URI { get; protected set; }
+    public string Uri { get; protected set; }
 
     public string Message { get; protected set; }
 }

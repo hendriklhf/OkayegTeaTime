@@ -7,7 +7,7 @@ public static class PatternCreator
 {
     private static readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
 
-    public static Regex Create(string alias, string prefix, string addition = "")
+    public static Regex Create(string alias, string? prefix, string addition = "")
     {
         // TODO: kinda don't like how this is passed in
         var patternPrefix = string.IsNullOrEmpty(prefix)
@@ -16,7 +16,7 @@ public static class PatternCreator
 
         var patternKey = patternPrefix + addition;
 
-        if (_cachedPatterns.TryGetValue(patternKey, out Regex cachedPattern))
+        if (_cachedPatterns.TryGetValue(patternKey, out Regex? cachedPattern))
         {
             return cachedPattern;
         }

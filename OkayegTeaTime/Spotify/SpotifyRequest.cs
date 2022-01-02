@@ -12,60 +12,65 @@ public static class SpotifyRequest
 {
     public static async Task<string> AddToQueue(string channel, string song)
     {
-        song = SpotifyHelper.GetSpotifyURI(song);
-        if (song is null)
+        string? uri = SpotifyHelper.GetSpotifyUri(song);
+        if (uri is null)
         {
             return "this isn't a valid track link";
         }
-        if (DatabaseController.DoesSpotifyUserExist(channel))
+
+        Database.Models.Spotify? user = await GetSpotifyUser(channel);
+        if (user is null)
         {
-            Database.Models.Spotify user = await GetSpotifyUser(channel);
-            if (user.SongRequestEnabled == true)
+            return $"can't add the song to the queue of {channel}, they have to register first";
+        }
+
+        if (user.SongRequestEnabled == true)
+        {
+            try
             {
-                try
-                {
-                    SpotifyClient client = new(user.AccessToken);
-                    await client.Player.AddToQueue(new(song));
-                    FullTrack item = await client.Tracks.Get(song.Remove("spotify:track:"));
-                    return $"{item.Name} by {item.Artists.GetArtists()} has been added to the queue";
-                }
-                catch (APIException ex)
-                {
-                    Logger.Log(ex);
-                    return $"no music playing on any device, {channel} has to start their playback first";
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex);
-                    return $"that song id doesn't match any song";
-                }
+                SpotifyClient client = new(user.AccessToken);
+                await client.Player.AddToQueue(new(uri));
+                FullTrack item = await client.Tracks.Get(uri.Remove("spotify:track:"));
+                return $"{item.Name} by {item.Artists.GetArtists()} has been added to the queue";
             }
-            else
+            catch (APIException ex)
             {
-                return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
+                Logger.Log(ex);
+                return $"no music playing on any device, {channel} has to start their playback first";
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+                return $"that song id doesn't match any song";
             }
         }
         else
         {
-            return $"can't add the song to the queue of {channel}, they have to register first";
+            return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
         }
     }
 
     public static async Task<string> GetCurrentlyPlaying(string username)
     {
-        if (DatabaseController.DoesSpotifyUserExist(username))
-        {
-            Database.Models.Spotify user = await GetSpotifyUser(username);
-            CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
-            return response.GetItem() is not null ? response.GetItem().Message : "nothing playing";
-        }
-        else
+        Database.Models.Spotify? user = await GetSpotifyUser(username);
+        if (user is null)
         {
             return $"can't request the current playing song, user {username} has to register first";
         }
+
+        CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
+        PlayingItem? item = response.GetItem();
+        if (item is not null)
+        {
+            return item.Message;
+        }
+        else
+        {
+            return "noting playing";
+        }
     }
 
-    public static string GetLoginURL()
+    public static string GetLoginUrl()
     {
         LoginRequest login = new(new("https://example.com/callback"), AppSettings.Spotify.ClientId, LoginRequest.ResponseType.Code)
         {
@@ -76,7 +81,13 @@ public static class SpotifyRequest
 
     public static async Task GetNewAccessToken(string username)
     {
-        AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, DatabaseController.GetRefreshToken(username)));
+        string? refreshToken = DatabaseController.GetRefreshToken(username);
+        if (refreshToken is null)
+        {
+            return;
+        }
+
+        AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
         DatabaseController.UpdateAccessToken(username, response.AccessToken);
     }
 
@@ -86,9 +97,14 @@ public static class SpotifyRequest
         DatabaseController.AddNewToken(username, response.AccessToken, response.RefreshToken);
     }
 
-    public static async Task<Database.Models.Spotify> GetSpotifyUser(string username)
+    public static async Task<Database.Models.Spotify?> GetSpotifyUser(string username)
     {
-        Database.Models.Spotify user = DatabaseController.GetSpotifyUser(username);
+        Database.Models.Spotify? user = DatabaseController.GetSpotifyUser(username);
+        if (user is null)
+        {
+            return null;
+        }
+
         if (user.Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(5).Milliseconds)
         {
             await GetNewAccessToken(username);
@@ -102,11 +118,16 @@ public static class SpotifyRequest
 
     public static async Task<string> Search(string query)
     {
-        Database.Models.Spotify user = await GetSpotifyUser("strbhlfe");
-        SearchResponse response = await new SpotifyClient(user.AccessToken).Search.Item(new(SearchRequest.Types.Track, query));
-        if (response.Tracks.Items.Count > 0)
+        Database.Models.Spotify? user = await GetSpotifyUser("strbhlfe");
+        if (user is null)
         {
-            FullTrack track = SpotifyHelper.GetExcactTrackFromSearch(response.Tracks.Items, query.Split().ToList());
+            return "can't search for a track at the moment";
+        }
+
+        SearchResponse response = await new SpotifyClient(user.AccessToken).Search.Item(new(SearchRequest.Types.Track, query));
+        FullTrack? track = SpotifyHelper.GetExcactTrackFromSearch(response.Tracks.Items, query.Split().ToList());
+        if (track is not null)
+        {
             return $"{track.Name} by {track.Artists.GetArtists()} || {track.Uri}";
         }
         else
@@ -117,30 +138,28 @@ public static class SpotifyRequest
 
     public static async Task<string> SkipToNextSong(string channel)
     {
-        if (DatabaseController.DoesSpotifyUserExist(channel))
+        Database.Models.Spotify? user = await GetSpotifyUser(channel);
+        if (user is null)
         {
-            Database.Models.Spotify user = await GetSpotifyUser(channel);
-            if (user.SongRequestEnabled == true)
+            return $"can't skip a song of {channel}, they have to register first";
+        }
+
+        if (user.SongRequestEnabled == true)
+        {
+            try
             {
-                try
-                {
-                    await new SpotifyClient(user.AccessToken).Player.SkipNext(new());
-                    return $"skipped to the next song in queue";
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex);
-                    return $"couldn't skip to the next song";
-                }
+                await new SpotifyClient(user.AccessToken).Player.SkipNext(new());
+                return $"skipped to the next song in queue";
             }
-            else
+            catch (Exception ex)
             {
-                return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
+                Logger.Log(ex);
+                return $"couldn't skip to the next song";
             }
         }
         else
         {
-            return $"can't skip a song of {channel}, they have to register first";
+            return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
         }
     }
 }

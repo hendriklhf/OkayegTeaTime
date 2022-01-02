@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable disable
+
+using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.JsonClasses.HttpRequests;
 
@@ -16,7 +18,8 @@ public class BttvChannelEmote
     [JsonPropertyName("userId")]
     public string UserId { get; set; }
 
-    public override bool Equals(object obj)
+#nullable enable
+    public override bool Equals(object? obj)
     {
         return obj is BttvChannelEmote emote && emote.Name == Name;
     }

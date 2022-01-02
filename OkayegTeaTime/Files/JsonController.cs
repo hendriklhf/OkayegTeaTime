@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#nullable disable
+
+using System.IO;
 using System.Text.Json;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
 using OkayegTeaTime.Files.JsonClasses.Settings;

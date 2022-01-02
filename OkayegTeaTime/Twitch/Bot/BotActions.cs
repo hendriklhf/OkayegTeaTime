@@ -8,10 +8,10 @@ using HLE.Time;
 using HLE.Time.Enums;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Exceptions;
 using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Api;
+using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Messages.Interfaces;
@@ -24,17 +24,20 @@ public static class BotActions
     private const string _channelEmotesError = "the channel doesn't have the specified amount of " +
         "emotes enabled or an error occurred";
     private const byte _defaultEmoteCount = 5;
-    private const string _noModOrStreamerMessage = "you aren't a mod or the broadcaster";
+    private const string _noModOrBroadcasterMessage = "you aren't a mod or the broadcaster";
     private const string _twitchUserDoesntExistMessage = "Twitch user doesn't exist";
     private const string _tooManyRemindersMessage = "that person has too many reminders set for them";
+    private const string _userNotFoundMessage = "could not find any matching user";
+    private const string _reminderNotFoundMessage = "could not find any matching reminder";
 
     public static void AddAfkCooldown(int userId)
     {
-        if (TwitchBot.AfkCooldowns.Any(c => c.UserId == userId))
+        AfkCooldown? cooldown = TwitchBot.AfkCooldowns.FirstOrDefault(c => c.UserId == userId);
+        if (cooldown is not null)
         {
-            TwitchBot.AfkCooldowns.Remove(TwitchBot.AfkCooldowns.FirstOrDefault(c => c.UserId == userId));
-            AddUserToAfkCooldownDictionary(userId);
+            TwitchBot.AfkCooldowns.Remove(cooldown);
         }
+        AddUserToAfkCooldownDictionary(userId);
     }
 
     public static string SendSongAddedToQueue(ITwitchChatMessage chatMessage)
@@ -45,11 +48,12 @@ public static class BotActions
 
     public static void AddCooldown(int userId, CommandType type)
     {
-        if (TwitchBot.Cooldowns.Any(c => c.UserId == userId && c.Type == type))
+        Cooldown? cooldown = TwitchBot.Cooldowns.FirstOrDefault(c => c.UserId == userId && c.Type == type);
+        if (cooldown is not null)
         {
-            TwitchBot.Cooldowns.Remove(TwitchBot.Cooldowns.FirstOrDefault(c => c.UserId == userId && c.Type == type));
-            AddUserToCooldownDictionary(userId, type);
+            TwitchBot.Cooldowns.Remove(cooldown);
         }
+        AddUserToCooldownDictionary(userId, type);
     }
 
     public static void AddUserToAfkCooldownDictionary(int userId)
@@ -146,44 +150,40 @@ public static class BotActions
 
     public static string SendCheckAfk(IChatMessage chatMessage)
     {
-        try
+        string username = chatMessage.LowerSplit[2];
+        User? user = DatabaseController.GetUser(username);
+        if (user is null)
         {
-            string username = chatMessage.LowerSplit[2];
-            User user = DatabaseController.GetUser(username);
-            if (user.IsAfk == true)
-            {
-                string message = $"{chatMessage.Username}, {new AfkMessage(user).GoingAway}";
-                message += user.MessageText.Decode().Length > 0
-                    ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})"
-                    : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
-                return message;
-            }
-            else
-            {
-                return $"{chatMessage.Username}, {username} is not afk";
-            }
+            return $"{chatMessage.Username}, {_userNotFoundMessage}";
         }
-        catch (UserNotFoundException ex)
+
+        if (user.IsAfk == true)
         {
-            return $"{chatMessage.Username}, {ex.Message}";
+            string message = $"{chatMessage.Username}, {new AfkMessage(user).GoingAway}";
+            message += user.MessageText.Decode().Length > 0
+                ? $": {user.MessageText.Decode()} ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})"
+                : $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
+            return message;
+        }
+        else
+        {
+            return $"{chatMessage.Username}, {username} is not afk";
         }
     }
 
     public static string SendCheckReminder(IChatMessage chatMessage)
     {
-        try
+        int id = chatMessage.Split[2].ToInt();
+        Reminder? reminder = DatabaseController.GetReminder(id);
+        if (reminder is null)
         {
-            int id = chatMessage.Split[2].ToInt();
-            Reminder reminder = DatabaseController.GetReminder(id);
-            return $"{chatMessage.Username}, From: {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} || To: {GetReminderTarget(reminder.ToUser, reminder.FromUser)} || " +
-                $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago", ConversionType.YearDayHourMin)} || " +
-                (reminder.ToTime > 0 ? $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, conversionType: ConversionType.YearDayHourMin)} || " : string.Empty) +
-                $"Message: {reminder.Message.Decode()}";
+            return $"{chatMessage.Username}, {_reminderNotFoundMessage}";
         }
-        catch (ReminderNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
+
+        return $"{chatMessage.Username}, From: {GetReminderAuthor(reminder.ToUser, reminder.FromUser)} || To: {GetReminderTarget(reminder.ToUser, reminder.FromUser)} || " +
+            $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago", ConversionType.YearDayHourMin)} || " +
+            (reminder.ToTime > 0 ? $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, conversionType: ConversionType.YearDayHourMin)} || " : string.Empty) +
+            $"Message: {reminder.Message.Decode()}";
     }
 
     public static string SendCoinFlip(IChatMessage chatMessage)
@@ -202,11 +202,11 @@ public static class BotActions
         return $"{chatMessage.Username}, {HttpRequest.GetCSharpOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
     }
 
-    public static string SendDetectedSpotifyUri(IChatMessage chatMessage)
+    public static string? SendDetectedSpotifyUri(IChatMessage chatMessage)
     {
         if (new LinkRecognizer(chatMessage).TryFindSpotifyLink(out string uri))
         {
-            return $"{uri}";
+            return uri;
         }
         else
         {
@@ -232,7 +232,7 @@ public static class BotActions
                 break;
             }
         }
-        return string.Join((char)32, messageParts);
+        return string.Join(' ', messageParts);
     }
 
     public static string SendFuck(IChatMessage chatMessage)
@@ -248,7 +248,14 @@ public static class BotActions
     public static void SendGoingAfk(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
     {
         DatabaseController.SetAfk(chatMessage, type);
-        twitchBot.Send(chatMessage.Channel, new AfkMessage(DatabaseController.GetUser(chatMessage.Username)).GoingAway);
+        User? user = DatabaseController.GetUser(chatMessage.Username);
+        if (user is null)
+        {
+            DatabaseController.AddUser(chatMessage.Username);
+            user = DatabaseController.GetUser(chatMessage.Username);
+        }
+
+        twitchBot.Send(chatMessage.Channel, new AfkMessage(user!).GoingAway);
     }
 
     public static string SendGoLangCompilerResult(IChatMessage chatMessage)
@@ -301,7 +308,7 @@ public static class BotActions
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
@@ -322,7 +329,11 @@ public static class BotActions
 
     public static string SendRandomGachi()
     {
-        Gachi gachi = DatabaseController.GetRandomGachi();
+        Gachi? gachi = DatabaseController.GetRandomGachi();
+        if (gachi is null)
+        {
+            return $"couldn't find a song";
+        }
         return $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS";
     }
 
@@ -346,8 +357,12 @@ public static class BotActions
 
     public static string SendRandomYourmom(IChatMessage chatMessage)
     {
-        Yourmom yourmom = DatabaseController.GetRandomYourmom();
+        Yourmom? yourmom = DatabaseController.GetRandomYourmom();
         string target = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
+        if (yourmom is null)
+        {
+            return $"{chatMessage.Username}, couldn't find a joke";
+        }
         return $"{target}, {yourmom.MessageText} YOURMOM";
     }
 
@@ -381,9 +396,20 @@ public static class BotActions
 
     public static string SendResumingAfkStatus(IChatMessage chatMessage)
     {
+        User? user = DatabaseController.GetUser(chatMessage.Username);
+        if (user is null)
+        {
+            DatabaseController.AddUser(chatMessage.Username);
+            user = DatabaseController.GetUser(chatMessage.Username);
+        }
+
+        if (string.IsNullOrEmpty(user!.Type))
+        {
+            return $"{chatMessage.Username}, can't resume your afk status, because you never went afk before";
+        }
+
         DatabaseController.ResumeAfkStatus(chatMessage.Username);
-        User user = DatabaseController.GetUser(chatMessage.Username);
-        return new AfkMessage(user).Resuming;
+        return new AfkMessage(user!).Resuming;
     }
 
     public static string SendSetEmoteInFront(ITwitchChatMessage chatMessage)
@@ -396,7 +422,7 @@ public static class BotActions
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
@@ -410,7 +436,7 @@ public static class BotActions
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
@@ -521,7 +547,7 @@ public static class BotActions
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
@@ -553,12 +579,12 @@ public static class BotActions
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
-            chatMessage.Channel.Emote = null;
+            chatMessage.Channel.Emote = AppSettings.DefaultEmote;
             return $"{chatMessage.Username}, unset emote";
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
@@ -571,24 +597,21 @@ public static class BotActions
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
     public static string SendUnsetReminder(ITwitchChatMessage chatMessage)
     {
-        try
+        int reminderId = chatMessage.Split[2].ToInt();
+        bool removed = DatabaseController.RemoveReminder(chatMessage, reminderId);
+        if (removed)
         {
-            DatabaseController.RemoveReminder(chatMessage);
             return $"{chatMessage.Username}, the reminder has been unset";
         }
-        catch (NoPermissionException ex)
+        else
         {
-            return $"{chatMessage.Username}, {ex.Message}";
-        }
-        catch (ReminderNotFoundException ex)
-        {
-            return $"{chatMessage.Username}, {ex.Message}";
+            return $"{chatMessage.Username}, the reminder couldn't be unset";
         }
     }
 
@@ -602,7 +625,7 @@ public static class BotActions
         }
         else
         {
-            return $"{chatMessage.Username}, {_noModOrStreamerMessage}";
+            return $"{chatMessage.Username}, {_noModOrBroadcasterMessage}";
         }
     }
 
