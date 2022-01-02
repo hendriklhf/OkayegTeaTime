@@ -10,9 +10,8 @@ using OkayegTeaTime.Twitch.Messages.Interfaces;
 
 namespace OkayegTeaTime.Database;
 
-public static class DatabaseController
+public static class DbController
 {
-
     public static void AddChannel(string channel)
     {
         // FIXME: all operations create a Context, act on it and dispose straight away

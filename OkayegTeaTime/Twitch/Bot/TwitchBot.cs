@@ -126,7 +126,7 @@ public class TwitchBot
     {
         if (TwitchApi.DoesUserExist(channel))
         {
-            DatabaseController.AddChannel(channel);
+            DbController.AddChannel(channel);
             LastMessagesDictionary.Add(channel);
             try
             {

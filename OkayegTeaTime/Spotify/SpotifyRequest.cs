@@ -81,25 +81,25 @@ public static class SpotifyRequest
 
     public static async Task GetNewAccessToken(string username)
     {
-        string? refreshToken = DatabaseController.GetRefreshToken(username);
+        string? refreshToken = DbController.GetRefreshToken(username);
         if (refreshToken is null)
         {
             return;
         }
 
         AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
-        DatabaseController.UpdateAccessToken(username, response.AccessToken);
+        DbController.UpdateAccessToken(username, response.AccessToken);
     }
 
     public static async Task GetNewAuthTokens(string username, string code)
     {
         AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
-        DatabaseController.AddNewToken(username, response.AccessToken, response.RefreshToken);
+        DbController.AddNewToken(username, response.AccessToken, response.RefreshToken);
     }
 
     public static async Task<Database.Models.Spotify?> GetSpotifyUser(string username)
     {
-        Database.Models.Spotify? user = DatabaseController.GetSpotifyUser(username);
+        Database.Models.Spotify? user = DbController.GetSpotifyUser(username);
         if (user is null)
         {
             return null;
@@ -108,7 +108,7 @@ public static class SpotifyRequest
         if (user.Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(5).Milliseconds)
         {
             await GetNewAccessToken(username);
-            return DatabaseController.GetSpotifyUser(username);
+            return DbController.GetSpotifyUser(username);
         }
         else
         {

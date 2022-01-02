@@ -21,7 +21,7 @@ public class EmoteManagementNotificator
     public EmoteManagementNotificator(TwitchBot twitchBot)
     {
         TwitchBot = twitchBot;
-        DatabaseController.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
+        DbController.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
         InitChannels();
         _timer.Elapsed += Timer_OnElapsed!;
         _timer.Start();

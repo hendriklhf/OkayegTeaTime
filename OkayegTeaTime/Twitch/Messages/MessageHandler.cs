@@ -32,11 +32,11 @@ public class MessageHandler : Handler
     {
         if (!AppSettings.UserLists.IgnoredUsers.Contains(chatMessage.UserId))
         {
-            DatabaseController.AddUser(chatMessage.Username);
+            DbController.AddUser(chatMessage.Username);
 
-            DatabaseController.CheckIfAfk(TwitchBot, chatMessage);
+            DbController.CheckIfAfk(TwitchBot, chatMessage);
 
-            DatabaseController.CheckForReminder(TwitchBot, chatMessage);
+            DbController.CheckForReminder(TwitchBot, chatMessage);
 
             CommandHandler.Handle(chatMessage);
 

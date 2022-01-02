@@ -151,7 +151,7 @@ public static class BotActions
     public static string SendCheckAfk(IChatMessage chatMessage)
     {
         string username = chatMessage.LowerSplit[2];
-        User? user = DatabaseController.GetUser(username);
+        User? user = DbController.GetUser(username);
         if (user is null)
         {
             return $"{chatMessage.Username}, {_userNotFoundMessage}";
@@ -174,7 +174,7 @@ public static class BotActions
     public static string SendCheckReminder(IChatMessage chatMessage)
     {
         int id = chatMessage.Split[2].ToInt();
-        Reminder? reminder = DatabaseController.GetReminder(id);
+        Reminder? reminder = DbController.GetReminder(id);
         if (reminder is null)
         {
             return $"{chatMessage.Username}, {_reminderNotFoundMessage}";
@@ -247,12 +247,12 @@ public static class BotActions
 
     public static void SendGoingAfk(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
     {
-        DatabaseController.SetAfk(chatMessage, type);
-        User? user = DatabaseController.GetUser(chatMessage.Username);
+        DbController.SetAfk(chatMessage, type);
+        User? user = DbController.GetUser(chatMessage.Username);
         if (user is null)
         {
-            DatabaseController.AddUser(chatMessage.Username);
-            user = DatabaseController.GetUser(chatMessage.Username);
+            DbController.AddUser(chatMessage.Username);
+            user = DbController.GetUser(chatMessage.Username);
         }
 
         twitchBot.Send(chatMessage.Channel, new AfkMessage(user!).GoingAway);
@@ -329,7 +329,7 @@ public static class BotActions
 
     public static string SendRandomGachi()
     {
-        Gachi? gachi = DatabaseController.GetRandomGachi();
+        Gachi? gachi = DbController.GetRandomGachi();
         if (gachi is null)
         {
             return $"couldn't find a song";
@@ -357,7 +357,7 @@ public static class BotActions
 
     public static string SendRandomYourmom(IChatMessage chatMessage)
     {
-        Yourmom? yourmom = DatabaseController.GetRandomYourmom();
+        Yourmom? yourmom = DbController.GetRandomYourmom();
         string target = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
         if (yourmom is null)
         {
@@ -396,11 +396,11 @@ public static class BotActions
 
     public static string SendResumingAfkStatus(IChatMessage chatMessage)
     {
-        User? user = DatabaseController.GetUser(chatMessage.Username);
+        User? user = DbController.GetUser(chatMessage.Username);
         if (user is null)
         {
-            DatabaseController.AddUser(chatMessage.Username);
-            user = DatabaseController.GetUser(chatMessage.Username);
+            DbController.AddUser(chatMessage.Username);
+            user = DbController.GetUser(chatMessage.Username);
         }
 
         if (string.IsNullOrEmpty(user!.Type))
@@ -408,7 +408,7 @@ public static class BotActions
             return $"{chatMessage.Username}, can't resume your afk status, because you never went afk before";
         }
 
-        DatabaseController.ResumeAfkStatus(chatMessage.Username);
+        DbController.ResumeAfkStatus(chatMessage.Username);
         return new AfkMessage(user!).Resuming;
     }
 
@@ -450,7 +450,7 @@ public static class BotActions
                 return $"{chatMessage.Username}, the target user does not exist";
             }
 
-            int? id = DatabaseController.AddReminder(chatMessage.Username, targets[0], message, chatMessage.Channel.Name, toTime);
+            int? id = DbController.AddReminder(chatMessage.Username, targets[0], message, chatMessage.Channel.Name, toTime);
             if (!id.HasValue)
             {
                 return $"{chatMessage.Username}, {_tooManyRemindersMessage}";
@@ -467,7 +467,7 @@ public static class BotActions
                 .Select<string, (string, string, string, string, long)>(t => new(chatMessage.Username, t, message, chatMessage.Channel.Name, toTime))
                 .ToArray();
 
-            int?[] ids = DatabaseController.AddReminders(values);
+            int?[] ids = DbController.AddReminders(values);
 
             StringBuilder builder = new($"{chatMessage.Username}, ");
             bool multi = ids.Count(i => i != default) > 1;
@@ -496,10 +496,10 @@ public static class BotActions
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
-            if (DatabaseController.DoesSpotifyUserExist(chatMessage.Channel.Name))
+            if (DbController.DoesSpotifyUserExist(chatMessage.Channel.Name))
             {
                 bool state = chatMessage.Split[2].IsMatch(@"(1|true|enabled?)");
-                DatabaseController.SetSongRequestEnabledState(chatMessage.Channel.Name, state);
+                DbController.SetSongRequestEnabledState(chatMessage.Channel.Name, state);
                 return $"{chatMessage.Username}, song requests {(state ? "enabled" : "disabled")} for channel {chatMessage.Channel}";
             }
             else
@@ -553,7 +553,7 @@ public static class BotActions
 
     public static string SendSuggestionNoted(ITwitchChatMessage chatMessage)
     {
-        DatabaseController.AddSugestion(chatMessage, chatMessage.Message[chatMessage.LowerSplit[0].Length..]);
+        DbController.AddSugestion(chatMessage, chatMessage.Message[chatMessage.LowerSplit[0].Length..]);
         return $"{chatMessage.Username}, your suggestion has been noted";
     }
 
@@ -604,7 +604,7 @@ public static class BotActions
     public static string SendUnsetReminder(ITwitchChatMessage chatMessage)
     {
         int reminderId = chatMessage.Split[2].ToInt();
-        bool removed = DatabaseController.RemoveReminder(chatMessage, reminderId);
+        bool removed = DbController.RemoveReminder(chatMessage, reminderId);
         if (removed)
         {
             return $"{chatMessage.Username}, the reminder has been unset";

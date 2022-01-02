@@ -11,7 +11,7 @@ public class Channel
         set
         {
             _name = value;
-            Database.Models.Channel? channel = DatabaseController.GetChannel(value);
+            Database.Models.Channel? channel = DbController.GetChannel(value);
             _emote = channel?.EmoteInFront?.Decode() ?? AppSettings.DefaultEmote;
             _prefix = channel?.Prefix?.Decode();
             _isEmoteSub = channel?.EmoteManagementSub == true;
@@ -26,11 +26,11 @@ public class Channel
             _emote = value ?? AppSettings.DefaultEmote;
             if (value is null)
             {
-                DatabaseController.UnsetEmoteInFront(Name);
+                DbController.UnsetEmoteInFront(Name);
             }
             else
             {
-                DatabaseController.SetEmoteInFront(Name, value);
+                DbController.SetEmoteInFront(Name, value);
             }
         }
     }
@@ -43,11 +43,11 @@ public class Channel
             _prefix = value;
             if (value is null)
             {
-                DatabaseController.UnsetPrefix(Name);
+                DbController.UnsetPrefix(Name);
             }
             else
             {
-                DatabaseController.SetPrefix(Name, value);
+                DbController.SetPrefix(Name, value);
             }
         }
     }
@@ -58,7 +58,7 @@ public class Channel
         set
         {
             _isEmoteSub = value;
-            DatabaseController.SetEmoteSub(Name, value);
+            DbController.SetEmoteSub(Name, value);
         }
     }
 

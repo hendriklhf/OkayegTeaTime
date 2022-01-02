@@ -8,7 +8,7 @@ public static class TimerFunctions
 {
     public static void CheckForTimedReminders(TwitchBot twitchBot)
     {
-        DatabaseController.CheckForTimedReminder(twitchBot);
+        DbController.CheckForTimedReminder(twitchBot);
     }
 
     public static void ReloadJsonFiles()
