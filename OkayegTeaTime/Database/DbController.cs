@@ -46,7 +46,7 @@ public static class DbController
         using OkayegTeaTimeContext database = new();
         Reminder reminder = new(fromUser, toUser, message.Encode(), channel, toTime);
 
-        if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0))
+        if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0, database))
         {
             return null;
         }
@@ -59,7 +59,7 @@ public static class DbController
     public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel, long ToTime)> reminders)
     {
         int count = reminders.Count();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        EntityEntry<Reminder>[] entities = new EntityEntry<Reminder>[count];
         using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
@@ -80,7 +80,7 @@ public static class DbController
     public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel)> reminders)
     {
         int count = reminders.Count();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        EntityEntry<Reminder>[] entities = new EntityEntry<Reminder>[count];
         using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
@@ -238,7 +238,7 @@ public static class DbController
         return database.Users.FirstOrDefault(u => u.Username == username);
     }
 
-    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext? database = null)
+    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext database = null)
     {
         database ??= new();
         if (!isTimedReminder)
