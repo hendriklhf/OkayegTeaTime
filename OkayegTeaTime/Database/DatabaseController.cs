@@ -61,7 +61,7 @@ public static class DatabaseController
     public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel, long ToTime)> reminders)
     {
         int count = reminders.Count();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        EntityEntry<Reminder>[] entities = new EntityEntry<Reminder>[count];
         using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
@@ -82,7 +82,7 @@ public static class DatabaseController
     public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel)> reminders)
     {
         int count = reminders.Count();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        EntityEntry<Reminder>[] entities = new EntityEntry<Reminder>[count];
         using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
@@ -225,7 +225,7 @@ public static class DatabaseController
         return user ?? throw new UserNotFoundException();
     }
 
-    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext? database = null)
+    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder, OkayegTeaTimeContext database = null)
     {
         database ??= new();
         if (!isTimedReminder)
