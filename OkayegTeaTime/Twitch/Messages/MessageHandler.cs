@@ -15,6 +15,7 @@ public class MessageHandler : Handler
     public CommandHandler CommandHandler { get; }
 
     private const int _pajaAlertUserId = 82008718;
+    private const int _pajaChannelId = 11148817;
     private static readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private const string _pajaAlertChannel = "pajlada";
     private const string _pajaAlertEmote = "pajaStare";
@@ -30,7 +31,7 @@ public class MessageHandler : Handler
 
     public override void Handle(ITwitchChatMessage chatMessage)
     {
-        if (!AppSettings.UserLists.IgnoredUsers.Contains(chatMessage.UserId))
+        if (!chatMessage.IsIgnoredUser)
         {
             DbController.AddUser(chatMessage.Username);
 
@@ -52,7 +53,7 @@ public class MessageHandler : Handler
 
     public void CheckForPajaAlert(ChatMessage chatMessage)
     {
-        if (chatMessage.UserId.ToInt() == _pajaAlertUserId && _pajaAlertPattern.IsMatch(chatMessage.Message))
+        if (chatMessage.RoomId.ToInt() == _pajaChannelId && chatMessage.UserId.ToInt() == _pajaAlertUserId && _pajaAlertPattern.IsMatch(chatMessage.Message))
         {
             TwitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
         }

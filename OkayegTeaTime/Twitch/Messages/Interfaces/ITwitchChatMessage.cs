@@ -40,7 +40,7 @@ public interface ITwitchChatMessage : ITwitchMessage
 
     public Noisy Noisy { get; }
 
-    public int RoomId { get; }
+    public int ChannelId { get; }
 
     public int SubcsribedMonthCount { get; }
 

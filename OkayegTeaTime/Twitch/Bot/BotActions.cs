@@ -271,7 +271,7 @@ public static class BotActions
 
     public static string SendJoinChannel(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        if (AppSettings.UserLists.Moderators.Contains(chatMessage.UserId))
+        if (chatMessage.IsModerator)
         {
             string channel = chatMessage.LowerSplit[1];
             string response = twitchBot.JoinChannel(channel.Remove("#"));
