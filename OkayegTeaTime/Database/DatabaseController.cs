@@ -48,7 +48,7 @@ public static class DatabaseController
         using var database = new OkayegTeaTimeContext();
         Reminder reminder = new(fromUser, toUser, message.Encode(), channel, toTime);
 
-        if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0))
+        if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0, database))
         {
             return null;
         }
