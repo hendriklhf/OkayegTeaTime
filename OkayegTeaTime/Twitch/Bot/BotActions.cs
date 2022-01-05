@@ -368,11 +368,6 @@ public static class BotActions
 
     public static void SendReminder(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, List<Reminder> reminders)
     {
-        if (!reminders.Any())
-        {
-            return;
-        }
-
         string message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")})";
         StringBuilder builder = new(message);
         if (reminders[0].Message.Length > 0)

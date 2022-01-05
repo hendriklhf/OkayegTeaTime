@@ -17,14 +17,14 @@ public static class DbController
         // FIXME: all operations create a Context, act on it and dispose straight away
         // Would be better to make this class non-static (treat as a Repository) & pool connections (see the following:
         // https://docs.microsoft.com/en-us/ef/core/performance/advanced-performance-topics#dbcontext-pooling)
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         database.Channels.Add(new(channel));
         database.SaveChanges();
     }
 
     public static void AddNewToken(string username, string accessToken, string refreshToken)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
 
         if (user is null)
@@ -43,7 +43,7 @@ public static class DbController
 
     public static int? AddReminder(string fromUser, string toUser, string message, string channel, long toTime = 0)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Reminder reminder = new(fromUser, toUser, message.Encode(), channel, toTime);
 
         if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0))
@@ -100,14 +100,14 @@ public static class DbController
 
     public static void AddSugestion(ITwitchChatMessage chatMessage, string suggestion)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         database.Suggestions.Add(new(chatMessage.Username, suggestion.Encode(), $"#{chatMessage.Channel}"));
         database.SaveChanges();
     }
 
     public static void AddUser(string username)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         if (!database.Users.Any(u => u.Username == username))
         {
             database.Users.Add(new(username));
@@ -117,8 +117,13 @@ public static class DbController
 
     public static void CheckForReminder(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime == 0 && r.ToUser == chatMessage.Username).ToList();
+        if (!reminders.Any())
+        {
+            return;
+        }
+
         twitchBot.SendReminder(chatMessage, reminders);
         database.Reminders.RemoveRange(reminders);
         database.SaveChanges();
@@ -126,8 +131,13 @@ public static class DbController
 
     public static void CheckForTimedReminder(TwitchBot twitchBot)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         IEnumerable<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now());
+        if (!reminders.Any())
+        {
+            return;
+        }
+
         reminders.ForEach(r => twitchBot.SendTimedReminder(r));
         database.Reminders.RemoveRange(reminders);
         database.SaveChanges();
@@ -135,7 +145,7 @@ public static class DbController
 
     public static void CheckIfAfk(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         User? user = GetUser(chatMessage.Username);
 
         if (user is null)
@@ -197,13 +207,13 @@ public static class DbController
 
     public static Gachi? GetRandomGachi()
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         return database.Gachi.FromSqlRaw($"SELECT * FROM gachi ORDER BY RAND() LIMIT 1").FirstOrDefault();
     }
 
     public static Yourmom? GetRandomYourmom()
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         return database.Yourmom.FromSqlRaw($"SELECT * FROM yourmom ORDER BY RAND() LIMIT 1").FirstOrDefault();
     }
 
@@ -224,7 +234,7 @@ public static class DbController
 
     public static User? GetUser(string username)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         return database.Users.FirstOrDefault(u => u.Username == username);
     }
 
@@ -248,7 +258,7 @@ public static class DbController
 
     public static bool RemoveReminder(ITwitchChatMessage chatMessage, int reminderId)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Reminder? reminder = GetReminder(reminderId);
         if (reminder is null)
         {
@@ -273,7 +283,7 @@ public static class DbController
 
     public static void SetAfk(ITwitchChatMessage chatMessage, AfkCommandType type)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
 
         if (user is null)
@@ -292,7 +302,7 @@ public static class DbController
 
     public static void SetEmoteInFront(string channel, string emote)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
@@ -303,7 +313,7 @@ public static class DbController
 
     public static void SetEmoteSub(string channel, bool subbed)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
@@ -314,7 +324,7 @@ public static class DbController
 
     public static void SetPrefix(string channel, string prefix)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
@@ -325,7 +335,7 @@ public static class DbController
 
     public static void SetSongRequestEnabledState(string channel, bool enabled)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == channel.ToLower());
         if (user is not null)
         {
@@ -336,7 +346,7 @@ public static class DbController
 
     public static void UnsetEmoteInFront(string channel)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
@@ -347,7 +357,7 @@ public static class DbController
 
     public static void UnsetPrefix(string channel)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
@@ -358,7 +368,7 @@ public static class DbController
 
     public static void UpdateAccessToken(string username, string accessToken)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         Models.Spotify? user = GetSpotifyUser(username);
         if (user is not null)
         {
@@ -370,7 +380,7 @@ public static class DbController
 
     private static void SetAfkStatus(string username, bool afk)
     {
-        using OkayegTeaTimeContext? database = new();
+        using OkayegTeaTimeContext database = new();
         User? user = GetUser(username);
         if (user is null)
         {
