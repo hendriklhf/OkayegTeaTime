@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-namespace OkayegTeaTime.Files.JsonClasses.Settings;
+﻿namespace OkayegTeaTime.Files.JsonClasses.Settings;
 
 public class Spotify
 {

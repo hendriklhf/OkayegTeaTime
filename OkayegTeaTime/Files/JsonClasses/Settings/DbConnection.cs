@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.JsonClasses.Settings;
 

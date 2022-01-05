@@ -19,14 +19,14 @@ public class LastMessagesDictionary
 
     private void FillDictionary()
     {
-        _lastMessages = DbController.GetChannels().ToDictionary(c => c, c => string.Empty);
+        _lastMessages = DatabaseController.GetChannels().ToDictionary(c => c, c => string.Empty);
     }
 
-    public void Add(string channel, string message = "")
+    public void Add(string channel, string message = null)
     {
         if (!_lastMessages.ContainsKey(channel))
         {
-            _lastMessages.Add(channel, message);
+            _lastMessages.Add(channel, message ?? string.Empty);
         }
     }
 
@@ -44,14 +44,13 @@ public class LastMessagesDictionary
 
     private string Get(string channel)
     {
-        if (_lastMessages.TryGetValue(channel, out string? message))
+        if (_lastMessages.TryGetValue(channel, out string message))
         {
             return message;
         }
         else
         {
-            Add(channel);
-            return string.Empty;
+            return null;
         }
     }
 }

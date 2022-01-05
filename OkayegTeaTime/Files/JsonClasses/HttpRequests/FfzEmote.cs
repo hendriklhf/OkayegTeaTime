@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.JsonClasses.HttpRequests;
 
@@ -54,8 +52,7 @@ public class FfzEmote
     [JsonPropertyName("last_updated")]
     public string LastUpdated { get; set; }
 
-#nullable enable
-    public override bool Equals(object? obj)
+    public override bool Equals(object obj)
     {
         return obj is FfzEmote emote && emote.Id == Id;
     }

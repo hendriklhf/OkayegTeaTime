@@ -7,14 +7,14 @@ public class Channel
 {
     public string Name
     {
-        get => _name!;
+        get => _name;
         set
         {
             _name = value;
-            Database.Models.Channel? channel = DbController.GetChannel(value);
-            _emote = channel?.EmoteInFront?.Decode() ?? AppSettings.DefaultEmote;
-            _prefix = channel?.Prefix?.Decode();
-            _isEmoteSub = channel?.EmoteManagementSub == true;
+            Database.Models.Channel channel = DatabaseController.GetChannel(value);
+            _emote = channel.EmoteInFront?.Decode();
+            _prefix = channel.Prefix?.Decode();
+            _isEmoteSub = channel.EmoteManagementSub == true;
         }
     }
 
@@ -23,31 +23,31 @@ public class Channel
         get => _emote ?? AppSettings.DefaultEmote;
         set
         {
-            _emote = value ?? AppSettings.DefaultEmote;
+            _emote = value;
             if (value is null)
             {
-                DbController.UnsetEmoteInFront(Name);
+                DatabaseController.UnsetEmoteInFront(Name);
             }
             else
             {
-                DbController.SetEmoteInFront(Name, value);
+                DatabaseController.SetEmoteInFront(Name, Emote);
             }
         }
     }
 
-    public string? Prefix
+    public string Prefix
     {
-        get => _prefix;
+        get => _prefix ?? string.Empty;
         set
         {
             _prefix = value;
             if (value is null)
             {
-                DbController.UnsetPrefix(Name);
+                DatabaseController.UnsetPrefix(Name);
             }
             else
             {
-                DbController.SetPrefix(Name, value);
+                DatabaseController.SetPrefix(Name, Prefix);
             }
         }
     }
@@ -58,13 +58,13 @@ public class Channel
         set
         {
             _isEmoteSub = value;
-            DbController.SetEmoteSub(Name, value);
+            DatabaseController.SetEmoteSub(Name, value);
         }
     }
 
-    private string? _name;
-    private string? _emote;
-    private string? _prefix;
+    private string _name;
+    private string _emote;
+    private string _prefix;
     private bool _isEmoteSub;
 
     public Channel(string name)
@@ -77,7 +77,7 @@ public class Channel
         return Name;
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object obj)
     {
         return obj is Channel channel && channel.Name == Name;
     }

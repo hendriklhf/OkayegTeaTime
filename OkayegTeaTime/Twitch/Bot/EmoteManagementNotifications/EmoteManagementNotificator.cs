@@ -21,9 +21,9 @@ public class EmoteManagementNotificator
     public EmoteManagementNotificator(TwitchBot twitchBot)
     {
         TwitchBot = twitchBot;
-        DbController.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
+        DatabaseController.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
         InitChannels();
-        _timer.Elapsed += Timer_OnElapsed!;
+        _timer.Elapsed += Timer_OnElapsed;
         _timer.Start();
     }
 
@@ -31,17 +31,17 @@ public class EmoteManagementNotificator
     {
         _channels.Where(c => AreEmoteListsNull(c)).ForEach(c =>
         {
-            List<SevenTvEmote> sevenTvEmotes = HttpRequest.GetSevenTvEmotes(c.Name)?.ToList() ?? new();
-            c.New7TVEmotes = sevenTvEmotes;
-            c.Old7TVEmotes = sevenTvEmotes;
+            List<SevenTvEmote> sevenTvEmotes = HttpRequest.GetSevenTvEmotes(c.Name)?.ToList();
+            c.New7TVEmotes = sevenTvEmotes ?? new();
+            c.Old7TVEmotes = sevenTvEmotes ?? new();
 
-            List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBttvEmotes(c.Name)?.ToList() ?? new();
-            c.NewBTTVEmotes = bttvEmotes;
-            c.OldBTTVEmotes = bttvEmotes;
+            List<BttvSharedEmote> bttvEmotes = HttpRequest.GetBttvEmotes(c.Name)?.ToList();
+            c.NewBTTVEmotes = bttvEmotes ?? new();
+            c.OldBTTVEmotes = bttvEmotes ?? new();
 
-            List<FfzEmote> ffzEmotes = HttpRequest.GetFfzEmotes(c.Name)?.ToList() ?? new();
-            c.NewFFZEmotes = ffzEmotes;
-            c.OldFFZEmotes = ffzEmotes;
+            List<FfzEmote> ffzEmotes = HttpRequest.GetFfzEmotes(c.Name)?.ToList();
+            c.NewFFZEmotes = ffzEmotes ?? new();
+            c.OldFFZEmotes = ffzEmotes ?? new();
         });
     }
 
@@ -55,9 +55,9 @@ public class EmoteManagementNotificator
                 c.OldBTTVEmotes = c.NewBTTVEmotes;
                 c.OldFFZEmotes = c.NewFFZEmotes;
 
-                c.New7TVEmotes = HttpRequest.GetSevenTvEmotes(c.Name)?.ToList();
-                c.NewBTTVEmotes = HttpRequest.GetBttvEmotes(c.Name)?.ToList();
-                c.NewFFZEmotes = HttpRequest.GetFfzEmotes(c.Name)?.ToList();
+                c.New7TVEmotes = HttpRequest.GetSevenTvEmotes(c.Name).ToList();
+                c.NewBTTVEmotes = HttpRequest.GetBttvEmotes(c.Name).ToList();
+                c.NewFFZEmotes = HttpRequest.GetFfzEmotes(c.Name).ToList();
             }
             catch (Exception ex)
             {
@@ -71,17 +71,17 @@ public class EmoteManagementNotificator
         _channels.ForEach(c =>
         {
             List<string> newEmotes = new();
-            if (c.Old7TVEmotes is not null && c.Old7TVEmotes.Count > 0 && c.New7TVEmotes is not null)
+            if (!c.Old7TVEmotes.IsNullOrEmpty())
             {
-                newEmotes = newEmotes.Concat(c.New7TVEmotes.Where(e => c.Old7TVEmotes.Contains(e) == false).Select(e => e.Name)).ToList();
+                newEmotes = newEmotes.Concat(c.New7TVEmotes?.Where(e => c.Old7TVEmotes?.Contains(e) == false).Select(e => e.Name)).ToList();
             }
-            if (c.OldBTTVEmotes is not null && c.OldBTTVEmotes.Count > 0 && c.NewBTTVEmotes is not null)
+            if (!c.OldBTTVEmotes.IsNullOrEmpty())
             {
-                newEmotes = newEmotes.Concat(c.NewBTTVEmotes.Where(e => c.OldBTTVEmotes.Contains(e) == false).Select(e => e.Name)).ToList();
+                newEmotes = newEmotes.Concat(c.NewBTTVEmotes?.Where(e => c.OldBTTVEmotes?.Contains(e) == false).Select(e => e.Name)).ToList();
             }
-            if (c.OldFFZEmotes is not null & c.OldFFZEmotes!.Count > 0 && c.NewFFZEmotes is not null)
+            if (!c.OldFFZEmotes.IsNullOrEmpty())
             {
-                newEmotes = newEmotes.Concat(c.NewFFZEmotes.Where(e => c.OldFFZEmotes.Contains(e) == false).Select(e => e.Name)).ToList();
+                newEmotes = newEmotes.Concat(c.NewFFZEmotes?.Where(e => c.OldFFZEmotes?.Contains(e) == false).Select(e => e.Name)).ToList();
             }
             NotifyChannel(c.Name, newEmotes, NotificationType.NewEmote);
         });
@@ -89,7 +89,7 @@ public class EmoteManagementNotificator
 
     private void NotifyChannel(string channel, List<string> emotes, NotificationType type)
     {
-        if (type == NotificationType.NewEmote && emotes.Any())
+        if (type == NotificationType.NewEmote && !emotes.IsNullOrEmpty())
         {
             TwitchBot.Send(channel, $"Newly added emote{(emotes.Count > 1 ? "s" : string.Empty)}: {string.Join(" | ", emotes)}");
         }

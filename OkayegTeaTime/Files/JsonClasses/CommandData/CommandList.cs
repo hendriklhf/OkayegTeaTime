@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Messages.Interfaces;
 
@@ -17,14 +15,8 @@ public class CommandList
     {
         get
         {
-            if (_afkCommandAliases is not null)
-            {
-                return _afkCommandAliases;
-            }
-
             List<string> listAlias = new();
-            AppSettings.CommandList.AfkCommands.ForEach(cmd => cmd?.Alias?.ForEach(alias => listAlias.Add(alias)));
-            _afkCommandAliases = listAlias;
+            AppSettings.CommandList.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             return listAlias;
         }
     }
@@ -34,46 +26,20 @@ public class CommandList
     {
         get
         {
-            if (_commandAliases is not null)
-            {
-                return _commandAliases;
-            }
-
             List<string> listAlias = new();
-            AppSettings.CommandList.Commands.ForEach(cmd => cmd?.Alias?.ForEach(alias => listAlias.Add(alias)));
-            _commandAliases = listAlias;
+            AppSettings.CommandList.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             return listAlias;
         }
     }
 
     [JsonIgnore]
-    public List<string> AllAliases
-    {
-        get
-        {
-            if (_allAliases is not null)
-            {
-                return _allAliases;
-            }
-
-            List<string> listAlias = CommandAliases.Concat(AfkCommandAliases).ToList();
-            _allAliases = listAlias;
-            return listAlias;
-        }
-    }
+    public List<string> AllAliases => CommandAliases.Concat(AfkCommandAliases).ToList();
 
     [JsonIgnore]
     public AfkCommand this[AfkCommandType type] => AfkCommands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
 
     [JsonIgnore]
     public Command this[CommandType type] => Commands.FirstOrDefault(cmd => cmd.CommandName == type.ToString().ToLower());
-
-    [JsonIgnore]
-    private List<string> _afkCommandAliases;
-    [JsonIgnore]
-    private List<string> _commandAliases;
-    [JsonIgnore]
-    private List<string> _allAliases;
 
     public bool MatchesAnyAlias(ITwitchChatMessage chatMessage, CommandType type)
     {

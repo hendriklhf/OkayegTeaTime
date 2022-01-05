@@ -14,7 +14,7 @@ public class Chatter
         ChatRole = chatRole;
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object obj)
     {
         return obj is Chatter chatter && chatter.Username == Username;
     }

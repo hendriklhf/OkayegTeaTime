@@ -9,7 +9,7 @@ public class Track : PlayingItem
     {
         Artist = track.Artists.GetArtists();
         Title = track.Name;
-        Uri = track.Uri.IsMatch("local") ? "local file" : track.Uri;
-        Message = $"{Title} by {Artist} || {Uri}";
+        URI = track.Uri.IsMatch("local") ? "local file" : track.Uri;
+        Message = $"{Title} by {Artist} || {URI}";
     }
 }

@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-namespace OkayegTeaTime.Files.JsonClasses.CommandData;
+﻿namespace OkayegTeaTime.Files.JsonClasses.CommandData;
 
 public class AfkCommand
 {

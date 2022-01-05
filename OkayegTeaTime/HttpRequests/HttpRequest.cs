@@ -16,18 +16,7 @@ public static class HttpRequest
 {
     public const string FfzSetIdReplacement = "mainSet";
 
-    private static readonly string[] _chatRoles =
-    {
-        "broadcaster",
-        "vips",
-        "moderators",
-        "staff",
-        "admins",
-        "global_mods",
-        "viewers"
-    };
-
-    private static void NormalizeCount<T>(IEnumerable<T>? collection, ref int count)
+    private static void NormalizeCount<T>(IEnumerable<T> collection, ref int count)
     {
         if (collection is not null)
         {
@@ -36,19 +25,19 @@ public static class HttpRequest
         }
     }
 
-    public static IEnumerable<SevenTvEmote>? GetSevenTvEmotes(string channel, int count)
+    public static IEnumerable<SevenTvEmote> GetSevenTvEmotes(string channel, int count)
     {
-        IEnumerable<SevenTvEmote>? emotes = GetSevenTvEmotes(channel);
+        IEnumerable<SevenTvEmote> emotes = GetSevenTvEmotes(channel);
         NormalizeCount(emotes, ref count);
         return emotes?.Take(count);
     }
 
-    public static IEnumerable<SevenTvEmote>? GetSevenTvEmotes(string channel)
+    public static IEnumerable<SevenTvEmote> GetSevenTvEmotes(string channel)
     {
         return GetSevenTvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>();
     }
 
-    public static SevenTvRequest? GetSevenTvRequest(string channel)
+    public static SevenTvRequest GetSevenTvRequest(string channel)
     {
         try
         {
@@ -67,14 +56,14 @@ public static class HttpRequest
         }
     }
 
-    public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel, int count)
+    public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel, int count)
     {
-        IEnumerable<BttvSharedEmote>? emotes = GetBttvEmotes(channel);
+        IEnumerable<BttvSharedEmote> emotes = GetBttvEmotes(channel);
         NormalizeCount(emotes, ref count);
         return emotes?.Take(count);
     }
 
-    public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel)
+    public static IEnumerable<BttvSharedEmote> GetBttvEmotes(string channel)
     {
         return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>();
     }
@@ -91,31 +80,31 @@ public static class HttpRequest
         JsonElement chatters = request.Data.GetProperty("chatters");
         List<Chatter> result = new();
         byte pIdx = 0;
-        _chatRoles.ForEach(p =>
+        new string[] { "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers" }.ForEach(p =>
         {
             JsonElement chatterList = chatters.GetProperty(p);
             for (int i = 0; i < chatterList.GetArrayLength(); i++)
             {
-                result.Add(new(chatterList[i].GetString()!, (ChatRole)pIdx));
+                result.Add(new(chatterList[i].GetString(), (ChatRole)pIdx));
             }
             pIdx++;
         });
         return result;
     }
 
-    public static IEnumerable<FfzEmote>? GetFfzEmotes(string channel, int count)
+    public static IEnumerable<FfzEmote> GetFfzEmotes(string channel, int count)
     {
-        IEnumerable<FfzEmote>? emotes = GetFfzEmotes(channel);
+        IEnumerable<FfzEmote> emotes = GetFfzEmotes(channel);
         NormalizeCount(emotes, ref count);
         return emotes?.Take(count);
     }
 
-    public static IEnumerable<FfzEmote>? GetFfzEmotes(string channel)
+    public static IEnumerable<FfzEmote> GetFfzEmotes(string channel)
     {
         return GetFfzRequest(channel)?.Set?.EmoteSet?.Emotes?.Reverse<FfzEmote>();
     }
 
-    public static FfzRequest? GetFfzRequest(string channel)
+    public static FfzRequest GetFfzRequest(string channel)
     {
         try
         {
@@ -147,10 +136,10 @@ public static class HttpRequest
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
             });
-        string? result = request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
-        if (!result?.IsNullOrEmptyOrWhitespace() == true)
+        string result = request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
+        if (!result.IsNullOrEmptyOrWhitespace())
         {
-            return string.Concat(result!.Take(500)).NewLinesToSpaces();
+            return string.Concat(result.Take(500)).NewLinesToSpaces();
         }
         else
         {
@@ -158,12 +147,12 @@ public static class HttpRequest
         }
     }
 
-    private static string? GetCSharpOnlineCompilerTemplate(string code)
+    private static string GetCSharpOnlineCompilerTemplate(string code)
     {
-        return FileController.OnlineCompilerTemplateCSharp?.Replace("{code}", code);
+        return FileController.OnlineCompilerTemplateCSharp.Replace("{code}", code);
     }
 
-    public static BttvRequest? GetBttvRequest(string channel)
+    public static BttvRequest GetBttvRequest(string channel)
     {
         int? id = TwitchApi.GetUserId(channel);
         if (id.HasValue)
@@ -173,7 +162,7 @@ public static class HttpRequest
         return null;
     }
 
-    public static BttvRequest? GetBttvRequest(int channelId)
+    public static BttvRequest GetBttvRequest(int channelId)
     {
         try
         {
@@ -187,7 +176,7 @@ public static class HttpRequest
         }
     }
 
-    public static string? GetGoLangOnlineCompilerResult(string code)
+    public static string GetGoLangOnlineCompilerResult(string code)
     {
         HttpPost request = new("https://play.golang.org/compile",
             new()
@@ -196,7 +185,7 @@ public static class HttpRequest
                 new("body", GetGoLangOnlineCompilerTemplate(code)),
                 new("withVet", "true")
             });
-        string? error = request.Data.GetProperty("Errors").GetString();
+        string error = request.Data.GetProperty("Errors").GetString();
         bool hasError = !string.IsNullOrEmpty(error);
         if (!hasError)
         {
@@ -208,8 +197,8 @@ public static class HttpRequest
         }
     }
 
-    private static string? GetGoLangOnlineCompilerTemplate(string code)
+    private static string GetGoLangOnlineCompilerTemplate(string code)
     {
-        return FileController.OnlineCompilerTemplateGo?.Replace("{code}", code);
+        return FileController.OnlineCompilerTemplateGo.Replace("{code}", code);
     }
 }

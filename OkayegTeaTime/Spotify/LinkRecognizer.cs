@@ -22,7 +22,7 @@ public class LinkRecognizer
         }
         else
         {
-            uri = string.Empty;
+            uri = null;
             return false;
         }
     }
