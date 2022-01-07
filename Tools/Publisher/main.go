@@ -15,9 +15,9 @@ var (
 		"osx-x64",
 	}
 	pattern = []*regexp.Regexp{
-		regexp.MustCompile(`(?i)^win(dows)?(-?x64)?$`),
+		regexp.MustCompile(`(?i)^win(dows)?(-?x?64)?$`),
 		regexp.MustCompile(`(?i)^((linux-?)?arm)|((raspberry)?pi)$`),
-		regexp.MustCompile(`(?i)^linux(-?x64)?$`),
+		regexp.MustCompile(`(?i)^linux(-?x?64)?$`),
 		regexp.MustCompile(`(?i)^((osx)|(mac(-?os)?)(-?x64)?)$`),
 	}
 	allRegex = regexp.MustCompile(`(?i)^all$`)
@@ -43,7 +43,9 @@ const (
 func main() {
 	rts := GetRuntimes()
 	if Count(rts) == 0 {
-		fmt.Println("No valid publish arguments given! Exiting...")
+		fmt.Println("No valid publish arguments given!")
+		fmt.Println("Available arguments:")
+		fmt.Println(runtimes)
 		os.Exit(0)
 	}
 	RunCommands(rts)
