@@ -8,17 +8,17 @@ import (
 
 type JsonController struct {
 	JsonCommands JsonCommands
-	_path        string
+	path         string
 }
 
 func New(path string) *JsonController {
 	return &JsonController{
-		_path: path,
+		path: path,
 	}
 }
 
 func (jsonController *JsonController) LoadData() {
-	fileContent, err := os.ReadFile(jsonController._path)
+	fileContent, err := os.ReadFile(jsonController.path)
 	if err == nil {
 		err := json.Unmarshal(fileContent, &jsonController.JsonCommands)
 		if err != nil {
