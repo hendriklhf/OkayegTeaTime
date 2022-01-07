@@ -1,4 +1,4 @@
-module Documents/Git/OkayegTeaTimeCSharp/Tools/GitHub
+module ReadMeGenerator
 
 go 1.17
 

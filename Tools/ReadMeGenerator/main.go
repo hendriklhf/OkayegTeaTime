@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Documents/Git/OkayegTeaTimeCSharp/Tools/GitHub/Json"
+	"ReadMeGenerator/Json"
 	"fmt"
 	"os"
 	"strings"
@@ -29,8 +29,8 @@ var (
 )
 
 const (
-	ReadMePath = "../../README.md"
-	JsonPath   = "../../OkayegTeaTime/Resources/Commands.json"
+	ReadMePath = "./README.md"
+	JsonPath   = "./OkayegTeaTime/Resources/Commands.json"
 	Title      = "OkayegTeaTime"
 	Header1    = "Commands"
 	Header2    = "AFK-Commands"

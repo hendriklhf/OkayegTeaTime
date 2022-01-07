@@ -15,7 +15,7 @@ var (
 )
 
 const (
-	SqlFilePath = "../../OkayegTeaTime/Resources/SqlCreate.sql"
+	SqlFilePath = "./OkayegTeaTime/Resources/SqlCreate.sql"
 )
 
 func main() {
