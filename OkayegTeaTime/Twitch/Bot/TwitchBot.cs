@@ -32,23 +32,23 @@ public class TwitchBot
 
     public ClientOptions ClientOptions { get; private set; }
 
-    public WebSocketClient WebSocketClient { get; private set; }
-
     public TcpClient TcpClient { get; private set; }
 
-    public MessageHandler MessageHandler { get; private set; }
+    public MessageHandler? MessageHandler { get; private set; }
 
-    public WhisperHandler WhisperHandler { get; private set; }
+    public WhisperHandler? WhisperHandler { get; private set; }
 
     public LastMessagesDictionary LastMessagesDictionary { get; private set; } = new();
 
     public Restarter Restarter { get; private set; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
 
-    public EmoteManagementNotificator EmoteManagementNotificator { get; private set; }
+    public EmoteManagementNotificator? EmoteManagementNotificator { get; private set; }
 
     public DottedNumber CommandCount { get; set; } = 1;
 
     public string SystemInfo => GetSystemInfo();
+
+    public string MemoryUsage => GetMemoryUsage();
 
     public string Runtime => ConvertUnixTimeToTimeStamp(_runtime);
 
@@ -80,20 +80,20 @@ public class TwitchBot
 #if DEBUG
         TwitchClient.Initialize(ConnectionCredentials, AppSettings.DebugChannel);
 #else
-        TwitchClient.Initialize(ConnectionCredentials, DatabaseController.GetChannels());
+        TwitchClient.Initialize(ConnectionCredentials, DbController.GetChannels());
 #endif
 
-        TwitchClient.OnLog += Client_OnLog;
-        TwitchClient.OnConnected += Client_OnConnected;
-        TwitchClient.OnJoinedChannel += Client_OnJoinedChannel;
-        TwitchClient.OnMessageReceived += Client_OnMessageReceived;
-        TwitchClient.OnMessageSent += Client_OnMessageSent;
-        TwitchClient.OnWhisperReceived += Client_OnWhisperReceived;
-        TwitchClient.OnConnectionError += Client_OnConnectionError;
-        TwitchClient.OnError += Client_OnError;
-        TwitchClient.OnDisconnected += Client_OnDisconnect;
-        TwitchClient.OnReconnected += Client_OnReconnected;
-        TwitchClient.OnUserJoined += Client_OnUserJoinedChannel;
+        TwitchClient.OnLog += Client_OnLog!;
+        TwitchClient.OnConnected += Client_OnConnected!;
+        TwitchClient.OnJoinedChannel += Client_OnJoinedChannel!;
+        TwitchClient.OnMessageReceived += Client_OnMessageReceived!;
+        TwitchClient.OnMessageSent += Client_OnMessageSent!;
+        TwitchClient.OnWhisperReceived += Client_OnWhisperReceived!;
+        TwitchClient.OnConnectionError += Client_OnConnectionError!;
+        TwitchClient.OnError += Client_OnError!;
+        TwitchClient.OnDisconnected += Client_OnDisconnect!;
+        TwitchClient.OnReconnected += Client_OnReconnected!;
+        TwitchClient.OnUserJoined += Client_OnUserJoinedChannel!;
     }
 
     public void Connect()
@@ -126,7 +126,7 @@ public class TwitchBot
     {
         if (TwitchApi.DoesUserExist(channel))
         {
-            DatabaseController.AddChannel(channel);
+            DbController.AddChannel(channel);
             LastMessagesDictionary.Add(channel);
             try
             {
@@ -180,8 +180,8 @@ public class TwitchBot
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.RemoveChatterinoChar().TrimAll()}");
-        MessageHandler.CheckForPajaAlert(e.ChatMessage);
-        MessageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
+        MessageHandler?.CheckForPajaAlert(e.ChatMessage);
+        MessageHandler?.Handle(new TwitchChatMessage(e.ChatMessage));
     }
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
@@ -192,7 +192,7 @@ public class TwitchBot
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <WHISPER> {e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
-        WhisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
+        WhisperHandler?.Handle(new TwitchWhisperMessage(e.WhisperMessage));
     }
 
     private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
@@ -220,7 +220,7 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
-        User user = TwitchApi.GetUser(e.Username);
+        User? user = TwitchApi.GetUser(e.Username);
         if (user is null)
         {
             return;
@@ -250,10 +250,10 @@ public class TwitchBot
 
     private void AddTimerFunction()
     {
-        Bot.Timers.GetTimer(new Second().Milliseconds).Elapsed += OnTimer1000;
-        Bot.Timers.GetTimer(new Second(30).Milliseconds).Elapsed += OnTimer30000;
-        Bot.Timers.GetTimer(new Minute().Milliseconds).Elapsed += OnTimer60000;
-        Bot.Timers.GetTimer(new Day(10).Milliseconds).Elapsed += OnTimer10Days;
+        Bot.Timers.GetTimer(new Second().Milliseconds)!.Elapsed += OnTimer1000!;
+        Bot.Timers.GetTimer(new Second(30).Milliseconds)!.Elapsed += OnTimer30000!;
+        Bot.Timers.GetTimer(new Minute().Milliseconds)!.Elapsed += OnTimer60000!;
+        Bot.Timers.GetTimer(new Day(10).Milliseconds)!.Elapsed += OnTimer10Days!;
     }
 
     private void OnTimer1000(object sender, ElapsedEventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Emojis;
+using HLE.Strings;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands;
@@ -13,7 +14,8 @@ public class MessageHandler : Handler
 {
     public CommandHandler CommandHandler { get; }
 
-    private const string _pajaAlertUsername = "pajbot";
+    private const int _pajaAlertUserId = 82008718;
+    private const int _pajaChannelId = 11148817;
     private static readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private const string _pajaAlertChannel = "pajlada";
     private const string _pajaAlertEmote = "pajaStare";
@@ -29,13 +31,13 @@ public class MessageHandler : Handler
 
     public override void Handle(ITwitchChatMessage chatMessage)
     {
-        if (!AppSettings.UserLists.IgnoredUsers.Contains(chatMessage.UserId))
+        if (!chatMessage.IsIgnoredUser)
         {
-            DatabaseController.AddUser(chatMessage.Username);
+            DbController.AddUser(chatMessage.Username);
 
-            DatabaseController.CheckIfAfk(TwitchBot, chatMessage);
+            DbController.CheckIfAfk(TwitchBot, chatMessage);
 
-            DatabaseController.CheckForReminder(TwitchBot, chatMessage);
+            DbController.CheckForReminder(TwitchBot, chatMessage);
 
             CommandHandler.Handle(chatMessage);
 
@@ -51,7 +53,7 @@ public class MessageHandler : Handler
 
     public void CheckForPajaAlert(ChatMessage chatMessage)
     {
-        if (chatMessage.Username == _pajaAlertUsername && _pajaAlertPattern.IsMatch(chatMessage.Message))
+        if (chatMessage.RoomId.ToInt() == _pajaChannelId && chatMessage.UserId.ToInt() == _pajaAlertUserId && _pajaAlertPattern.IsMatch(chatMessage.Message))
         {
             TwitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
             TwitchBot.TwitchClient.SendMessage(AppSettings.SecretOfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
@@ -62,7 +64,7 @@ public class MessageHandler : Handler
     {
         if (chatMessage.Channel.Name == AppSettings.SecretOfflineChatChannel)
         {
-            string uri = BotActions.SendDetectedSpotifyUri(chatMessage);
+            string? uri = BotActions.SendDetectedSpotifyUri(chatMessage);
             if (!string.IsNullOrEmpty(uri))
             {
                 TwitchBot.Send(AppSettings.SecretOfflineChatChannel, uri);

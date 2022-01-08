@@ -31,7 +31,7 @@ public static class Timers
         TwitchBot.Timers.Add(timer);
     }
 
-    public static Timer GetTimer(long interval)
+    public static Timer? GetTimer(long interval)
     {
         return TwitchBot.Timers.FirstOrDefault(t => t.Interval == interval);
     }

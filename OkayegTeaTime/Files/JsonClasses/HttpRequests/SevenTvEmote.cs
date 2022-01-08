@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable disable
+
+using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.JsonClasses.HttpRequests;
 
@@ -22,7 +24,8 @@ public class SevenTvEmote
     [JsonPropertyName("height")]
     public List<int> Height { get; set; }
 
-    public override bool Equals(object obj)
+#nullable enable
+    public override bool Equals(object? obj)
     {
         return obj is SevenTvEmote emote && emote.Id == Id;
     }

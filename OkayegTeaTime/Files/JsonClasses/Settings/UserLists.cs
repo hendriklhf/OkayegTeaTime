@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace OkayegTeaTime.Files.JsonClasses.Settings;
 
 public class UserLists

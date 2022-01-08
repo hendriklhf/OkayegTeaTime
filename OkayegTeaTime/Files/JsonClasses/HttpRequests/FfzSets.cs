@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable disable
+
+using System.Text.Json.Serialization;
 using OkayegTeaTime.HttpRequests;
 
 namespace OkayegTeaTime.Files.JsonClasses.HttpRequests;

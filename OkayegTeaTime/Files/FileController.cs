@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#nullable disable
+
+using System.IO;
 using System.Reflection;
 
 namespace OkayegTeaTime.Files;

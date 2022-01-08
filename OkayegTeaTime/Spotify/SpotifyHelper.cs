@@ -10,14 +10,14 @@ public static class SpotifyHelper
         return string.Join(", ", artist.Select(a => a.Name));
     }
 
-    public static FullTrack GetExcactTrackFromSearch(List<FullTrack> tracks, List<string> query)
+    public static FullTrack? GetExcactTrackFromSearch(List<FullTrack>? tracks, List<string> query)
     {
-        return tracks.FirstOrDefault(t =>
+        return tracks?.FirstOrDefault(t =>
             query.Any(q => t.Name.IsMatch(q))
             || query.Any(q => t.Artists.Any(a => a.Name.IsMatch(q))));
     }
 
-    public static PlayingItem GetItem(this CurrentlyPlaying currentlyPlaying)
+    public static PlayingItem? GetItem(this CurrentlyPlaying currentlyPlaying)
     {
         if (currentlyPlaying is not null)
         {
@@ -40,7 +40,7 @@ public static class SpotifyHelper
         }
     }
 
-    public static string GetSpotifyURI(string input)
+    public static string? GetSpotifyUri(string input)
     {
         if (input.IsMatch(Pattern.SpotifyUri))
         {

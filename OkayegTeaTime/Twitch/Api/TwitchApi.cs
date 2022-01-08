@@ -1,5 +1,6 @@
 ﻿using HLE.HttpRequests;
 using HLE.Strings;
+using OkayegTeaTime.Logging;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibApi = TwitchLib.Api.TwitchAPI;
@@ -21,10 +22,17 @@ public static class TwitchApi
             AuthScopes.Helix_Channel_Read_Subscriptions,
             AuthScopes.User_Subscriptions
         };
-        _api.Settings.AccessToken = GetAccessToken();
+        string? accessToken = GetAccessToken();
+        if (accessToken is null)
+        {
+            ArgumentNullException ex = new("Twitch API access token was null");
+            Logger.Log(ex);
+            throw ex;
+        }
+        _api.Settings.AccessToken = accessToken;
     }
 
-    private static string GetAccessToken()
+    private static string? GetAccessToken()
     {
         HttpPost request = new("https://id.twitch.tv/oauth2/token",
             new()
@@ -41,7 +49,7 @@ public static class TwitchApi
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public static User GetUser(string username)
+    public static User? GetUser(string username)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new() { username }).Result;
         if (response?.Users?.Length > 0)
@@ -54,10 +62,10 @@ public static class TwitchApi
         }
     }
 
-    public static Dictionary<string, User> GetUsers(IEnumerable<string> usernames)
+    public static Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: usernames.ToList()).Result;
-        Dictionary<string, User> result = new();
+        Dictionary<string, User?> result = new();
         foreach (string username in usernames)
         {
             result.Add(username, response.Users.FirstOrDefault(u => u.DisplayName.ToLower() == username.ToLower()));
@@ -65,7 +73,7 @@ public static class TwitchApi
         return result;
     }
 
-    public static User GetUser(int id)
+    public static User? GetUser(int id)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { $"{id}" }).Result;
         if (response?.Users?.Length > 0)
@@ -78,10 +86,10 @@ public static class TwitchApi
         }
     }
 
-    public static Dictionary<int, User> GetUsers(IEnumerable<int> ids)
+    public static Dictionary<int, User?> GetUsers(IEnumerable<int> ids)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: ids.Select(i => i.ToString()).ToList()).Result;
-        Dictionary<int, User> result = new();
+        Dictionary<int, User?> result = new();
         foreach (int id in ids)
         {
             result.Add(id, response.Users.FirstOrDefault(u => u.Id.ToInt() == id));
@@ -101,7 +109,7 @@ public static class TwitchApi
 
     public static Dictionary<string, bool> DoUsersExist(IEnumerable<string> usernames)
     {
-        Dictionary<string, User> users = GetUsers(usernames);
+        Dictionary<string, User?> users = GetUsers(usernames);
         IEnumerable<KeyValuePair<string, bool>> result = users.Select(u => new KeyValuePair<string, bool>(u.Key, u.Value is not null));
         return new(result);
     }
@@ -113,7 +121,7 @@ public static class TwitchApi
 
     public static Dictionary<int, bool> DoUsersExist(IEnumerable<int> ids)
     {
-        Dictionary<int, User> users = GetUsers(ids);
+        Dictionary<int, User?> users = GetUsers(ids);
         IEnumerable<KeyValuePair<int, bool>> result = users.Select(u => new KeyValuePair<int, bool>(u.Key, u.Value is not null));
         return new(result);
     }

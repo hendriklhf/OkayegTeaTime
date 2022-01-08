@@ -27,7 +27,7 @@ public class Restarter
         _restartTimes.ForEach(r => _restartTimers.Add(new(TimeHelper.MillisecondsUntil(r.Hour, r.Minute))));
         _restartTimers.ForEach(t =>
         {
-            t.Elapsed += RestartTimer_OnElapsed;
+            t.Elapsed += RestartTimer_OnElapsed!;
             t.Start();
         });
     }
@@ -44,7 +44,7 @@ public class Restarter
 
     private void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
     {
-        (sender as Timer::Timer).Interval = new Day().Milliseconds;
+        (sender as Timer::Timer)!.Interval = new Day().Milliseconds;
         Restart();
     }
 }

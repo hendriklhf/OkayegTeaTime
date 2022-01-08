@@ -60,7 +60,7 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public string RawIrcMessage { get; }
 
-    public int RoomId { get; }
+    public int ChannelId { get; }
 
     public string[] Split { get; }
 
@@ -118,7 +118,7 @@ public class TwitchChatMessage : ITwitchChatMessage
         LowerSplit = Message.ToLower().Split();
         Noisy = chatMessage.Noisy;
         RawIrcMessage = chatMessage.RawIrcMessage;
-        RoomId = chatMessage.RoomId.ToInt();
+        ChannelId = chatMessage.RoomId.ToInt();
         Split = Message.Split();
         SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
         TmiSentTs = chatMessage.TmiSentTs.ToLong();
