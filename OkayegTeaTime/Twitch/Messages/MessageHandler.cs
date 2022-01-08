@@ -54,6 +54,7 @@ public class MessageHandler : Handler
         if (chatMessage.Username == _pajaAlertUsername && _pajaAlertPattern.IsMatch(chatMessage.Message))
         {
             TwitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
+            TwitchBot.TwitchClient.SendMessage(AppSettings.SecretOfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
         }
     }
 
