@@ -66,7 +66,7 @@ public static class SpotifyRequest
         }
         else
         {
-            return "noting playing";
+            return "nothing playing";
         }
     }
 
