@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using HLE.Collections;
 using HLE.Emojis;
+using HLE.HttpRequests;
 using HLE.Numbers;
 using HLE.Strings;
 using HLE.Time;
@@ -39,6 +40,36 @@ public static class BotActions
         AddUserToAfkCooldownDictionary(userId);
     }
 
+    public static void SendBanFromFile(TwitchBot twitchBot, TwitchChatMessage chatMessage)
+    {
+        try
+        {
+            if (AppSettings.UserLists.Moderators.Contains(chatMessage.UserId))
+            {
+                List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
+                string regex = chatMessage.Split[2];
+                fileContent.Where(f => f.IsMatch(regex)).ForEach(f =>
+                {
+                    if (f.IsMatch(@"^[\./]ban\s\w+"))
+                    {
+                        twitchBot.TwitchClient.SendMessage(chatMessage.Channel.Name, f);
+                    }
+                    else
+                    {
+                        twitchBot.TwitchClient.SendMessage(chatMessage.Channel.Name, $"/ban {f}");
+                    }
+                });
+            }
+            else
+            {
+                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you must be a moderator of the bot");
+            }
+        }
+        catch (Exception)
+        {
+            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, something went wrong");
+        }
+    }
     public static string SendSongAddedToQueue(TwitchChatMessage chatMessage)
     {
         string song = chatMessage.Split[1];
