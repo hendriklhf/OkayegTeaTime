@@ -5,8 +5,8 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
-using TwitchLib.Client.Models;
+using OkayegTeaTime.Twitch.Models;
+using TwitchLib = TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Messages;
 
@@ -29,7 +29,7 @@ public class MessageHandler : Handler
         CommandHandler = new(twitchBot);
     }
 
-    public override void Handle(ITwitchChatMessage chatMessage)
+    public override void Handle(TwitchChatMessage chatMessage)
     {
         if (!chatMessage.IsIgnoredUser)
         {
@@ -45,13 +45,13 @@ public class MessageHandler : Handler
         }
     }
 
-    private void HandleSpecificMessages(ITwitchChatMessage chatMessage)
+    private void HandleSpecificMessages(TwitchChatMessage chatMessage)
     {
         CheckForSpotifyUri(chatMessage);
         CheckForForgottenPrefix(chatMessage);
     }
 
-    public void CheckForPajaAlert(ChatMessage chatMessage)
+    public void CheckForPajaAlert(TwitchLib::ChatMessage chatMessage)
     {
         if (chatMessage.RoomId.ToInt() == _pajaChannelId && chatMessage.UserId.ToInt() == _pajaAlertUserId && _pajaAlertPattern.IsMatch(chatMessage.Message))
         {
@@ -60,7 +60,7 @@ public class MessageHandler : Handler
         }
     }
 
-    private void CheckForSpotifyUri(ITwitchChatMessage chatMessage)
+    private void CheckForSpotifyUri(TwitchChatMessage chatMessage)
     {
         if (chatMessage.Channel.Name == AppSettings.SecretOfflineChatChannel)
         {
@@ -72,7 +72,7 @@ public class MessageHandler : Handler
         }
     }
 
-    private void CheckForForgottenPrefix(ITwitchChatMessage chatMessage)
+    private void CheckForForgottenPrefix(TwitchChatMessage chatMessage)
     {
         if (_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {

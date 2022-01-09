@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.HttpRequests;
 using HLE.Numbers;
 using HLE.Strings;
 using HLE.Time;
@@ -14,7 +13,7 @@ using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 using Random = HLE.Random.Random;
 
 namespace OkayegTeaTime.Twitch.Bot;
@@ -40,7 +39,7 @@ public static class BotActions
         AddUserToAfkCooldownDictionary(userId);
     }
 
-    public static string SendSongAddedToQueue(ITwitchChatMessage chatMessage)
+    public static string SendSongAddedToQueue(TwitchChatMessage chatMessage)
     {
         string song = chatMessage.Split[1];
         return $"{chatMessage.Username}, {SpotifyRequest.AddToQueue(chatMessage.Channel.Name, song).Result}";
@@ -88,37 +87,6 @@ public static class BotActions
         return TwitchBot.Cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > TimeHelper.Now());
     }
 
-    public static void SendBanFromFile(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
-    {
-        try
-        {
-            if (AppSettings.UserLists.Moderators.Contains(chatMessage.UserId))
-            {
-                List<string> fileContent = new HttpGet(chatMessage.Split[1]).Result.Split("\n").ToList();
-                string regex = chatMessage.Split[2];
-                fileContent.Where(f => f.IsMatch(regex)).ForEach(f =>
-                {
-                    if (f.IsMatch(@"^[\./]ban\s\w+"))
-                    {
-                        twitchBot.TwitchClient.SendMessage(chatMessage.Channel.Name, f);
-                    }
-                    else
-                    {
-                        twitchBot.TwitchClient.SendMessage(chatMessage.Channel.Name, $"/ban {f}");
-                    }
-                });
-            }
-            else
-            {
-                twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, you must be a moderator of the bot");
-            }
-        }
-        catch (Exception)
-        {
-            twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, something went wrong");
-        }
-    }
-
     public static string SendChatterino2Links()
     {
         return $"Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases";
@@ -129,7 +97,7 @@ public static class BotActions
         return $"Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
     }
 
-    public static string SendChattersCount(ITwitchChatMessage chatMessage)
+    public static string SendChattersCount(TwitchChatMessage chatMessage)
     {
         string channel = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Channel.Name;
         DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
@@ -148,7 +116,7 @@ public static class BotActions
         }
     }
 
-    public static string SendCheckAfk(IChatMessage chatMessage)
+    public static string SendCheckAfk(ChatMessage chatMessage)
     {
         string username = chatMessage.LowerSplit[2];
         User? user = DbController.GetUser(username);
@@ -171,7 +139,7 @@ public static class BotActions
         }
     }
 
-    public static string SendCheckReminder(IChatMessage chatMessage)
+    public static string SendCheckReminder(ChatMessage chatMessage)
     {
         int id = chatMessage.Split[2].ToInt();
         Reminder? reminder = DbController.GetReminder(id);
@@ -186,23 +154,23 @@ public static class BotActions
             $"Message: {reminder.Message.Decode()}";
     }
 
-    public static string SendCoinFlip(IChatMessage chatMessage)
+    public static string SendCoinFlip(ChatMessage chatMessage)
     {
         string result = Random.Int(0, 100) >= 50 ? "yes/heads" : "no/tails";
         return $"{chatMessage.Username}, {result} {Emoji.Coin}";
     }
 
-    public static void SendComingBack(this TwitchBot twitchBot, User user, ITwitchChatMessage chatMessage)
+    public static void SendComingBack(this TwitchBot twitchBot, User user, TwitchChatMessage chatMessage)
     {
         twitchBot.Send(chatMessage.Channel, new AfkMessage(user).ComingBack);
     }
 
-    public static string SendCompilerResult(IChatMessage chatMessage)
+    public static string SendCompilerResult(ChatMessage chatMessage)
     {
         return $"{chatMessage.Username}, {HttpRequest.GetCSharpOnlineCompilerResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
     }
 
-    public static string? SendDetectedSpotifyUri(IChatMessage chatMessage)
+    public static string? SendDetectedSpotifyUri(ChatMessage chatMessage)
     {
         if (new LinkRecognizer(chatMessage).TryFindSpotifyLink(out string uri))
         {
@@ -214,7 +182,7 @@ public static class BotActions
         }
     }
 
-    public static string SendFill(ITwitchChatMessage chatMessage)
+    public static string SendFill(TwitchChatMessage chatMessage)
     {
         List<string> messageParts = new();
         string[] split = chatMessage.Split[1..];
@@ -235,7 +203,7 @@ public static class BotActions
         return string.Join(' ', messageParts);
     }
 
-    public static string SendFuck(IChatMessage chatMessage)
+    public static string SendFuck(ChatMessage chatMessage)
     {
         string message = $"{Emoji.PointRight} {Emoji.OkHand} {chatMessage.Username} fucked {chatMessage.Split[1]}";
         if (chatMessage.Split.Length > 2)
@@ -245,7 +213,7 @@ public static class BotActions
         return message;
     }
 
-    public static void SendGoingAfk(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, AfkCommandType type)
+    public static void SendGoingAfk(this TwitchBot twitchBot, TwitchChatMessage chatMessage, AfkCommandType type)
     {
         DbController.SetAfk(chatMessage, type);
         User? user = DbController.GetUser(chatMessage.Username);
@@ -258,18 +226,18 @@ public static class BotActions
         twitchBot.Send(chatMessage.Channel, new AfkMessage(user!).GoingAway);
     }
 
-    public static string SendGoLangCompilerResult(IChatMessage chatMessage)
+    public static string SendGoLangCompilerResult(ChatMessage chatMessage)
     {
         return $"{chatMessage.Username}, {HttpRequest.GetGoLangOnlineCompilerResult(chatMessage.Message[(chatMessage.Message.Split()[0].Length + 1)..])}";
     }
 
-    public static string SendHelp(IChatMessage chatMessage)
+    public static string SendHelp(ChatMessage chatMessage)
     {
         string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
         return $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {AppSettings.RepositoryUrl}";
     }
 
-    public static string SendJoinChannel(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static string SendJoinChannel(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator)
         {
@@ -283,7 +251,7 @@ public static class BotActions
         }
     }
 
-    public static string SendMassping(ITwitchChatMessage chatMessage)
+    public static string SendMassping(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster && chatMessage.Channel.Name != "moondye7")
         {
@@ -312,12 +280,12 @@ public static class BotActions
         }
     }
 
-    public static string SendMathResult(IChatMessage chatMessage)
+    public static string SendMathResult(ChatMessage chatMessage)
     {
         return $"{chatMessage.Username}, {HttpRequest.GetMathResult(chatMessage.Message[(chatMessage.Split[0].Length + 1)..])}";
     }
 
-    public static string SendPick(IChatMessage chatMessage)
+    public static string SendPick(ChatMessage chatMessage)
     {
         return $"{chatMessage.Username}, {chatMessage.Split[1..].Random()}";
     }
@@ -337,7 +305,7 @@ public static class BotActions
         return $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS";
     }
 
-    public static string SendRandomWords(ITwitchChatMessage chatMessage, int count = 1)
+    public static string SendRandomWords(TwitchChatMessage chatMessage, int count = 1)
     {
         List<string> words = new();
         for (int i = 0; i < count; i++)
@@ -355,7 +323,7 @@ public static class BotActions
         }
     }
 
-    public static string SendRandomYourmom(IChatMessage chatMessage)
+    public static string SendRandomYourmom(ChatMessage chatMessage)
     {
         Yourmom? yourmom = DbController.GetRandomYourmom();
         string target = chatMessage.LowerSplit.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
@@ -366,7 +334,7 @@ public static class BotActions
         return $"{target}, {yourmom.MessageText} YOURMOM";
     }
 
-    public static void SendReminder(this TwitchBot twitchBot, ITwitchChatMessage chatMessage, List<Reminder> reminders)
+    public static void SendReminder(this TwitchBot twitchBot, TwitchChatMessage chatMessage, List<Reminder> reminders)
     {
         string message = $"{chatMessage.Username}, reminder from {GetReminderAuthor(chatMessage.Username, reminders[0].FromUser)} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time, "ago")})";
         StringBuilder builder = new(message);
@@ -389,7 +357,7 @@ public static class BotActions
         twitchBot.Send(chatMessage.Channel, builder.ToString());
     }
 
-    public static string SendResumingAfkStatus(IChatMessage chatMessage)
+    public static string SendResumingAfkStatus(ChatMessage chatMessage)
     {
         User? user = DbController.GetUser(chatMessage.Username);
         if (user is null)
@@ -407,7 +375,7 @@ public static class BotActions
         return new AfkMessage(user!).Resuming;
     }
 
-    public static string SendSetEmoteInFront(ITwitchChatMessage chatMessage)
+    public static string SendSetEmoteInFront(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
@@ -421,7 +389,7 @@ public static class BotActions
         }
     }
 
-    public static string SendSetPrefix(ITwitchChatMessage chatMessage)
+    public static string SendSetPrefix(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
@@ -435,7 +403,7 @@ public static class BotActions
         }
     }
 
-    public static string SendSetReminder(ITwitchChatMessage chatMessage, string[] targets, string message, long toTime = 0)
+    public static string SendSetReminder(TwitchChatMessage chatMessage, string[] targets, string message, long toTime = 0)
     {
         if (targets.Length == 1)
         {
@@ -487,7 +455,7 @@ public static class BotActions
         }
     }
 
-    public static string SendSetSongRequestState(ITwitchChatMessage chatMessage)
+    public static string SendSetSongRequestState(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
@@ -508,7 +476,7 @@ public static class BotActions
         }
     }
 
-    public static string SendSongSkipped(ITwitchChatMessage chatMessage)
+    public static string SendSongSkipped(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
@@ -520,19 +488,19 @@ public static class BotActions
         }
     }
 
-    public static string SendSpotifyCurrentlyPlaying(ITwitchChatMessage chatMessage)
+    public static string SendSpotifyCurrentlyPlaying(TwitchChatMessage chatMessage)
     {
         string username = chatMessage.LowerSplit.Length > 1 ? (chatMessage.LowerSplit[1] == "me" ? chatMessage.Username : chatMessage.LowerSplit[1]) : chatMessage.Channel.Name;
         return $"{chatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}";
     }
 
-    public static string SendSpotifySearch(IChatMessage chatMessage)
+    public static string SendSpotifySearch(ChatMessage chatMessage)
     {
         string query = chatMessage.Split.Skip(2).JoinToString(' ');
         return $"{chatMessage.Username}, {SpotifyRequest.Search(query).Result}";
     }
 
-    public static string SendSubbedToEmotes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static string SendSubbedToEmotes(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
         {
@@ -546,7 +514,7 @@ public static class BotActions
         }
     }
 
-    public static string SendSuggestionNoted(ITwitchChatMessage chatMessage)
+    public static string SendSuggestionNoted(TwitchChatMessage chatMessage)
     {
         DbController.AddSugestion(chatMessage, chatMessage.Message[chatMessage.LowerSplit[0].Length..]);
         return $"{chatMessage.Username}, your suggestion has been noted";
@@ -563,14 +531,14 @@ public static class BotActions
         twitchBot.Send(reminder.Channel, message);
     }
 
-    public static string SendTuckedToBed(IChatMessage chatMessage)
+    public static string SendTuckedToBed(ChatMessage chatMessage)
     {
         string target = chatMessage.LowerSplit[1];
         string emote = chatMessage.LowerSplit.Length > 2 ? chatMessage.Split[2] : string.Empty;
         return $"{Emoji.PointRight} {Emoji.Bed} {chatMessage.Username} tucked {target} to bed {emote}".Trim();
     }
 
-    public static string SendUnsetEmoteInFront(ITwitchChatMessage chatMessage)
+    public static string SendUnsetEmoteInFront(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
@@ -583,7 +551,7 @@ public static class BotActions
         }
     }
 
-    public static string SendUnsetPrefix(ITwitchChatMessage chatMessage)
+    public static string SendUnsetPrefix(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsModerator || chatMessage.IsBroadcaster)
         {
@@ -596,7 +564,7 @@ public static class BotActions
         }
     }
 
-    public static string SendUnsetReminder(ITwitchChatMessage chatMessage)
+    public static string SendUnsetReminder(TwitchChatMessage chatMessage)
     {
         int reminderId = chatMessage.Split[2].ToInt();
         bool removed = DbController.RemoveReminder(chatMessage, reminderId);
@@ -610,7 +578,7 @@ public static class BotActions
         }
     }
 
-    public static string SendUnsubEmotes(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static string SendUnsubEmotes(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsBroadcaster || chatMessage.IsModerator)
         {
@@ -624,7 +592,7 @@ public static class BotActions
         }
     }
 
-    public static string SendUserId(IChatMessage chatMessage)
+    public static string SendUserId(ChatMessage chatMessage)
     {
         string username = chatMessage.Split.Length > 1 ? chatMessage.LowerSplit[1] : chatMessage.Username;
         return $"{chatMessage.Username}, {TwitchApi.GetUserId(username)?.ToString() ?? _twitchUserDoesntExistMessage}";

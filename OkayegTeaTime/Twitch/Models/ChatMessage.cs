@@ -1,10 +1,10 @@
-﻿using HLE.Strings;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+﻿using System.Text.RegularExpressions;
+using HLE.Strings;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class ChatMessage : IChatMessage
+public class ChatMessage
 {
     public string DisplayName { get; }
 
@@ -15,6 +15,9 @@ public class ChatMessage : IChatMessage
     public string[] Split { get; }
 
     public string Username { get; }
+
+    private static readonly Regex _messagePattern = new(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _messageReplacePattern = new(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public ChatMessage(TwitchLibMessage twitchLibMessage)
     {
@@ -27,8 +30,8 @@ public class ChatMessage : IChatMessage
 
     private string GetMessage(TwitchLibMessage twitchLibMessage)
     {
-        string message = twitchLibMessage.RawIrcMessage.Match(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$");
-        return message.ReplacePattern(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", "");
+        string message = _messagePattern.Match(twitchLibMessage.RawIrcMessage).Value;
+        return _messageReplacePattern.Replace(message, "");
     }
 
     private string[] GetSplit()

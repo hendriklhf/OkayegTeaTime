@@ -1,12 +1,12 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 using TwitchLib.Client.Extensions;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
 public class VanishCommand : Command
 {
-    public VanishCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
     }

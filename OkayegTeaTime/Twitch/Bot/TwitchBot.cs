@@ -122,6 +122,16 @@ public class TwitchBot
         Send(new Channel(channel), message);
     }
 
+    public void Send(string channel, Response response)
+    {
+        Send(new Channel(channel), response.Message);
+    }
+
+    public void Send(Channel channel, Response response)
+    {
+        Send(channel, response.Message);
+    }
+
     public string JoinChannel(string channel)
     {
         if (TwitchApi.DoesUserExist(channel))

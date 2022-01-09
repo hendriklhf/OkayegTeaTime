@@ -1,11 +1,11 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
 public class ChatterinoCommand : Command
 {
-    public ChatterinoCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    public ChatterinoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
     }

@@ -1,8 +1,9 @@
-﻿using OkayegTeaTime.Twitch.Bot;
+﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Handlers;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -15,7 +16,7 @@ public class CommandHandler : Handler
     {
     }
 
-    public override void Handle(ITwitchChatMessage chatMessage)
+    public override void Handle(TwitchChatMessage chatMessage)
     {
         if (chatMessage.IsCommand)
         {
@@ -29,19 +30,24 @@ public class CommandHandler : Handler
         }
     }
 
-    private void HandleCommand(ITwitchChatMessage chatMessage)
+    private void HandleCommand(TwitchChatMessage chatMessage)
     {
-        foreach (var type in (CommandType[])Enum.GetValues(typeof(CommandType)))
+        foreach (CommandType type in (CommandType[])Enum.GetValues(typeof(CommandType)))
         {
             if (!AppSettings.CommandList.MatchesAnyAlias(chatMessage, type))
+            {
                 continue;
+            }
+
             if (BotActions.IsOnCooldown(chatMessage.UserId, type))
+            {
                 continue;
+            }
 
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var alias in AppSettings.CommandList[type].Alias)
+            foreach (string alias in AppSettings.CommandList[type].Alias)
             {
-                var pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
+                Regex pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
 
                 // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
@@ -58,19 +64,24 @@ public class CommandHandler : Handler
         }
     }
 
-    private void HandleAfkCommand(ITwitchChatMessage chatMessage)
+    private void HandleAfkCommand(TwitchChatMessage chatMessage)
     {
-        foreach (var type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
+        foreach (AfkCommandType type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
         {
             if (!AppSettings.CommandList.MatchesAnyAlias(chatMessage, type))
+            {
                 continue;
+            }
+
             if (BotActions.IsOnAfkCooldown(chatMessage.UserId))
+            {
                 continue;
+            }
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var alias in AppSettings.CommandList[type].Alias)
+            foreach (string? alias in AppSettings.CommandList[type].Alias)
             {
-                var pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
+                Regex pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
 
                 // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
@@ -94,24 +105,30 @@ public class CommandHandler : Handler
     /// <param name="chatMessage">The chat message to handle</param>
     /// <param name="alias">A command alias</param>
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
-    private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, ITwitchChatMessage chatMessage,
+    private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage,
         string alias)
     {
-        var commandClassName = AppSettings.CommandList.GetCommandClassName(type);
+        string? commandClassName = AppSettings.CommandList.GetCommandClassName(type);
 
-        var commandClass = Type.GetType(commandClassName);
+        Type? commandClass = Type.GetType(commandClassName);
         if (commandClass is null)
+        {
             throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
+        }
 
-        var constructor = commandClass.GetConstructor(new[] { typeof(TwitchBot), typeof(ITwitchChatMessage), typeof(string) });
+        System.Reflection.ConstructorInfo? constructor = commandClass.GetConstructor(new[] { typeof(TwitchBot), typeof(TwitchChatMessage), typeof(string) });
         if (constructor is null)
+        {
             throw new InvalidOperationException($"Could not instantiate command class {commandClassName}");
+        }
 
-        var handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
+        object? handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
 
-        var handleMethod = commandClass.GetMethod(_handleName);
+        System.Reflection.MethodInfo? handleMethod = commandClass.GetMethod(_handleName);
         if (handleMethod is null)
+        {
             throw new InvalidOperationException($"Could not get handler method for command class {commandClassName}");
+        }
 
         handleMethod.Invoke(handlerInstance, null);
     }

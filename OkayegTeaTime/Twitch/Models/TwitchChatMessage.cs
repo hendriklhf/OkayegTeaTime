@@ -1,17 +1,13 @@
-﻿using System.Drawing;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using HLE.Strings;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 using TwitchLib = TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class TwitchChatMessage : ITwitchChatMessage
+public class TwitchChatMessage : TwitchMessage
 {
-    public List<string> Badges { get; }
-
     public int Bits { get; }
 
     public double BitsInDollars { get; }
@@ -22,13 +18,7 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public CheerBadge CheerBadge { get; }
 
-    public Color Color { get; }
-
-    public string ColorHex { get; }
-
     public string CustomRewardId { get; }
-
-    public string DisplayName { get; }
 
     public Guid Id { get; }
 
@@ -48,31 +38,15 @@ public class TwitchChatMessage : ITwitchChatMessage
 
     public bool IsSubscriber { get; }
 
-    public bool IsTurbo { get; }
-
     public bool IsVip { get; }
-
-    public string[] LowerSplit { get; }
-
-    public string Message { get; }
 
     public Noisy Noisy { get; }
 
-    public string RawIrcMessage { get; }
-
     public int ChannelId { get; }
-
-    public string[] Split { get; }
 
     public int SubcsribedMonthCount { get; }
 
     public long TmiSentTs { get; }
-
-    public int UserId { get; }
-
-    public string Username { get; }
-
-    public UserType UserType { get; }
 
     public bool IsAfkCommmand => AppSettings.CommandList.AfkCommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
 
@@ -92,17 +66,14 @@ public class TwitchChatMessage : ITwitchChatMessage
     }
 
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
+        : base(chatMessage)
     {
-        Badges = chatMessage.Badges.Select(b => b.Key).ToList();
         Bits = chatMessage.Bits;
         BitsInDollars = chatMessage.BitsInDollars;
         Channel = new(chatMessage.Channel);
         ChatReply = chatMessage.ChatReply;
         CheerBadge = chatMessage.CheerBadge;
-        Color = chatMessage.Color;
-        ColorHex = chatMessage.ColorHex;
         CustomRewardId = chatMessage.CustomRewardId;
-        DisplayName = chatMessage.DisplayName;
         Id = new(chatMessage.Id);
         IsBroadcaster = chatMessage.IsBroadcaster;
         IsHighlighted = chatMessage.IsHighlighted;
@@ -112,18 +83,10 @@ public class TwitchChatMessage : ITwitchChatMessage
         IsSkippingSubMode = chatMessage.IsSkippingSubMode;
         IsStaff = chatMessage.IsStaff;
         IsSubscriber = chatMessage.IsSubscriber;
-        IsTurbo = chatMessage.IsTurbo;
         IsVip = chatMessage.IsVip;
-        Message = chatMessage.Message.RemoveChatterinoChar();
-        LowerSplit = Message.ToLower().Split();
         Noisy = chatMessage.Noisy;
-        RawIrcMessage = chatMessage.RawIrcMessage;
         ChannelId = chatMessage.RoomId.ToInt();
-        Split = Message.Split();
         SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
         TmiSentTs = chatMessage.TmiSentTs.ToLong();
-        UserId = chatMessage.UserId.ToInt();
-        Username = chatMessage.Username;
-        UserType = chatMessage.UserType;
     }
 }

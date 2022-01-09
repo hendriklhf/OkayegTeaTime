@@ -3,7 +3,7 @@ using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
@@ -13,7 +13,7 @@ public class RemindCommand : Command
     private static readonly Regex _timeSplitPattern = new(Pattern.TimeSplit, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _exceptMessagePattern = new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public RemindCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
     }

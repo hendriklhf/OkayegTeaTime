@@ -1,11 +1,11 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
 public class GachiCommand : Command
 {
-    public GachiCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    public GachiCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
     }

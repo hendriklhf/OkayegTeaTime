@@ -1,19 +1,20 @@
-﻿using HLE.Strings;
+﻿using System.Text.RegularExpressions;
+using HLE.Strings;
 using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
 public class RandomWordCommand : Command
 {
-    public RandomWordCommand(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    public RandomWordCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
     }
 
     public override void Handle()
     {
-        var countPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\d+");
+        Regex countPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\d+");
         if (countPattern.IsMatch(ChatMessage.Message))
         {
             TwitchBot.Send(ChatMessage.Channel, BotActions.SendRandomWords(ChatMessage, ChatMessage.Split[1].ToInt()));

@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 using OkayegTeaTime.Twitch.Commands.Enums;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Files.JsonClasses.CommandData;
 
@@ -75,12 +75,12 @@ public class CommandList
     [JsonIgnore]
     private List<string> _allAliases;
 
-    public bool MatchesAnyAlias(ITwitchChatMessage chatMessage, CommandType type)
+    public bool MatchesAnyAlias(TwitchChatMessage chatMessage, CommandType type)
     {
         return this[type].Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + AppSettings.Suffix == chatMessage.LowerSplit[0]);
     }
 
-    public bool MatchesAnyAlias(ITwitchChatMessage chatMessage, AfkCommandType type)
+    public bool MatchesAnyAlias(TwitchChatMessage chatMessage, AfkCommandType type)
     {
         return this[type].Alias.Any(alias => chatMessage.Channel.Prefix + alias == chatMessage.LowerSplit[0] || alias + AppSettings.Suffix == chatMessage.LowerSplit[0]);
     }

@@ -1,5 +1,5 @@
 ﻿using HLE.Strings;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Spotify;
 
@@ -7,7 +7,7 @@ public class LinkRecognizer
 {
     public string Message { get; set; }
 
-    public LinkRecognizer(IChatMessage chatMessage)
+    public LinkRecognizer(ChatMessage chatMessage)
     {
         Message = chatMessage.Message;
     }

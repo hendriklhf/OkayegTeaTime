@@ -1,23 +1,27 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Commands.Interfaces;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-public abstract class Command : ICommand
+public abstract class Command
 {
     public TwitchBot TwitchBot { get; }
 
-    public ITwitchChatMessage ChatMessage { get; }
+    public TwitchChatMessage ChatMessage { get; }
 
     public string Alias { get; }
 
-    public Command(TwitchBot twitchBot, ITwitchChatMessage chatMessage, string alias)
+    public Response Response { get; set; } = new();
+
+    public Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
         TwitchBot = twitchBot;
         ChatMessage = chatMessage;
         Alias = alias;
     }
 
-    public abstract void Handle();
+    public virtual void Handle()
+    {
+        TwitchBot.Send(ChatMessage.Channel, Response);
+    }
 }

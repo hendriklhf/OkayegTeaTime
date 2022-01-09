@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.Enums;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Database;
 
@@ -98,7 +98,7 @@ public static class DbController
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
-    public static void AddSugestion(ITwitchChatMessage chatMessage, string suggestion)
+    public static void AddSugestion(TwitchChatMessage chatMessage, string suggestion)
     {
         using OkayegTeaTimeContext database = new();
         database.Suggestions.Add(new(chatMessage.Username, suggestion.Encode(), $"#{chatMessage.Channel}"));
@@ -115,7 +115,7 @@ public static class DbController
         }
     }
 
-    public static void CheckForReminder(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static void CheckForReminder(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         using OkayegTeaTimeContext database = new();
         List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime == 0 && r.ToUser == chatMessage.Username).ToList();
@@ -143,18 +143,17 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void CheckIfAfk(TwitchBot twitchBot, ITwitchChatMessage chatMessage)
+    public static void CheckIfAfk(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = GetUser(chatMessage.Username);
+        User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
 
         if (user is null)
         {
-            AddUser(chatMessage.Username);
-            user = GetUser(chatMessage.Username);
+            return;
         }
 
-        if (user!.IsAfk == true)
+        if (user.IsAfk == true)
         {
             twitchBot.SendComingBack(user, chatMessage);
             if (!chatMessage.IsAfkCommmand)
@@ -169,7 +168,7 @@ public static class DbController
         return new OkayegTeaTimeContext().Spotify.Any(s => s.Username == username.ToLower());
     }
 
-    public static Channel? GetChannel(string channel)
+    public static Models.Channel? GetChannel(string channel)
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.FirstOrDefault(c => c.ChannelName == channel);
@@ -256,7 +255,7 @@ public static class DbController
         return GetChannel(channel)?.EmoteManagementSub == true;
     }
 
-    public static bool RemoveReminder(ITwitchChatMessage chatMessage, int reminderId)
+    public static bool RemoveReminder(TwitchChatMessage chatMessage, int reminderId)
     {
         using OkayegTeaTimeContext database = new();
         Reminder? reminder = GetReminder(reminderId);
@@ -281,19 +280,17 @@ public static class DbController
         SetAfkStatus(username, true);
     }
 
-    public static void SetAfk(ITwitchChatMessage chatMessage, AfkCommandType type)
+    public static void SetAfk(TwitchChatMessage chatMessage, AfkCommandType type)
     {
         using OkayegTeaTimeContext database = new();
         User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
-
         if (user is null)
         {
-            AddUser(chatMessage.Username);
-            user = GetUser(chatMessage.Username);
+            return;
         }
 
         string? message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].JoinToString(' ') : null;
-        user!.MessageText = message?.Encode();
+        user.MessageText = message?.Encode();
         user.Type = type.ToString();
         user.Time = TimeHelper.Now();
         database.SaveChanges();
@@ -303,7 +300,7 @@ public static class DbController
     public static void SetEmoteInFront(string channel, string emote)
     {
         using OkayegTeaTimeContext database = new();
-        Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = emote.Encode();
@@ -314,7 +311,7 @@ public static class DbController
     public static void SetEmoteSub(string channel, bool subbed)
     {
         using OkayegTeaTimeContext database = new();
-        Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
             chnl.EmoteManagementSub = subbed;
@@ -325,7 +322,7 @@ public static class DbController
     public static void SetPrefix(string channel, string prefix)
     {
         using OkayegTeaTimeContext database = new();
-        Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
             chnl.Prefix = prefix.RemoveChatterinoChar().TrimAll().Encode();
@@ -347,7 +344,7 @@ public static class DbController
     public static void UnsetEmoteInFront(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = null;
@@ -358,7 +355,7 @@ public static class DbController
     public static void UnsetPrefix(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = GetChannel(channel);
         if (chnl is not null)
         {
             chnl.Prefix = null;
@@ -381,14 +378,13 @@ public static class DbController
     private static void SetAfkStatus(string username, bool afk)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = GetUser(username);
+        User? user = database.Users.FirstOrDefault(u => u.Username == username);
         if (user is null)
         {
-            AddUser(username);
-            user = GetUser(username);
+            return;
         }
 
-        user!.IsAfk = afk;
+        user.IsAfk = afk;
         database.SaveChanges();
     }
 }

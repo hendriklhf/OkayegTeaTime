@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Logging;
 
@@ -10,7 +10,7 @@ public static class Logger
         LogToFile(text);
     }
 
-    public static void Log(ITwitchChatMessage chatMessage)
+    public static void Log(TwitchChatMessage chatMessage)
     {
         LogToFile($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}");
     }

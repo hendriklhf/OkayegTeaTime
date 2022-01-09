@@ -2,6 +2,7 @@
 using HLE.Strings;
 using OkayegTeaTime.Logging;
 using TwitchLib.Api.Core.Enums;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibApi = TwitchLib.Api.TwitchAPI;
 
@@ -124,5 +125,41 @@ public static class TwitchApi
         Dictionary<int, User?> users = GetUsers(ids);
         IEnumerable<KeyValuePair<int, bool>> result = users.Select(u => new KeyValuePair<int, bool>(u.Key, u.Value is not null));
         return new(result);
+    }
+
+    public static Stream? GetStream(string channel)
+    {
+        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new List<string> { channel }).Result;
+        if (response.Streams.Any())
+        {
+            return response.Streams.FirstOrDefault();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static Stream? GetStream(int id)
+    {
+        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string> { id.ToString() }).Result;
+        if (response.Streams.Any())
+        {
+            return response.Streams.FirstOrDefault();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static bool IsLive(string channel)
+    {
+        return GetStream(channel) is not null;
+    }
+
+    public static bool IsLive(int id)
+    {
+        return GetStream(id) is not null;
     }
 }

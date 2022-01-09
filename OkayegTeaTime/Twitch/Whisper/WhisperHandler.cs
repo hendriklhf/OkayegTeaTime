@@ -1,5 +1,5 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Messages.Interfaces;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Whisper;
 
@@ -12,7 +12,7 @@ public class WhisperHandler
         TwitchBot = twitchBot;
     }
 
-    public void Handle(ITwitchWhisperMessage whisperMessage)
+    public void Handle(TwitchWhisperMessage whisperMessage)
     {
     }
 }
