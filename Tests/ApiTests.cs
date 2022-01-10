@@ -74,7 +74,7 @@ public class ApiTests
     }
 
     [TestMethod]
-    public void GetMatchResultTest()
+    public void GetMathResultTest()
     {
         string result = HttpRequest.GetMathResult("2^8");
         Assert.AreEqual("256", result);
