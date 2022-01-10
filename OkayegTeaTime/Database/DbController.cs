@@ -258,7 +258,7 @@ public static class DbController
     public static bool RemoveReminder(TwitchChatMessage chatMessage, int reminderId)
     {
         using OkayegTeaTimeContext database = new();
-        Reminder? reminder = GetReminder(reminderId);
+        Reminder? reminder = database.Reminders.FirstOrDefault(r => r.Id == reminderId);
         if (reminder is null)
         {
             return false;
@@ -300,7 +300,7 @@ public static class DbController
     public static void SetEmoteInFront(string channel, string emote)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = emote.Encode();
@@ -311,7 +311,7 @@ public static class DbController
     public static void SetEmoteSub(string channel, bool subbed)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
             chnl.EmoteManagementSub = subbed;
@@ -322,7 +322,7 @@ public static class DbController
     public static void SetPrefix(string channel, string prefix)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
             chnl.Prefix = prefix.RemoveChatterinoChar().TrimAll().Encode();
@@ -334,17 +334,19 @@ public static class DbController
     {
         using OkayegTeaTimeContext database = new();
         Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == channel.ToLower());
-        if (user is not null)
+        if (user is null)
         {
-            user.SongRequestEnabled = enabled;
-            database.SaveChanges();
+            return;
         }
+
+        user.SongRequestEnabled = enabled;
+        database.SaveChanges();
     }
 
     public static void UnsetEmoteInFront(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = null;
@@ -355,7 +357,7 @@ public static class DbController
     public static void UnsetPrefix(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = GetChannel(channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
             chnl.Prefix = null;
@@ -366,13 +368,15 @@ public static class DbController
     public static void UpdateAccessToken(string username, string accessToken)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Spotify? user = GetSpotifyUser(username);
-        if (user is not null)
+        Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
+        if (user is null)
         {
-            user.AccessToken = accessToken;
-            user.Time = TimeHelper.Now();
-            database.SaveChanges();
+            return;
         }
+
+        user.AccessToken = accessToken;
+        user.Time = TimeHelper.Now();
+        database.SaveChanges();
     }
 
     private static void SetAfkStatus(string username, bool afk)

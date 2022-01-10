@@ -13,7 +13,7 @@ public class VanishCommand : Command
 
     public override void Handle()
     {
-        if (!ChatMessage.IsModerator || !ChatMessage.IsBroadcaster || !ChatMessage.IsStaff)
+        if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster && !ChatMessage.IsStaff)
         {
             TwitchBot.TwitchClient.TimeoutUser(ChatMessage.Channel.Name, ChatMessage.Username, TimeSpan.FromSeconds(1));
         }

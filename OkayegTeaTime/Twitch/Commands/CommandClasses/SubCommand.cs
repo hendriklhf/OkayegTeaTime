@@ -16,7 +16,16 @@ public class SubCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semotes?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSubbedToEmotes(TwitchBot, ChatMessage));
+            if (ChatMessage.IsBroadcaster || ChatMessage.IsModerator)
+            {
+                TwitchBot.EmoteManagementNotificator?.AddChannel(ChatMessage.Channel.Name);
+                ChatMessage.Channel.IsEmoteSub = true;
+                Response = $"{ChatMessage.Username}, channel #{ChatMessage.Channel} has subscribed to the emote notifications";
+            }
+            else
+            {
+                Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+            }
         }
     }
 }

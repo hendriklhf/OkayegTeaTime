@@ -12,6 +12,6 @@ public class PingCommand : Command
 
     public override void Handle()
     {
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendPing(TwitchBot));
+        Response = $"Pongeg, I'm here! {TwitchBot.SystemInfo}";
     }
 }

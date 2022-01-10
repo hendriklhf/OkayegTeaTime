@@ -1,4 +1,5 @@
-﻿using OkayegTeaTime.Twitch.Bot;
+﻿using HLE.Collections;
+using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
@@ -12,6 +13,6 @@ public class PickCommand : Command
 
     public override void Handle()
     {
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendPick(ChatMessage));
+        Response = $"{ChatMessage.Username}, {ChatMessage.Split[1..].Random()}";
     }
 }

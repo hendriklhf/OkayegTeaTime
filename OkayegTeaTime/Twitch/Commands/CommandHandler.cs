@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
@@ -10,6 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public class CommandHandler : Handler
 {
     private const string _handleName = "Handle";
+    private const string _sendResponseName = "SendResponse";
 
     public CommandHandler(TwitchBot twitchBot)
         : base(twitchBot)
@@ -116,7 +118,7 @@ public class CommandHandler : Handler
             throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
         }
 
-        System.Reflection.ConstructorInfo? constructor = commandClass.GetConstructor(new[] { typeof(TwitchBot), typeof(TwitchChatMessage), typeof(string) });
+        ConstructorInfo? constructor = commandClass.GetConstructor(new[] { typeof(TwitchBot), typeof(TwitchChatMessage), typeof(string) });
         if (constructor is null)
         {
             throw new InvalidOperationException($"Could not instantiate command class {commandClassName}");
@@ -124,12 +126,18 @@ public class CommandHandler : Handler
 
         object? handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
 
-        System.Reflection.MethodInfo? handleMethod = commandClass.GetMethod(_handleName);
+        MethodInfo? handleMethod = commandClass.GetMethod(_handleName);
         if (handleMethod is null)
         {
             throw new InvalidOperationException($"Could not get handler method for command class {commandClassName}");
         }
-
         handleMethod.Invoke(handlerInstance, null);
+
+        MethodInfo? sendMethod = commandClass.GetMethod(_sendResponseName);
+        if (sendMethod is null)
+        {
+            throw new InvalidOperationException($"Could not get send method for command class {commandClassName}");
+        }
+        sendMethod.Invoke(handlerInstance, null);
     }
 }

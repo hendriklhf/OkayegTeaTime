@@ -12,6 +12,6 @@ public class ChatterinoCommand : Command
 
     public override void Handle()
     {
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendChatterino2Links());
+        Response = "Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases";
     }
 }

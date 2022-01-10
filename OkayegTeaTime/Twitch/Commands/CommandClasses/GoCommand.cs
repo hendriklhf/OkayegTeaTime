@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,9 @@ public class GoCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendGoLangCompilerResult(ChatMessage));
+
+            Response = $"{ChatMessage.Username}, {HttpRequest.GetGoLangOnlineCompilerResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..])}";
+            return;
         }
     }
 }

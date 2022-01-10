@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using HLE.Emojis;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,9 +17,9 @@ public class TuckCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
         if (!pattern.IsMatch(ChatMessage.Message))
         {
-            return;
+            string target = ChatMessage.LowerSplit[1];
+            string emote = ChatMessage.LowerSplit.Length > 2 ? ChatMessage.Split[2] : string.Empty;
+            Response = $"{Emoji.PointRight} {Emoji.Bed} {ChatMessage.Username} tucked {target} to bed {emote}".Trim();
         }
-
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendTuckedToBed(ChatMessage));
     }
 }

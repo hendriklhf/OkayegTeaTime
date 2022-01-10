@@ -51,5 +51,25 @@ namespace OkayegTeaTime.Database.Models
             Channel = values.Channel;
             ToTime = values.ToTime;
         }
+
+        public string GetAuthor()
+        {
+            return ToUser == FromUser ? "yourself" : FromUser;
+        }
+
+        public string GetTarget()
+        {
+            return ToUser == FromUser ? "yourself" : ToUser;
+        }
+
+        public static string GetAuthor(string toUser, string fromUser)
+        {
+            return toUser == fromUser ? "yourself" : fromUser;
+        }
+
+        public static string GetTarget(string toUser, string fromUser)
+        {
+            return toUser == fromUser ? "yourself" : toUser;
+        }
     }
 }

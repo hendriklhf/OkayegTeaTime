@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -13,10 +14,17 @@ public class IdCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"(\s\w+)?");
+        Response = $"{ChatMessage.Username}, ";
+        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendUserId(ChatMessage));
+            string username = ChatMessage.LowerSplit[1];
+            string? userId = TwitchApi.GetUserId(username)?.ToString();
+            Response += userId ?? PredefinedMessages.TwitchUserDoesntExistMessage;
+        }
+        else
+        {
+            Response += ChatMessage.UserId.ToString();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using OkayegTeaTime.Twitch.Bot;
+﻿using HLE.Emojis;
+using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
@@ -12,7 +13,8 @@ public class HelpCommand : Command
 
     public override void Handle()
     {
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendHelp(ChatMessage));
+        string username = ChatMessage.Split.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Username;
+        Response = $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {AppSettings.RepositoryUrl}";
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,8 @@ public class SuggestCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S{3,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSuggestionNoted(ChatMessage));
+            DbController.AddSugestion(ChatMessage, ChatMessage.Message[ChatMessage.LowerSplit[0].Length..]);
+            Response = $"{ChatMessage.Username}, your suggestion has been noted";
         }
     }
 }

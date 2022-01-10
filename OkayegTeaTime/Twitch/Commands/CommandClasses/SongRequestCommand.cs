@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,8 @@ public class SongRequestCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSongAddedToQueue(ChatMessage));
+            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.Channel.Name, ChatMessage.Split[1]).Result}";
+            return;
         }
     }
 }

@@ -54,9 +54,9 @@ public class TwitchChatMessage : TwitchMessage
 
     public bool IsCommand => AppSettings.CommandList.CommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
 
-    public bool IsNotLoggedChannel => AppSettings.NotLoggedChannels.Contains(Channel.Name);
-
     public bool IsIgnoredUser => AppSettings.UserLists.IgnoredUsers.Contains(UserId);
+
+    public bool IsBotModerator => AppSettings.UserLists.Moderators.Contains(UserId);
 
     public string QueryableMessage => Message.RemoveSQLChars();
 

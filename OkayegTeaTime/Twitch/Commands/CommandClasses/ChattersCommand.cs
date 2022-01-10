@@ -1,4 +1,6 @@
 ﻿using System.Text.RegularExpressions;
+using HLE.Numbers;
+using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +18,23 @@ public class ChattersCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendChattersCount(ChatMessage));
+            string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel.Name;
+            DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
+            Response = $"{ChatMessage.Username}, ";
+
+            switch (chatterCount)
+            {
+                case > 1:
+                    Response += $"there are {chatterCount} chatters in the channel of {channel}";
+                    break;
+                case > 0:
+                    Response += $"{ChatMessage.Username}, there is {chatterCount} chatter in the channel of {channel}";
+                    break;
+                default:
+                    Response += $"{ChatMessage.Username}, there are no chatters in the channel of {channel}";
+                    break;
+            }
+            return;
         }
     }
 }

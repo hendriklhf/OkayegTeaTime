@@ -17,7 +17,7 @@ public static class StringHelper
         return value.Remove("\r").Replace('\n', ' ');
     }
 
-    public static bool IsNullOrEmptyOrWhitespace(this string value)
+    public static bool IsNullOrEmptyOrWhitespace(this string? value)
     {
         return value is null || value.Length == 0 || _onlyWhitespacesPattern.IsMatch(value);
     }

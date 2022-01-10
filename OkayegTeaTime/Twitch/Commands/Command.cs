@@ -11,7 +11,7 @@ public abstract class Command
 
     public string Alias { get; }
 
-    public Response Response { get; set; } = new();
+    public Response Response { get; protected set; } = new();
 
     public Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
@@ -20,8 +20,14 @@ public abstract class Command
         Alias = alias;
     }
 
-    public virtual void Handle()
+    public abstract void Handle();
+
+    public void SendResponse()
     {
-        TwitchBot.Send(ChatMessage.Channel, Response);
+        string message = Response.Message;
+        if (!message.IsNullOrEmptyOrWhitespace())
+        {
+            TwitchBot.Send(ChatMessage.Channel, message);
+        }
     }
 }

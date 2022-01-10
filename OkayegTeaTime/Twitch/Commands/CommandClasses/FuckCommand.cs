@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using HLE.Emojis;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,12 @@ public class FuckCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendFuck(ChatMessage));
+            Response = $"{Emoji.PointRight} {Emoji.OkHand} {ChatMessage.Username} fucked {ChatMessage.Split[1]}";
+            if (ChatMessage.Split.Length > 2)
+            {
+                Response += $" {ChatMessage.Split[2]}";
+            }
+            return;
         }
     }
 }

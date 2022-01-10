@@ -1,5 +1,7 @@
-﻿using OkayegTeaTime.Twitch.Bot;
+﻿using HLE.Emojis;
+using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
+using Random = HLE.Random.Random;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
@@ -12,6 +14,7 @@ public class CoinflipCommand : Command
 
     public override void Handle()
     {
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendCoinFlip(ChatMessage));
+        string result = Random.Bool() ? "yes/heads" : "no/tails";
+        Response = $"{ChatMessage.Username}, {result} {Emoji.Coin}";
     }
 }

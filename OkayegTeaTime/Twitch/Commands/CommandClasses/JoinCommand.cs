@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using HLE.Strings;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,16 @@ public class JoinCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#?\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendJoinChannel(TwitchBot, ChatMessage));
+            if (!ChatMessage.IsBotModerator)
+            {
+                Response = $"{ChatMessage.Username}, you are not a moderator of the bot";
+                return;
+            }
+
+            string channel = ChatMessage.LowerSplit[1];
+            string response = TwitchBot.JoinChannel(channel.Remove("#"));
+            Response = $"{ChatMessage.Username}, {response}";
+            return;
         }
     }
 }

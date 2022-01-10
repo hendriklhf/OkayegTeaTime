@@ -16,7 +16,17 @@ public class UnsubCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semotes?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendUnsubEmotes(TwitchBot, ChatMessage));
+            Response = $"{ChatMessage.Username}, ";
+            if (ChatMessage.IsBroadcaster || ChatMessage.IsModerator)
+            {
+                TwitchBot.EmoteManagementNotificator?.RemoveChannel(ChatMessage.Channel.Name);
+                ChatMessage.Channel.IsEmoteSub = false;
+                Response += $"channel #{ChatMessage.Channel} has unsubscribed from the emote notifications";
+            }
+            else
+            {
+                Response += PredefinedMessages.NoModOrBroadcasterMessage;
+            }
         }
     }
 }

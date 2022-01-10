@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,15 @@ public class SkipCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendSongSkipped(ChatMessage));
+            Response = $"{ChatMessage.Username}, ";
+            if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
+            {
+                Response += SpotifyRequest.SkipToNextSong(ChatMessage.Channel.Name).Result;
+            }
+            else
+            {
+                Response += "you have to be a mod or the broadcaster to skip the song";
+            }
         }
     }
 }

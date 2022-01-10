@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,7 +17,7 @@ public class MathCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            TwitchBot.Send(ChatMessage.Channel, BotActions.SendMathResult(ChatMessage));
+            Response = $"{ChatMessage.Username}, {HttpRequest.GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..])}";
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using OkayegTeaTime.Twitch.Bot;
+﻿using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
@@ -12,6 +14,14 @@ public class YourmomCommand : Command
 
     public override void Handle()
     {
-        TwitchBot.Send(ChatMessage.Channel, BotActions.SendRandomYourmom(ChatMessage));
+        Yourmom? yourmom = DbController.GetRandomYourmom();
+        string target = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Username;
+        if (yourmom is null)
+        {
+            Response = "couldn't find a joke";
+            return;
+        }
+        Response = $"{target}, {yourmom.MessageText} YOURMOM";
+        return;
     }
 }
