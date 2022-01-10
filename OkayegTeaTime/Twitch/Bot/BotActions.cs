@@ -5,7 +5,7 @@ using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
-using OkayegTeaTime.Twitch.Commands;
+using OkayegTeaTime.Twitch.Bot.Cooldowns;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Models;

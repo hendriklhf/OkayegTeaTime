@@ -1,6 +1,6 @@
 ﻿using HLE.Time;
 
-namespace OkayegTeaTime.Twitch.Bot;
+namespace OkayegTeaTime.Twitch.Bot.Cooldowns;
 
 public class AfkCooldown
 {
