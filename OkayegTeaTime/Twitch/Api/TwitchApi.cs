@@ -53,14 +53,7 @@ public static class TwitchApi
     public static User? GetUser(string username)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new() { username }).Result;
-        if (response?.Users?.Length > 0)
-        {
-            return response.Users[0];
-        }
-        else
-        {
-            return null;
-        }
+        return response.Users.FirstOrDefault();
     }
 
     public static Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
@@ -77,14 +70,7 @@ public static class TwitchApi
     public static User? GetUser(int id)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { $"{id}" }).Result;
-        if (response?.Users?.Length > 0)
-        {
-            return response.Users[0];
-        }
-        else
-        {
-            return null;
-        }
+        return response.Users.FirstOrDefault();
     }
 
     public static Dictionary<int, User?> GetUsers(IEnumerable<int> ids)
@@ -130,27 +116,13 @@ public static class TwitchApi
     public static Stream? GetStream(string channel)
     {
         GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new List<string> { channel }).Result;
-        if (response.Streams.Any())
-        {
-            return response.Streams.FirstOrDefault();
-        }
-        else
-        {
-            return null;
-        }
+        return response.Streams.FirstOrDefault();
     }
 
     public static Stream? GetStream(int id)
     {
         GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string> { id.ToString() }).Result;
-        if (response.Streams.Any())
-        {
-            return response.Streams.FirstOrDefault();
-        }
-        else
-        {
-            return null;
-        }
+        return response.Streams.FirstOrDefault();
     }
 
     public static bool IsLive(string channel)
