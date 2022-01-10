@@ -61,7 +61,7 @@ public class ApiTests
     }
 
     [TestMethod]
-    public void GetFFZEmotesTest()
+    public void GetFfzEmotesTest()
     {
         int emoteCount = 5;
         List<FfzEmote> emotes = HttpRequest.GetFfzEmotes(_testChannel, emoteCount).ToList();
