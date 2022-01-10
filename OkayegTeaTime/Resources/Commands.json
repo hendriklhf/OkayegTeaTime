@@ -508,6 +508,24 @@
       ],
       "Cooldown": 10000,
       "Document": true
+    },
+    {
+      "CommandName": "stream",
+      "Alias": [
+        "stream",
+        "streaminfo",
+        "si"
+      ],
+      "Parameter": [
+        "(none)",
+        "[channel]"
+      ],
+      "Description": [
+        "Sends information about the current channel's stream",
+        "Sends information about the given channel's stream"
+      ],
+      "Cooldown": 10000,
+      "Document": true
     }
   ],
   "AfkCommands": [

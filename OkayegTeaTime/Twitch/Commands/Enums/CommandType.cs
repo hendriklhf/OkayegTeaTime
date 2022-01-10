@@ -27,6 +27,7 @@ public enum CommandType
     Skip,
     SongRequest,
     Spotify,
+    Stream,
     Sub,
     Suggest,
     Tuck,
