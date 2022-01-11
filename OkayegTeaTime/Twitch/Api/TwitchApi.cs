@@ -2,6 +2,8 @@
 using HLE.Strings;
 using OkayegTeaTime.Logging;
 using TwitchLib.Api.Core.Enums;
+using TwitchLib.Api.Helix.Models.Chat.Emotes;
+using TwitchLib.Api.Helix.Models.Chat.Emotes.GetChannelEmotes;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLibApi = TwitchLib.Api.TwitchAPI;
@@ -69,7 +71,7 @@ public static class TwitchApi
 
     public static User? GetUser(int id)
     {
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { $"{id}" }).Result;
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { id.ToString() }).Result;
         return response.Users.FirstOrDefault();
     }
 
@@ -133,5 +135,21 @@ public static class TwitchApi
     public static bool IsLive(int id)
     {
         return GetStream(id) is not null;
+    }
+
+    public static ChannelEmote[] GetSubEmotes(string channel)
+    {
+        int? channelId = GetUserId(channel);
+        if (channelId is null)
+        {
+            return Array.Empty<ChannelEmote>();
+        }
+        return GetSubEmotes(channelId.Value);
+    }
+
+    public static ChannelEmote[] GetSubEmotes(int channelId)
+    {
+        GetChannelEmotesResponse response = _api.Helix.Chat.GetChannelEmotesAsync(channelId.ToString()).Result;
+        return response.ChannelEmotes;
     }
 }
