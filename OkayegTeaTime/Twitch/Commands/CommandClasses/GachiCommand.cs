@@ -1,7 +1,7 @@
-﻿using HLE.Emojis;
-using HLE.Strings;
-using OkayegTeaTime.Database;
-using OkayegTeaTime.Database.Models;
+﻿using HLE.Collections;
+using HLE.Emojis;
+using OkayegTeaTime.Files;
+using OkayegTeaTime.Files.JsonClasses;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -16,12 +16,13 @@ public class GachiCommand : Command
 
     public override void Handle()
     {
-        Gachi? gachi = DbController.GetRandomGachi();
+        GachiSong? gachi = JsonController.GachiSongs.Random();
         if (gachi is null)
         {
             Response = $"couldn't find a song";
             return;
         }
-        Response = $"{Emoji.PointRight} {gachi.Title.Decode()} || {gachi.Link} gachiBASS";
+        Response = $"{Emoji.PointRight} {gachi.Title} || {gachi.Url} gachiBASS";
+        return;
     }
 }

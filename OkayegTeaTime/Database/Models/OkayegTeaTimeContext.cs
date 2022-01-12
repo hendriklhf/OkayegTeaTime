@@ -15,7 +15,6 @@ namespace OkayegTeaTime.Database.Models
         {
         }
 
-        public virtual DbSet<Gachi> Gachi { get; set; }
         public virtual DbSet<Channel> Channels { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
@@ -53,21 +52,6 @@ namespace OkayegTeaTime.Database.Models
                 entity.Property(e => e.Prefix)
                     .HasMaxLength(50)
                     .HasDefaultValueSql("'NULL'");
-            });
-
-            modelBuilder.Entity<Gachi>(entity =>
-            {
-                entity.ToTable("gachi");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Link)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<Reminder>(entity =>

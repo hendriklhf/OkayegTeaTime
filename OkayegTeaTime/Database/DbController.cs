@@ -204,12 +204,6 @@ public static class DbController
         return new OkayegTeaTimeContext().Channels.ToDictionary(c => c.ChannelName, c => c.Prefix?.Decode());
     }
 
-    public static Gachi? GetRandomGachi()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Gachi.FromSqlRaw($"SELECT * FROM gachi ORDER BY RAND() LIMIT 1").FirstOrDefault();
-    }
-
     public static Yourmom? GetRandomYourmom()
     {
         using OkayegTeaTimeContext database = new();
