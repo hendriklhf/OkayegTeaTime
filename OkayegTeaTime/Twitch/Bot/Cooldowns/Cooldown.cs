@@ -9,12 +9,17 @@ public class Cooldown
 
     public CommandType Type { get; }
 
-    public long Time { get; private set; }
+    public long Time { get; }
 
     public Cooldown(int userId, CommandType type)
     {
         UserId = userId;
         Type = type;
         Time = TimeHelper.Now() + AppSettings.CommandList[type].Cooldown;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Cooldown c && c.UserId == UserId && c.Type == Type;
     }
 }

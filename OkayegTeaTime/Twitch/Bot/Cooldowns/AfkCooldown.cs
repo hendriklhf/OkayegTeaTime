@@ -13,4 +13,9 @@ public class AfkCooldown
         UserId = userId;
         Time = TimeHelper.Now() + AppSettings.AfkCooldown;
     }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is AfkCooldown c && c.UserId == UserId;
+    }
 }

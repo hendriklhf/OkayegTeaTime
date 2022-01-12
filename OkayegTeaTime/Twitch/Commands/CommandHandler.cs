@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.RegularExpressions;
 using OkayegTeaTime.Twitch.Bot;
+using OkayegTeaTime.Twitch.Bot.Cooldowns;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Handlers;
@@ -34,16 +35,12 @@ public class CommandHandler : Handler
 
     private void HandleCommand(TwitchChatMessage chatMessage)
     {
+        bool handled = false;
         foreach (CommandType type in (CommandType[])Enum.GetValues(typeof(CommandType)))
         {
-            if (!AppSettings.CommandList.MatchesAnyAlias(chatMessage, type))
+            if (handled)
             {
-                continue;
-            }
-
-            if (BotActions.IsOnCooldown(chatMessage.UserId, type))
-            {
-                continue;
+                break;
             }
 
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
@@ -54,48 +51,51 @@ public class CommandHandler : Handler
                 // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
                 {
-                    BotActions.AddUserToCooldownDictionary(chatMessage.UserId, type);
+                    if (CooldownController.IsOnCooldown(chatMessage.UserId, type))
+                    {
+                        handled = true;
+                        break;
+                    }
+
                     InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
-                    BotActions.AddCooldown(chatMessage.UserId, type);
+                    CooldownController.AddCooldown(chatMessage.UserId, type);
+                    handled = true;
                     break;
                 }
             }
-
-            // Handled, we can jump out now
-            break;
         }
     }
 
     private void HandleAfkCommand(TwitchChatMessage chatMessage)
     {
+        bool handled = false;
         foreach (AfkCommandType type in (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType)))
         {
-            if (!AppSettings.CommandList.MatchesAnyAlias(chatMessage, type))
+            if (handled)
             {
-                continue;
-            }
-
-            if (BotActions.IsOnAfkCooldown(chatMessage.UserId))
-            {
-                continue;
+                break;
             }
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-            foreach (string? alias in AppSettings.CommandList[type].Alias)
+            foreach (string alias in AppSettings.CommandList[type].Alias)
             {
                 Regex pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
 
                 // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
                 {
-                    BotActions.AddUserToAfkCooldownDictionary(chatMessage.UserId);
+                    if (CooldownController.IsOnAfkCooldown(chatMessage.UserId))
+                    {
+                        handled = true;
+                        break;
+                    }
+
                     AfkCommandHandler.Handle(TwitchBot, chatMessage, type);
-                    BotActions.AddAfkCooldown(chatMessage.UserId);
+                    CooldownController.AddAfkCooldown(chatMessage.UserId);
+                    handled = true;
                     break;
                 }
             }
-
-            break;
         }
     }
 
@@ -107,8 +107,7 @@ public class CommandHandler : Handler
     /// <param name="chatMessage">The chat message to handle</param>
     /// <param name="alias">A command alias</param>
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
-    private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage,
-        string alias)
+    private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
         string? commandClassName = AppSettings.CommandList.GetCommandClassName(type);
 
