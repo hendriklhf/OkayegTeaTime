@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime", "OkayegTeaTime\OkayegTeaTime.csproj", "{AE3A8884-C469-46F2-846A-AEC1B45E588C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime.Tests", "Tests\OkayegTeaTime.Tests.csproj", "{DFA47320-94AA-4704-991E-7A3590DC0458}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime.Tests", "OkayegTeaTime.Tests\OkayegTeaTime.Tests.csproj", "{DFA47320-94AA-4704-991E-7A3590DC0458}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
