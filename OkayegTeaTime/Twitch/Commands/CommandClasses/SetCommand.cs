@@ -15,10 +15,10 @@ public class SetCommand : Command
 
     public override void Handle()
     {
-        Response = $"{ChatMessage.Username}, ";
         Regex prefixPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix\s\S+");
         if (prefixPattern.IsMatch(ChatMessage.Message))
         {
+            Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
                 string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength
@@ -37,6 +37,7 @@ public class SetCommand : Command
         Regex emotePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote\s\S+");
         if (emotePattern.IsMatch(ChatMessage.Message))
         {
+            Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
                 string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength
@@ -56,6 +57,7 @@ public class SetCommand : Command
                     @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (songRequestPattern.IsMatch(ChatMessage.Message))
         {
+            Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
                 if (DbController.DoesSpotifyUserExist(ChatMessage.Channel.Name))

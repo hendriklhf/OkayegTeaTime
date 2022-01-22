@@ -19,25 +19,21 @@ public static class SpotifyHelper
 
     public static PlayingItem? GetItem(this CurrentlyPlaying currentlyPlaying)
     {
-        if (currentlyPlaying is not null)
-        {
-            if (currentlyPlaying.Item is FullTrack track)
-            {
-                return new Track(track);
-            }
-            else if (currentlyPlaying.Item is FullEpisode episode)
-            {
-                return new Episode(episode);
-            }
-            else
-            {
-                return null;
-            }
-        }
-        else
+        if (currentlyPlaying is null)
         {
             return null;
         }
+
+        if (currentlyPlaying.Item is FullTrack track)
+        {
+            return new Track(track);
+        }
+        else if (currentlyPlaying.Item is FullEpisode episode)
+        {
+            return new Episode(episode);
+        }
+
+        return null;
     }
 
     public static string? GetSpotifyUri(string input)

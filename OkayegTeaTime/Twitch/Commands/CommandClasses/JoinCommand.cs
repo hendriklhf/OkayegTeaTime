@@ -17,15 +17,16 @@ public class JoinCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#?\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
+            Response = $"{ChatMessage.Username}, ";
             if (!ChatMessage.IsBotModerator)
             {
-                Response = $"{ChatMessage.Username}, you are not a moderator of the bot";
+                Response += "you are not a moderator of the bot";
                 return;
             }
 
             string channel = ChatMessage.LowerSplit[1];
             string response = TwitchBot.JoinChannel(channel.Remove("#"));
-            Response = $"{ChatMessage.Username}, {response}";
+            Response += response;
             return;
         }
     }

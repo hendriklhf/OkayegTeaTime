@@ -17,9 +17,10 @@ public class StreamCommand : Command
 
     public override void Handle()
     {
-        Response = $"{ChatMessage.Username}, ";
         Regex channelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
         Stream? stream;
+        Response = $"{ChatMessage.Username}, ";
+
         if (channelPattern.IsMatch(ChatMessage.Message))
         {
             stream = TwitchApi.GetStream(ChatMessage.Split[1]);
