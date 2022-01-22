@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Logging;
@@ -13,6 +14,7 @@ public static class Program
     private static void Main()
     {
         Console.Title = "OkayegTeaTime";
+        Console.OutputEncoding = Encoding.UTF8;
 
         JsonController.Initialize();
 
