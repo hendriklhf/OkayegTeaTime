@@ -493,23 +493,6 @@
       "Document": true
     },
     {
-      "CommandName": "randomword",
-      "Alias": [
-        "randomword",
-        "rw"
-      ],
-      "Parameter": [
-        "(none)",
-        "[count]"
-      ],
-      "Description": [
-        "Sends a random word",
-        "Sends the given amount of random words"
-      ],
-      "Cooldown": 10000,
-      "Document": true
-    },
-    {
       "CommandName": "stream",
       "Alias": [
         "stream",

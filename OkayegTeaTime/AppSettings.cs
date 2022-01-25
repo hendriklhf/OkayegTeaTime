@@ -23,8 +23,6 @@ public static class AppSettings
 
     public static List<string> NotLoggedChannels => JsonController.Settings.NotLoggedChannels;
 
-    public static List<string> RandomWords => JsonController.RandomWords;
-
     public static string RepositoryUrl => JsonController.Settings.RepositoryUrl;
 
     public static string SecretOfflineChatChannel => JsonController.Settings.SecretOfflineChatChannel;

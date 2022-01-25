@@ -30,7 +30,6 @@
         <EmbeddedResource Include="Resources\GachiSongs.json" />
         <EmbeddedResource Include="Resources\OnlineCompilerTemplate.cs" />
         <EmbeddedResource Include="Resources\OnlineCompilerTemplate.go" />
-        <EmbeddedResource Include="Resources\RandomWords.json" />
     </ItemGroup>
 
     <ItemGroup>
