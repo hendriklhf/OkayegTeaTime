@@ -6,10 +6,6 @@ namespace OkayegTeaTime.Database.Models
 {
     public class OkayegTeaTimeContext : DbContext
     {
-        public OkayegTeaTimeContext()
-        {
-        }
-
         public OkayegTeaTimeContext(DbContextOptions<OkayegTeaTimeContext> options)
             : base(options)
         {
