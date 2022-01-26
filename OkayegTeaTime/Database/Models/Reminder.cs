@@ -1,7 +1,7 @@
-﻿#nullable disable
-
-using HLE.Strings;
+﻿using HLE.Strings;
 using HLE.Time;
+
+#nullable disable
 
 namespace OkayegTeaTime.Database.Models
 {

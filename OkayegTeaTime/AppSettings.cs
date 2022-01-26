@@ -1,9 +1,9 @@
-﻿#nullable disable
-
-using System.Reflection;
+﻿using System.Reflection;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
 using JsonSettings = OkayegTeaTime.Files.JsonClasses.Settings;
+
+#nullable disable
 
 namespace OkayegTeaTime;
 

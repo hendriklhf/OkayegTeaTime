@@ -1,7 +1,7 @@
-﻿#nullable disable
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using OkayegTeaTime.HttpRequests;
+
+#nullable disable
 
 namespace OkayegTeaTime.Files.JsonClasses.HttpRequests;
 

@@ -1,7 +1,7 @@
-﻿#nullable disable
-
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
+
+#nullable disable
 
 namespace OkayegTeaTime.Files;
 
