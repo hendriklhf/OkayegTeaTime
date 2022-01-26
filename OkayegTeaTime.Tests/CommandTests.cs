@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using HLE.Enums;
+﻿using System;
+using System.Linq;
+using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime;
 using OkayegTeaTime.Files;
@@ -16,7 +17,7 @@ public class CommandTests
     public void CommandCompletenessTestFromEnum()
     {
         JsonController.Initialize();
-        typeof(CommandType).ToList<CommandType>().ForEach(type =>
+        ((CommandType[])Enum.GetValues(typeof(CommandType))).ForEach(type =>
         {
             JCommand command = AppSettings.CommandList[type];
             Assert.IsNotNull(command);
@@ -29,7 +30,7 @@ public class CommandTests
         JsonController.Initialize();
         AppSettings.CommandList.Commands.ForEach(cmd =>
         {
-            CommandType type = typeof(CommandType).ToList<CommandType>().SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName.ToLower());
+            CommandType type = ((CommandType[])Enum.GetValues(typeof(CommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName.ToLower());
             Assert.IsNotNull(type);
         });
     }
@@ -38,7 +39,7 @@ public class CommandTests
     public void AfkCommandCompletenessTestFromEnum()
     {
         JsonController.Initialize();
-        typeof(AfkCommandType).ToList<AfkCommandType>().ForEach(type =>
+        ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ForEach(type =>
         {
             AfkCommand command = AppSettings.CommandList[type];
             Assert.IsNotNull(command);
@@ -51,7 +52,7 @@ public class CommandTests
         JsonController.Initialize();
         AppSettings.CommandList.AfkCommands.ForEach(cmd =>
         {
-            AfkCommandType type = typeof(AfkCommandType).ToList<AfkCommandType>().SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName);
+            AfkCommandType type = ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName);
             Assert.IsNotNull(type);
         });
     }

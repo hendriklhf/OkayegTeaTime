@@ -3,7 +3,6 @@ using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.Enums;
@@ -13,24 +12,19 @@ namespace OkayegTeaTime.Database;
 
 public static class DbController
 {
-    private static readonly DbContextOptions<OkayegTeaTimeContext> _options = new DbContextOptionsBuilder<OkayegTeaTimeContext>()
-            .UseMySQL(AppSettings.DbConnection.ConnectionString)
-            .Options;
-    private static readonly PooledDbContextFactory<OkayegTeaTimeContext> _factory = new(_options);
-
     public static void AddChannel(string channel)
     {
         // FIXME: all operations create a Context, act on it and dispose straight away
         // Would be better to make this class non-static (treat as a Repository) & pool connections (see the following:
         // https://docs.microsoft.com/en-us/ef/core/performance/advanced-performance-topics#dbcontext-pooling)
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         database.Channels.Add(new(channel));
         database.SaveChanges();
     }
 
     public static void AddNewToken(string username, string accessToken, string refreshToken)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
 
         if (user is null)
@@ -49,7 +43,7 @@ public static class DbController
 
     public static int? AddReminder(string fromUser, string toUser, string message, string channel, long toTime = 0)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Reminder reminder = new(fromUser, toUser, message.Encode(), channel, toTime);
 
         if (HasTooManyRemindersSet(reminder.ToUser, reminder.ToTime > 0))
@@ -66,7 +60,7 @@ public static class DbController
     {
         int count = reminders.Count();
         EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
             Reminder r = new(v);
@@ -87,7 +81,7 @@ public static class DbController
     {
         int count = reminders.Count();
         EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
             Reminder r = new(v);
@@ -106,14 +100,14 @@ public static class DbController
 
     public static void AddSugestion(TwitchChatMessage chatMessage, string suggestion)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         database.Suggestions.Add(new(chatMessage.Username, suggestion.Encode(), $"#{chatMessage.Channel}"));
         database.SaveChanges();
     }
 
     public static void AddUser(string username)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         if (!database.Users.Any(u => u.Username == username))
         {
             database.Users.Add(new(username));
@@ -123,7 +117,7 @@ public static class DbController
 
     public static void CheckForReminder(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime == 0 && r.ToUser == chatMessage.Username).ToList();
         if (!reminders.Any())
         {
@@ -137,7 +131,7 @@ public static class DbController
 
     public static void CheckForTimedReminder(TwitchBot twitchBot)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         IEnumerable<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now());
         if (!reminders.Any())
         {
@@ -151,7 +145,7 @@ public static class DbController
 
     public static void CheckIfAfk(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
 
         if (user is null)
@@ -171,25 +165,25 @@ public static class DbController
 
     public static bool DoesSpotifyUserExist(string username)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Spotify.Any(s => s.Username == username.ToLower());
     }
 
     public static Models.Channel? GetChannel(string channel)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Channels.FirstOrDefault(c => c.ChannelName == channel);
     }
 
     public static List<string> GetChannelNames()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Channels.AsQueryable().Select(c => c.ChannelName).ToList();
     }
 
     public static List<Models.Channel> GetChannels()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Channels.ToList();
     }
 
@@ -200,13 +194,13 @@ public static class DbController
 
     public static List<string> GetEmoteManagementSubs()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Channels.AsQueryable().Where(c => c.EmoteManagementSub == true).Select(c => c.ChannelName).ToList();
     }
 
     public static Dictionary<string, string?> GetEmotesInFront()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Channels.ToDictionary(c => c.ChannelName, c => c.EmoteInFront?.Decode());
     }
 
@@ -217,19 +211,19 @@ public static class DbController
 
     public static Dictionary<string, string?> GetPrefixes()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Channels.ToDictionary(c => c.ChannelName, c => c.Prefix?.Decode());
     }
 
     public static Yourmom? GetRandomYourmom()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Yourmom.FromSqlRaw($"SELECT * FROM yourmom ORDER BY RAND() LIMIT 1").FirstOrDefault();
     }
 
     public static List<Reminder> GetReminders()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Reminders.ToList();
     }
 
@@ -240,37 +234,37 @@ public static class DbController
 
     public static Reminder? GetReminder(int id)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Reminders.FirstOrDefault(r => r.Id == id);
     }
 
     public static Models.Spotify? GetSpotifyUser(string username)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Spotify.FirstOrDefault(s => s.Username == username);
     }
 
     public static List<Models.Spotify> GetSpotifyUsers()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Spotify.ToList();
     }
 
     public static User? GetUser(string username)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Users.FirstOrDefault(u => u.Username == username);
     }
 
     public static List<User> GetUsers()
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         return database.Users.ToList();
     }
 
     public static bool HasTooManyRemindersSet(string target, bool isTimedReminder)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         if (!isTimedReminder)
         {
             return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime == 0) >= AppSettings.MaxReminders;
@@ -288,7 +282,7 @@ public static class DbController
 
     public static bool RemoveReminder(TwitchChatMessage chatMessage, int reminderId)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Reminder? reminder = database.Reminders.FirstOrDefault(r => r.Id == reminderId);
         if (reminder is null)
         {
@@ -313,7 +307,7 @@ public static class DbController
 
     public static void SetAfk(TwitchChatMessage chatMessage, AfkCommandType type)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
         if (user is null)
         {
@@ -330,7 +324,7 @@ public static class DbController
 
     public static void SetEmoteInFront(string channel, string emote)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
@@ -341,7 +335,7 @@ public static class DbController
 
     public static void SetEmoteSub(string channel, bool subbed)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
@@ -352,7 +346,7 @@ public static class DbController
 
     public static void SetPrefix(string channel, string prefix)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
@@ -363,7 +357,7 @@ public static class DbController
 
     public static void SetSongRequestEnabledState(string channel, bool enabled)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == channel.ToLower());
         if (user is null)
         {
@@ -376,7 +370,7 @@ public static class DbController
 
     public static void UnsetEmoteInFront(string channel)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
@@ -387,7 +381,7 @@ public static class DbController
 
     public static void UnsetPrefix(string channel)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
         if (chnl is not null)
         {
@@ -398,7 +392,7 @@ public static class DbController
 
     public static void UpdateAccessToken(string username, string accessToken)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         Models.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
         if (user is null)
         {
@@ -412,7 +406,7 @@ public static class DbController
 
     private static void SetAfkStatus(string username, bool afk)
     {
-        using OkayegTeaTimeContext database = _factory.CreateDbContext();
+        using OkayegTeaTimeContext database = new();
         User? user = database.Users.FirstOrDefault(u => u.Username == username);
         if (user is null)
         {

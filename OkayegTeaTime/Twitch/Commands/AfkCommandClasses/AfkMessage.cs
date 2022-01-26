@@ -1,5 +1,4 @@
-﻿using HLE.Enums;
-using HLE.Strings;
+﻿using HLE.Strings;
 using HLE.Time;
 using HLE.Time.Enums;
 using OkayegTeaTime.Database.Models;
@@ -19,7 +18,7 @@ public class AfkMessage
     public AfkMessage(User user)
     {
         string type = user.Type.ToLower();
-        List<AfkCommandType> afkTypes = typeof(AfkCommandType).ToList<AfkCommandType>();
+        List<AfkCommandType> afkTypes = ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ToList();
         AfkCommand afkCommand = AppSettings.CommandList[afkTypes.FirstOrDefault(t => t.ToString().ToLower() == type)];
         ComingBack = afkCommand.ComingBack;
         GoingAway = afkCommand.GoingAway;
@@ -30,7 +29,7 @@ public class AfkMessage
     private void ReplaceSpaceHolder(User user)
     {
         ComingBack = ComingBack.Replace("{username}", user.Username)
-            .Replace("{time}", TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin))
+            .Replace("{time}", $"{TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, ConversionType.YearDayHourMin)} ago")
             .Replace("{message}", user.MessageText?.Decode());
         ComingBack = string.IsNullOrEmpty(user.MessageText?.Decode()) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
 

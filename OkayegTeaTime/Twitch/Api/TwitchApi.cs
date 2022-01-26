@@ -44,7 +44,12 @@ public static class TwitchApi
                 new("client_secret", _api.Settings.Secret),
                 new("grant_type", "client_credentials")
             });
-        return request.Data.GetProperty("access_token").GetString();
+        if (request.Data is null)
+        {
+            return null;
+        }
+
+        return request.Data.Value.GetProperty("access_token").GetString();
     }
 
     public static void RefreshAccessToken()

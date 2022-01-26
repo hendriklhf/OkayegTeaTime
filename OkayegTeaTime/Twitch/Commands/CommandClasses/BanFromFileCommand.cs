@@ -31,7 +31,14 @@ public class BanFromFileCommand : Command
                     return;
                 }
 
-                List<string> fileContent = new HttpGet(ChatMessage.Split[1]).Result.Remove("\r").Split("\n").ToList();
+                HttpGet request = new(ChatMessage.Split[1]);
+                if (request.Result is null)
+                {
+                    Response += "an error occurred while requesting the file content";
+                    return;
+                }
+
+                List<string> fileContent = request.Result.Remove("\r").Split("\n").ToList();
                 Regex regex = new(ChatMessage.Split[2], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
                 fileContent.Where(f => regex.IsMatch(f)).ForEach(f =>
                 {

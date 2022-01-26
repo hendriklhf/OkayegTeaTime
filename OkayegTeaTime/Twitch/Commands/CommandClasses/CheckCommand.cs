@@ -39,7 +39,7 @@ public class CheckCommand : Command
                 {
                     Response += $": {user.MessageText.Decode()}";
                 }
-                Response += $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, "ago", ConversionType.YearDayHourMin)})";
+                Response += $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, ConversionType.YearDayHourMin)} ago)";
             }
             else
             {
@@ -61,8 +61,8 @@ public class CheckCommand : Command
             }
 
             Response += $"From: {reminder.GetAuthor()} || To: {reminder.GetTarget()} || ";
-            Response += $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, "ago", ConversionType.YearDayHourMin)} || ";
-            Response += reminder.ToTime > 0 ? $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, conversionType: ConversionType.YearDayHourMin)} || " : string.Empty;
+            Response += $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, ConversionType.YearDayHourMin)} ago || ";
+            Response += reminder.ToTime > 0 ? $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, ConversionType.YearDayHourMin)} || " : string.Empty;
             Response += $"Message: {reminder.Message.Decode()}";
             return;
         }

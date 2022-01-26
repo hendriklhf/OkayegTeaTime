@@ -58,6 +58,11 @@ public static class HttpRequest
                 new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
                 new("variables", "{}")
             });
+
+            if (request.Result is null)
+            {
+                return null;
+            }
             return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
         }
         catch (Exception ex)
@@ -82,14 +87,24 @@ public static class HttpRequest
     public static int GetChatterCount(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
-        return request.Data.GetProperty("chatter_count").GetInt32();
+        if (request.Data is null)
+        {
+            return 0;
+        }
+
+        return request.Data.Value.GetProperty("chatter_count").GetInt32();
     }
 
     public static IEnumerable<Chatter> GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
-        JsonElement chatters = request.Data.GetProperty("chatters");
         List<Chatter> result = new();
+        if (request.Data is null)
+        {
+            return result;
+        }
+
+        JsonElement chatters = request.Data.Value.GetProperty("chatters");
         byte pIdx = 0;
         _chatRoles.ForEach(p =>
         {
@@ -120,7 +135,12 @@ public static class HttpRequest
         try
         {
             HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channel.Remove("#").ToLower()}");
-            int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
+            if (request.Data is null || request.Result is null)
+            {
+                return null;
+            }
+
+            int setId = request.Data.Value.GetProperty("room").GetProperty("set").GetInt32();
             string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
             return JsonSerializer.Deserialize<FfzRequest>(result);
         }
@@ -134,23 +154,30 @@ public static class HttpRequest
     public static string GetMathResult(string expression)
     {
         HttpGet request = new($"http://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
-        return request.ValidJsonData ? request.Data.GetRawText() : request.Result;
+        return request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetRawText() : request.Result ?? "api error";
     }
 
     public static string GetCSharpOnlineCompilerResult(string input)
     {
+        const string errorMessage = "Compiler service error";
+        string? encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
+        if (encodedInput is null)
+        {
+            return errorMessage;
+        }
+
         HttpPost request = new("https://dotnetfiddle.net/Home/Run",
             new()
             {
-                new("CodeBlock", HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input))),
+                new("CodeBlock", encodedInput),
                 new("Compiler", "NetCore22"),
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
             });
-        string? result = request.ValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "Compiler service error";
+        string? result = request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetProperty("ConsoleOutput").GetString() : errorMessage;
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
-            return string.Concat(result!.Take(500)).NewLinesToSpaces();
+            return $"{string.Concat(result!.Take(450)).NewLinesToSpaces()}...";
         }
         else
         {
@@ -178,6 +205,11 @@ public static class HttpRequest
         try
         {
             HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{channelId}");
+            if (request.Result is null)
+            {
+                return null;
+            }
+
             return JsonSerializer.Deserialize<BttvRequest>(request.Result);
         }
         catch (Exception ex)
@@ -196,11 +228,16 @@ public static class HttpRequest
                 new("body", GetGoLangOnlineCompilerTemplate(code)),
                 new("withVet", "true")
             });
-        string? error = request.Data.GetProperty("Errors").GetString();
+        if (request.Data is null)
+        {
+            return null;
+        }
+
+        string? error = request.Data.Value.GetProperty("Errors").GetString();
         bool hasError = !string.IsNullOrEmpty(error);
         if (!hasError)
         {
-            return request.Data.GetProperty("Events")[0].GetProperty("Message").GetString();
+            return request.Data.Value.GetProperty("Events")[0].GetProperty("Message").GetString();
         }
         else
         {
@@ -208,8 +245,8 @@ public static class HttpRequest
         }
     }
 
-    private static string? GetGoLangOnlineCompilerTemplate(string code)
+    private static string GetGoLangOnlineCompilerTemplate(string code)
     {
-        return FileController.OnlineCompilerTemplateGo?.Replace("{code}", code);
+        return FileController.OnlineCompilerTemplateGo.Replace("{code}", code);
     }
 }

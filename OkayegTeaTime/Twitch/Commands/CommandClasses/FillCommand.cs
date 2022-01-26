@@ -22,7 +22,12 @@ public class FillCommand : Command
             int maxLength = AppSettings.MaxMessageLength - (ChatMessage.Channel.Emote.Length + 1);
             for (; ; )
             {
-                string messagePart = split.Random();
+                string? messagePart = split.Random();
+                if (messagePart is null)
+                {
+                    break;
+                }
+
                 int currentMessageLength = messageParts.Sum(m => m.Length) + messageParts.Count + messagePart.Length;
                 if (currentMessageLength <= maxLength)
                 {
