@@ -231,13 +231,18 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
+        if (e.Channel != AppSettings.SecretOfflineChatChannel)
+        {
+            return;
+        }
+
         User? user = TwitchApi.GetUser(e.Username);
         if (user is null)
         {
             return;
         }
 
-        if (e.Channel == AppSettings.SecretOfflineChatChannel && !AppSettings.UserLists.SecretUsers.Contains(user.Id.ToInt()))
+        if (!AppSettings.UserLists.SecretUsers.Contains(user.Id.ToInt()))
         {
             Send(AppSettings.SecretOfflineChatChannel, $"{e.Username} joined the chat Stare");
         }
