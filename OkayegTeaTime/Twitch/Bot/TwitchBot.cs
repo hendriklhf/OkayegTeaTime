@@ -81,7 +81,7 @@ public class TwitchBot
 #if DEBUG
         TwitchClient.Initialize(ConnectionCredentials, AppSettings.DebugChannel);
 #else
-        TwitchClient.Initialize(ConnectionCredentials, DbController.GetChannels());
+        TwitchClient.Initialize(ConnectionCredentials, DbController.GetChannelNames());
 #endif
 
         TwitchClient.OnLog += Client_OnLog!;
@@ -180,7 +180,7 @@ public class TwitchBot
 
     private void Client_OnConnected(object sender, OnConnectedArgs e)
     {
-        ConsoleOut("[TWITCH] CONNECTED", true, ConsoleColor.Red);
+        ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
     }
 
     private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
@@ -208,25 +208,25 @@ public class TwitchBot
 
     private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
     {
-        ConsoleOut($"[TWITCH] <CONNECTION-ERROR> {e.Error.Message}", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] <CONNECTION-ERROR> {e.Error.Message}", ConsoleColor.Red, true);
         Restart();
     }
 
     private void Client_OnError(object sender, OnErrorEventArgs e)
     {
-        ConsoleOut($"[TWITCH] <ERROR> {e.Exception.Message}", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] <ERROR> {e.Exception.Message}", ConsoleColor.Red, true);
         Restart();
     }
 
     private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
     {
-        ConsoleOut($"[TWITCH] DISCONNECTED", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
         Restart();
     }
 
     private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
     {
-        ConsoleOut($"[TWITCH] RECONNECTED", true, ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] RECONNECTED", ConsoleColor.Red, true);
     }
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
