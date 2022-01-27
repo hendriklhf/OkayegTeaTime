@@ -3,7 +3,6 @@ using HLE.Time;
 using HLE.Time.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
-using OkayegTeaTime.Twitch.Commands.Enums;
 
 namespace OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 
@@ -18,8 +17,7 @@ public class AfkMessage
     public AfkMessage(User user)
     {
         string type = user.Type.ToLower();
-        List<AfkCommandType> afkTypes = ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ToList();
-        AfkCommand afkCommand = AppSettings.CommandList[afkTypes.FirstOrDefault(t => t.ToString().ToLower() == type)];
+        AfkCommand afkCommand = AppSettings.CommandList[CommandHandler.AfkCommandTypes.FirstOrDefault(t => t.ToString().ToLower() == type)];
         ComingBack = afkCommand.ComingBack;
         GoingAway = afkCommand.GoingAway;
         Resuming = afkCommand.Resuming;
