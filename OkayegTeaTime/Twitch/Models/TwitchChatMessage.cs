@@ -58,8 +58,6 @@ public class TwitchChatMessage : TwitchMessage
 
     public bool IsBotModerator => AppSettings.UserLists.Moderators.Contains(UserId);
 
-    public string QueryableMessage => Message.RemoveSQLChars();
-
     private Regex CommandPattern(string alias)
     {
         return PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");

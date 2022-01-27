@@ -177,7 +177,7 @@ public static class HttpRequest
         string? result = request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetProperty("ConsoleOutput").GetString() : errorMessage;
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
-            return $"{string.Concat(result!.Take(450)).NewLinesToSpaces()}...";
+            return $"{string.Concat(result!.Take(450)).NewLinesToSpaces()} ...";
         }
         else
         {
