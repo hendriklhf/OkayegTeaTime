@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Spotify;
 
 public static class SpotifyRequest
 {
-    public static async Task<string> AddToQueue(string channel, string song)
+    public static async Task<string> AddToQueue(string channel, string song, bool channelEqualsTarget = true)
     {
         string? uri = SpotifyHelper.GetSpotifyUri(song);
         if (uri is null)
@@ -31,7 +31,13 @@ public static class SpotifyRequest
                 SpotifyClient client = new(user.AccessToken);
                 await client.Player.AddToQueue(new(uri));
                 FullTrack item = await client.Tracks.Get(uri.Remove("spotify:track:"));
-                return $"{item.Name} by {item.Artists.GetArtists()} has been added to the queue";
+                string response = $"{item.Name} by {item.Artists.GetArtists()} has been added to the queue";
+
+                if (!channelEqualsTarget)
+                {
+                    response = string.Concat(response, $" of {channel}");
+                }
+                return response;
             }
             catch (APIException ex)
             {
@@ -41,7 +47,7 @@ public static class SpotifyRequest
             catch (Exception ex)
             {
                 Logger.Log(ex);
-                return $"that song id doesn't match any song";
+                return $"an unknown error occurred. It might not be possible to request songs for this user";
             }
         }
         else

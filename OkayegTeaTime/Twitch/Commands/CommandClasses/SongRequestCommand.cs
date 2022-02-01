@@ -14,11 +14,17 @@ public class SongRequestCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
+        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.Channel.Name, ChatMessage.Split[1]).Result}";
             return;
+        }
+
+        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\S+");
+        if (pattern.IsMatch(ChatMessage.Message))
+        {
+            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.LowerSplit[1], ChatMessage.Split[2], false).Result}";
         }
     }
 }

@@ -345,14 +345,12 @@
         "sr"
       ],
       "Parameter": [
-        "[Spotify track link]",
-        "[Spotify URI]",
-        "[Spotify track ID]"
+        "[Spotify track link/URI/id]",
+        "[channel] [link/URI/id]"
       ],
       "Description": [
-        "Adds the Spotify song of the link to the broadcaster's queue, if registered and enabled",
-        "Adds the Spotify song of the URI to the broadcaster's queue, if registered and enabled",
-        "Adds the Spotify song of the ID to the broadcaster's queue, if registered and enabled"
+        "Adds the Spotify song to the broadcaster's queue, if registered and enabled",
+        "Adds the Spotify song to the specified channel's queue, if registered and enabled"
       ],
       "Cooldown": 15000,
       "Document": true
