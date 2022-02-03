@@ -14,14 +14,15 @@ public class EmoteManagementNotificator
     public TwitchBot TwitchBot { get; }
 
     private readonly List<NotificatorChannel> _channels = new();
-    private readonly Timer _timer = new(new Minute().Milliseconds);
-
+    private readonly long _checkInterval = new Minute(2).Milliseconds;
+    private readonly Timer _timer;
 
     public EmoteManagementNotificator(TwitchBot twitchBot)
     {
         TwitchBot = twitchBot;
         DbController.GetEmoteManagementSubs().ForEach(c => _channels.Add(new(c)));
         InitChannels();
+        _timer = new(_checkInterval);
         _timer.Elapsed += Timer_OnElapsed!;
         _timer.Start();
     }
