@@ -1,7 +1,7 @@
 {
   "Commands": [
     {
-      "CommandName": "help",
+      "CommandName": "Help",
       "Alias": [
         "help",
         "commands"
@@ -16,7 +16,7 @@
       "Document": true
     },
     {
-      "CommandName": "ping",
+      "CommandName": "Ping",
       "Alias": [
         "ping",
         "pong"
@@ -31,7 +31,7 @@
       "Document": true
     },
     {
-      "CommandName": "suggest",
+      "CommandName": "Suggest",
       "Alias": [
         "suggest",
         "bug"
@@ -48,7 +48,7 @@
       "Document": true
     },
     {
-      "CommandName": "fuck",
+      "CommandName": "Fuck",
       "Alias": [
         "fuck"
       ],
@@ -64,7 +64,7 @@
       "Document": true
     },
     {
-      "CommandName": "remind",
+      "CommandName": "Remind",
       "Alias": [
         "remind",
         "notify"
@@ -81,7 +81,7 @@
       "Document": true
     },
     {
-      "CommandName": "rafk",
+      "CommandName": "Rafk",
       "Alias": [
         "rafk",
         "cafk"
@@ -96,7 +96,7 @@
       "Document": true
     },
     {
-      "CommandName": "check",
+      "CommandName": "Check",
       "Alias": [
         "check"
       ],
@@ -112,7 +112,7 @@
       "Document": true
     },
     {
-      "CommandName": "yourmom",
+      "CommandName": "Yourmom",
       "Alias": [
         "yourmom"
       ],
@@ -128,7 +128,7 @@
       "Document": true
     },
     {
-      "CommandName": "tuck",
+      "CommandName": "Tuck",
       "Alias": [
         "tuck"
       ],
@@ -142,7 +142,7 @@
       "Document": true
     },
     {
-      "CommandName": "gachi",
+      "CommandName": "Gachi",
       "Alias": [
         "gachi"
       ],
@@ -156,7 +156,7 @@
       "Document": true
     },
     {
-      "CommandName": "massping",
+      "CommandName": "Massping",
       "Alias": [
         "massping"
       ],
@@ -172,7 +172,7 @@
       "Document": true
     },
     {
-      "CommandName": "set",
+      "CommandName": "Set",
       "Alias": [
         "set"
       ],
@@ -188,7 +188,7 @@
       "Document": true
     },
     {
-      "CommandName": "unset",
+      "CommandName": "Unset",
       "Alias": [
         "unset"
       ],
@@ -206,7 +206,7 @@
       "Document": true
     },
     {
-      "CommandName": "math",
+      "CommandName": "Math",
       "Alias": [
         "math",
         "calc"
@@ -221,7 +221,7 @@
       "Document": true
     },
     {
-      "CommandName": "coinflip",
+      "CommandName": "Coinflip",
       "Alias": [
         "coinflip",
         "cf",
@@ -237,7 +237,7 @@
       "Document": true
     },
     {
-      "CommandName": "spotify",
+      "CommandName": "Spotify",
       "Alias": [
         "spotify",
         "song"
@@ -256,7 +256,7 @@
       "Document": true
     },
     {
-      "CommandName": "chatters",
+      "CommandName": "Chatters",
       "Alias": [
         "chatters",
         "chattercount",
@@ -278,7 +278,7 @@
       "Document": true
     },
     {
-      "CommandName": "join",
+      "CommandName": "Join",
       "Alias": [
         "join",
         "enter"
@@ -293,7 +293,7 @@
       "Document": false
     },
     {
-      "CommandName": "csharp",
+      "CommandName": "CSharp",
       "Alias": [
         "csharp",
         "c#"
@@ -308,7 +308,7 @@
       "Document": true
     },
     {
-      "CommandName": "fill",
+      "CommandName": "Fill",
       "Alias": [
         "fill"
       ],
@@ -324,7 +324,7 @@
       "Document": true
     },
     {
-      "CommandName": "vanish",
+      "CommandName": "Vanish",
       "Alias": [
         "vanish",
         "v"
@@ -339,7 +339,7 @@
       "Document": true
     },
     {
-      "CommandName": "songrequest",
+      "CommandName": "SongRequest",
       "Alias": [
         "songrequest",
         "sr"
@@ -356,7 +356,7 @@
       "Document": true
     },
     {
-      "CommandName": "skip",
+      "CommandName": "Skip",
       "Alias": [
         "skip"
       ],
@@ -370,7 +370,7 @@
       "Document": true
     },
     {
-      "CommandName": "id",
+      "CommandName": "Id",
       "Alias": [
         "id",
         "uid",
@@ -389,7 +389,7 @@
       "Document": true
     },
     {
-      "CommandName": "chatterino",
+      "CommandName": "Chatterino",
       "Alias": [
         "chatterino",
         "c2"
@@ -404,7 +404,7 @@
       "Document": true
     },
     {
-      "CommandName": "chatterino7",
+      "CommandName": "Chatterino7",
       "Alias": [
         "chatterino7",
         "c7"
@@ -419,7 +419,7 @@
       "Document": true
     },
     {
-      "CommandName": "pick",
+      "CommandName": "Pick",
       "Alias": [
         "pick",
         "choose"
@@ -434,7 +434,7 @@
       "Document": true
     },
     {
-      "CommandName": "banfromfile",
+      "CommandName": "BanFromFile",
       "Alias": [
         "banfromfile"
       ],
@@ -448,7 +448,7 @@
       "Document": false
     },
     {
-      "CommandName": "sub",
+      "CommandName": "Sub",
       "Alias": [
         "sub"
       ],
@@ -462,7 +462,7 @@
       "Document": true
     },
     {
-      "CommandName": "unsub",
+      "CommandName": "Unsub",
       "Alias": [
         "unsub"
       ],
@@ -476,7 +476,7 @@
       "Document": true
     },
     {
-      "CommandName": "go",
+      "CommandName": "Go",
       "Alias": [
         "go",
         "golang"
@@ -491,7 +491,7 @@
       "Document": true
     },
     {
-      "CommandName": "stream",
+      "CommandName": "Stream",
       "Alias": [
         "stream",
         "streaminfo",
@@ -504,6 +504,20 @@
       "Description": [
         "Sends information about the current channel's stream",
         "Sends information about the given channel's stream"
+      ],
+      "Cooldown": 10000,
+      "Document": true
+    },
+    {
+      "CommandName": "Code",
+      "Alias": [
+        "code"
+      ],
+      "Parameter": [
+        "[command name]"
+      ],
+      "Description": [
+        "Sends a link to the code of the provided command"
       ],
       "Cooldown": 10000,
       "Document": true

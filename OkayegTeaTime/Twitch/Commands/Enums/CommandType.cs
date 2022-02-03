@@ -7,6 +7,7 @@ public enum CommandType
     Chatterino,
     Chatters,
     Check,
+    Code,
     Coinflip,
     CSharp,
     Fill,
