@@ -4,7 +4,7 @@ namespace OkayegTeaTime.Files.JsonClasses.CommandData;
 
 public class Command
 {
-    public string CommandName { get; set; }
+    public string Name { get; set; }
 
     public List<string> Alias { get; set; }
 

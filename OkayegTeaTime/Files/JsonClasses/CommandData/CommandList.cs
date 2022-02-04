@@ -63,10 +63,10 @@ public class CommandList
     }
 
     [JsonIgnore]
-    public AfkCommand this[AfkCommandType type] => AfkCommands.FirstOrDefault(cmd => cmd.CommandName.ToLower() == type.ToString().ToLower());
+    public AfkCommand this[AfkCommandType type] => AfkCommands.FirstOrDefault(cmd => cmd.Name.ToLower() == type.ToString().ToLower());
 
     [JsonIgnore]
-    public Command this[CommandType type] => Commands.FirstOrDefault(cmd => cmd.CommandName.ToLower() == type.ToString().ToLower());
+    public Command this[CommandType type] => Commands.FirstOrDefault(cmd => cmd.Name.ToLower() == type.ToString().ToLower());
 
     [JsonIgnore]
     private List<string> _afkCommandAliases;
@@ -83,6 +83,6 @@ public class CommandList
 #nullable enable
     public Command? FindCommand(string searchValue)
     {
-        return Commands.FirstOrDefault(c => c.CommandName.IsMatch($"^{searchValue}$") || c.Alias.Any(a => a.IsMatch($"^{searchValue}$")));
+        return Commands.FirstOrDefault(c => c.Name.IsMatch($"^{searchValue}$") || c.Alias.Any(a => a.IsMatch($"^{searchValue}$")));
     }
 }

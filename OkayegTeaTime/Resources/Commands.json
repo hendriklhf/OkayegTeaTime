@@ -1,7 +1,7 @@
 {
   "Commands": [
     {
-      "CommandName": "Help",
+      "Name": "Help",
       "Alias": [
         "help",
         "commands"
@@ -16,7 +16,7 @@
       "Document": true
     },
     {
-      "CommandName": "Ping",
+      "Name": "Ping",
       "Alias": [
         "ping",
         "pong"
@@ -31,7 +31,7 @@
       "Document": true
     },
     {
-      "CommandName": "Suggest",
+      "Name": "Suggest",
       "Alias": [
         "suggest",
         "bug"
@@ -48,7 +48,7 @@
       "Document": true
     },
     {
-      "CommandName": "Fuck",
+      "Name": "Fuck",
       "Alias": [
         "fuck"
       ],
@@ -64,7 +64,7 @@
       "Document": true
     },
     {
-      "CommandName": "Remind",
+      "Name": "Remind",
       "Alias": [
         "remind",
         "notify"
@@ -81,7 +81,7 @@
       "Document": true
     },
     {
-      "CommandName": "Rafk",
+      "Name": "Rafk",
       "Alias": [
         "rafk",
         "cafk"
@@ -96,7 +96,7 @@
       "Document": true
     },
     {
-      "CommandName": "Check",
+      "Name": "Check",
       "Alias": [
         "check"
       ],
@@ -112,7 +112,7 @@
       "Document": true
     },
     {
-      "CommandName": "Yourmom",
+      "Name": "Yourmom",
       "Alias": [
         "yourmom"
       ],
@@ -128,7 +128,7 @@
       "Document": true
     },
     {
-      "CommandName": "Tuck",
+      "Name": "Tuck",
       "Alias": [
         "tuck"
       ],
@@ -142,7 +142,7 @@
       "Document": true
     },
     {
-      "CommandName": "Gachi",
+      "Name": "Gachi",
       "Alias": [
         "gachi"
       ],
@@ -156,7 +156,7 @@
       "Document": true
     },
     {
-      "CommandName": "Massping",
+      "Name": "Massping",
       "Alias": [
         "massping"
       ],
@@ -172,7 +172,7 @@
       "Document": true
     },
     {
-      "CommandName": "Set",
+      "Name": "Set",
       "Alias": [
         "set"
       ],
@@ -188,7 +188,7 @@
       "Document": true
     },
     {
-      "CommandName": "Unset",
+      "Name": "Unset",
       "Alias": [
         "unset"
       ],
@@ -206,7 +206,7 @@
       "Document": true
     },
     {
-      "CommandName": "Math",
+      "Name": "Math",
       "Alias": [
         "math",
         "calc"
@@ -221,7 +221,7 @@
       "Document": true
     },
     {
-      "CommandName": "Coinflip",
+      "Name": "Coinflip",
       "Alias": [
         "coinflip",
         "cf",
@@ -237,7 +237,7 @@
       "Document": true
     },
     {
-      "CommandName": "Spotify",
+      "Name": "Spotify",
       "Alias": [
         "spotify",
         "song"
@@ -256,7 +256,7 @@
       "Document": true
     },
     {
-      "CommandName": "Chatters",
+      "Name": "Chatters",
       "Alias": [
         "chatters",
         "chattercount",
@@ -278,7 +278,7 @@
       "Document": true
     },
     {
-      "CommandName": "Join",
+      "Name": "Join",
       "Alias": [
         "join",
         "enter"
@@ -293,7 +293,7 @@
       "Document": false
     },
     {
-      "CommandName": "CSharp",
+      "Name": "CSharp",
       "Alias": [
         "csharp",
         "c#"
@@ -308,7 +308,7 @@
       "Document": true
     },
     {
-      "CommandName": "Fill",
+      "Name": "Fill",
       "Alias": [
         "fill"
       ],
@@ -324,7 +324,7 @@
       "Document": true
     },
     {
-      "CommandName": "Vanish",
+      "Name": "Vanish",
       "Alias": [
         "vanish",
         "v"
@@ -339,7 +339,7 @@
       "Document": true
     },
     {
-      "CommandName": "SongRequest",
+      "Name": "SongRequest",
       "Alias": [
         "songrequest",
         "sr"
@@ -356,7 +356,7 @@
       "Document": true
     },
     {
-      "CommandName": "Skip",
+      "Name": "Skip",
       "Alias": [
         "skip"
       ],
@@ -370,7 +370,7 @@
       "Document": true
     },
     {
-      "CommandName": "Id",
+      "Name": "Id",
       "Alias": [
         "id",
         "uid",
@@ -389,7 +389,7 @@
       "Document": true
     },
     {
-      "CommandName": "Chatterino",
+      "Name": "Chatterino",
       "Alias": [
         "chatterino",
         "c2"
@@ -404,7 +404,7 @@
       "Document": true
     },
     {
-      "CommandName": "Chatterino7",
+      "Name": "Chatterino7",
       "Alias": [
         "chatterino7",
         "c7"
@@ -419,7 +419,7 @@
       "Document": true
     },
     {
-      "CommandName": "Pick",
+      "Name": "Pick",
       "Alias": [
         "pick",
         "choose"
@@ -434,7 +434,7 @@
       "Document": true
     },
     {
-      "CommandName": "BanFromFile",
+      "Name": "BanFromFile",
       "Alias": [
         "banfromfile"
       ],
@@ -448,7 +448,7 @@
       "Document": false
     },
     {
-      "CommandName": "Sub",
+      "Name": "Sub",
       "Alias": [
         "sub"
       ],
@@ -462,7 +462,7 @@
       "Document": true
     },
     {
-      "CommandName": "Unsub",
+      "Name": "Unsub",
       "Alias": [
         "unsub"
       ],
@@ -476,7 +476,7 @@
       "Document": true
     },
     {
-      "CommandName": "Go",
+      "Name": "Go",
       "Alias": [
         "go",
         "golang"
@@ -491,7 +491,7 @@
       "Document": true
     },
     {
-      "CommandName": "Stream",
+      "Name": "Stream",
       "Alias": [
         "stream",
         "streaminfo",
@@ -509,7 +509,7 @@
       "Document": true
     },
     {
-      "CommandName": "Code",
+      "Name": "Code",
       "Alias": [
         "code"
       ],
@@ -525,7 +525,7 @@
   ],
   "AfkCommands": [
     {
-      "CommandName": "gn",
+      "Name": "gn",
       "ComingBack": "{username} just woke up: {message} ({time})",
       "GoingAway": "{username} is now sleeping",
       "Resuming": "{username} fell asleep again",
@@ -541,7 +541,7 @@
       ]
     },
     {
-      "CommandName": "afk",
+      "Name": "afk",
       "ComingBack": "{username} just came back: {message} ({time})",
       "GoingAway": "{username} is now afk",
       "Resuming": "{username} went afk again",
@@ -556,7 +556,7 @@
       ]
     },
     {
-      "CommandName": "brb",
+      "Name": "brb",
       "ComingBack": "{username} came right back: {message} ({time})",
       "GoingAway": "{username} will be right back",
       "Resuming": "{username} went away again",
@@ -571,7 +571,7 @@
       ]
     },
     {
-      "CommandName": "fat",
+      "Name": "fat",
       "ComingBack": "{username} came back from eating: {message} ({time})",
       "GoingAway": "{username} went eating",
       "Resuming": "{username} went back to eating",
@@ -587,7 +587,7 @@
       ]
     },
     {
-      "CommandName": "lurk",
+      "Name": "lurk",
       "ComingBack": "{username} stopped lurking: {message} ({time})",
       "GoingAway": "{username} is now lurking",
       "Resuming": "{username} went back to lurking",
@@ -602,7 +602,7 @@
       ]
     },
     {
-      "CommandName": "shower",
+      "Name": "shower",
       "ComingBack": "{username} is now clean: {message} ({time})",
       "GoingAway": "{username} went for a shower",
       "Resuming": "{username} went back into the shower",
@@ -617,7 +617,7 @@
       ]
     },
     {
-      "CommandName": "nap",
+      "Name": "nap",
       "ComingBack": "{username} woke up from their nap: {message} ({time})",
       "GoingAway": "{username} is taking a nap",
       "Resuming": "{username} fell asleep again",
@@ -632,7 +632,7 @@
       ]
     },
     {
-      "CommandName": "study",
+      "Name": "study",
       "ComingBack": "{username} stopped studying: {message} ({time})",
       "GoingAway": "{username} is now studying",
       "Resuming": "{username} went back to studying",
@@ -647,7 +647,7 @@
       ]
     },
     {
-      "CommandName": "work",
+      "Name": "work",
       "ComingBack": "{username} came back from work: {message} ({time})",
       "GoingAway": "{username} went to work",
       "Resuming": "{username} went back to working",
@@ -662,7 +662,7 @@
       ]
     },
     {
-      "CommandName": "school",
+      "Name": "school",
       "ComingBack": "{username} came back from school: {message} ({time})",
       "GoingAway": "{username} went to school",
       "Resuming": "{username} went back to school",
@@ -677,7 +677,7 @@
       ]
     },
     {
-      "CommandName": "poof",
+      "Name": "poof",
       "ComingBack": "{username} fooped back: {message} ({time})",
       "GoingAway": "{username} poofed away",
       "Resuming": "{username} poofed again ppPoof",
@@ -692,7 +692,7 @@
       ]
     },
     {
-      "CommandName": "game",
+      "Name": "game",
       "ComingBack": "{username} stopped gaming: {message} ({time})",
       "GoingAway": "{username} is now gaming",
       "Resuming": "{username} went back to gaming",
@@ -708,7 +708,7 @@
       ]
     },
     {
-      "CommandName": "movie",
+      "Name": "movie",
       "ComingBack": "{username} finished a movie: {message} ({time})",
       "GoingAway": "{username} is now watching a movie",
       "Resuming": "{username} went back to watching a movie",
@@ -724,7 +724,7 @@
       ]
     },
     {
-      "CommandName": "piss",
+      "Name": "piss",
       "ComingBack": "{username} emptied their bladder: {message} ({time})",
       "GoingAway": "{username} needs to empty their bladder",
       "Resuming": "{username} ran back to the toilet",
@@ -740,7 +740,7 @@
       ]
     },
     {
-      "CommandName": "poop",
+      "Name": "poop",
       "ComingBack": "{username} took a big shit: {message} ({time})",
       "GoingAway": "{username} needs to take a shit",
       "Resuming": "{username} ran back to the toilet",

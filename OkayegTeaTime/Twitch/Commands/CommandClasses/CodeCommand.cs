@@ -14,7 +14,7 @@ public class CodeCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
+        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             JCommand? command = AppSettings.CommandList.FindCommand(ChatMessage.LowerSplit[1]);
@@ -24,7 +24,7 @@ public class CodeCommand : Command
                 return;
             }
 
-            Response = $"{ChatMessage.Username}, https://github.com/Sterbehilfe/OkayegTeaTimeCSharp/blob/master/OkayegTeaTime/Twitch/Commands/CommandClasses/{command.CommandName}Command.cs";
+            Response = $"{ChatMessage.Username}, https://github.com/Sterbehilfe/OkayegTeaTimeCSharp/blob/master/OkayegTeaTime/Twitch/Commands/CommandClasses/{command.Name}Command.cs";
         }
     }
 }

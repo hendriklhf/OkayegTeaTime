@@ -4,7 +4,7 @@ namespace OkayegTeaTime.Files.JsonClasses.CommandData;
 
 public class AfkCommand
 {
-    public string CommandName { get; set; }
+    public string Name { get; set; }
 
     public string ComingBack { get; set; }
 

@@ -30,7 +30,7 @@ public class CommandTests
         JsonController.Initialize();
         AppSettings.CommandList.Commands.ForEach(cmd =>
         {
-            CommandType type = ((CommandType[])Enum.GetValues(typeof(CommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName.ToLower());
+            CommandType type = ((CommandType[])Enum.GetValues(typeof(CommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.Name.ToLower());
             Assert.IsNotNull(type);
         });
     }
@@ -52,7 +52,7 @@ public class CommandTests
         JsonController.Initialize();
         AppSettings.CommandList.AfkCommands.ForEach(cmd =>
         {
-            AfkCommandType type = ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.CommandName);
+            AfkCommandType type = ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.Name);
             Assert.IsNotNull(type);
         });
     }
