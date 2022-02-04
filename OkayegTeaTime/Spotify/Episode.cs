@@ -6,9 +6,10 @@ public class Episode : PlayingItem
 {
     public Episode(FullEpisode episode)
     {
-        Artist = episode.Show.Publisher;
+        Artists = new[] { episode.Show.Publisher };
         Title = episode.Name;
         Uri = episode.Uri;
-        Message = $"{Title} by {Artist} || {Uri}";
+        Message = $"{Title} by {string.Join(", ", Artists)} || {Uri}";
+        IsLocal = false;
     }
 }

@@ -6,9 +6,11 @@ public abstract class PlayingItem
 {
     public string Title { get; protected set; }
 
-    public string Artist { get; protected set; }
+    public string[] Artists { get; protected set; }
 
     public string Uri { get; protected set; }
 
     public string Message { get; protected set; }
+
+    public bool IsLocal { get; protected set; }
 }

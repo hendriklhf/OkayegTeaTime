@@ -521,6 +521,20 @@
       ],
       "Cooldown": 10000,
       "Document": true
+    },
+    {
+      "Name": "Listen",
+      "Alias": [
+        "listen"
+      ],
+      "Parameter": [
+        "[username]"
+      ],
+      "Description": [
+        "Listen to the currently playing song on Spotify of the provided to user"
+      ],
+      "Cooldown": 15000,
+      "Document": true
     }
   ],
   "AfkCommands": [

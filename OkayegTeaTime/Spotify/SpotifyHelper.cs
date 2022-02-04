@@ -5,9 +5,9 @@ namespace OkayegTeaTime.Spotify;
 
 public static class SpotifyHelper
 {
-    public static string GetArtists(this List<SimpleArtist> artist)
+    public static string[] GetArtistNames(this List<SimpleArtist> artists)
     {
-        return string.Join(", ", artist.Select(a => a.Name));
+        return artists.Select(a => a.Name).ToArray();
     }
 
     public static FullTrack? GetExcactTrackFromSearch(List<FullTrack>? tracks, List<string> query)
@@ -17,7 +17,7 @@ public static class SpotifyHelper
             || query.Any(q => t.Artists.Any(a => a.Name.IsMatch(q))));
     }
 
-    public static PlayingItem? GetItem(this CurrentlyPlaying currentlyPlaying)
+    public static PlayingItem? GetPlayingItem(CurrentlyPlaying currentlyPlaying)
     {
         if (currentlyPlaying is null)
         {

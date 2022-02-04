@@ -1,5 +1,4 @@
-﻿using HLE.Strings;
-using SpotifyAPI.Web;
+﻿using SpotifyAPI.Web;
 
 namespace OkayegTeaTime.Spotify;
 
@@ -7,9 +6,10 @@ public class Track : PlayingItem
 {
     public Track(FullTrack track)
     {
-        Artist = track.Artists.GetArtists();
+        Artists = track.Artists.GetArtistNames();
         Title = track.Name;
-        Uri = track.Uri.IsMatch("local") ? "local file" : track.Uri;
-        Message = $"{Title} by {Artist} || {Uri}";
+        Uri = track.IsLocal ? "local file" : track.Uri;
+        Message = $"{Title} by {string.Join(", ", Artists)} || {Uri}";
+        IsLocal = track.IsLocal;
     }
 }
