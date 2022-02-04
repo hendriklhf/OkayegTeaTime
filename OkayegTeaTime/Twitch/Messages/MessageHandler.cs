@@ -2,6 +2,7 @@
 using HLE.Emojis;
 using HLE.Strings;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
@@ -14,14 +15,16 @@ public class MessageHandler : Handler
 {
     public CommandHandler CommandHandler { get; }
 
+    private readonly LinkRecognizer _linkRecognizer = new();
+
+    private static readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+
     private const int _pajaAlertUserId = 82008718;
     private const int _pajaChannelId = 11148817;
-    private static readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private const string _pajaAlertChannel = "pajlada";
     private const string _pajaAlertEmote = "pajaStare";
     private const string _pajaAlertMessage = $"/me {_pajaAlertEmote} {Emoji.RotatingLight} OBACHT";
-
-    private static readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
@@ -64,7 +67,7 @@ public class MessageHandler : Handler
     {
         if (chatMessage.Channel.Name == AppSettings.SecretOfflineChatChannel)
         {
-            string? uri = BotActions.SendDetectedSpotifyUri(chatMessage);
+            string? uri = _linkRecognizer.FindSpotifyLink(chatMessage);
             if (!string.IsNullOrEmpty(uri))
             {
                 TwitchBot.Send(AppSettings.SecretOfflineChatChannel, uri);

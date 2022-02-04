@@ -4,7 +4,6 @@ using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Models;
@@ -16,18 +15,6 @@ public static class BotActions
     public static void SendComingBack(this TwitchBot twitchBot, User user, TwitchChatMessage chatMessage)
     {
         twitchBot.Send(chatMessage.Channel, new AfkMessage(user).ComingBack);
-    }
-
-    public static string? SendDetectedSpotifyUri(ChatMessage chatMessage)
-    {
-        if (new LinkRecognizer(chatMessage).TryFindSpotifyLink(out string uri))
-        {
-            return uri;
-        }
-        else
-        {
-            return null;
-        }
     }
 
     public static void SendGoingAfk(this TwitchBot twitchBot, TwitchChatMessage chatMessage, AfkCommandType type)

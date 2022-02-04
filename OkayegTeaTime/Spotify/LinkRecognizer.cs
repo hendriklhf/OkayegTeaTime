@@ -1,29 +1,23 @@
-﻿using HLE.Strings;
+﻿using System.Text.RegularExpressions;
+using HLE.Strings;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Spotify;
 
 public class LinkRecognizer
 {
-    public string Message { get; set; }
+    private static readonly Regex _spotifyLinkPattern = new(Pattern.SpotifyLink, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public LinkRecognizer(ChatMessage chatMessage)
+    public string? FindSpotifyLink(ChatMessage chatMessage)
     {
-        Message = chatMessage.Message;
-    }
-
-    public bool TryFindSpotifyLink(out string uri)
-    {
-        if (Message.IsMatch(Pattern.SpotifyLink))
+        if (_spotifyLinkPattern.IsMatch(chatMessage.Message))
         {
-            string uriCode = Message.Match(@"track/\w+\?").Remove("track/").Remove("?");
-            uri = $"spotify:track:{uriCode}";
-            return true;
+            string uriCode = chatMessage.Message.Match(@"track/\w+\?").Remove("track/").Remove("?");
+            return $"spotify:track:{uriCode}";
         }
         else
         {
-            uri = string.Empty;
-            return false;
+            return null;
         }
     }
 }
