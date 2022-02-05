@@ -61,7 +61,7 @@ public class TwitchBot
 
     private readonly long _runtime = Now();
 
-    public TwitchBot()
+    public TwitchBot(List<string>? channels = null)
     {
         TwitchApi.Initialize();
 
@@ -78,11 +78,18 @@ public class TwitchBot
             AutoReListenOnException = true
         };
 
+        if (channels is not null)
+        {
+            TwitchClient.Initialize(ConnectionCredentials, channels);
+        }
+        else
+        {
 #if DEBUG
-        TwitchClient.Initialize(ConnectionCredentials, AppSettings.DebugChannel);
+            TwitchClient.Initialize(ConnectionCredentials, AppSettings.DebugChannel);
 #else
-        TwitchClient.Initialize(ConnectionCredentials, DbController.GetChannelNames());
+            TwitchClient.Initialize(ConnectionCredentials, DbController.GetChannelNames());
 #endif
+        }
 
         TwitchClient.OnLog += Client_OnLog!;
         TwitchClient.OnConnected += Client_OnConnected!;

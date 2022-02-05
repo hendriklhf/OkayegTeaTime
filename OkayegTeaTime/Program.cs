@@ -11,14 +11,22 @@ public static class Program
 {
     private static bool _running = true;
 
-    private static void Main()
+    private static void Main(string[] args)
     {
         Console.Title = "OkayegTeaTime";
         Console.OutputEncoding = Encoding.UTF8;
 
         JsonController.Initialize();
 
-        TwitchBot twitchBot = new();
+        TwitchBot twitchBot;
+        if (args.Length > 0)
+        {
+            twitchBot = new(args.ToList());
+        }
+        else
+        {
+            twitchBot = new();
+        }
         twitchBot.Connect();
 
         while (_running)
