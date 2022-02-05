@@ -28,10 +28,10 @@ public class ChattersCommand : Command
                     Response += $"there are {chatterCount} chatters in the channel of {channel}";
                     break;
                 case > 0:
-                    Response += $"{ChatMessage.Username}, there is {chatterCount} chatter in the channel of {channel}";
+                    Response += $"there is {chatterCount} chatter in the channel of {channel}";
                     break;
                 default:
-                    Response += $"{ChatMessage.Username}, there are no chatters in the channel of {channel}";
+                    Response += $"there are no chatters in the channel of {channel}";
                     break;
             }
             return;

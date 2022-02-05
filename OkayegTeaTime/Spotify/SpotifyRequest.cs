@@ -180,7 +180,7 @@ public static class SpotifyRequest
             return $"can't listen to other's songs, you have to register first";
         }
 
-        if (username.ToLower() == target.ToLower())
+        if (username == target)
         {
             return $"you can't listen to your own song";
         }
@@ -227,7 +227,7 @@ public static class SpotifyRequest
         catch (Exception ex)
         {
             Logger.Log(ex);
-            return $"couldn't skip to the next song";
+            return $"an error occurred while trying to play the song";
         }
 
         return $"now playing {playingItem.Title} by {string.Join(", ", playingItem.Artists)} || {playingItem.Uri}";

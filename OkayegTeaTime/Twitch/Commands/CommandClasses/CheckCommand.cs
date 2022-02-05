@@ -37,7 +37,7 @@ public class CheckCommand : Command
                 string message = user.MessageText.Decode();
                 if (!string.IsNullOrEmpty(message))
                 {
-                    Response += $": {user.MessageText.Decode()}";
+                    Response += $": {message}";
                 }
                 Response += $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, ConversionType.YearDayHourMin)} ago)";
             }
