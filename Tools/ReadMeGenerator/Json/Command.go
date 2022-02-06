@@ -1,7 +1,7 @@
 package Json
 
 type Command struct {
-	CommandName string
+	Name        string
 	Alias       []string
 	Parameter   []string
 	Description []string

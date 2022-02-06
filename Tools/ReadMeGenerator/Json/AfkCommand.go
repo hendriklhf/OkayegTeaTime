@@ -1,7 +1,7 @@
 package Json
 
 type AfkCommand struct {
-	CommandName string
+	Name        string
 	ComingBack  string
 	GoingAway   string
 	Resuming    string

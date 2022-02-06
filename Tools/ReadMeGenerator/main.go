@@ -63,10 +63,10 @@ func GenerateReadMe(jsonController *Json.JsonController) string {
 	})
 	builder.WriteString("<tr/>")
 	linq.From(jsonController.JsonCommands.Commands).SortT(func(c1 Json.Command, c2 Json.Command) bool {
-		return c1.CommandName < c2.CommandName
+		return c1.Name < c2.Name
 	}).ForEachT(func(c Json.Command) {
 		if c.Document {
-			builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td><table>", c.CommandName))
+			builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td><table>", c.Name))
 			linq.From(c.Alias).ForEachT(func(a string) {
 				builder.WriteString(fmt.Sprintf("<tr><td>%s</td></tr>", a))
 			})
@@ -83,9 +83,9 @@ func GenerateReadMe(jsonController *Json.JsonController) string {
 	})
 	builder.WriteString("</tr>")
 	linq.From(jsonController.JsonCommands.AfkCommands).SortT(func(c1 Json.AfkCommand, c2 Json.AfkCommand) bool {
-		return c1.CommandName < c2.CommandName
+		return c1.Name < c2.Name
 	}).ForEachT(func(c Json.AfkCommand) {
-		builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td><table>", c.CommandName))
+		builder.WriteString(fmt.Sprintf("<tr><td>%s</td><td><table>", c.Name))
 		linq.From(c.Alias).ForEachT(func(s string) {
 			builder.WriteString(fmt.Sprintf("<tr><td>%s</td></tr>", s))
 		})
