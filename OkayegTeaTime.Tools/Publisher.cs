@@ -22,7 +22,7 @@ public class Publisher
     private static readonly Dictionary<string, Regex> _regexDic = new(new KeyValuePair<string, Regex>[]
     {
         new(_runtimes[0], NewRegex("^win(dows)?(-?x?64)?$")),
-        new(_runtimes[1], NewRegex("^((linux-?)?arm)|((raspberry)?pi)")),
+        new(_runtimes[1], NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
         new(_runtimes[2], NewRegex("^linux(-?x?64)?$")),
         new(_runtimes[3], NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
     });
@@ -37,7 +37,7 @@ public class Publisher
         List<string> runtimes = GetRuntimes();
         if (!runtimes.Any())
         {
-            Console.WriteLine($"The provided runtimes (\"{Args[1]}\") don't match many any available runtime identifier");
+            Console.WriteLine($"The provided runtimes (\"{Args[1]}\") don't match any available runtime identifier");
             Environment.Exit(1);
             return;
         }

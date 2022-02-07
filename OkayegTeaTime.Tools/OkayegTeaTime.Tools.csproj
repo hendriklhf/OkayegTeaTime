@@ -14,4 +14,8 @@
     <PackageReference Include="HLE" Version="1.2.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime\OkayegTeaTime.csproj" />
+  </ItemGroup>
+
 </Project>
