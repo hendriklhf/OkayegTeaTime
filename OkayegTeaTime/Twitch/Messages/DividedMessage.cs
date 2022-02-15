@@ -20,7 +20,7 @@ public class DividedMessage
         TwitchBot = twitchBot;
         Channel = channel;
         EmoteInFront = emoteInFront;
-        Messages = message.Split(AppSettings.MaxMessageLength - (EmoteInFront.Length + 1)).ToList();
+        Messages = message.Split(AppSettings.MaxMessageLength - (EmoteInFront.Length + 1), true).ToList();
     }
 
     public void StartSending()

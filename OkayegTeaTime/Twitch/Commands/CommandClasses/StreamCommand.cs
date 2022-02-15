@@ -42,7 +42,7 @@ public class StreamCommand : Command
         {
             milliseconds += new Hour().Milliseconds;
         }
-        string streamTime = TimeHelper.ConvertUnixTimeToTimeStamp(milliseconds);
+        string streamTime = TimeHelper.GetUnixDifference(milliseconds).ToString();
         Response += streamTime;
         return;
     }

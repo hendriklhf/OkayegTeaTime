@@ -1,6 +1,5 @@
 ﻿using HLE.Strings;
 using HLE.Time;
-using HLE.Time.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
 using OkayegTeaTime.Twitch.Handlers;
@@ -28,7 +27,7 @@ public class AfkMessage
     private void ReplaceSpaceHolder(User user)
     {
         ComingBack = ComingBack.Replace("{username}", user.Username)
-            .Replace("{time}", $"{TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, ConversionType.YearDayHourMin)} ago")
+            .Replace("{time}", $"{TimeHelper.GetUnixDifference(user.Time)} ago")
             .Replace("{message}", user.MessageText?.Decode());
         ComingBack = string.IsNullOrEmpty(user.MessageText?.Decode()) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
 

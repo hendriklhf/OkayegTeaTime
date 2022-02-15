@@ -32,7 +32,7 @@ public static class BotActions
 
     public static void SendReminder(this TwitchBot twitchBot, TwitchChatMessage chatMessage, List<Reminder> reminders)
     {
-        string message = $"{chatMessage.Username}, reminder from {reminders[0].GetAuthor()} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminders[0].Time)} ago)";
+        string message = $"{chatMessage.Username}, reminder from {reminders[0].GetAuthor()} ({TimeHelper.GetUnixDifference(reminders[0].Time)} ago)";
         StringBuilder builder = new(message);
         if (reminders[0].Message.Length > 0)
         {
@@ -43,7 +43,7 @@ public static class BotActions
         {
             reminders.Skip(1).ForEach(r =>
             {
-                builder.Append($" || {r.GetAuthor()} ({TimeHelper.ConvertUnixTimeToTimeStamp(r.Time)} ago)");
+                builder.Append($" || {r.GetAuthor()} ({TimeHelper.GetUnixDifference(r.Time)} ago)");
                 if (r.Message.Length > 0)
                 {
                     builder.Append($": {r.Message.Decode()}");
@@ -55,7 +55,7 @@ public static class BotActions
 
     public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
     {
-        string message = $"{reminder.ToUser}, reminder from {reminder.GetAuthor()} ({TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time)} ago)";
+        string message = $"{reminder.ToUser}, reminder from {reminder.GetAuthor()} ({TimeHelper.GetUnixDifference(reminder.Time)} ago)";
         string reminderMessage = reminder.Message.Decode();
         if (!string.IsNullOrEmpty(reminderMessage))
         {

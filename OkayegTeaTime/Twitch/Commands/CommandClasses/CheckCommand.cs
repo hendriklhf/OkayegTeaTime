@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Strings;
 using HLE.Time;
-using HLE.Time.Enums;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
@@ -39,7 +38,7 @@ public class CheckCommand : Command
                 {
                     Response += $": {message}";
                 }
-                Response += $" ({TimeHelper.ConvertUnixTimeToTimeStamp(user.Time, ConversionType.YearDayHourMin)} ago)";
+                Response += $" ({TimeHelper.GetUnixDifference(user.Time)} ago)";
             }
             else
             {
@@ -61,8 +60,8 @@ public class CheckCommand : Command
             }
 
             Response += $"From: {reminder.GetAuthor()} || To: {reminder.GetTarget()} || ";
-            Response += $"Set: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.Time, ConversionType.YearDayHourMin)} ago || ";
-            Response += reminder.ToTime > 0 ? $"Fires in: {TimeHelper.ConvertUnixTimeToTimeStamp(reminder.ToTime, ConversionType.YearDayHourMin)} || " : string.Empty;
+            Response += $"Set: {TimeHelper.GetUnixDifference(reminder.Time)} ago || ";
+            Response += reminder.ToTime > 0 ? $"Fires in: {TimeHelper.GetUnixDifference(reminder.ToTime)} || " : string.Empty;
             Response += $"Message: {reminder.Message.Decode()}";
             return;
         }

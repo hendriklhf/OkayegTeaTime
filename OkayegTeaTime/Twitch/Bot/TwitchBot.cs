@@ -54,7 +54,7 @@ public class TwitchBot
 
     public string MemoryUsage => GetMemoryUsage();
 
-    public string Runtime => ConvertUnixTimeToTimeStamp(_runtime);
+    public string Runtime => GetUnixDifference(_runtime).ToString();
 
     public static List<Timer> Timers { get; } = new();
 

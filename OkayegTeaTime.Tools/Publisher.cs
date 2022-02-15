@@ -37,7 +37,7 @@ public class Publisher
         List<string> runtimes = GetRuntimes();
         if (!runtimes.Any())
         {
-            Console.WriteLine($"The provided runtimes (\"{Args[1]}\") don't match any available runtime identifier");
+            Console.WriteLine($"The provided runtimes aren't matching any available runtime identifier.");
             Environment.Exit(1);
             return;
         }
