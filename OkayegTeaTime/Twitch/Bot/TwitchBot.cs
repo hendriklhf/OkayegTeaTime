@@ -9,6 +9,7 @@ using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot.Cooldowns;
 using OkayegTeaTime.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTime.Twitch.Commands;
+using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Whisper;
@@ -34,6 +35,8 @@ public class TwitchBot
     public ClientOptions ClientOptions { get; private set; }
 
     public TcpClient TcpClient { get; private set; }
+
+    public List<string> Channels { get; private set; }
 
     public MessageHandler? MessageHandler { get; private set; }
 
@@ -80,16 +83,17 @@ public class TwitchBot
 
         if (channels is not null)
         {
-            TwitchClient.Initialize(ConnectionCredentials, channels);
+            Channels = channels;
         }
         else
         {
 #if DEBUG
-            TwitchClient.Initialize(ConnectionCredentials, AppSettings.DebugChannel);
+            Channels = new() { AppSettings.DebugChannel };
 #else
-            TwitchClient.Initialize(ConnectionCredentials, DbController.GetChannelNames());
+            Channels = DbController.GetChannelNames();
 #endif
         }
+        TwitchClient.Initialize(ConnectionCredentials, Channels);
 
         TwitchClient.OnLog += Client_OnLog!;
         TwitchClient.OnConnected += Client_OnConnected!;

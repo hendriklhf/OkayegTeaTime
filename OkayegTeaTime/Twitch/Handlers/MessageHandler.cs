@@ -4,16 +4,16 @@ using HLE.Strings;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Commands;
-using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Models;
 using TwitchLib = TwitchLib.Client.Models;
 
-namespace OkayegTeaTime.Twitch.Messages;
+namespace OkayegTeaTime.Twitch.Handlers;
 
 public class MessageHandler : Handler
 {
     public CommandHandler CommandHandler { get; }
+
+    public Throttler Throttler { get; }
 
     private readonly LinkRecognizer _linkRecognizer = new();
 
@@ -30,22 +30,30 @@ public class MessageHandler : Handler
         : base(twitchBot)
     {
         CommandHandler = new(twitchBot);
+        Throttler = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
     {
-        if (!chatMessage.IsIgnoredUser)
+        if (chatMessage.IsIgnoredUser)
         {
-            DbController.AddUser(chatMessage.Username);
-
-            DbController.CheckIfAfk(TwitchBot, chatMessage);
-
-            DbController.CheckForReminder(TwitchBot, chatMessage);
-
-            CommandHandler.Handle(chatMessage);
-
-            HandleSpecificMessages(chatMessage);
+            return;
         }
+
+        DbController.AddUser(chatMessage.Username);
+
+        DbController.CheckIfAfk(TwitchBot, chatMessage);
+
+        DbController.CheckForReminder(TwitchBot, chatMessage);
+
+        if (!Throttler.CanBeProcessed(chatMessage))
+        {
+            return;
+        }
+
+        CommandHandler.Handle(chatMessage);
+
+        HandleSpecificMessages(chatMessage);
     }
 
     private void HandleSpecificMessages(TwitchChatMessage chatMessage)

@@ -41,6 +41,7 @@ public static class AppSettings
     public const short MaxMessageLength = 500;
     public const byte MaxPrefixLength = 10;
     public const byte MaxReminders = 10;
-    public const short MinDelayBetweenMessages = 1300;
+    public const short DelayBetweenSentMessages = 1300;
+    public const short DelayBetweenReceivedMessages = 500;
     public const string Suffix = "eg";
 }

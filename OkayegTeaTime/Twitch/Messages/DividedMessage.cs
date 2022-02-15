@@ -29,11 +29,11 @@ public class DividedMessage
         Messages.RemoveAt(0);
         if (Messages.Count > 0)
         {
-            Thread.Sleep(AppSettings.MinDelayBetweenMessages);
+            Thread.Sleep(AppSettings.DelayBetweenSentMessages);
             Messages.ForEach(str =>
             {
                 TwitchBot.TwitchClient.SendMessage(Channel.Name, str);
-                Thread.Sleep(AppSettings.MinDelayBetweenMessages);
+                Thread.Sleep(AppSettings.DelayBetweenSentMessages);
             });
         }
     }

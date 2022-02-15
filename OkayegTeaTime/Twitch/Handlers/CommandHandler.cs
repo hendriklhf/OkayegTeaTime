@@ -4,10 +4,9 @@ using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Bot.Cooldowns;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
-using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Models;
 
-namespace OkayegTeaTime.Twitch.Commands;
+namespace OkayegTeaTime.Twitch.Handlers;
 
 public class CommandHandler : Handler
 {
