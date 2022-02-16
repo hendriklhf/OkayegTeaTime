@@ -2,32 +2,23 @@
 using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
-using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Bot;
 
 public static class BotActions
 {
-    public static void SendComingBack(this TwitchBot twitchBot, User user, TwitchChatMessage chatMessage)
+    public static void SendComingBack(this TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
-        twitchBot.Send(chatMessage.Channel, new AfkMessage(user).ComingBack);
-    }
-
-    public static void SendGoingAfk(this TwitchBot twitchBot, TwitchChatMessage chatMessage, AfkCommandType type)
-    {
-        DbController.SetAfk(chatMessage, type);
-        User? user = DbController.GetUser(chatMessage.Username);
-        if (user is null)
+        string? afkMessage = new AfkMessage(chatMessage.UserId).ComingBack;
+        if (afkMessage is null)
         {
-            DbController.AddUser(chatMessage.Username);
-            user = DbController.GetUser(chatMessage.Username);
+            return;
         }
 
-        twitchBot.Send(chatMessage.Channel, new AfkMessage(user!).GoingAway);
+        twitchBot.Send(chatMessage.Channel, afkMessage);
     }
 
     public static void SendReminder(this TwitchBot twitchBot, TwitchChatMessage chatMessage, List<Reminder> reminders)

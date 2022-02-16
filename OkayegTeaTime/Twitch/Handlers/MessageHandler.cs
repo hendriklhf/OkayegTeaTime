@@ -40,9 +40,14 @@ public class MessageHandler : Handler
             return;
         }
 
-        DbController.AddUser(chatMessage.Username);
-
-        DbController.CheckIfAfk(TwitchBot, chatMessage);
+        if (DbController.CheckIfAfk(chatMessage.UserId))
+        {
+            TwitchBot.SendComingBack(chatMessage);
+            if (!chatMessage.IsAfkCommmand)
+            {
+                DbController.SetAfkStatus(chatMessage.UserId, false);
+            }
+        }
 
         DbController.CheckForReminder(TwitchBot, chatMessage);
 

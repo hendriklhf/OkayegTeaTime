@@ -7,7 +7,7 @@ public class Response
     public string Message => GetMessage();
 
     private readonly string _value = string.Empty;
-    private readonly StringBuilder? _builder;
+    private StringBuilder? _builder;
 
     public Response()
     {
@@ -37,8 +37,8 @@ public class Response
 
     public static Response operator +(Response left, string right)
     {
-        StringBuilder builder = new(left.Message);
-        return new(builder.Append(right));
+        left._builder ??= new();
+        return new(left._builder.Append(right));
     }
 
     public static implicit operator Response(string str)

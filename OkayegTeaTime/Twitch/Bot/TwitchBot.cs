@@ -6,7 +6,6 @@ using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Api;
-using OkayegTeaTime.Twitch.Bot.Cooldowns;
 using OkayegTeaTime.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
@@ -57,10 +56,6 @@ public class TwitchBot
     public string Runtime => GetUnixDifference(_runtime).ToString();
 
     public static List<Timer> Timers { get; } = new();
-
-    public static List<Cooldown> Cooldowns { get; } = new();
-
-    public static List<AfkCooldown> AfkCooldowns { get; } = new();
 
     private readonly long _runtime = Now();
 

@@ -20,8 +20,7 @@ namespace OkayegTeaTime.Database.Models
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<Yourmom> Yourmom { get; set; }
+        public virtual DbSet<UserNew> UsersNew { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -134,39 +133,29 @@ namespace OkayegTeaTime.Database.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<UserNew>(entity =>
             {
+                entity.ToTable("Users2");
+
                 entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.AfkMessage)
+                    .HasMaxLength(2000)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.AfkTime).HasColumnType("bigint(20)");
+
+                entity.Property(e => e.AfkType).HasColumnType("int(11)");
 
                 entity.Property(e => e.IsAfk)
                     .IsRequired()
                     .HasColumnType("bit(1)")
                     .HasDefaultValueSql("b'0'");
 
-                entity.Property(e => e.MessageText)
-                    .HasMaxLength(2000)
-                    .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.Time).HasColumnType("bigint(20)");
-
-                entity.Property(e => e.Type)
-                    .HasMaxLength(10)
-                    .HasDefaultValueSql("'NULL'");
-
                 entity.Property(e => e.Username)
                     .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Yourmom>(entity =>
-            {
-                entity.ToTable("yourmom");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.MessageText)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                    .HasMaxLength(50)
+                    .HasDefaultValueSql("''''''");
             });
         }
     }

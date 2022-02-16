@@ -10,6 +10,8 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public class CommandHandler : Handler
 {
+    public AfkCommandHandler AfkCommandHandler { get; }
+
     public static CommandType[] CommandTypes { get; } = (CommandType[])Enum.GetValues(typeof(CommandType));
 
     public static AfkCommandType[] AfkCommandTypes { get; } = (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType));
@@ -22,6 +24,7 @@ public class CommandHandler : Handler
     public CommandHandler(TwitchBot twitchBot)
         : base(twitchBot)
     {
+        AfkCommandHandler = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
@@ -79,7 +82,7 @@ public class CommandHandler : Handler
                         return;
                     }
 
-                    AfkCommandHandler.Handle(TwitchBot, chatMessage, type);
+                    AfkCommandHandler.Handle(chatMessage, type);
                     CooldownController.AddAfkCooldown(chatMessage.UserId);
                     TwitchBot.CommandCount++;
                     return;

@@ -1,7 +1,6 @@
 ﻿using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
@@ -20,6 +19,30 @@ public static class DbController
         using OkayegTeaTimeContext database = new();
         database.Channels.Add(new(channel));
         database.SaveChanges();
+    }
+
+    public static void AddUser(int userId, string username, AfkCommandType type, bool checkIfUserExists = false)
+    {
+        _ = AddUserAndReturn(userId, username, type, checkIfUserExists);
+    }
+
+    public static UserNew? AddUserAndReturn(int userId, string username, AfkCommandType type, bool checkIfUserExists = false)
+    {
+        UserNew? user;
+        if (checkIfUserExists)
+        {
+            user = GetUser(userId, username);
+            if (user is not null)
+            {
+                return null;
+            }
+        }
+
+        OkayegTeaTimeContext database = new();
+        user = new(userId, username, type);
+        user = database.UsersNew.Add(user).Entity;
+        database.SaveChanges();
+        return user;
     }
 
     public static void AddNewToken(string username, string accessToken, string refreshToken)
@@ -105,16 +128,6 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void AddUser(string username)
-    {
-        using OkayegTeaTimeContext database = new();
-        if (!database.Users.Any(u => u.Username == username))
-        {
-            database.Users.Add(new(username));
-            database.SaveChanges();
-        }
-    }
-
     public static void CheckForReminder(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         using OkayegTeaTimeContext database = new();
@@ -143,24 +156,33 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void CheckIfAfk(TwitchBot twitchBot, TwitchChatMessage chatMessage)
+    public static bool CheckIfAfk(int userId)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
+        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
 
+        if (user is null)
+        {
+            return false;
+        }
+
+        return user.IsAfk == true;
+    }
+
+    public static void SetAfk(int userId, string message, AfkCommandType type)
+    {
+        using OkayegTeaTimeContext database = new();
+        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return;
         }
 
-        if (user.IsAfk == true)
-        {
-            twitchBot.SendComingBack(user, chatMessage);
-            if (!chatMessage.IsAfkCommmand)
-            {
-                SetAfkStatus(chatMessage.Username, false);
-            }
-        }
+        user.AfkMessage = message.Encode();
+        user.AfkType = (int)type;
+        user.AfkTime = TimeHelper.Now();
+        user.IsAfk = true;
+        database.SaveChanges();
     }
 
     public static bool DoesSpotifyUserExist(string username)
@@ -215,12 +237,6 @@ public static class DbController
         return database.Channels.ToDictionary(c => c.ChannelName, c => c.Prefix?.Decode());
     }
 
-    public static Yourmom? GetRandomYourmom()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Yourmom.FromSqlRaw($"SELECT * FROM yourmom ORDER BY RAND() LIMIT 1").FirstOrDefault();
-    }
-
     public static List<Reminder> GetReminders()
     {
         using OkayegTeaTimeContext database = new();
@@ -250,16 +266,22 @@ public static class DbController
         return database.Spotify.ToList();
     }
 
-    public static User? GetUser(string username)
+    public static UserNew? GetUser(int userId, string? username = null)
     {
         using OkayegTeaTimeContext database = new();
-        return database.Users.FirstOrDefault(u => u.Username == username);
-    }
+        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        if (user is null)
+        {
+            return user;
+        }
 
-    public static List<User> GetUsers()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Users.ToList();
+        if (username is not null && user.Username != username)
+        {
+            user.Username = username;
+        }
+        database.SaveChanges();
+
+        return user;
     }
 
     public static bool HasTooManyRemindersSet(string target, bool isTimedReminder)
@@ -300,26 +322,9 @@ public static class DbController
         return false;
     }
 
-    public static void ResumeAfkStatus(string username)
+    public static void ResumeAfkStatus(int userId)
     {
-        SetAfkStatus(username, true);
-    }
-
-    public static void SetAfk(TwitchChatMessage chatMessage, AfkCommandType type)
-    {
-        using OkayegTeaTimeContext database = new();
-        User? user = database.Users.FirstOrDefault(u => u.Username == chatMessage.Username);
-        if (user is null)
-        {
-            return;
-        }
-
-        string? message = chatMessage.Split.Length > 1 ? chatMessage.Split[1..].JoinToString(' ') : null;
-        user.MessageText = message?.Encode();
-        user.Type = type.ToString();
-        user.Time = TimeHelper.Now();
-        database.SaveChanges();
-        SetAfkStatus(chatMessage.Username, true);
+        SetAfkStatus(userId, true);
     }
 
     public static void SetEmoteInFront(string channel, string emote)
@@ -404,10 +409,10 @@ public static class DbController
         database.SaveChanges();
     }
 
-    private static void SetAfkStatus(string username, bool afk)
+    public static void SetAfkStatus(int userId, bool afk)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = database.Users.FirstOrDefault(u => u.Username == username);
+        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return;

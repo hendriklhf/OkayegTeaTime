@@ -1,38 +1,43 @@
 ﻿using HLE.Strings;
 using HLE.Time;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
-using OkayegTeaTime.Twitch.Handlers;
+using OkayegTeaTime.Twitch.Commands.Enums;
 
 namespace OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 
 public class AfkMessage
 {
-    public string ComingBack { get; private set; }
+    public UserNew? User { get; }
 
-    public string GoingAway { get; private set; }
+    public string? ComingBack { get; private set; }
 
-    public string Resuming { get; private set; }
+    public string? GoingAway { get; private set; }
 
-    public AfkMessage(User user)
+    public string? Resuming { get; private set; }
+
+    public AfkMessage(int userId, string? username = null)
     {
-        string type = user.Type.ToLower();
-        AfkCommand afkCommand = AppSettings.CommandList[CommandHandler.AfkCommandTypes.FirstOrDefault(t => t.ToString().ToLower() == type)];
-        ComingBack = afkCommand.ComingBack;
-        GoingAway = afkCommand.GoingAway;
-        Resuming = afkCommand.Resuming;
-        ReplaceSpaceHolder(user);
+        User = DbController.GetUser(userId, username);
+        CreateMessages();
     }
 
-    private void ReplaceSpaceHolder(User user)
+    private void CreateMessages()
     {
-        ComingBack = ComingBack.Replace("{username}", user.Username)
-            .Replace("{time}", $"{TimeHelper.GetUnixDifference(user.Time)} ago")
-            .Replace("{message}", user.MessageText?.Decode());
-        ComingBack = string.IsNullOrEmpty(user.MessageText?.Decode()) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
+        if (User is null)
+        {
+            return;
+        }
 
-        GoingAway = GoingAway.Replace("{username}", user.Username);
+        AfkCommand afkCommand = AppSettings.CommandList[(AfkCommandType)User.AfkType];
+        ComingBack = afkCommand.ComingBack.Replace("{username}", User.Username)
+            .Replace("{time}", $"{TimeHelper.GetUnixDifference(User.AfkTime)} ago")
+            .Replace("{message}", User.AfkMessage.Decode());
+        ComingBack = string.IsNullOrEmpty(User.AfkMessage.Decode()) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
 
-        Resuming = Resuming.Replace("{username}", user.Username);
+        GoingAway = afkCommand.GoingAway.Replace("{username}", User.Username);
+
+        Resuming = afkCommand.Resuming.Replace("{username}", User.Username);
     }
 }

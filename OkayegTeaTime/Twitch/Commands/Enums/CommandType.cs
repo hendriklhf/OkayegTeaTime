@@ -34,6 +34,5 @@ public enum CommandType
     Tuck,
     Unset,
     Unsub,
-    Vanish,
-    Yourmom
+    Vanish
 }

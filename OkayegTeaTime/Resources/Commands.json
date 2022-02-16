@@ -112,22 +112,6 @@
       "Document": true
     },
     {
-      "Name": "Yourmom",
-      "Alias": [
-        "yourmom"
-      ],
-      "Parameter": [
-        "(none)",
-        "[username]"
-      ],
-      "Description": [
-        "Sends a \u0022your mom\u0022 joke",
-        "Sends a \u0022your mom\u0022 joke to the given user"
-      ],
-      "Cooldown": 5000,
-      "Document": true
-    },
-    {
       "Name": "Tuck",
       "Alias": [
         "tuck"

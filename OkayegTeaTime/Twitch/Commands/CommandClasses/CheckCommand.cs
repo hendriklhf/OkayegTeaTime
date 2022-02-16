@@ -3,6 +3,7 @@ using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Models;
@@ -23,7 +24,14 @@ public class CheckCommand : Command
         {
             Response = $"{ChatMessage.Username}, ";
             string username = ChatMessage.LowerSplit[2];
-            User? user = DbController.GetUser(username);
+            int? userId = TwitchApi.GetUserId(username);
+            if (userId is null)
+            {
+                Response += PredefinedMessages.UserNotFoundMessage;
+                return;
+            }
+
+            UserNew? user = DbController.GetUser(userId.Value, username);
             if (user is null)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;
@@ -32,13 +40,13 @@ public class CheckCommand : Command
 
             if (user.IsAfk == true)
             {
-                Response += new AfkMessage(user).GoingAway;
-                string message = user.MessageText.Decode();
+                Response += new AfkMessage(userId.Value).GoingAway!;
+                string message = user.AfkMessage.Decode();
                 if (!string.IsNullOrEmpty(message))
                 {
                     Response += $": {message}";
                 }
-                Response += $" ({TimeHelper.GetUnixDifference(user.Time)} ago)";
+                Response += $" ({TimeHelper.GetUnixDifference(user.AfkTime)} ago)";
             }
             else
             {
