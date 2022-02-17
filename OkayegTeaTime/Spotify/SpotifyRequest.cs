@@ -88,10 +88,7 @@ public static class SpotifyRequest
         
         CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
         PlayingItem? item = SpotifyHelper.GetPlayingItem(response);
-        if (item is not null)
-        {
-            return item;
-        }
+        return item;
     }
 
     public static string GetLoginUrl()
