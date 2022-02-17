@@ -21,6 +21,15 @@ public class SongRequestCommand : Command
             return;
         }
 
+        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, "\s\w+\s\w+");
+        if(pattern.IsMatch(ChatMessage.Message))
+        {
+            if (DbController.DoesSpotifyUserExist(ChatMessage.Split[2]))
+            {
+                Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.LowerSplit[1], SpotifyRequest.GetCurrentlyPlayingTrack(ChatMessage.Split[2]), false).Result};
+            }
+        }
+
         pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
