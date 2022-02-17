@@ -9,7 +9,7 @@ namespace OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 
 public class AfkMessage
 {
-    public UserNew? User { get; }
+    public User? User { get; }
 
     public string? ComingBack { get; private set; }
 

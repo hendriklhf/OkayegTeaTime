@@ -5,7 +5,7 @@ using OkayegTeaTime.Twitch.Commands.Enums;
 
 namespace OkayegTeaTime.Database.Models
 {
-    public class UserNew
+    public class User
     {
         public int Id { get; set; }
         public string Username { get; set; }
@@ -14,7 +14,7 @@ namespace OkayegTeaTime.Database.Models
         public long AfkTime { get; set; } = TimeHelper.Now();
         public bool? IsAfk { get; set; }
 
-        public UserNew(int id, string username, byte[] afkMessage, int afkType, long afkTime, bool? isAfk)
+        public User(int id, string username, byte[] afkMessage, int afkType, long afkTime, bool? isAfk)
         {
             Id = id;
             Username = username;
@@ -24,7 +24,7 @@ namespace OkayegTeaTime.Database.Models
             IsAfk = isAfk;
         }
 
-        public UserNew(int id, string username, AfkCommandType type)
+        public User(int id, string username, AfkCommandType type)
         {
             Id = id;
             Username = username;

@@ -31,7 +31,7 @@ public class CheckCommand : Command
                 return;
             }
 
-            UserNew? user = DbController.GetUser(userId.Value, username);
+            User? user = DbController.GetUser(userId.Value, username);
             if (user is null)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;

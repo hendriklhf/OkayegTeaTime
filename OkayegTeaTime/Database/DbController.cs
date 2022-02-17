@@ -26,9 +26,9 @@ public static class DbController
         _ = AddUserAndReturn(userId, username, type, checkIfUserExists);
     }
 
-    public static UserNew? AddUserAndReturn(int userId, string username, AfkCommandType type, bool checkIfUserExists = false)
+    public static User? AddUserAndReturn(int userId, string username, AfkCommandType type, bool checkIfUserExists = false)
     {
-        UserNew? user;
+        User? user;
         if (checkIfUserExists)
         {
             user = GetUser(userId, username);
@@ -159,20 +159,14 @@ public static class DbController
     public static bool CheckIfAfk(int userId)
     {
         using OkayegTeaTimeContext database = new();
-        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
-
-        if (user is null)
-        {
-            return false;
-        }
-
-        return user.IsAfk == true;
+        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        return user?.IsAfk == true;
     }
 
     public static void SetAfk(int userId, string message, AfkCommandType type)
     {
         using OkayegTeaTimeContext database = new();
-        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return;
@@ -266,10 +260,10 @@ public static class DbController
         return database.Spotify.ToList();
     }
 
-    public static UserNew? GetUser(int userId, string? username = null)
+    public static User? GetUser(int userId, string? username = null)
     {
         using OkayegTeaTimeContext database = new();
-        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return user;
@@ -412,7 +406,7 @@ public static class DbController
     public static void SetAfkStatus(int userId, bool afk)
     {
         using OkayegTeaTimeContext database = new();
-        UserNew? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return;

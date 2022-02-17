@@ -18,7 +18,7 @@ public class AfkCommandHandler
 
     public void Handle(TwitchChatMessage chatMessage, AfkCommandType type)
     {
-        UserNew? user = DbController.GetUser(chatMessage.UserId, chatMessage.Username);
+        User? user = DbController.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
             DbController.AddUser(chatMessage.UserId, chatMessage.Username, type);

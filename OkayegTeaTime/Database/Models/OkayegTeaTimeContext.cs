@@ -20,7 +20,7 @@ namespace OkayegTeaTime.Database.Models
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
-        public virtual DbSet<UserNew> UsersNew { get; set; }
+        public virtual DbSet<User> UsersNew { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -133,9 +133,9 @@ namespace OkayegTeaTime.Database.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<UserNew>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("Users2");
+                entity.ToTable("Users");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
