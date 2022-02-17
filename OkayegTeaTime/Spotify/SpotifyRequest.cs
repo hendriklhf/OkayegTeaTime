@@ -78,6 +78,19 @@ public static class SpotifyRequest
         }
     }
 
+    public static async Task<PlayingItem?> GetCurrentlyPlayingTrack(string username)
+    {
+        SpotifyUser? user = await GetSpotifyUser(username);
+        if (user is null)
+        {
+            return null;
+        }
+        
+        CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
+        PlayingItem? item = SpotifyHelper.GetPlayingItem(response);
+        return item;
+    }
+
     public static string GetLoginUrl()
     {
         LoginRequest login = new(new("https://example.com/callback"), AppSettings.Spotify.ClientId, LoginRequest.ResponseType.Code)
