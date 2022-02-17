@@ -11,7 +11,7 @@ namespace OkayegTeaTime.Spotify;
 
 public static class SpotifyRequest
 {
-    public static async Task<string> AddToQueue(string channel, string song, bool channelEqualsTarget = true)
+    public static async Task<string> AddToQueue(string targetUser, string song, bool channelEqualsTarget)
     {
         string? uri = SpotifyHelper.GetSpotifyUri(song);
         if (uri is null)
@@ -19,10 +19,10 @@ public static class SpotifyRequest
             return "this isn't a valid track link";
         }
 
-        SpotifyUser? user = await GetSpotifyUser(channel);
+        SpotifyUser? user = await GetSpotifyUser(targetUser);
         if (user is null)
         {
-            return $"can't add the song to the queue of {channel}, they have to register first";
+            return $"can't add the song to the queue of {targetUser}, they have to register first";
         }
 
         if (user.SongRequestEnabled == true)
@@ -37,14 +37,14 @@ public static class SpotifyRequest
 
                 if (!channelEqualsTarget)
                 {
-                    response = string.Concat(response, $" of {channel}");
+                    response = string.Concat(response, $" of {targetUser}");
                 }
                 return response;
             }
             catch (APIException ex)
             {
                 Logger.Log(ex);
-                return $"no music playing on any device, {channel} has to start their playback first";
+                return $"no music playing on any device, {targetUser} has to start their playback first";
             }
             catch (Exception ex)
             {
@@ -54,7 +54,7 @@ public static class SpotifyRequest
         }
         else
         {
-            return $"song requests are currently not open, {channel} or a mod has to enable song requests first";
+            return $"song requests are currently not open, {targetUser} or a mod has to enable song requests first";
         }
     }
 
@@ -85,7 +85,7 @@ public static class SpotifyRequest
         {
             return null;
         }
-        
+
         CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
         PlayingItem? item = SpotifyHelper.GetPlayingItem(response);
         return item;
