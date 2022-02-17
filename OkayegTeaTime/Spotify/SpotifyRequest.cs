@@ -80,13 +80,14 @@ public static class SpotifyRequest
 
     public static async Task<PlayingItem?> GetCurrentlyPlayingTrack(string username)
     {
+        if (user is null)
+        {
+            return null;
+        }
+        
         SpotifyUser? user = await GetSpotifyUser(username);
         CurrentlyPlaying response = await new SpotifyClient(user.AccessToken).Player.GetCurrentlyPlaying(new());
         PlayingItem? item = SpotifyHelper.GetPlayingItem(response);
-        if (user is null)
-        {
-            return item;
-        }
         
         if (item is not null)
         {
