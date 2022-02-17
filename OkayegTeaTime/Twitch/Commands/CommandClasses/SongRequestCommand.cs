@@ -26,5 +26,10 @@ public class SongRequestCommand : Command
         {
             Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.LowerSplit[1], ChatMessage.Split[2], false).Result}";
         }
+        
+        if (DbController.DoesSpotifyUserExist == ChatMessage.Split[2])
+        {
+            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.LowerSplit[1], SpotifyRequest.GetCurrentlyPlaying, false).Result};
+        }
     }
 }
