@@ -17,7 +17,9 @@ public static class Logger
 
     public static void Log(Exception ex)
     {
-        LogToFile($"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}");
+        string log = $"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}";
+        ConsoleOut(log, ConsoleColor.Magenta);
+        LogToFile(log);
     }
 
     private static string CreateLog(string input)
