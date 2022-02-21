@@ -22,7 +22,5 @@ public class Settings
 
     public string SecretOfflineChatChannel { get; set; }
 
-    public List<string> NotLoggedChannels { get; set; }
-
     public DbConnection DatabaseConnection { get; set; }
 }

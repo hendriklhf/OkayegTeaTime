@@ -21,8 +21,6 @@ public static class AppSettings
 
     public static JsonSettings::Discord Discord => JsonController.Settings.Discord;
 
-    public static List<string> NotLoggedChannels => JsonController.Settings.NotLoggedChannels;
-
     public static string RepositoryUrl => JsonController.Settings.RepositoryUrl;
 
     public static string SecretOfflineChatChannel => JsonController.Settings.SecretOfflineChatChannel;
