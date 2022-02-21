@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
@@ -20,7 +21,18 @@ public class SkipCommand : Command
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                Response += SpotifyRequest.SkipToNextSong(ChatMessage.Channel.Name).Result;
+                Task.Run(async () =>
+                {
+                    SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Channel.Name);
+                    if (user is null)
+                    {
+                        Response += $"you cant't skip songs of {ChatMessage.Channel.Name.Antiping()}, they have to register first";
+                        return;
+                    }
+
+                    await user.Skip();
+                    Response += $"{user.Response}";
+                }).Wait();
             }
             else
             {

@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Collections;
+﻿using System.Threading.Tasks;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
@@ -15,23 +14,56 @@ public class SpotifyCommand : Command
 
     public override void Handle()
     {
-        Regex searchPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\ssearch\s.+");
-        if (searchPattern.IsMatch(ChatMessage.Message))
+        string username = ChatMessage.LowerSplit.Length > 1
+            ? (ChatMessage.LowerSplit[1] == "me"
+                ? ChatMessage.Username
+                : ChatMessage.LowerSplit[1])
+            : ChatMessage.Channel.Name;
+        Response = $"{ChatMessage.Username}, ";
+        bool targetIsSender = username == ChatMessage.Username;
+        Task.Run(async () =>
         {
-            string query = ChatMessage.Split.Skip(2).JoinToString(' ');
-            Response = $"{ChatMessage.Username}, {SpotifyRequest.Search(query).Result}";
-            return;
-        }
+            SpotifyUser? user = await SpotifyController.GetSpotifyUser(username);
+            if (user is null)
+            {
+                if (targetIsSender)
+                {
+                    Response += $"can't get your currently playing song, you have to register first";
+                }
+                else
+                {
+                    Response += $"can't get the currently playing song of {username.Antiping()}, they have to register first";
+                }
+                return;
+            }
 
-        Regex currentPlayingPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"(\s\w+)?");
-        if (currentPlayingPattern.IsMatch(ChatMessage.Message))
-        {
-            string username = ChatMessage.LowerSplit.Length > 1
-                ? (ChatMessage.LowerSplit[1] == "me"
-                    ? ChatMessage.Username
-                    : ChatMessage.LowerSplit[1])
-                : ChatMessage.Channel.Name;
-            Response = $"{ChatMessage.Username}, {SpotifyRequest.GetCurrentlyPlaying(username).Result}";
-        }
+            SpotifyItem? item = await user.GetCurrentlyPlayingItem();
+            if (item is null)
+            {
+                if (targetIsSender)
+                {
+                    Response += $"you aren't listening to anything";
+                }
+                else
+                {
+                    Response += $"{username.Antiping()} is not listening to anything";
+                }
+                return;
+            }
+
+            if (item is SpotifyTrack track)
+            {
+                string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                Response += $"{track.Name} by {artists} || {track.Uri}";
+            }
+            else if (item is SpotifyEpisode episode)
+            {
+                Response += $"{episode.Name} by {episode.Show.Name} || {episode.Uri}";
+            }
+            else
+            {
+                Response += $"listening to an unknown Spotify item type monkaS";
+            }
+        }).Wait();
     }
 }

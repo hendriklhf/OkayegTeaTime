@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
@@ -17,42 +18,100 @@ public class SongRequestCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\sme(\s|$)");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            PlayingItem? playingItem = SpotifyRequest.GetCurrentlyPlayingTrack(ChatMessage.Username).Result;
-            if (playingItem is null)
+            Task.Run(async () =>
             {
-                Response = $"{ChatMessage.Username}, you aren't listening to a song or aren't registered yet.";
-                return;
-            }
-            bool channelEqualsTarget = ChatMessage.Channel.Name == ChatMessage.LowerSplit[1];
-            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.LowerSplit[1], playingItem.Uri, channelEqualsTarget).Result}";
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Username);
+                if (user is null)
+                {
+                    Response = $"{ChatMessage.Username}, you aren't registered yet";
+                    return;
+                }
+
+                SpotifyItem? playingItem = await user.GetCurrentlyPlayingItem();
+                if (playingItem is null)
+                {
+                    Response = $"{ChatMessage.Username}, you aren't listening to a song";
+                    return;
+                }
+
+                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.LowerSplit[1]);
+                if (target is null)
+                {
+                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[1].Antiping()} isn't registered yet, they have to register first";
+                    return;
+                }
+
+                await target.AddToQueue(playingItem.Uri);
+                Response = $"{ChatMessage.Username}, {target.Response}";
+            }).Wait();
             return;
         }
 
         pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            bool channelEqualsTarget = ChatMessage.Channel.Name == ChatMessage.LowerSplit[1];
-            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.LowerSplit[1], ChatMessage.Split[2], channelEqualsTarget).Result}";
+            Task.Run(async () =>
+            {
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.LowerSplit[1]);
+                if (user is null)
+                {
+                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[1].Antiping()} isn't registered yet, they have to register first";
+                    return;
+                }
+
+                await user.AddToQueue(ChatMessage.Split[2]);
+                Response = $"{ChatMessage.Username}, {user.Response}";
+            }).Wait();
             return;
         }
 
         pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            PlayingItem? playingItem = SpotifyRequest.GetCurrentlyPlayingTrack(ChatMessage.Username).Result;
-            if (playingItem is null)
+            Task.Run(async () =>
             {
-                Response = $"{ChatMessage.Username}, you aren't listening to a song or aren't registered yet.";
-                return;
-            }
-            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.Channel.Name, playingItem.Uri, true).Result}";
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Username);
+                if (user is null)
+                {
+                    Response = $"{ChatMessage.Username}, you aren't registered yet, you have to register first";
+                    return;
+                }
+
+                SpotifyItem? playingItem = await user.GetCurrentlyPlayingItem();
+                if (playingItem is null)
+                {
+                    Response = $"{ChatMessage.Username}, you aren't listening to anything";
+                    return;
+                }
+
+                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.Channel.Name);
+                if (target is null)
+                {
+                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Name.Antiping()} isn't registered yet, they have to register first";
+                    return;
+                }
+
+                await target.AddToQueue(playingItem.Uri);
+                Response = $"{ChatMessage.Username}, {target.Response}";
+            }).Wait();
             return;
         }
 
         pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, {SpotifyRequest.AddToQueue(ChatMessage.Channel.Name, ChatMessage.Split[1], true).Result}";
+            Task.Run(async () =>
+            {
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Channel.Name);
+                if (user is null)
+                {
+                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Name.Antiping()} isn't registered yet, they have to register first";
+                    return;
+                }
+
+                await user.AddToQueue(ChatMessage.Split[1]);
+                Response = $"{ChatMessage.Username}, {user.Response}";
+            }).Wait();
             return;
         }
     }

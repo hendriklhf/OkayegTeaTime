@@ -18,8 +18,25 @@ public class ListenCommand : Command
         Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string response = Task.Run(async () => await SpotifyRequest.ListenTo(ChatMessage.Username, ChatMessage.LowerSplit[1])).Result;
-            Response = $"{ChatMessage.Username}, {response}";
+            Task.Run(async () =>
+            {
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Username);
+                if (user is null)
+                {
+                    Response = $"{ChatMessage.Username}, you can't listen to other users, you have to register first";
+                    return;
+                }
+
+                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.LowerSplit[1]);
+                if (target is null)
+                {
+                    Response = $"{ChatMessage.Username}, you can't listen to {ChatMessage.LowerSplit[1]}'s music, they have to register first";
+                    return;
+                }
+
+                await user.ListenTo(target);
+                Response = $"{ChatMessage.Username}, {user.Response}";
+            }).Wait();
             return;
         }
     }
