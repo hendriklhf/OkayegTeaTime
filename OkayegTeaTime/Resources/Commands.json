@@ -535,7 +535,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022sleeping\u0022"
+        "Sets your status to \"sleeping\""
       ]
     },
     {
@@ -550,7 +550,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022afk\u0022"
+        "Sets your status to \"afk\""
       ]
     },
     {
@@ -565,7 +565,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022brb\u0022"
+        "Sets your status to \"brb\""
       ]
     },
     {
@@ -581,7 +581,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022eating\u0022"
+        "Sets your status to \"eating\""
       ]
     },
     {
@@ -596,7 +596,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022lurking\u0022"
+        "Sets your status to \"lurking\""
       ]
     },
     {
@@ -611,7 +611,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022showering\u0022"
+        "Sets your status to \"showering\""
       ]
     },
     {
@@ -626,7 +626,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022napping\u0022"
+        "Sets your status to \"napping\""
       ]
     },
     {
@@ -641,7 +641,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022studying\u0022"
+        "Sets your status to \"studying\""
       ]
     },
     {
@@ -656,7 +656,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022working\u0022"
+        "Sets your status to \"working\""
       ]
     },
     {
@@ -671,7 +671,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022at school\u0022"
+        "Sets your status to \"at school\""
       ]
     },
     {
@@ -686,7 +686,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022poofed away\u0022"
+        "Sets your status to \"poofed away\""
       ]
     },
     {
@@ -702,7 +702,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022gaming\u0022"
+        "Sets your status to \"gaming\""
       ]
     },
     {
@@ -718,7 +718,7 @@
         "[message]"
       ],
       "Description": [
-        "Sets your status to \u0022watching a movie\u0022"
+        "Sets your status to \"watching a movie\""
       ]
     },
     {
