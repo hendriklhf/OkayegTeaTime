@@ -37,7 +37,7 @@ public class Response
 
     public static Response operator +(Response left, string right)
     {
-        left._builder ??= new();
+        left._builder ??= new(left._value);
         return new(left._builder.Append(right));
     }
 
