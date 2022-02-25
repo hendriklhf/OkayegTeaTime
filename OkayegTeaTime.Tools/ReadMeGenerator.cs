@@ -57,24 +57,21 @@ public class ReadMeGenerator
         builder.Append("<br/><table><tr>");
         _cmdTableHeader.ForEach(h => builder.Append($"<th>{h}</th>"));
         builder.Append("<tr/>");
-        AppSettings.CommandList.Commands.OrderBy(c => c.Name).ForEach(c =>
+        AppSettings.CommandList.Commands.Where(c => c.Document).OrderBy(c => c.Name).ForEach(c =>
         {
-            if (c.Document)
+            builder.Append($"<tr><td>{c.Name}</td><td><table>");
+            c.Alias.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
+            builder.Append("</table></td><td><table>");
+            for (int i = 0; i < c.Parameter.Count; i++)
             {
-                builder.Append($"<tr><td>{c.Name}</td><td><table>");
-                c.Alias.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
-                builder.Append("</table></td><td><table>");
-                for (int i = 0; i < c.Parameter.Count; i++)
-                {
-                    builder.Append($"<tr><td>{c.Parameter[i]}</td><td>{c.Description[i]}</td></tr>");
-                }
-                builder.Append("</table></td></tr>");
+                builder.Append($"<tr><td>{c.Parameter[i]}</td><td>{c.Description[i]}</td></tr>");
             }
+            builder.Append("</table></td></tr>");
         });
         builder.Append($"</table><h2>{_header2}</h2><table><tr>");
         _afkCmdTableHeader.ForEach(h => builder.Append($"<th>{h}</th>"));
         builder.Append("</tr>");
-        AppSettings.CommandList.AfkCommands.OrderBy(c => c.Name).ForEach(c =>
+        AppSettings.CommandList.AfkCommands.Where(c => c.Document).OrderBy(c => c.Name).ForEach(c =>
         {
             builder.Append($"<tr><td>{c.Name}</td><td><table>");
             c.Alias.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
