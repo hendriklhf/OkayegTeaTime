@@ -17,4 +17,6 @@ public class AfkCommand
     public List<string> Parameter { get; set; }
 
     public List<string> Description { get; set; }
+
+    public bool Document { get; set; }
 }
