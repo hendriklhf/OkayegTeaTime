@@ -12,9 +12,11 @@ public class CommandHandler : Handler
 {
     public AfkCommandHandler AfkCommandHandler { get; }
 
-    public static CommandType[] CommandTypes { get; } = (CommandType[])Enum.GetValues(typeof(CommandType));
+    public CooldownController CooldownController { get; }
 
-    public static AfkCommandType[] AfkCommandTypes { get; } = (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType));
+    public CommandType[] CommandTypes { get; } = (CommandType[])Enum.GetValues(typeof(CommandType));
+
+    public AfkCommandType[] AfkCommandTypes { get; } = (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType));
 
     private bool _handled = false;
 
@@ -25,6 +27,7 @@ public class CommandHandler : Handler
         : base(twitchBot)
     {
         AfkCommandHandler = new(twitchBot);
+        CooldownController = new();
     }
 
     public override void Handle(TwitchChatMessage chatMessage)

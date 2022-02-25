@@ -3,13 +3,13 @@ using OkayegTeaTime.Twitch.Commands.Enums;
 
 namespace OkayegTeaTime.Twitch.Bot.Cooldowns;
 
-public static class CooldownController
+public class CooldownController
 {
-    public static List<Cooldown> Cooldowns { get; } = new();
+    public List<Cooldown> Cooldowns { get; } = new();
 
-    public static List<AfkCooldown> AfkCooldowns { get; } = new();
+    public List<AfkCooldown> AfkCooldowns { get; } = new();
 
-    public static void AddCooldown(int userId, CommandType type)
+    public void AddCooldown(int userId, CommandType type)
     {
 #if !DEBUG
         if (AppSettings.UserLists.Moderators.Contains(userId))
@@ -26,7 +26,7 @@ public static class CooldownController
         Cooldowns.Add(new(userId, type));
     }
 
-    public static void AddAfkCooldown(int userId)
+    public void AddAfkCooldown(int userId)
     {
 #if !DEBUG
         if (AppSettings.UserLists.Moderators.Contains(userId))
@@ -43,12 +43,12 @@ public static class CooldownController
         AfkCooldowns.Add(new(userId));
     }
 
-    public static bool IsOnCooldown(int userId, CommandType type)
+    public bool IsOnCooldown(int userId, CommandType type)
     {
         return Cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > TimeHelper.Now());
     }
 
-    public static bool IsOnAfkCooldown(int userId)
+    public bool IsOnAfkCooldown(int userId)
     {
         return AfkCooldowns.Any(c => c.UserId == userId && c.Time > TimeHelper.Now());
     }
