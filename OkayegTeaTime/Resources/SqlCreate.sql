@@ -13,13 +13,7 @@ CREATE TABLE IF NOT EXISTS `Channels` (
   `Prefix` varbinary(50) DEFAULT NULL,
   `EmoteManagementSub` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS `gachi` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `Title` varbinary(100) NOT NULL,
-  `Link` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `reminder` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `FromUser` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -29,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `reminder` (
   `Time` bigint(20) NOT NULL DEFAULT 0,
   `ToTime` bigint(20) NOT NULL DEFAULT 0,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2209 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2457 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `spotify` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -38,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `spotify` (
   `Time` bigint(20) NOT NULL DEFAULT 0,
   `SongRequestEnabled` bit(1) DEFAULT b'0',
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `suggestions` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -47,21 +41,16 @@ CREATE TABLE IF NOT EXISTS `suggestions` (
   `Time` bigint(20) NOT NULL,
   `Done` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=434 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=438 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `Users` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `Username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `MessageText` varbinary(2000) DEFAULT NULL,
-  `Type` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Time` bigint(20) NOT NULL DEFAULT 0,
+  `Id` int(11) NOT NULL DEFAULT 0,
+  `Username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `AfkMessage` varbinary(2000) DEFAULT NULL,
+  `AfkType` int(11) NOT NULL DEFAULT 0,
+  `AfkTime` bigint(20) NOT NULL DEFAULT 0,
   `IsAfk` bit(1) NOT NULL DEFAULT b'0',
-  PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=46435 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS `yourmom` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `MessageText` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
