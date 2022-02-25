@@ -107,6 +107,8 @@ public class TwitchBot
     {
         TwitchClient.Connect();
         Initlialize();
+
+        TwitchClient.SendWhisper("strbhlfe", "test");
     }
 
     public void Send(Channel channel, string message)
@@ -181,7 +183,7 @@ public class TwitchBot
 
     private void Client_OnLog(object sender, OnLogArgs e)
     {
-        //ConsoleOut($"[TWITCH] {e.Data}");
+        //ConsoleOut($"[TWITCH] {e.Data}", ConsoleColor.Blue);
     }
 
     private void Client_OnConnected(object sender, OnConnectedArgs e)
