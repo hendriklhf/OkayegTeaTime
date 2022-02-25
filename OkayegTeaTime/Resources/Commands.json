@@ -536,7 +536,8 @@
       ],
       "Description": [
         "Sets your status to \"sleeping\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "afk",
@@ -551,7 +552,8 @@
       ],
       "Description": [
         "Sets your status to \"afk\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "brb",
@@ -566,7 +568,8 @@
       ],
       "Description": [
         "Sets your status to \"brb\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "fat",
@@ -582,7 +585,8 @@
       ],
       "Description": [
         "Sets your status to \"eating\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "lurk",
@@ -597,7 +601,8 @@
       ],
       "Description": [
         "Sets your status to \"lurking\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "shower",
@@ -612,7 +617,8 @@
       ],
       "Description": [
         "Sets your status to \"showering\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "nap",
@@ -627,7 +633,8 @@
       ],
       "Description": [
         "Sets your status to \"napping\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "study",
@@ -642,7 +649,8 @@
       ],
       "Description": [
         "Sets your status to \"studying\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "work",
@@ -657,7 +665,8 @@
       ],
       "Description": [
         "Sets your status to \"working\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "school",
@@ -672,7 +681,8 @@
       ],
       "Description": [
         "Sets your status to \"at school\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "poof",
@@ -687,7 +697,8 @@
       ],
       "Description": [
         "Sets your status to \"poofed away\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "game",
@@ -703,7 +714,8 @@
       ],
       "Description": [
         "Sets your status to \"gaming\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "movie",
@@ -719,7 +731,8 @@
       ],
       "Description": [
         "Sets your status to \"watching a movie\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "piss",
@@ -735,7 +748,8 @@
       ],
       "Description": [
         "Sets your status to \"peeing\""
-      ]
+      ],
+      "Document": true
     },
     {
       "Name": "poop",
@@ -751,7 +765,8 @@
       ],
       "Description": [
         "Sets your status to \"pooping\""
-      ]
+      ],
+      "Document": true
     }
   ]
 }
