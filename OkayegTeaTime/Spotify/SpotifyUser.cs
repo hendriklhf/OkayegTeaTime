@@ -27,11 +27,6 @@ public class SpotifyUser
     /// </summary>
     private const byte _trackIdPrefixLength = 14;
 
-    /// <summary>
-    /// The length of "spotify:episode:".
-    /// </summary>
-    private const byte _episodeIdPrefixLength = 16;
-
     public SpotifyUser(string username, string accessToken, string refreshToken, bool areSongRequestsEnabled)
     {
         Username = username;

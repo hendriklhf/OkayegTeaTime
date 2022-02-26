@@ -35,7 +35,6 @@ public class ReadMeGenerator
     private const string _header2 = "Afk-Commands";
 
     private const string _readMePath = "./README.md";
-    private const string _jsonPath = "./OkayegTeaTime/Resources/Commands.json";
 
     public void GenerateReadMe()
     {
