@@ -18,7 +18,7 @@ public static class Program
 
         JsonController.Initialize();
 
-        TwitchBot twitchBot = args.Any() ? new(args.ToList()) : new();
+        TwitchBot twitchBot = args.Any() ? new(args) : new();
         twitchBot.Connect();
 
         while (_running)

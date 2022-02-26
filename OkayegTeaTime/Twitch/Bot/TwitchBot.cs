@@ -59,7 +59,7 @@ public class TwitchBot
 
     private readonly long _runtime = Now();
 
-    public TwitchBot(List<string>? channels = null)
+    public TwitchBot(IEnumerable<string>? channels = null)
     {
         TwitchApi.Initialize();
 
@@ -78,7 +78,7 @@ public class TwitchBot
 
         if (channels is not null)
         {
-            Channels = channels;
+            Channels = channels.ToList();
         }
         else
         {
@@ -107,8 +107,6 @@ public class TwitchBot
     {
         TwitchClient.Connect();
         Initlialize();
-
-        TwitchClient.SendWhisper("strbhlfe", "test");
     }
 
     public void Send(Channel channel, string message)
