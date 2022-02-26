@@ -767,6 +767,22 @@
         "Sets your status to \"pooping\""
       ],
       "Document": true
+    },
+    {
+      "Name": "music",
+      "ComingBack": "{username} stopped listening to music: {message} ({time})",
+      "GoingAway": "{username} is now listening to music",
+      "Resuming": "{username} is listening to music again",
+      "Alias": [
+        "music"
+      ],
+      "Parameter": [
+        "[message]"
+      ],
+      "Description": [
+        "Sets your status to \"listening to music\""
+      ],
+      "Document": true
     }
   ]
 }

@@ -9,6 +9,7 @@ public enum AfkCommandType
     Gn = 4,
     Lurk = 5,
     Movie = 6,
+    Music = 15,
     Nap = 7,
     Piss = 8,
     Poof = 9,
