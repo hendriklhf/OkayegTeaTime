@@ -279,7 +279,7 @@ public static class HttpRequest
             return "compiler service error";
         }
 
-        string result = request.Result.NewLinesToSpaces().Match("(</b>|</span>|<br>){3}.*")[15..].TrimAll();
+        string result = request.Result.NewLinesToSpaces().Match(@"\$main(</b>|</span>|<br>){3}.*")[20..].TrimAll();
         if (result.IsNullOrEmptyOrWhitespace())
         {
             return "compiled successfully";
