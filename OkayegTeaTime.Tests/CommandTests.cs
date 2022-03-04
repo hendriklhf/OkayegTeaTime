@@ -2,13 +2,12 @@
 using System.Linq;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using JCommand = OkayegTeaTime.Files.JsonClasses.CommandData.Command;
 
-namespace Tests;
+namespace OkayegTeaTime.Tests;
 
 [TestClass]
 public class CommandTests

@@ -2,7 +2,9 @@
 using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Files.JsonClasses.HttpRequests;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.Bttv;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.Ffz;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.SevenTv;
 using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Bot.EmoteManagementNotifications.Enums;

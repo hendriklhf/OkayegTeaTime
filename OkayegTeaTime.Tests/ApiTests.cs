@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime.Files.JsonClasses.HttpRequests;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.Bttv;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.Ffz;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.SevenTv;
 using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Models;
 
-namespace Tests;
+namespace OkayegTeaTime.Tests;
 
 [TestClass]
 public class ApiTests

@@ -11,7 +11,6 @@ using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Twitch.Whisper;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;

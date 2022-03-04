@@ -1,10 +1,9 @@
 ﻿using System.Reflection;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime;
 using OkayegTeaTime.Files;
 
-namespace Tests;
+namespace OkayegTeaTime.Tests;
 
 [TestClass]
 public class JsonTests

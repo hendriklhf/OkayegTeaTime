@@ -1,4 +1,6 @@
-﻿using OkayegTeaTime.Files.JsonClasses.HttpRequests;
+﻿using OkayegTeaTime.Files.JsonClasses.HttpRequests.Bttv;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.Ffz;
+using OkayegTeaTime.Files.JsonClasses.HttpRequests.SevenTv;
 
 namespace OkayegTeaTime.Twitch.Bot.EmoteManagementNotifications;
 
