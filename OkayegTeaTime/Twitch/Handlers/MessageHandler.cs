@@ -51,10 +51,10 @@ public class MessageHandler : Handler
 
         DbController.CheckForReminder(TwitchBot, chatMessage);
 
-        if (!Throttler.CanBeProcessed(chatMessage))
-        {
-            return;
-        }
+        //if (!Throttler.CanBeProcessed(chatMessage))
+        //{
+        //    return;
+        //}
 
         CommandHandler.Handle(chatMessage);
 
