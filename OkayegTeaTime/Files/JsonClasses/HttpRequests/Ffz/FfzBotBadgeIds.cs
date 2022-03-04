@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace OkayegTeaTime.Files.JsonClasses.HttpRequests;
+namespace OkayegTeaTime.Files.JsonClasses.HttpRequests.Ffz;
 
 public class FfzBotBadgeIds
 {

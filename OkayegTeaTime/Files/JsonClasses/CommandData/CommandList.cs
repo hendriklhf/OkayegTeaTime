@@ -23,7 +23,7 @@ public class CommandList
             }
 
             List<string> listAlias = new();
-            AppSettings.CommandList.AfkCommands.ForEach(cmd => cmd?.Alias?.ForEach(alias => listAlias.Add(alias)));
+            AppSettings.CommandList.AfkCommands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             _afkCommandAliases = listAlias;
             return listAlias;
         }
@@ -40,7 +40,7 @@ public class CommandList
             }
 
             List<string> listAlias = new();
-            AppSettings.CommandList.Commands.ForEach(cmd => cmd?.Alias?.ForEach(alias => listAlias.Add(alias)));
+            AppSettings.CommandList.Commands.ForEach(cmd => cmd.Alias.ForEach(alias => listAlias.Add(alias)));
             _commandAliases = listAlias;
             return listAlias;
         }
