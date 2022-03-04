@@ -161,7 +161,7 @@ public static class HttpRequest
 
     public static string GetCSharpOnlineCompilerResult(string input)
     {
-        const string errorMessage = "Compiler service error";
+        const string errorMessage = "compiler service error";
         string? encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
         if (encodedInput is null)
         {
@@ -257,5 +257,48 @@ public static class HttpRequest
     private static string GetGoLangOnlineCompilerTemplate(string code)
     {
         return FileController.OnlineCompilerTemplateGo.Replace("{code}", code);
+    }
+
+    public static string GetCppOnlineCompilerResult(string code)
+    {
+        HttpPost request = new("https://tpcg2.tutorialspoint.com/tpcg.php", new List<KeyValuePair<string, string>>
+        {
+            new("lang", "cpp"),
+            new("device", string.Empty),
+            new("code", GetCppOnlineCompilerTemplate(code)),
+            new("stdinput", string.Empty),
+            new("ext", "cpp"),
+            new("compile", HttpUtility.HtmlEncode("g++ -o main *.cpp")),
+            new("execute", "main"),
+            new("mainfile", "main.cpp"),
+            new("uid", "968291")
+        });
+
+        if (request.Result is null)
+        {
+            return "compiler service error";
+        }
+
+        string result = request.Result.NewLinesToSpaces().Match("(</b>|</span>|<br>){3}.*")[15..].TrimAll();
+        if (result.IsNullOrEmptyOrWhitespace())
+        {
+            return "compiled successfully";
+        }
+        else
+        {
+            if (result.Length > 500)
+            {
+                return $"{result[450..]}...";
+            }
+            else
+            {
+                return result;
+            }
+        }
+    }
+
+    private static string GetCppOnlineCompilerTemplate(string code)
+    {
+        return FileController.OnlineCompilerTemplateCpp.Replace("{code}", code);
     }
 }

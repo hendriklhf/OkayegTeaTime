@@ -519,6 +519,21 @@
       ],
       "Cooldown": 15000,
       "Document": true
+    },
+    {
+      "Name": "Cpp",
+      "Alias": [
+        "cpp",
+        "c++"
+      ],
+      "Parameter": [
+        "[code]"
+      ],
+      "Description": [
+        "Executes the given C++ code"
+      ],
+      "Cooldown": 15000,
+      "Document": true
     }
   ],
   "AfkCommands": [

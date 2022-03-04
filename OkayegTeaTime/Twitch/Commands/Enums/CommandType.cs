@@ -9,6 +9,7 @@ public enum CommandType
     Check,
     Code,
     Coinflip,
+    Cpp,
     CSharp,
     Fill,
     Fuck,

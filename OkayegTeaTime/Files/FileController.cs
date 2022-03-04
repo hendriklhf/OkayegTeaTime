@@ -14,7 +14,8 @@ public static class FileController
         NewFile("Commands.json"),
         NewFile("OnlineCompilerTemplate.cs"),
         NewFile("OnlineCompilerTemplate.go"),
-        NewFile("GachiSongs.json")
+        NewFile("GachiSongs.json"),
+        NewFile("OnlineCompilerTemplate.cpp")
     };
 
     public static string Commands { get; private set; } = Read(_fileNames[0]);
@@ -24,6 +25,8 @@ public static class FileController
     public static string OnlineCompilerTemplateGo { get; private set; } = Read(_fileNames[2]);
 
     public static string GachiSongs { get; private set; } = Read(_fileNames[3]);
+
+    public static string OnlineCompilerTemplateCpp { get; private set; } = Read(_fileNames[4]);
 
     private static string Read(string resourcePath)
     {
