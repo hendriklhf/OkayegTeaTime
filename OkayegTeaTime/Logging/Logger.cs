@@ -7,19 +7,19 @@ public static class Logger
 {
     public static void Log(string text)
     {
-        LogToFile(text);
+        LogToFile(Path.ExceptionLog, text);
     }
 
     public static void Log(TwitchChatMessage chatMessage)
     {
-        LogToFile($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}");
+        LogToFile(Path.Logs, $"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}");
     }
 
     public static void Log(Exception ex)
     {
         string log = $"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}";
         ConsoleOut(log, ConsoleColor.Magenta);
-        LogToFile(log);
+        LogToFile(Path.ExceptionLog, log);
     }
 
     private static string CreateLog(string input)
@@ -27,8 +27,8 @@ public static class Logger
         return $"{DateTime.Now:dd.MM.yyyy HH:mm:ss} | {input}{Environment.NewLine}";
     }
 
-    private static void LogToFile(string log)
+    private static void LogToFile(string path, string log)
     {
-        File.AppendAllText(Path.Logs, CreateLog(log));
+        File.AppendAllText(path, CreateLog(log));
     }
 }
