@@ -30,17 +30,19 @@ public class SpotifyEpisode : SpotifyItem
 
     public SpotifyEpisode(IPlayableItem item) : base(item)
     {
-        if (item is FullEpisode episode)
+        if (item is not FullEpisode episode)
         {
-            AudioPreviewUrl = episode.AudioPreviewUrl;
-            Description = episode.Description;
-            Images = episode.Images;
-            IsExternallyHosted = episode.IsExternallyHosted;
-            Languages = episode.Languages;
-            ReleaseDate = episode.ReleaseDate;
-            ReleaseDatePrecision = episode.ReleaseDatePrecision;
-            ResumePoint = episode.ResumePoint;
-            Show = episode.Show;
+            return;
         }
+
+        AudioPreviewUrl = episode.AudioPreviewUrl;
+        Description = episode.Description;
+        Images = episode.Images;
+        IsExternallyHosted = episode.IsExternallyHosted;
+        Languages = episode.Languages;
+        ReleaseDate = episode.ReleaseDate;
+        ReleaseDatePrecision = episode.ReleaseDatePrecision;
+        ResumePoint = episode.ResumePoint;
+        Show = episode.Show;
     }
 }

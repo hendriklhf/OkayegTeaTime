@@ -29,25 +29,27 @@ public static class HttpRequest
         "viewers"
     };
 
-    private static void NormalizeCount<T>(IEnumerable<T>? collection, ref int count)
+    private static void NormalizeCount<T>(List<T>? collection, ref int count)
     {
-        if (collection is not null)
+        if (collection is null)
         {
-            count = Math.Abs(count);
-            count = collection.Count() >= count ? count : collection.Count();
+            return;
         }
+
+        count = Math.Abs(count);
+        count = collection.Count >= count ? count : collection.Count;
     }
 
-    public static IEnumerable<SevenTvEmote>? GetSevenTvEmotes(string channel, int count)
+    public static List<SevenTvEmote>? GetSevenTvEmotes(string channel, int count)
     {
-        IEnumerable<SevenTvEmote>? emotes = GetSevenTvEmotes(channel);
+        List<SevenTvEmote>? emotes = GetSevenTvEmotes(channel);
         NormalizeCount(emotes, ref count);
-        return emotes?.Take(count);
+        return emotes?.Take(count).ToList();
     }
 
-    public static IEnumerable<SevenTvEmote>? GetSevenTvEmotes(string channel)
+    public static List<SevenTvEmote>? GetSevenTvEmotes(string channel)
     {
-        return GetSevenTvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>();
+        return GetSevenTvRequest(channel)?.Data?.User?.Emotes?.Reverse<SevenTvEmote>().ToList();
     }
 
     public static SevenTvRequest? GetSevenTvRequest(string channel)
@@ -74,16 +76,16 @@ public static class HttpRequest
         }
     }
 
-    public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel, int count)
+    public static List<BttvSharedEmote>? GetBttvEmotes(string channel, int count)
     {
-        IEnumerable<BttvSharedEmote>? emotes = GetBttvEmotes(channel);
+        List<BttvSharedEmote>? emotes = GetBttvEmotes(channel);
         NormalizeCount(emotes, ref count);
-        return emotes?.Take(count);
+        return emotes?.Take(count).ToList();
     }
 
-    public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel)
+    public static List<BttvSharedEmote>? GetBttvEmotes(string channel)
     {
-        return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>();
+        return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>().ToList();
     }
 
     public static int GetChatterCount(string channel)
@@ -97,7 +99,7 @@ public static class HttpRequest
         return request.Data.Value.GetProperty("chatter_count").GetInt32();
     }
 
-    public static IEnumerable<Chatter> GetChatters(string channel)
+    public static List<Chatter> GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
         List<Chatter> result = new();
@@ -120,16 +122,16 @@ public static class HttpRequest
         return result;
     }
 
-    public static IEnumerable<FfzEmote>? GetFfzEmotes(string channel, int count)
+    public static List<FfzEmote>? GetFfzEmotes(string channel, int count)
     {
-        IEnumerable<FfzEmote>? emotes = GetFfzEmotes(channel);
+        List<FfzEmote>? emotes = GetFfzEmotes(channel);
         NormalizeCount(emotes, ref count);
-        return emotes?.Take(count);
+        return emotes?.Take(count).ToList();
     }
 
-    public static IEnumerable<FfzEmote>? GetFfzEmotes(string channel)
+    public static List<FfzEmote>? GetFfzEmotes(string channel)
     {
-        return GetFfzRequest(channel)?.Set?.EmoteSet?.Emotes?.Reverse<FfzEmote>();
+        return GetFfzRequest(channel)?.Set?.EmoteSet?.Emotes?.Reverse<FfzEmote>().ToList();
     }
 
     public static FfzRequest? GetFfzRequest(string channel)
@@ -155,17 +157,16 @@ public static class HttpRequest
 
     public static string GetMathResult(string expression)
     {
-        HttpGet request = new($"http://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
+        HttpGet request = new($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
         return request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetRawText() : request.Result ?? "api error";
     }
 
     public static string GetCSharpOnlineCompilerResult(string input)
     {
-        const string errorMessage = "compiler service error";
         string? encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
         if (encodedInput is null)
         {
-            return errorMessage;
+            return "HTTP encoding error";
         }
 
         HttpPost request = new("https://dotnetfiddle.net/Home/Run",
@@ -176,17 +177,10 @@ public static class HttpRequest
                 new("Language", "CSharp"),
                 new("ProjectType", "Console")
             });
-        string? result = request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetProperty("ConsoleOutput").GetString() : errorMessage;
+        string? result = request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
-            if (result!.Length > 500)
-            {
-                return result[450..].NewLinesToSpaces();
-            }
-            else
-            {
-                return result!;
-            }
+            return result!.Length > 500 ? result[450..].NewLinesToSpaces() : result!;
         }
         else
         {
@@ -214,12 +208,7 @@ public static class HttpRequest
         try
         {
             HttpGet request = new($"https://api.betterttv.net/3/cached/users/twitch/{channelId}");
-            if (request.Result is null)
-            {
-                return null;
-            }
-
-            return JsonSerializer.Deserialize<BttvRequest>(request.Result);
+            return request.Result is null ? null : JsonSerializer.Deserialize<BttvRequest>(request.Result);
         }
         catch (Exception ex)
         {
@@ -244,14 +233,7 @@ public static class HttpRequest
 
         string? error = request.Data.Value.GetProperty("Errors").GetString();
         bool hasError = !string.IsNullOrEmpty(error);
-        if (!hasError)
-        {
-            return request.Data.Value.GetProperty("Events")[0].GetProperty("Message").GetString();
-        }
-        else
-        {
-            return error;
-        }
+        return hasError ? error : request.Data.Value.GetProperty("Events")[0].GetProperty("Message").GetString();
     }
 
     private static string GetGoLangOnlineCompilerTemplate(string code)
@@ -286,14 +268,7 @@ public static class HttpRequest
         }
         else
         {
-            if (result.Length > 500)
-            {
-                return $"{result[450..]}...";
-            }
-            else
-            {
-                return result;
-            }
+            return result.Length > 500 ? $"{result[450..]}..." : result;
         }
     }
 

@@ -3,7 +3,7 @@ namespace OkayegTeaTime.Twitch.Models.Enums;
 public enum ChatRole
 {
     Broadcaster,
-    VIP,
+    Vip,
     Moderator,
     Staff,
     Admin,

@@ -7,6 +7,7 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot.EmoteManagementNotifications;
+using OkayegTeaTime.Twitch.Bot.EmoteNotifications;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
@@ -44,7 +45,7 @@ public class TwitchBot
 
     public Restarter Restarter { get; private set; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
 
-    public EmoteManagementNotificator? EmoteManagementNotificator { get; private set; }
+    public ThirdPartyEmoteNotificator? EmoteManagementNotificator { get; private set; }
 
     public DottedNumber CommandCount { get; set; } = 1;
 

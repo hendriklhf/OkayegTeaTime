@@ -18,7 +18,7 @@ public class CommandHandler : Handler
 
     public AfkCommandType[] AfkCommandTypes { get; } = (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType));
 
-    private bool _handled = false;
+    private bool _handled;
 
     private const string _handleName = "Handle";
     private const string _sendResponseName = "SendResponse";
@@ -118,7 +118,7 @@ public class CommandHandler : Handler
             throw new InvalidOperationException($"Could not instantiate command class {commandClassName}");
         }
 
-        object? handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
+        object handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
 
         MethodInfo? handleMethod = commandClass.GetMethod(_handleName);
         if (handleMethod is null)

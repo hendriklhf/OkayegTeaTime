@@ -79,10 +79,10 @@ public static class DbController
         return entity.Entity.Id;
     }
 
-    public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel, long ToTime)> reminders)
+    public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel, long ToTime)> rmdrs)
     {
-        int count = reminders.Count();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        (string FromUser, string ToUser, string Message, string Channel, long ToTime)[] reminders = rmdrs.ToArray();
+        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[reminders.Length];
         using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {
@@ -100,10 +100,10 @@ public static class DbController
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
-    public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel)> reminders)
+    public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel)> rmdrs)
     {
-        int count = reminders.Count();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[count];
+        (string FromUser, string ToUser, string Message, string Channel)[] reminders = rmdrs.ToArray();
+        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[reminders.Length];
         using OkayegTeaTimeContext database = new();
         reminders.ForEach((v, i) =>
         {

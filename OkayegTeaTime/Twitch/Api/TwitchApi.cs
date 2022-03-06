@@ -65,13 +65,9 @@ public static class TwitchApi
 
     public static Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
     {
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: usernames.ToList()).Result;
-        Dictionary<string, User?> result = new();
-        foreach (string username in usernames)
-        {
-            result.Add(username, response.Users.FirstOrDefault(u => u.DisplayName.ToLower() == username.ToLower()));
-        }
-        return result;
+        List<string> users = usernames.ToList();
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: users).Result;
+        return users.ToDictionary(username => username, username => response.Users.FirstOrDefault(u => string.Equals(u.DisplayName, username, StringComparison.CurrentCultureIgnoreCase)));
     }
 
     public static User? GetUser(int id)
@@ -82,13 +78,9 @@ public static class TwitchApi
 
     public static Dictionary<int, User?> GetUsers(IEnumerable<int> ids)
     {
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: ids.Select(i => i.ToString()).ToList()).Result;
-        Dictionary<int, User?> result = new();
-        foreach (int id in ids)
-        {
-            result.Add(id, response.Users.FirstOrDefault(u => u.Id.ToInt() == id));
-        }
-        return result;
+        List<int> idss = ids.ToList();
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: idss.Select(i => i.ToString()).ToList()).Result;
+        return idss.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => u.Id.ToInt() == id));
     }
 
     public static int? GetUserId(string username)
@@ -145,11 +137,7 @@ public static class TwitchApi
     public static ChannelEmote[] GetSubEmotes(string channel)
     {
         int? channelId = GetUserId(channel);
-        if (channelId is null)
-        {
-            return Array.Empty<ChannelEmote>();
-        }
-        return GetSubEmotes(channelId.Value);
+        return channelId is null ? Array.Empty<ChannelEmote>() : GetSubEmotes(channelId.Value);
     }
 
     public static ChannelEmote[] GetSubEmotes(int channelId)

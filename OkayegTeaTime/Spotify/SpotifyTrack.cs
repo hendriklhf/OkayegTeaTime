@@ -32,18 +32,20 @@ public class SpotifyTrack : SpotifyItem
 
     public SpotifyTrack(IPlayableItem item) : base(item)
     {
-        if (item is FullTrack track)
+        if (item is not FullTrack track)
         {
-            Album = track.Album;
-            Artists = track.Artists;
-            AvailableMarkets = track.AvailableMarkets;
-            DiscNumber = track.DiscNumber;
-            ExternalIds = track.ExternalIds;
-            LinkedFrom = track.LinkedFrom;
-            Restrictions = track.Restrictions;
-            Popularity = track.Popularity;
-            PreviewUrl = track.PreviewUrl;
-            TrackNumber = track.TrackNumber;
+            return;
         }
+
+        Album = track.Album;
+        Artists = track.Artists;
+        AvailableMarkets = track.AvailableMarkets;
+        DiscNumber = track.DiscNumber;
+        ExternalIds = track.ExternalIds;
+        LinkedFrom = track.LinkedFrom;
+        Restrictions = track.Restrictions;
+        Popularity = track.Popularity;
+        PreviewUrl = track.PreviewUrl;
+        TrackNumber = track.TrackNumber;
     }
 }

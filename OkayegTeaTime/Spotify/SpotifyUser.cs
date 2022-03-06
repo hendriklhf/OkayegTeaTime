@@ -46,7 +46,7 @@ public class SpotifyUser
         string? uri = SpotifyController.ParseSongToUri(song);
         if (uri is null)
         {
-            Response = $"invalid track link";
+            Response = "invalid track link";
             return;
         }
 
@@ -67,7 +67,7 @@ public class SpotifyUser
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, you probably have to start your playback first";
+            Response = "an error occurred, you probably have to start your playback first";
             return;
         }
         catch (Exception ex)
@@ -90,7 +90,7 @@ public class SpotifyUser
         try
         {
             await _client.Player.SkipNext(new());
-            Response = $"skipped to next song in queue";
+            Response = "skipped to next song in queue";
             return;
         }
         catch (Exception ex)
@@ -105,7 +105,7 @@ public class SpotifyUser
     {
         if (Equals(target))
         {
-            Response = $"you can't listen to your own songs :)";
+            Response = "you can't listen to your own songs :)";
             return;
         }
 
@@ -128,13 +128,13 @@ public class SpotifyUser
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, you probably have to start your playback first";
+            Response = "an error occurred, you probably have to start your playback first";
             return;
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, it might not be possible to listen to other people's songs";
+            Response = "an error occurred, it might not be possible to listen to other people's songs";
             return;
         }
 
@@ -145,7 +145,7 @@ public class SpotifyUser
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"an error occured while trying to play the song you wanted to listen to";
+            Response = "an error occured while trying to play the song you wanted to listen to";
             return;
         }
 
@@ -169,7 +169,7 @@ public class SpotifyUser
         string? uri = SpotifyController.ParseSongToUri(song);
         if (uri is null)
         {
-            Response = $"invalid track link";
+            Response = "invalid track link";
             return;
         }
 
@@ -180,13 +180,13 @@ public class SpotifyUser
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, you probably have to start your playback first";
+            Response = "an error occurred, you probably have to start your playback first";
             return;
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, it might not be possible to listen to other people's songs";
+            Response = "an error occurred, it might not be possible to listen to other people's songs";
             return;
         }
 
@@ -197,7 +197,7 @@ public class SpotifyUser
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"an error occured while trying to play the song you wanted to listen to";
+            Response = "an error occured while trying to play the song you wanted to listen to";
             return;
         }
 
@@ -218,7 +218,6 @@ public class SpotifyUser
         {
             Logger.Log(ex);
             Response = $"now playing {uri}, but failed to retrieve further info about the playing item";
-            return;
         }
     }
 
@@ -231,7 +230,7 @@ public class SpotifyUser
         }
         catch (Exception ex)
         {
-            Response = $"an error occurred, it might not be possible to retrieve you currently playing song";
+            Response = "an error occurred, it might not be possible to retrieve you currently playing song";
             Logger.Log(ex);
             return null;
         }
@@ -250,6 +249,6 @@ public class SpotifyUser
 
     public override bool Equals(object? obj)
     {
-        return obj is SpotifyUser user && user.Username.ToLower() == Username.ToLower();
+        return obj is SpotifyUser user && string.Equals(user.Username, Username, StringComparison.CurrentCultureIgnoreCase);
     }
 }

@@ -14,7 +14,7 @@ public static class JsonController
 
     public static CommandList CommandList { get; private set; }
 
-    public static List<GachiSong> GachiSongs { get; private set; } = JsonSerializer.Deserialize<List<GachiSong>>(FileController.GachiSongs);
+    public static List<GachiSong> GachiSongs { get; } = JsonSerializer.Deserialize<List<GachiSong>>(FileController.GachiSongs);
 
     public static void Initialize()
     {
