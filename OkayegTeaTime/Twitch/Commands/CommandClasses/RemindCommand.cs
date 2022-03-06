@@ -23,8 +23,8 @@ public class RemindCommand : Command
 
     public override void Handle()
     {
-        string[] targets = Array.Empty<string>();
-        string message = string.Empty;
+        string[] targets;
+        string message;
         long toTime = 0;
 
         Regex timedPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime);
@@ -54,12 +54,14 @@ public class RemindCommand : Command
                 Response += "the target user does not exist";
                 return;
             }
+
             int? id = DbController.AddReminder(ChatMessage.Username, targets[0], message, ChatMessage.Channel.Name, toTime);
             if (!id.HasValue)
             {
                 Response += PredefinedMessages.TooManyRemindersMessage;
                 return;
             }
+
             Response += $"set a {(toTime == 0 ? string.Empty : "timed ")}reminder for {Reminder.GetTarget(targets[0], ChatMessage.Username)} (ID: {id.Value})";
         }
         else

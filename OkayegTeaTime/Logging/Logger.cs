@@ -7,7 +7,7 @@ public static class Logger
 {
     public static void Log(string text)
     {
-        LogToFile(Path.ExceptionLog, text);
+        LogToFile(Path.Logs, text);
     }
 
     public static void Log(TwitchChatMessage chatMessage)

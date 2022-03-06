@@ -6,7 +6,6 @@ using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Api;
-using OkayegTeaTime.Twitch.Bot.EmoteManagementNotifications;
 using OkayegTeaTime.Twitch.Bot.EmoteNotifications;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
