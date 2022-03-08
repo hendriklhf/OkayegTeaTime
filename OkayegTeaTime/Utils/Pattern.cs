@@ -1,6 +1,6 @@
 ﻿namespace OkayegTeaTime.Utils;
 
-public class Pattern
+public static class Pattern
 {
     public const string ReminderInTime = $@"\s{MultipleReminderTargets}\sin(\s{TimeSplit})+(\s(\S+|\s)+)?";
     public const string MultipleReminderTargets = @"\w+(,\s?\w+)*";

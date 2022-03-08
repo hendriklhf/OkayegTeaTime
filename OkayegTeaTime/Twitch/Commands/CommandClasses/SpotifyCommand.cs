@@ -15,9 +15,9 @@ public class SpotifyCommand : Command
     public override void Handle()
     {
         string username = ChatMessage.LowerSplit.Length > 1
-            ? (ChatMessage.LowerSplit[1] == "me"
+            ? ChatMessage.LowerSplit[1] == "me"
                 ? ChatMessage.Username
-                : ChatMessage.LowerSplit[1])
+                : ChatMessage.LowerSplit[1]
             : ChatMessage.Channel.Name;
         Response = $"{ChatMessage.Username}, ";
         bool targetIsSender = username == ChatMessage.Username;
@@ -54,11 +54,11 @@ public class SpotifyCommand : Command
             if (item is SpotifyTrack track)
             {
                 string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                Response += $"{track.Name} by {artists} || {track.Uri}";
+                Response += $"{track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
             }
             else if (item is SpotifyEpisode episode)
             {
-                Response += $"{episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                Response += $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
             }
             else
             {

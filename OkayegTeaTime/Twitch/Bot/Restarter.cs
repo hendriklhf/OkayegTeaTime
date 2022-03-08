@@ -5,7 +5,6 @@ namespace OkayegTeaTime.Twitch.Bot;
 
 public class Restarter
 {
-
     private readonly List<Timer::Timer> _restartTimers = new();
 
     private List<(int Hour, int Minute)> _restartTimes;
@@ -15,12 +14,12 @@ public class Restarter
         _restartTimes = restartTimes;
     }
 
-    public void InitializeResartTimer()
+    public void Initialize()
     {
-        InitializeResartTimer(_restartTimes);
+        Initialize(_restartTimes);
     }
 
-    public void InitializeResartTimer(List<(int, int)> hoursOfDay)
+    public void Initialize(List<(int, int)> hoursOfDay)
     {
         _restartTimes = hoursOfDay;
         Stop();

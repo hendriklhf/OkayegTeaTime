@@ -304,7 +304,7 @@ public class TwitchBot
         MessageHandler = new(this);
         WhisperHandler = new(this);
         EmoteManagementNotificator = new(this);
-        Restarter.InitializeResartTimer();
+        Restarter.Initialize();
         InitializeTimers();
     }
 }

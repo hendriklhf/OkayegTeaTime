@@ -26,15 +26,14 @@ public class ChattersCommand : Command
             {
                 case > 1:
                     Response += $"there are {chatterCount} chatters in the channel of {channel}";
-                    break;
+                    return;
                 case > 0:
                     Response += $"there is {chatterCount} chatter in the channel of {channel}";
-                    break;
+                    return;
                 default:
                     Response += $"there are no chatters in the channel of {channel}";
-                    break;
+                    return;
             }
-            return;
         }
     }
 }

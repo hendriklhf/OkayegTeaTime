@@ -19,7 +19,7 @@ public class LastMessagesDictionary
 
     private void FillDictionary()
     {
-        _lastMessages = DbController.GetChannelNames().ToDictionary(c => c, c => string.Empty);
+        _lastMessages = DbController.GetChannelNames().ToDictionary(c => c, _ => string.Empty);
     }
 
     public void Add(string channel, string message = "")
@@ -48,10 +48,8 @@ public class LastMessagesDictionary
         {
             return message;
         }
-        else
-        {
-            Add(channel);
-            return string.Empty;
-        }
+
+        Add(channel);
+        return string.Empty;
     }
 }
