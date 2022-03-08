@@ -121,10 +121,10 @@ public static class DbController
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
-    public static void AddSugestion(TwitchChatMessage chatMessage, string suggestion)
+    public static void AddSugestion(string username, string channel, string suggestion)
     {
         using OkayegTeaTimeContext database = new();
-        database.Suggestions.Add(new(chatMessage.Username, suggestion.Encode(), $"#{chatMessage.Channel}"));
+        database.Suggestions.Add(new(username, suggestion.Encode(), channel));
         database.SaveChanges();
     }
 
@@ -151,7 +151,7 @@ public static class DbController
             return;
         }
 
-        reminders.ForEach(r => twitchBot.SendTimedReminder(r));
+        reminders.ForEach(twitchBot.SendTimedReminder);
         database.Reminders.RemoveRange(reminders);
         database.SaveChanges();
     }
