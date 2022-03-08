@@ -20,7 +20,7 @@ namespace OkayegTeaTime.Database.Models
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
-        public virtual DbSet<User> UsersNew { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -56,8 +56,6 @@ namespace OkayegTeaTime.Database.Models
 
             modelBuilder.Entity<Reminder>(entity =>
             {
-                entity.ToTable("reminder");
-
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.Channel)
@@ -83,7 +81,7 @@ namespace OkayegTeaTime.Database.Models
 
             modelBuilder.Entity<Spotify>(entity =>
             {
-                entity.ToTable("spotify");
+                entity.ToTable("Spotify");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
@@ -108,18 +106,16 @@ namespace OkayegTeaTime.Database.Models
 
             modelBuilder.Entity<Suggestion>(entity =>
             {
-                entity.ToTable("suggestions");
-
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.Channel)
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Done)
+                entity.Property(e => e.Status)
                     .IsRequired()
-                    .HasColumnType("bit(1)")
-                    .HasDefaultValueSql("b'0'");
+                    .HasColumnType("enum('Open','Done','Rejected')")
+                    .HasDefaultValueSql("'''Open'''");
 
                 entity.Property(e => e.Suggestion1)
                     .IsRequired()
@@ -135,8 +131,6 @@ namespace OkayegTeaTime.Database.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("Users");
-
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.AfkMessage)

@@ -40,7 +40,7 @@ public static class DbController
 
         OkayegTeaTimeContext database = new();
         user = new(userId, username, type);
-        user = database.UsersNew.Add(user).Entity;
+        user = database.Users.Add(user).Entity;
         database.SaveChanges();
         return user;
     }
@@ -159,14 +159,14 @@ public static class DbController
     public static bool CheckIfAfk(int userId)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.Users.FirstOrDefault(u => u.Id == userId);
         return user?.IsAfk == true;
     }
 
     public static void SetAfk(int userId, string message, AfkCommandType type)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.Users.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return;
@@ -263,7 +263,7 @@ public static class DbController
     public static User? GetUser(int userId, string? username = null)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.Users.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return user;
@@ -406,7 +406,7 @@ public static class DbController
     public static void SetAfkStatus(int userId, bool afk)
     {
         using OkayegTeaTimeContext database = new();
-        User? user = database.UsersNew.FirstOrDefault(u => u.Id == userId);
+        User? user = database.Users.FirstOrDefault(u => u.Id == userId);
         if (user is null)
         {
             return;
