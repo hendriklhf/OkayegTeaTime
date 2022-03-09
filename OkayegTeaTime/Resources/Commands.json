@@ -330,11 +330,11 @@
       ],
       "Parameter": [
         "[Spotify track link/URI/id]",
-        "[channel] [link/URI/id]"
+        "[target] [source]"
       ],
       "Description": [
         "Adds the Spotify song to the broadcaster's queue, if registered and enabled",
-        "Adds the Spotify song to the specified channel's queue, if registered and enabled"
+        "Adds the source's Spotify song to the target's queue, if registered and enabled. Use \"me\" short for your username. If the target is not \"me\", the source can only be \"me\"."
       ],
       "Cooldown": 15000,
       "Document": true

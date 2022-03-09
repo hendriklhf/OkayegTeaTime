@@ -47,6 +47,38 @@ public class SongRequestCommand : Command
             return;
         }
 
+        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sme\s\w+");
+        if (pattern.IsMatch(ChatMessage.Message))
+        {
+            Task.Run(async () =>
+            {
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Username);
+                if (user is null)
+                {
+                    Response = $"{ChatMessage.Username}, you aren't registered yet, you have to register first";
+                    return;
+                }
+
+                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.LowerSplit[2]);
+                if (target is null)
+                {
+                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't registered yet, they have to register first";
+                    return;
+                }
+
+                SpotifyItem? currentlyPlaying = await target.GetCurrentlyPlayingItem();
+                if (currentlyPlaying is null)
+                {
+                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't listening to anything";
+                    return;
+                }
+
+                await user.AddToQueue(currentlyPlaying.Uri);
+                Response = $"{ChatMessage.Username}, {user.Response}";
+            }).Wait();
+            return;
+        }
+
         pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
