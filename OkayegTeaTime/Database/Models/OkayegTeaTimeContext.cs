@@ -117,7 +117,7 @@ namespace OkayegTeaTime.Database.Models
                     .HasColumnType("enum('Open','Done','Rejected')")
                     .HasDefaultValueSql("'''Open'''");
 
-                entity.Property(e => e.Suggestion1)
+                entity.Property(e => e.Content)
                     .IsRequired()
                     .HasMaxLength(2000)
                     .HasColumnName("Suggestion");

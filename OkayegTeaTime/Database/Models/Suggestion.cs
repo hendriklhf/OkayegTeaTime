@@ -9,16 +9,16 @@ namespace OkayegTeaTime.Database.Models
     {
         public int Id { get; set; }
         public string Username { get; set; }
-        public byte[] Suggestion1 { get; set; }
+        public byte[] Content { get; set; }
         public string Channel { get; set; }
         public long Time { get; set; } = TimeHelper.Now();
         public string Status { get; set; } = "Open";
 
-        public Suggestion(int id, string username, byte[] suggestion1, string channel, long time, string status)
+        public Suggestion(int id, string username, byte[] content, string channel, long time, string status)
         {
             Id = id;
             Username = username;
-            Suggestion1 = suggestion1;
+            Content = content;
             Channel = channel;
             Time = time;
             Status = status;
@@ -27,7 +27,7 @@ namespace OkayegTeaTime.Database.Models
         public Suggestion(string username, byte[] suggestion, string channel)
         {
             Username = username;
-            Suggestion1 = suggestion;
+            Content = suggestion;
             Channel = $"#{channel.Remove("#")}";
         }
     }
