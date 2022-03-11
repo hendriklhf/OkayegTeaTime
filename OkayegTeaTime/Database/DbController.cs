@@ -101,27 +101,6 @@ public static class DbController
         return entities.Select(e => e?.Entity?.Id).ToArray();
     }
 
-    public static int?[] AddReminders(IEnumerable<(string FromUser, string ToUser, string Message, string Channel)> rmdrs)
-    {
-        (string FromUser, string ToUser, string Message, string Channel)[] reminders = rmdrs.ToArray();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[reminders.Length];
-        using OkayegTeaTimeContext database = new();
-        reminders.ForEach((v, i) =>
-        {
-            Reminder r = new(v);
-            if (HasTooManyRemindersSet(r.ToUser, r.ToTime > 0))
-            {
-                entities[i] = null;
-            }
-            else
-            {
-                entities[i] = database.Reminders.Add(r);
-            }
-        });
-        database.SaveChanges();
-        return entities.Select(e => e?.Entity?.Id).ToArray();
-    }
-
     public static void AddSugestion(string username, string channel, string suggestion)
     {
         using OkayegTeaTimeContext database = new();
@@ -129,6 +108,7 @@ public static class DbController
         database.SaveChanges();
     }
 
+    //TODO: dont pass TwitchBot into here
     public static void CheckForReminder(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         using OkayegTeaTimeContext database = new();
@@ -143,6 +123,7 @@ public static class DbController
         database.SaveChanges();
     }
 
+    //TODO: dont pass TwitchBot into here
     public static void CheckForTimedReminder(TwitchBot twitchBot)
     {
         using OkayegTeaTimeContext database = new();
@@ -155,13 +136,6 @@ public static class DbController
         reminders.ForEach(twitchBot.SendTimedReminder);
         database.Reminders.RemoveRange(reminders);
         database.SaveChanges();
-    }
-
-    public static bool CheckIfAfk(int userId)
-    {
-        using OkayegTeaTimeContext database = new();
-        User? user = database.Users.FirstOrDefault(u => u.Id == userId);
-        return user?.IsAfk == true;
     }
 
     public static void SetAfk(int userId, string message, AfkCommandType type)
@@ -180,67 +154,16 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static bool DoesSpotifyUserExist(string username)
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Spotify.Any(s => s.Username == username.ToLower());
-    }
-
     public static Channel? GetChannel(string channel)
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.FirstOrDefault(c => c.Name == channel);
     }
 
-    public static List<string> GetChannelNames()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Channels.AsQueryable().Select(c => c.Name).ToList();
-    }
-
     public static List<Channel> GetChannels()
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.ToList();
-    }
-
-    public static string? GetEmoteInFront(string channel)
-    {
-        return GetChannel(channel)?.EmoteInFront?.Decode();
-    }
-
-    public static List<string> GetEmoteManagementSubs()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Channels.AsQueryable().Where(c => c.EmoteManagementSub == true).Select(c => c.Name).ToList();
-    }
-
-    public static Dictionary<string, string?> GetEmotesInFront()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Channels.ToDictionary(c => c.Name, c => c.EmoteInFront?.Decode());
-    }
-
-    public static string? GetPrefix(string channel)
-    {
-        return GetChannel(channel)?.Prefix?.Decode();
-    }
-
-    public static Dictionary<string, string?> GetPrefixes()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Channels.ToDictionary(c => c.Name, c => c.Prefix?.Decode());
-    }
-
-    public static List<Reminder> GetReminders()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Reminders.ToList();
-    }
-
-    public static string? GetRefreshToken(string username)
-    {
-        return GetSpotifyUser(username)?.RefreshToken;
     }
 
     public static Reminder? GetReminder(int id)
@@ -253,12 +176,6 @@ public static class DbController
     {
         using OkayegTeaTimeContext database = new();
         return database.Spotify.FirstOrDefault(s => s.Username == username);
-    }
-
-    public static List<Models.Spotify> GetSpotifyUsers()
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Spotify.ToList();
     }
 
     public static User? GetUser(int userId, string? username = null)
@@ -291,11 +208,6 @@ public static class DbController
         {
             return database.Reminders.AsQueryable().Count(r => r.ToUser == target && r.ToTime > 0) >= AppSettings.MaxReminders;
         }
-    }
-
-    public static bool IsEmoteManagementSub(string channel)
-    {
-        return GetChannel(channel)?.EmoteManagementSub == true;
     }
 
     public static void LogException(Exception ex)
@@ -348,11 +260,6 @@ public static class DbController
         IEnumerable<Reminder> reminder = database.Reminders.AsEnumerable().Where(r => r.Channel == channel && r.ToTime > 0);
         database.RemoveRange(reminder);
         database.SaveChanges();
-    }
-
-    public static void ResumeAfkStatus(int userId)
-    {
-        SetAfkStatus(userId, true);
     }
 
     public static void SetEmoteInFront(string channel, string emote)

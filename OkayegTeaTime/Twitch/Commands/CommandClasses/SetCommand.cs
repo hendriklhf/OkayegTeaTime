@@ -60,7 +60,7 @@ public class SetCommand : Command
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                if (DbController.DoesSpotifyUserExist(ChatMessage.Channel.Name))
+                if (DbController.GetSpotifyUser(ChatMessage.Channel.Name) is not null)
                 {
                     bool state = ChatMessage.Split[2].IsMatch(@"(1|true|enabled?)");
                     DbController.SetSongRequestEnabledState(ChatMessage.Channel.Name, state);

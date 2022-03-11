@@ -11,8 +11,8 @@ public static class PatternCreator
     {
         // TODO: kinda don't like how this is passed in
         string patternPrefix = string.IsNullOrEmpty(prefix)
-            ? "^" + Regex.Escape(alias + AppSettings.Suffix)
-            : "^" + Regex.Escape(prefix + alias);
+            ? '^' + Regex.Escape(alias + AppSettings.Suffix)
+            : '^' + Regex.Escape(prefix + alias);
 
         string patternKey = patternPrefix + addition;
 

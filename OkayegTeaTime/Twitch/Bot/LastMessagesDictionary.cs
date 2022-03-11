@@ -19,10 +19,10 @@ public class LastMessagesDictionary
 
     private void FillDictionary()
     {
-        _lastMessages = DbController.GetChannelNames().ToDictionary(c => c, _ => string.Empty);
+        _lastMessages = DbController.GetChannels().Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
     }
 
-    public void Add(string channel, string message = "")
+    private void Add(string channel, string message = "")
     {
         if (!_lastMessages.ContainsKey(channel))
         {

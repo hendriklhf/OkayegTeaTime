@@ -22,7 +22,7 @@ public class RafkCommand : Command
             return;
         }
 
-        DbController.ResumeAfkStatus(ChatMessage.UserId);
+        DbController.SetAfkStatus(ChatMessage.UserId, true);
         Response = new AfkMessage(user.Id!).Resuming!;
     }
 }

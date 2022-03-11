@@ -40,7 +40,7 @@ public class MessageHandler : Handler
             return;
         }
 
-        if (DbController.CheckIfAfk(chatMessage.UserId))
+        if (DbController.GetUser(chatMessage.UserId, chatMessage.Username)?.IsAfk == true)
         {
             TwitchBot.SendComingBack(chatMessage);
             if (!chatMessage.IsAfkCommmand)

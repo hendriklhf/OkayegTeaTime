@@ -22,7 +22,7 @@ public static class SpotifyController
 
     public static async Task RefreshAccessToken(string username)
     {
-        string? refreshToken = DbController.GetRefreshToken(username);
+        string? refreshToken = DbController.GetSpotifyUser(username)?.RefreshToken;
         if (refreshToken is null)
         {
             return;
