@@ -17,8 +17,10 @@ namespace OkayegTeaTime.Database.Models
         }
 
         public virtual DbSet<Channel> Channels { get; set; }
+        public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<Spotify> Spotify { get; set; }
+        public virtual DbSet<SubEmoteNotification> SubEmoteNotifications { get; set; }
         public virtual DbSet<Suggestion> Suggestions { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -36,10 +38,6 @@ namespace OkayegTeaTime.Database.Models
             {
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.EmoteInFront)
                     .HasMaxLength(100)
                     .HasDefaultValueSql("'NULL'");
@@ -49,8 +47,33 @@ namespace OkayegTeaTime.Database.Models
                     .HasColumnType("bit(1)")
                     .HasDefaultValueSql("b'0'");
 
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.Prefix)
                     .HasMaxLength(50)
+                    .HasDefaultValueSql("'NULL'");
+            });
+
+            modelBuilder.Entity<ExceptionLog>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Message)
+                    .HasMaxLength(500)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Origin)
+                    .HasMaxLength(100)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.StackTrace)
+                    .HasMaxLength(500)
+                    .HasDefaultValueSql("'NULL'");
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(100)
                     .HasDefaultValueSql("'NULL'");
             });
 
@@ -104,6 +127,22 @@ namespace OkayegTeaTime.Database.Models
                     .HasMaxLength(50);
             });
 
+            modelBuilder.Entity<SubEmoteNotification>(entity =>
+            {
+                entity.HasIndex(e => e.ChannelId, "Channel");
+
+                entity.HasIndex(e => e.Id, "SubEmoteNotifications_Id_uindex")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.ChannelId).HasColumnType("int(11)");
+
+                entity.Property(e => e.SubChannel)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<Suggestion>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnType("int(11)");
@@ -150,6 +189,7 @@ namespace OkayegTeaTime.Database.Models
                     .HasMaxLength(50)
                     .HasDefaultValueSql("''''''");
             });
+
         }
     }
 }

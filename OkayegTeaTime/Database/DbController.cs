@@ -298,6 +298,14 @@ public static class DbController
         return GetChannel(channel)?.EmoteManagementSub == true;
     }
 
+    public static void LogException(Exception ex)
+    {
+        using OkayegTeaTimeContext database = new();
+        ExceptionLog log = new(ex);
+        database.ExceptionLogs.Add(log);
+        database.SaveChanges();
+    }
+
     public static void RemoveChannel(string channel)
     {
         using OkayegTeaTimeContext database = new();

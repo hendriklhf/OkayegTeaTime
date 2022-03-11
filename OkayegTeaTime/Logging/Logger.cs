@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Logging;
@@ -19,7 +20,7 @@ public static class Logger
     {
         string log = $"{ex.GetType().Name}: {ex.Message}: {ex.StackTrace}";
         ConsoleOut(log, ConsoleColor.Magenta);
-        LogToFile(Path.ExceptionLog, log);
+        DbController.LogException(ex);
     }
 
     private static string CreateLog(string input)
