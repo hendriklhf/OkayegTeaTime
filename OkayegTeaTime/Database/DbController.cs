@@ -11,13 +11,13 @@ namespace OkayegTeaTime.Database;
 
 public static class DbController
 {
-    public static void AddChannel(string channel)
+    public static void AddChannel(int id, string channel)
     {
         // FIXME: all operations create a Context, act on it and dispose straight away
         // Would be better to make this class non-static (treat as a Repository) & pool connections (see the following:
         // https://docs.microsoft.com/en-us/ef/core/performance/advanced-performance-topics#dbcontext-pooling)
         using OkayegTeaTimeContext database = new();
-        database.Channels.Add(new(channel));
+        database.Channels.Add(new(id, channel));
         database.SaveChanges();
     }
 
@@ -269,12 +269,13 @@ public static class DbController
             return user;
         }
 
-        if (username is not null && user.Username != username)
+        if (username is null || user.Username == username)
         {
-            user.Username = username;
+            return user;
         }
-        database.SaveChanges();
 
+        user.Username = username;
+        database.SaveChanges();
         return user;
     }
 
@@ -313,6 +314,7 @@ public static class DbController
             database.SaveChanges();
             return true;
         }
+
         return false;
     }
 

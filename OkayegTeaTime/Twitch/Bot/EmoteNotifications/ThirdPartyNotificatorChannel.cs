@@ -27,11 +27,6 @@ public class ThirdPartyNotificatorChannel
 
     public override bool Equals(object? obj)
     {
-        return obj is ThirdPartyNotificatorChannel notificatorChannel && notificatorChannel.Name == Name;
-    }
-
-    public override string ToString()
-    {
-        return Name;
+        return obj is ThirdPartyNotificatorChannel notificatorChannel && string.Equals(notificatorChannel.Name, Name, StringComparison.OrdinalIgnoreCase);
     }
 }

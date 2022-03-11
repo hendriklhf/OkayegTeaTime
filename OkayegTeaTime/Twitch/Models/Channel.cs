@@ -8,7 +8,7 @@ public class Channel
     public string Name
     {
         get => _name!;
-        set
+        private init
         {
             _name = value;
             Database.Models.Channel? channel = DbController.GetChannel(value);
@@ -62,7 +62,7 @@ public class Channel
         }
     }
 
-    private string? _name;
+    private readonly string? _name;
     private string? _emote;
     private string? _prefix;
     private bool _isEmoteSub;

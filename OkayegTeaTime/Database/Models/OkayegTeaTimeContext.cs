@@ -112,15 +112,14 @@ namespace OkayegTeaTime.Database.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
                 entity.Property(e => e.Status)
                     .IsRequired()
                     .HasColumnType("enum('Open','Done','Rejected')")
                     .HasDefaultValueSql("'''Open'''");
-
-                entity.Property(e => e.Content)
-                    .IsRequired()
-                    .HasMaxLength(2000)
-                    .HasColumnName("Suggestion");
 
                 entity.Property(e => e.Time).HasColumnType("bigint(20)");
 

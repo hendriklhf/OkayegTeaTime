@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Timers;
+using HLE.Emojis;
 using HLE.Numbers;
 using HLE.Strings;
 using HLE.Time;
@@ -26,25 +27,36 @@ namespace OkayegTeaTime.Twitch.Bot;
 
 public class TwitchBot
 {
-    public TwitchClient TwitchClient { get; private set; }
+    public TwitchClient TwitchClient { get; }
 
-    public ConnectionCredentials ConnectionCredentials { get; private set; }
+    public ConnectionCredentials ConnectionCredentials { get; }
 
-    public ClientOptions ClientOptions { get; private set; }
+    public ClientOptions ClientOptions { get; }
 
-    public TcpClient TcpClient { get; private set; }
+    public TcpClient TcpClient { get; }
 
-    public List<string> Channels { get; private set; }
+    public List<string> Channels { get; }
 
     public MessageHandler? MessageHandler { get; private set; }
 
     public WhisperHandler? WhisperHandler { get; private set; }
 
-    public LastMessagesDictionary LastMessagesDictionary { get; private set; } = new();
+    public LastMessagesDictionary LastMessagesDictionary { get; } = new();
 
-    public Restarter Restarter { get; private set; } = new(new() { new(4, 0), new(4, 10), new(4, 20), new(4, 30), new(4, 40), new(4, 50), new(5, 0) });
+    public Restarter Restarter { get; } = new(new()
+    {
+        new(4, 0),
+        new(4, 10),
+        new(4, 20),
+        new(4, 30),
+        new(4, 40),
+        new(4, 50),
+        new(5, 0)
+    });
 
     public ThirdPartyEmoteNotificator? EmoteManagementNotificator { get; private set; }
+
+    //public SubEmoteNotificator? SubEmoteNotificator { get; private set; }
 
     public DottedNumber CommandCount { get; set; } = 1;
 
@@ -82,11 +94,15 @@ public class TwitchBot
         else
         {
 #if DEBUG
-            Channels = new() { AppSettings.DebugChannel };
+            Channels = new()
+            {
+                AppSettings.DebugChannel
+            };
 #else
             Channels = DbController.GetChannelNames();
 #endif
         }
+
         TwitchClient.Initialize(ConnectionCredentials, Channels);
 
         TwitchClient.OnLog += Client_OnLog!;
@@ -140,26 +156,34 @@ public class TwitchBot
 
     public string JoinChannel(string channel)
     {
-        if (TwitchApi.DoesUserExist(channel))
-        {
-            DbController.AddChannel(channel);
-            LastMessagesDictionary.Add(channel);
-            try
-            {
-                TwitchClient.JoinChannel(channel);
-                Send(channel, "I'm online");
-                return $"successfully joined #{channel}";
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-                return $"unable to join #{channel}";
-            }
-        }
-        else
+        User? user = TwitchApi.GetUser(channel);
+        if (user is null)
         {
             return $"channel #{channel} does not exist";
         }
+
+        DbController.AddChannel(user.Id.ToInt(), channel);
+        try
+        {
+            TwitchClient.JoinChannel(channel);
+            Send(channel, $"{Emoji.Wave}");
+            return $"successfully joined #{channel}";
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(ex);
+            return $"unable to join #{channel}";
+        }
+    }
+
+    private void Initlialize()
+    {
+        MessageHandler = new(this);
+        WhisperHandler = new(this);
+        EmoteManagementNotificator = new(this);
+        //SubEmoteNotificator = new(this);
+        Restarter.Initialize();
+        InitializeTimers();
     }
 
     #region SystemInfo
@@ -190,7 +214,7 @@ public class TwitchBot
 
     private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
     {
-        ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", fontColor: ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", ConsoleColor.Red);
     }
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -202,7 +226,7 @@ public class TwitchBot
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
-        ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.Twitch.Username}: {e.SentMessage.Message}", fontColor: ConsoleColor.Green);
+        ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.Twitch.Username}: {e.SentMessage.Message}", ConsoleColor.Green);
     }
 
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
@@ -225,13 +249,13 @@ public class TwitchBot
 
     private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
     {
-        ConsoleOut($"[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
+        ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
         Restart();
     }
 
     private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
     {
-        ConsoleOut($"[TWITCH] RECONNECTED", ConsoleColor.Red, true);
+        ConsoleOut("[TWITCH] RECONNECTED", ConsoleColor.Red, true);
     }
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
@@ -298,13 +322,4 @@ public class TwitchBot
     }
 
     #endregion Timer
-
-    private void Initlialize()
-    {
-        MessageHandler = new(this);
-        WhisperHandler = new(this);
-        EmoteManagementNotificator = new(this);
-        Restarter.Initialize();
-        InitializeTimers();
-    }
 }

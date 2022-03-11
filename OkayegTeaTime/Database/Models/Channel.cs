@@ -10,10 +10,11 @@ namespace OkayegTeaTime.Database.Models
         public string ChannelName { get; set; }
         public byte[] EmoteInFront { get; set; }
         public byte[] Prefix { get; set; }
-        public bool? EmoteManagementSub { get; set; } = false;
+        public bool? EmoteManagementSub { get; set; }
 
-        public Channel(string channel, string emote = null, string prefix = null)
+        public Channel(int id, string channel, string emote = null, string prefix = null)
         {
+            Id = id;
             ChannelName = channel;
             EmoteInFront = emote?.Encode();
             Prefix = prefix?.Encode();
