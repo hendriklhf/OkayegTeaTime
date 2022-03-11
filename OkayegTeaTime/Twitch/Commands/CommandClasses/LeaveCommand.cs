@@ -5,9 +5,9 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
-public class JoinCommand : Command
+public class LeaveCommand : Command
 {
-    public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
+    public LeaveCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
     }
@@ -23,10 +23,9 @@ public class JoinCommand : Command
                 return;
             }
 
-            string channel = ChatMessage.LowerSplit[1];
-            string response = TwitchBot.JoinChannel(channel.Remove("#"));
+            string channel = ChatMessage.LowerSplit[1].Remove("#");
+            string response = TwitchBot.LeaveChannel(channel);
             Response = $"{ChatMessage.Username}, {response}";
-            return;
         }
     }
 }

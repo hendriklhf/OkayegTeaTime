@@ -18,6 +18,7 @@ public enum CommandType
     Help,
     Id,
     Join,
+    Leave,
     Listen,
     Massping,
     Math,

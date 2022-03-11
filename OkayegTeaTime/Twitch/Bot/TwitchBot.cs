@@ -22,6 +22,7 @@ using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static HLE.Time.TimeHelper;
+using Database = OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Twitch.Bot;
 
@@ -162,17 +163,39 @@ public class TwitchBot
             return $"channel #{channel} does not exist";
         }
 
+        Database::Channel? chnl = DbController.GetChannel(channel);
+        if (chnl is not null)
+        {
+            return $"the bot is already connected to #{channel}";
+        }
+
         DbController.AddChannel(user.Id.ToInt(), channel);
         try
         {
             TwitchClient.JoinChannel(channel);
-            Send(channel, $"{Emoji.Wave}");
+            Send(channel, $"{Emoji.Wave} hello");
             return $"successfully joined #{channel}";
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
             return $"unable to join #{channel}";
+        }
+    }
+
+    public string LeaveChannel(string channel)
+    {
+        try
+        {
+            Send(channel, $"{Emoji.Wave} bye");
+            DbController.RemoveChannel(channel);
+            TwitchClient.LeaveChannel(channel);
+            return $"successfully left #{channel}";
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(ex);
+            return $"unable to leave #{channel}";
         }
     }
 

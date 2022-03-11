@@ -534,6 +534,21 @@
       ],
       "Cooldown": 15000,
       "Document": true
+    },
+    {
+      "Name": "Leave",
+      "Alias": [
+        "leave",
+        "part"
+      ],
+      "Parameter": [
+        "[channel]"
+      ],
+      "Description": [
+        "Leaves the provided channel."
+      ],
+      "Cooldown": 10000,
+      "Document": false
     }
   ],
   "AfkCommands": [

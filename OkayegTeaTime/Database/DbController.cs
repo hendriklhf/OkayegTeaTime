@@ -6,6 +6,7 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Models;
+using Channel = OkayegTeaTime.Database.Models.Channel;
 
 namespace OkayegTeaTime.Database;
 
@@ -185,7 +186,7 @@ public static class DbController
         return database.Spotify.Any(s => s.Username == username.ToLower());
     }
 
-    public static Models.Channel? GetChannel(string channel)
+    public static Channel? GetChannel(string channel)
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.FirstOrDefault(c => c.Name == channel);
@@ -197,7 +198,7 @@ public static class DbController
         return database.Channels.AsQueryable().Select(c => c.Name).ToList();
     }
 
-    public static List<Models.Channel> GetChannels()
+    public static List<Channel> GetChannels()
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.ToList();
@@ -297,6 +298,21 @@ public static class DbController
         return GetChannel(channel)?.EmoteManagementSub == true;
     }
 
+    public static void RemoveChannel(string channel)
+    {
+        using OkayegTeaTimeContext database = new();
+        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
+        if (chnl is null)
+        {
+            return;
+        }
+
+        database.Channels.Remove(chnl);
+        database.SaveChanges();
+
+        RemoveReminderOfChannel(channel);
+    }
+
     public static bool RemoveReminder(TwitchChatMessage chatMessage, int reminderId)
     {
         using OkayegTeaTimeContext database = new();
@@ -318,6 +334,14 @@ public static class DbController
         return false;
     }
 
+    private static void RemoveReminderOfChannel(string channel)
+    {
+        using OkayegTeaTimeContext database = new();
+        IEnumerable<Reminder> reminder = database.Reminders.AsEnumerable().Where(r => r.Channel == channel && r.ToTime > 0);
+        database.RemoveRange(reminder);
+        database.SaveChanges();
+    }
+
     public static void ResumeAfkStatus(int userId)
     {
         SetAfkStatus(userId, true);
@@ -326,7 +350,7 @@ public static class DbController
     public static void SetEmoteInFront(string channel, string emote)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
+        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = emote.Encode();
@@ -337,7 +361,7 @@ public static class DbController
     public static void SetEmoteSub(string channel, bool subbed)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
+        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.EmoteManagementSub = subbed;
@@ -348,7 +372,7 @@ public static class DbController
     public static void SetPrefix(string channel, string prefix)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
+        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.Prefix = prefix.RemoveChatterinoChar().TrimAll().Encode();
@@ -372,7 +396,7 @@ public static class DbController
     public static void UnsetEmoteInFront(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
+        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = null;
@@ -383,7 +407,7 @@ public static class DbController
     public static void UnsetPrefix(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
+        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.Prefix = null;

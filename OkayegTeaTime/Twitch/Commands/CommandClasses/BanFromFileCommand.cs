@@ -27,7 +27,7 @@ public class BanFromFileCommand : Command
             {
                 if (!ChatMessage.IsBotModerator)
                 {
-                    Response += "you must be a moderator of the bot";
+                    Response += PredefinedMessages.NoBotModerator;
                     return;
                 }
 
