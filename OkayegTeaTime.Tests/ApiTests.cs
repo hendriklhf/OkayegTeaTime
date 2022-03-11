@@ -21,8 +21,8 @@ public class ApiTests
     {
         int emoteCount = 5;
         // FIXME: making HTTP call from tests. Should be mocked out to remove external dependency
-        List<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(_testChannel, emoteCount).ToList();
-        Assert.IsTrue(emotes.Count == emoteCount);
+        List<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(_testChannel, emoteCount)?.ToList();
+        Assert.IsTrue(emotes?.Count == emoteCount);
         emotes.ForEach(e =>
         {
             bool isMatch = e.Name.IsMatch(@"^\w+$");
@@ -35,8 +35,8 @@ public class ApiTests
     {
         TwitchApi.Initialize();
         int emoteCount = 5;
-        List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount).ToList();
-        Assert.IsTrue(emotes.Count == emoteCount);
+        List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount)?.ToList();
+        Assert.IsTrue(emotes?.Count == emoteCount);
         emotes.ForEach(e =>
         {
             bool isMatch = e.Name.IsMatch(@"^\w+$");
@@ -66,8 +66,8 @@ public class ApiTests
     public void GetFfzEmotesTest()
     {
         int emoteCount = 5;
-        List<FfzEmote> emotes = HttpRequest.GetFfzEmotes(_testChannel, emoteCount).ToList();
-        Assert.IsTrue(emotes.Count == emoteCount);
+        List<FfzEmote> emotes = HttpRequest.GetFfzEmotes(_testChannel, emoteCount)?.ToList();
+        Assert.IsTrue(emotes?.Count == emoteCount);
         emotes.ForEach(e =>
         {
             bool isMatch = e.Name.IsMatch(@"^\w+$");
@@ -90,9 +90,16 @@ public class ApiTests
     }
 
     [TestMethod]
-    public void GetGoLangOnlineCompilerTemplate()
+    public void GetGoLangOnlineCompilerResultTest()
     {
         string result = HttpRequest.GetGoLangOnlineCompilerResult("fmt.Println(\"test\");");
         Assert.AreEqual("test\n", result);
+    }
+
+    [TestMethod]
+    public void GetCppOnlineCompilerResultTest()
+    {
+        string result = HttpRequest.GetCppOnlineCompilerResult("std::cout << \"test\";");
+        Assert.AreEqual("test", result);
     }
 }
