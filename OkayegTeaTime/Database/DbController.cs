@@ -188,13 +188,13 @@ public static class DbController
     public static Models.Channel? GetChannel(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        return database.Channels.FirstOrDefault(c => c.ChannelName == channel);
+        return database.Channels.FirstOrDefault(c => c.Name == channel);
     }
 
     public static List<string> GetChannelNames()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Channels.AsQueryable().Select(c => c.ChannelName).ToList();
+        return database.Channels.AsQueryable().Select(c => c.Name).ToList();
     }
 
     public static List<Models.Channel> GetChannels()
@@ -211,13 +211,13 @@ public static class DbController
     public static List<string> GetEmoteManagementSubs()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Channels.AsQueryable().Where(c => c.EmoteManagementSub == true).Select(c => c.ChannelName).ToList();
+        return database.Channels.AsQueryable().Where(c => c.EmoteManagementSub == true).Select(c => c.Name).ToList();
     }
 
     public static Dictionary<string, string?> GetEmotesInFront()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Channels.ToDictionary(c => c.ChannelName, c => c.EmoteInFront?.Decode());
+        return database.Channels.ToDictionary(c => c.Name, c => c.EmoteInFront?.Decode());
     }
 
     public static string? GetPrefix(string channel)
@@ -228,7 +228,7 @@ public static class DbController
     public static Dictionary<string, string?> GetPrefixes()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Channels.ToDictionary(c => c.ChannelName, c => c.Prefix?.Decode());
+        return database.Channels.ToDictionary(c => c.Name, c => c.Prefix?.Decode());
     }
 
     public static List<Reminder> GetReminders()
@@ -326,7 +326,7 @@ public static class DbController
     public static void SetEmoteInFront(string channel, string emote)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = emote.Encode();
@@ -337,7 +337,7 @@ public static class DbController
     public static void SetEmoteSub(string channel, bool subbed)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.EmoteManagementSub = subbed;
@@ -348,7 +348,7 @@ public static class DbController
     public static void SetPrefix(string channel, string prefix)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.Prefix = prefix.RemoveChatterinoChar().TrimAll().Encode();
@@ -372,7 +372,7 @@ public static class DbController
     public static void UnsetEmoteInFront(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.EmoteInFront = null;
@@ -383,7 +383,7 @@ public static class DbController
     public static void UnsetPrefix(string channel)
     {
         using OkayegTeaTimeContext database = new();
-        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.ChannelName == channel);
+        Models.Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
         if (chnl is not null)
         {
             chnl.Prefix = null;

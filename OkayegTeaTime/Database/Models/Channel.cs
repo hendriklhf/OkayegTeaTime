@@ -7,23 +7,23 @@ namespace OkayegTeaTime.Database.Models
     public class Channel
     {
         public int Id { get; set; }
-        public string ChannelName { get; set; }
+        public string Name { get; set; }
         public byte[] EmoteInFront { get; set; }
         public byte[] Prefix { get; set; }
         public bool? EmoteManagementSub { get; set; }
 
-        public Channel(int id, string channel, string emote = null, string prefix = null)
+        public Channel(int id, string name, string emote = null, string prefix = null)
         {
             Id = id;
-            ChannelName = channel;
+            Name = name;
             EmoteInFront = emote?.Encode();
             Prefix = prefix?.Encode();
         }
 
-        public Channel(int id, string channelName, byte[] emoteInFront, byte[] prefix, bool? emoteManagementSub = false)
+        public Channel(int id, string name, byte[] emoteInFront, byte[] prefix, bool? emoteManagementSub = false)
         {
             Id = id;
-            ChannelName = channelName;
+            Name = name;
             EmoteInFront = emoteInFront;
             Prefix = prefix;
             EmoteManagementSub = emoteManagementSub;
