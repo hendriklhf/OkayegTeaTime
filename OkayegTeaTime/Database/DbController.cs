@@ -107,7 +107,8 @@ public static class DbController
         database.SaveChanges();
     }
 
-    //TODO: dont pass TwitchBot into here
+    //TODO: don't pass TwitchBot into here, don't delete reminders here
+    [Obsolete("needs refactoring")]
     public static void CheckForReminder(TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
         using OkayegTeaTimeContext database = new();
@@ -122,7 +123,8 @@ public static class DbController
         database.SaveChanges();
     }
 
-    //TODO: dont pass TwitchBot into here
+    //TODO: don't pass TwitchBot into here, don't delete reminders here
+    [Obsolete("needs refactoring")]
     public static void CheckForTimedReminder(TwitchBot twitchBot)
     {
         using OkayegTeaTimeContext database = new();
