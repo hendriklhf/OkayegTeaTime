@@ -1,11 +1,21 @@
 create table Channels
 (
-    Id                 int auto_increment
+    Id                 int default 0    not null
         primary key,
-    ChannelName        varchar(50)      not null,
+    Name               varchar(50)      not null,
     EmoteInFront       varbinary(100)   null,
     Prefix             varbinary(50)    null,
     EmoteManagementSub bit default b'0' not null
+);
+
+create table ExceptionLogs
+(
+    Id         int auto_increment
+        primary key,
+    Type       varchar(100) null,
+    Origin     varchar(100) null,
+    Message    varchar(500) null,
+    StackTrace varchar(500) null
 );
 
 create table Reminders
@@ -31,15 +41,28 @@ create table Spotify
     SongRequestEnabled bit    default b'0' null
 );
 
-create table Suggestions
+create table SubEmoteNotifications
 (
     Id         int auto_increment
         primary key,
-    Username   varchar(50)                                      not null,
-    Suggestion varbinary(2000)                                  not null,
-    Channel    varchar(50)                                      not null,
-    Time       bigint                                           not null,
-    Status     enum ('Open', 'Done', 'Rejected') default 'Open' not null
+    ChannelId  int         not null,
+    SubChannel varchar(50) not null,
+    constraint SubEmoteNotifications_Id_uindex
+        unique (Id)
+);
+
+create index Channel
+    on SubEmoteNotifications (ChannelId);
+
+create table Suggestions
+(
+    Id       int auto_increment
+        primary key,
+    Username varchar(50)                                      not null,
+    Content  varbinary(2000)                                  not null,
+    Channel  varchar(50)                                      not null,
+    Time     bigint                                           not null,
+    Status   enum ('Open', 'Done', 'Rejected') default 'Open' not null
 );
 
 create table Users
