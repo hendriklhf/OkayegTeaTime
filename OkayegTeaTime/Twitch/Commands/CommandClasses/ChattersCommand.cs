@@ -15,10 +15,10 @@ public class ChattersCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
+        Regex pattern = PatternCreator.Create(Alias, Prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel.Name;
+            string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;
             DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
             Response = $"{ChatMessage.Username}, ";
 

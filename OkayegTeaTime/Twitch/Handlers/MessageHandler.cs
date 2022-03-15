@@ -2,6 +2,7 @@
 using HLE.Emojis;
 using HLE.Strings;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
@@ -40,12 +41,13 @@ public class MessageHandler : Handler
             return;
         }
 
-        if (DbController.GetUser(chatMessage.UserId, chatMessage.Username)?.IsAfk == true)
+        User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
+        if (user?.IsAfk == true)
         {
             TwitchBot.SendComingBack(chatMessage);
             if (!chatMessage.IsAfkCommmand)
             {
-                DbController.SetAfkStatus(chatMessage.UserId, false);
+                user.IsAfk = false;
             }
         }
 
@@ -78,7 +80,7 @@ public class MessageHandler : Handler
 
     private void CheckForSpotifyUri(TwitchChatMessage chatMessage)
     {
-        if (chatMessage.Channel.Name == AppSettings.SecretOfflineChatChannel)
+        if (chatMessage.Channel == AppSettings.SecretOfflineChatChannel)
         {
             string? uri = _linkRecognizer.FindSpotifyLink(chatMessage);
             if (!string.IsNullOrEmpty(uri))
@@ -92,13 +94,14 @@ public class MessageHandler : Handler
     {
         if (_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {
-            if (string.IsNullOrEmpty(chatMessage.Channel.Prefix))
+            string? prefix = DbControl.Channels[chatMessage.Channel]?.Prefix;
+            if (string.IsNullOrEmpty(prefix))
             {
                 TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}");
             }
             else
             {
-                TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {chatMessage.Channel.Prefix}");
+                TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {prefix}");
             }
         }
     }

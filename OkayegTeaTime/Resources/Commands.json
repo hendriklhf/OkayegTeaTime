@@ -533,7 +533,7 @@
         "Executes the given C++ code"
       ],
       "Cooldown": 15000,
-      "Document": true
+      "Document": false
     },
     {
       "Name": "Leave",

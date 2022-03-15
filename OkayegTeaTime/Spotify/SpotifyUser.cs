@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using OkayegTeaTime.Logging;
 using SpotifyAPI.Web;
-using SpotifyModel = OkayegTeaTime.Database.Models.Spotify;
 
 namespace OkayegTeaTime.Spotify;
 
@@ -36,7 +35,7 @@ public class SpotifyUser
         _client = new(AccessToken);
     }
 
-    public SpotifyUser(SpotifyModel spotifyModel)
+    public SpotifyUser(Database.EntityFrameworkModels.Spotify spotifyModel)
         : this(spotifyModel.Username, spotifyModel.AccessToken, spotifyModel.RefreshToken, spotifyModel.SongRequestEnabled == true)
     {
     }
@@ -52,7 +51,7 @@ public class SpotifyUser
 
         if (!AreSongRequestsEnabled)
         {
-            Response = $"song requests are currently not enabled, {Username.Antiping()} or a moderator have to enable it first";
+            Response = $"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first";
             return;
         }
 
@@ -76,14 +75,13 @@ public class SpotifyUser
             Response = $"an error occurred, it might not be possible to add songs to {Username.Antiping()}'s queue";
             return;
         }
-        return;
     }
 
     public async Task Skip()
     {
         if (!AreSongRequestsEnabled)
         {
-            Response = $"song requests are currently not enabled, {Username.Antiping()} or a moderator have to enable it first";
+            Response = $"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first";
             return;
         }
 

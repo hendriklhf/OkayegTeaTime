@@ -1,33 +1,88 @@
 ﻿using HLE.Strings;
 
-#nullable disable
+namespace OkayegTeaTime.Database.Models;
 
-namespace OkayegTeaTime.Database.Models
+public class Channel : CacheModel
 {
-    public class Channel
+    public int Id { get; }
+
+    public string Name { get; }
+
+    public string? Emote
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public byte[] EmoteInFront { get; set; }
-        public byte[] Prefix { get; set; }
-        public bool? EmoteManagementSub { get; set; }
-
-        public Channel(int id, string name, string emote = null, string prefix = null, bool emoteManagementSub = false)
+        get => _emote;
+        set
         {
-            Id = id;
-            Name = name;
-            EmoteInFront = emote?.Encode();
-            Prefix = prefix?.Encode();
-            EmoteManagementSub = emoteManagementSub;
-        }
+            _emote = value;
+            EntityFrameworkModels.Channel? efChannel = GetDbContext().Channels.FirstOrDefault(c => c.Id == Id);
+            if (efChannel is null)
+            {
+                return;
+            }
 
-        public Channel(int id, string name, byte[] emoteInFront, byte[] prefix, bool? emoteManagementSub = false)
-        {
-            Id = id;
-            Name = name;
-            EmoteInFront = emoteInFront;
-            Prefix = prefix;
-            EmoteManagementSub = emoteManagementSub;
+            efChannel.EmoteInFront = value?.Encode();
+            EditedProperty();
         }
+    }
+
+    public string? Prefix
+    {
+        get => _prefix;
+        set
+        {
+            _prefix = value;
+            EntityFrameworkModels.Channel? efChannel = GetDbContext().Channels.FirstOrDefault(c => c.Id == Id);
+            if (efChannel is null)
+            {
+                return;
+            }
+
+            efChannel.Prefix = value?.Encode();
+            EditedProperty();
+        }
+    }
+
+    public bool IsEmoteNotificationSub
+    {
+        get => _isEmoteNotificationSub;
+        set
+        {
+            _isEmoteNotificationSub = value;
+            EntityFrameworkModels.Channel? efChannel = GetDbContext().Channels.FirstOrDefault(c => c.Id == Id);
+            if (efChannel is null)
+            {
+                return;
+            }
+
+            efChannel.EmoteManagementSub = value;
+            EditedProperty();
+        }
+    }
+
+    private string? _emote;
+    private string? _prefix;
+    private bool _isEmoteNotificationSub;
+
+    public Channel(EntityFrameworkModels.Channel channel)
+    {
+        Id = channel.Id;
+        Name = channel.Name;
+
+        string? emote = channel.EmoteInFront?.Decode();
+        _emote = string.IsNullOrEmpty(emote) ? AppSettings.DefaultEmote : emote;
+
+        string? prefix = channel.Prefix?.Decode();
+        _prefix = string.IsNullOrEmpty(prefix) ? null : prefix;
+
+        _isEmoteNotificationSub = channel.EmoteManagementSub == true;
+    }
+
+    public Channel(int id, string name)
+    {
+        Id = id;
+        Name = name;
+        _emote = null;
+        _prefix = null;
+        _isEmoteNotificationSub = false;
     }
 }

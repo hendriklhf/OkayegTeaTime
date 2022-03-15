@@ -19,7 +19,7 @@ public class BanFromFileCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+\s\S+");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
@@ -44,11 +44,11 @@ public class BanFromFileCommand : Command
                 {
                     if (_banPattern.IsMatch(f))
                     {
-                        TwitchBot.TwitchClient.SendMessage(ChatMessage.Channel.Name, f);
+                        TwitchBot.TwitchClient.SendMessage(ChatMessage.Channel, f);
                     }
                     else
                     {
-                        TwitchBot.TwitchClient.SendMessage(ChatMessage.Channel.Name, $"/ban {f}");
+                        TwitchBot.TwitchClient.SendMessage(ChatMessage.Channel, $"/ban {f}");
                     }
                 });
                 Response += "done :)";

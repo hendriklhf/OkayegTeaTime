@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace OkayegTeaTime.Database.Models
+namespace OkayegTeaTime.Database.EntityFrameworkModels
 {
     public class SubEmoteNotification
     {

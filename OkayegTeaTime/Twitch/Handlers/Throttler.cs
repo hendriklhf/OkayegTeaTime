@@ -31,9 +31,9 @@ public class Throttler
     public bool CanBeProcessed(TwitchChatMessage chatMessage)
     {
         long now = TimeHelper.Now();
-        if (_lastMessages[chatMessage.Channel.Name] + AppSettings.DelayBetweenReceivedMessages < now)
+        if (_lastMessages[chatMessage.Channel] + AppSettings.DelayBetweenReceivedMessages < now)
         {
-            _lastMessages[chatMessage.Channel.Name] = now;
+            _lastMessages[chatMessage.Channel] = now;
             return true;
         }
         else

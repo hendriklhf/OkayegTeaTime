@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace OkayegTeaTime.Database.Models
+namespace OkayegTeaTime.Database.EntityFrameworkModels
 {
     public class OkayegTeaTimeContext : DbContext
     {
@@ -85,7 +85,8 @@ namespace OkayegTeaTime.Database.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.FromUser)
+                entity.Property(e => e.Creator)
+                    .HasColumnName("FromUser")
                     .IsRequired()
                     .HasMaxLength(50);
 
@@ -97,7 +98,8 @@ namespace OkayegTeaTime.Database.Models
 
                 entity.Property(e => e.ToTime).HasColumnType("bigint(20)");
 
-                entity.Property(e => e.ToUser)
+                entity.Property(e => e.Target)
+                    .HasColumnName("ToUser")
                     .IsRequired()
                     .HasMaxLength(50);
             });

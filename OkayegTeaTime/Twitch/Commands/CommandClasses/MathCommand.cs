@@ -14,7 +14,7 @@ public class MathCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, {HttpRequest.GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..])}";

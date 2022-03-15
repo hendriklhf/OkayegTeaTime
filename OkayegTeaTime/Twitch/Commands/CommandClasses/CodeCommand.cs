@@ -14,7 +14,7 @@ public class CodeCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             JCommand? command = AppSettings.CommandList.FindCommand(ChatMessage.LowerSplit[1]);

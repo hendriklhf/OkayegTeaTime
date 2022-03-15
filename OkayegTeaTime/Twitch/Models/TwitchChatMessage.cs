@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Strings;
+using OkayegTeaTime.Database;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 using TwitchLib = TwitchLib.Client.Models;
@@ -12,9 +13,9 @@ public class TwitchChatMessage : TwitchMessage
 
     public double BitsInDollars { get; }
 
-    public Channel Channel { get; }
-
     public ChatReply ChatReply { get; }
+
+    public string Channel { get; }
 
     public CheerBadge CheerBadge { get; }
 
@@ -60,7 +61,7 @@ public class TwitchChatMessage : TwitchMessage
 
     private Regex CommandPattern(string alias)
     {
-        return PatternCreator.Create(alias, Channel.Prefix, @"(\s|$)");
+        return PatternCreator.Create(alias, DbControl.Channels[ChannelId]?.Prefix, @"(\s|$)");
     }
 
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
@@ -68,8 +69,8 @@ public class TwitchChatMessage : TwitchMessage
     {
         Bits = chatMessage.Bits;
         BitsInDollars = chatMessage.BitsInDollars;
-        Channel = new(chatMessage.Channel);
         ChatReply = chatMessage.ChatReply;
+        Channel = chatMessage.Channel;
         CheerBadge = chatMessage.CheerBadge;
         CustomRewardId = chatMessage.CustomRewardId;
         Id = new(chatMessage.Id);

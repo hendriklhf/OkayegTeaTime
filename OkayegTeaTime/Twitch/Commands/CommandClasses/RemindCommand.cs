@@ -3,7 +3,6 @@ using HLE.Collections;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
@@ -27,8 +26,8 @@ public class RemindCommand : Command
         string message;
         long toTime = 0;
 
-        Regex timedPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, Pattern.ReminderInTime);
-        Regex nextMessagePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+(\s\S+)*");
+        Regex timedPattern = PatternCreator.Create(Alias, Prefix, Pattern.ReminderInTime);
+        Regex nextMessagePattern = PatternCreator.Create(Alias, Prefix, @"\s\w+(\s\S+)*");
         if (timedPattern.IsMatch(ChatMessage.Message))
         {
             targets = GetTargets();
@@ -55,14 +54,14 @@ public class RemindCommand : Command
                 return;
             }
 
-            int? id = DbController.AddReminder(ChatMessage.Username, targets[0], message, ChatMessage.Channel.Name, toTime);
+            int? id = DbControl.Reminders.Add(ChatMessage.Username, targets[0], message, ChatMessage.Channel, toTime);
             if (!id.HasValue)
             {
                 Response += PredefinedMessages.TooManyRemindersMessage;
                 return;
             }
 
-            Response += $"set a {(toTime == 0 ? string.Empty : "timed ")}reminder for {Reminder.GetTarget(targets[0], ChatMessage.Username)} (ID: {id.Value})";
+            Response += $"set a {(toTime == 0 ? string.Empty : "timed ")}reminder for {(targets[0] == ChatMessage.Username ? "yourself" : targets[0])} (ID: {id.Value})";
         }
         else
         {
@@ -70,9 +69,9 @@ public class RemindCommand : Command
 
             (string, string, string, string, long)[] values = targets
                 .Where(t => exist[t])
-                .Select<string, (string, string, string, string, long)>(t => new(ChatMessage.Username, t, message, ChatMessage.Channel.Name, toTime))
+                .Select<string, (string, string, string, string, long)>(t => new(ChatMessage.Username, t, message, ChatMessage.Channel, toTime))
                 .ToArray();
-            int?[] ids = DbController.AddReminders(values);
+            int?[] ids = DbControl.Reminders.AddRange(values);
             bool multi = ids.Count(i => i != default) > 1;
             if (!multi)
             {

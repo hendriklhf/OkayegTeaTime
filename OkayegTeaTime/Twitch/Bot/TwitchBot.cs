@@ -5,14 +5,13 @@ using HLE.Numbers;
 using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot.EmoteNotifications;
-using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
-using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -22,7 +21,7 @@ using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static HLE.Time.TimeHelper;
-using Database = OkayegTeaTime.Database.Models;
+using User = TwitchLib.Api.Helix.Models.Users.GetUsers.User;
 
 namespace OkayegTeaTime.Twitch.Bot;
 
@@ -56,8 +55,6 @@ public class TwitchBot
     });
 
     public ThirdPartyEmoteNotificator? EmoteManagementNotificator { get; private set; }
-
-    //public SubEmoteNotificator? SubEmoteNotificator { get; private set; }
 
     public DottedNumber CommandCount { get; set; } = 1;
 
@@ -100,7 +97,7 @@ public class TwitchBot
                 AppSettings.DebugChannel
             };
 #else
-            Channels = DbController.GetChannelNames();
+            Channels = DbController.GetChannels().Select(c => c.Name).ToList();
 #endif
         }
 
@@ -125,34 +122,20 @@ public class TwitchBot
         Initlialize();
     }
 
-    public void Send(Channel channel, string message)
+    public void Send(string channel, string message)
     {
+        string emote = DbControl.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
         if (!MessageHelper.IsMessageTooLong(message, channel))
         {
-            message = message == LastMessagesDictionary[channel.Name] ? $"{message} {AppSettings.ChatterinoChar}" : message;
-            message = $"{channel.Emote} {message}";
-            TwitchClient.SendMessage(channel.Name, message);
-            LastMessagesDictionary[channel.Name] = message;
+            message = message == LastMessagesDictionary[channel] ? $"{message} {AppSettings.ChatterinoChar}" : message;
+            message = $"{emote} {message}";
+            TwitchClient.SendMessage(channel, message);
+            LastMessagesDictionary[channel] = message;
         }
         else
         {
-            new DividedMessage(this, channel, channel.Emote, message).StartSending();
+            new DividedMessage(this, channel, emote, message).StartSending();
         }
-    }
-
-    public void Send(string channel, string message)
-    {
-        Send(new Channel(channel), message);
-    }
-
-    public void Send(string channel, Response response)
-    {
-        Send(new Channel(channel), response.Message);
-    }
-
-    public void Send(Channel channel, Response response)
-    {
-        Send(channel, response.Message);
     }
 
     public string JoinChannel(string channel)
@@ -163,13 +146,13 @@ public class TwitchBot
             return $"channel #{channel} does not exist";
         }
 
-        Database::Channel? chnl = DbController.GetChannel(channel);
+        Channel? chnl = DbControl.Channels[channel];
         if (chnl is not null)
         {
             return $"the bot is already connected to #{channel}";
         }
 
-        DbController.AddChannel(user.Id.ToInt(), channel);
+        DbControl.Channels.Add(user.Id.ToInt(), channel);
         try
         {
             TwitchClient.JoinChannel(channel);
@@ -188,7 +171,7 @@ public class TwitchBot
         try
         {
             Send(channel, $"{Emoji.Wave} bye");
-            DbController.RemoveChannel(channel);
+            DbControl.Channels.Remove(channel);
             TwitchClient.LeaveChannel(channel);
             return $"successfully left #{channel}";
         }
@@ -204,7 +187,6 @@ public class TwitchBot
         MessageHandler = new(this);
         WhisperHandler = new(this);
         EmoteManagementNotificator = new(this);
-        //SubEmoteNotificator = new(this);
         Restarter.Initialize();
         InitializeTimers();
     }

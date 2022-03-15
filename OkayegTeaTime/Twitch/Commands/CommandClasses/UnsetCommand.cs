@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Strings;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -15,28 +16,36 @@ public class UnsetCommand : Command
 
     public override void Handle()
     {
-        Regex prefixPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sprefix");
+        Regex prefixPattern = PatternCreator.Create(Alias, Prefix, @"\sprefix");
         if (prefixPattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                ChatMessage.Channel.Prefix = null;
+                Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+                if (channel is null)
+                {
+                    Response += "an error occurred while trying to set the prefix";
+                    return;
+                }
+
+                channel.Prefix = null;
                 Response += "the prefix has been unset";
             }
             else
             {
                 Response += PredefinedMessages.NoModOrBroadcasterMessage;
             }
+
             return;
         }
 
-        Regex reminderPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sreminder\s\d+");
+        Regex reminderPattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+(\s|$)");
         if (reminderPattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             int reminderId = ChatMessage.Split[2].ToInt();
-            bool removed = DbController.RemoveReminder(ChatMessage, reminderId);
+            bool removed = DbControl.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
             if (removed)
             {
                 Response += "the reminder has been unset";
@@ -45,22 +54,31 @@ public class UnsetCommand : Command
             {
                 Response += "the reminder couldn't be unset";
             }
+
             return;
         }
 
-        Regex emotePattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\semote");
+        Regex emotePattern = PatternCreator.Create(Alias, Prefix, @"\semote");
         if (emotePattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                ChatMessage.Channel.Emote = AppSettings.DefaultEmote;
-                Response += "unset emote";
+                Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+                if (channel is null)
+                {
+                    Response += "an error occurred while trying to set the emote";
+                    return;
+                }
+
+                channel.Emote = null;
+                Response += "the emote has been unset";
             }
             else
             {
                 Response += PredefinedMessages.NoModOrBroadcasterMessage;
             }
+
             return;
         }
     }

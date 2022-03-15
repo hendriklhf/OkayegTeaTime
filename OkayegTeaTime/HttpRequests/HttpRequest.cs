@@ -180,7 +180,7 @@ public static class HttpRequest
         string? result = request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
-            return result!.Length > 500 ? result[450..].NewLinesToSpaces() : result!;
+            return result!.Length > 500 ? result[450..].NewLinesToSpaces() : result;
         }
         else
         {
@@ -196,11 +196,7 @@ public static class HttpRequest
     public static BttvRequest? GetBttvRequest(string channel)
     {
         int? id = TwitchApi.GetUserId(channel);
-        if (id.HasValue)
-        {
-            return GetBttvRequest(id.Value);
-        }
-        return null;
+        return id.HasValue ? GetBttvRequest(id.Value) : null;
     }
 
     public static BttvRequest? GetBttvRequest(int channelId)

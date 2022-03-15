@@ -18,7 +18,7 @@ public class SpotifyCommand : Command
             ? ChatMessage.LowerSplit[1] == "me"
                 ? ChatMessage.Username
                 : ChatMessage.LowerSplit[1]
-            : ChatMessage.Channel.Name;
+            : ChatMessage.Channel;
         Response = $"{ChatMessage.Username}, ";
         bool targetIsSender = username == ChatMessage.Username;
         Task.Run(async () =>
@@ -28,7 +28,7 @@ public class SpotifyCommand : Command
             {
                 if (targetIsSender)
                 {
-                    Response += $"can't get your currently playing song, you have to register first";
+                    Response += "can't get your currently playing song, you have to register first";
                 }
                 else
                 {
@@ -42,7 +42,7 @@ public class SpotifyCommand : Command
             {
                 if (targetIsSender)
                 {
-                    Response += $"you aren't listening to anything";
+                    Response += "you aren't listening to anything";
                 }
                 else
                 {
@@ -62,7 +62,7 @@ public class SpotifyCommand : Command
             }
             else
             {
-                Response += $"listening to an unknown Spotify item type monkaS";
+                Response += "listening to an unknown Spotify item type monkaS";
             }
         }).Wait();
     }

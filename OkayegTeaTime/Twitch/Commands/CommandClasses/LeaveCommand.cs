@@ -14,7 +14,7 @@ public class LeaveCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s#?\w+");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s#?\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (!ChatMessage.IsBotModerator)

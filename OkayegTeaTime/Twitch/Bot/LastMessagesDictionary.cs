@@ -19,7 +19,7 @@ public class LastMessagesDictionary
 
     private void FillDictionary()
     {
-        _lastMessages = DbController.GetChannels().Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
+        _lastMessages = DbControl.Channels.Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
     }
 
     private void Add(string channel, string message = "")

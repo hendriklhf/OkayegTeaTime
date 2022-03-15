@@ -19,29 +19,29 @@ public class CheckCommand : Command
 
     public override void Handle()
     {
-        Regex afkPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\safk\s\w+");
+        Regex afkPattern = PatternCreator.Create(Alias, Prefix, @"\safk\s\w+");
         if (afkPattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             string username = ChatMessage.LowerSplit[2];
             int? userId = TwitchApi.GetUserId(username);
-            if (userId is null)
+            if (!userId.HasValue)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;
                 return;
             }
 
-            User? user = DbController.GetUser(userId.Value, username);
+            User? user = DbControl.Users.GetUser(userId.Value, username);
             if (user is null)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;
                 return;
             }
 
-            if (user.IsAfk == true)
+            if (user.IsAfk)
             {
                 Response += new AfkMessage(userId.Value).GoingAway!;
-                string message = user.AfkMessage.Decode();
+                string? message = user.AfkMessage;
                 if (!string.IsNullOrEmpty(message))
                 {
                     Response += $": {message}";
@@ -55,22 +55,22 @@ public class CheckCommand : Command
             return;
         }
 
-        Regex reminderPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sreminder\s\d+");
+        Regex reminderPattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+(\s|$)");
         if (reminderPattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             int id = ChatMessage.Split[2].ToInt();
-            Reminder? reminder = DbController.GetReminder(id);
+            Reminder? reminder = DbControl.Reminders[id];
             if (reminder is null)
             {
                 Response += PredefinedMessages.ReminderNotFoundMessage;
                 return;
             }
 
-            Response += $"From: {reminder.GetAuthor()} || To: {reminder.GetTarget()} || ";
+            Response += $"From: {reminder.Creator} || To: {reminder.Target} || ";
             Response += $"Set: {TimeHelper.GetUnixDifference(reminder.Time)} ago || ";
             Response += reminder.ToTime > 0 ? $"Fires in: {TimeHelper.GetUnixDifference(reminder.ToTime)} || " : string.Empty;
-            Response += $"Message: {reminder.Message.Decode()}";
+            Response += $"Message: {reminder.Message}";
             return;
         }
     }

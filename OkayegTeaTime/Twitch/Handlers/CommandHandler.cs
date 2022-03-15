@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.RegularExpressions;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Bot.Cooldowns;
 using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
@@ -44,12 +45,11 @@ public class CommandHandler : Handler
     {
         foreach (CommandType type in CommandTypes)
         {
-            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (string alias in AppSettings.CommandList[type].Alias)
             {
-                Regex pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
+                string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+                Regex pattern = PatternCreator.Create(alias, prefix, @"(\s|$)");
 
-                // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
                 {
                     _handled = true;
@@ -72,12 +72,11 @@ public class CommandHandler : Handler
     {
         foreach (AfkCommandType type in AfkCommandTypes)
         {
-            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (string alias in AppSettings.CommandList[type].Alias)
             {
-                Regex pattern = PatternCreator.Create(alias, chatMessage.Channel.Prefix, @"(\s|$)");
+                string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+                Regex pattern = PatternCreator.Create(alias, prefix, @"(\s|$)");
 
-                // ReSharper disable once InvertIf
                 if (pattern.IsMatch(chatMessage.Message))
                 {
                     if (CooldownController.IsOnAfkCooldown(chatMessage.UserId))
@@ -112,19 +111,26 @@ public class CommandHandler : Handler
             throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
         }
 
-        ConstructorInfo? constructor = commandClass.GetConstructor(new[] { typeof(TwitchBot), typeof(TwitchChatMessage), typeof(string) });
+        ConstructorInfo? constructor = commandClass.GetConstructor(new[]
+        {
+            typeof(TwitchBot), typeof(TwitchChatMessage), typeof(string)
+        });
         if (constructor is null)
         {
             throw new InvalidOperationException($"Could not instantiate command class {commandClassName}");
         }
 
-        object handlerInstance = constructor.Invoke(new object[] { twitchBot, chatMessage, alias });
+        object handlerInstance = constructor.Invoke(new object[]
+        {
+            twitchBot, chatMessage, alias
+        });
 
         MethodInfo? handleMethod = commandClass.GetMethod(_handleName);
         if (handleMethod is null)
         {
             throw new InvalidOperationException($"Could not get handler method for command class {commandClassName}");
         }
+
         handleMethod.Invoke(handlerInstance, null);
 
         MethodInfo? sendMethod = commandClass.GetMethod(_sendResponseName);
@@ -132,6 +138,7 @@ public class CommandHandler : Handler
         {
             throw new InvalidOperationException($"Could not get send method for command class {commandClassName}");
         }
+
         sendMethod.Invoke(handlerInstance, null);
     }
 }

@@ -14,12 +14,14 @@ public class CppCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+");
+#if DEBUG
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
             string requestResult = HttpRequest.GetCppOnlineCompilerResult(code);
             Response = $"{ChatMessage.Username}, {requestResult}";
         }
+#endif
     }
 }

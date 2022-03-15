@@ -3,7 +3,6 @@ using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.JsonClasses.CommandData;
-using OkayegTeaTime.Twitch.Commands.Enums;
 
 namespace OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 
@@ -19,7 +18,7 @@ public class AfkMessage
 
     public AfkMessage(int userId, string? username = null)
     {
-        User = DbController.GetUser(userId, username);
+        User = DbControl.Users.GetUser(userId, username);
         CreateMessages();
     }
 
@@ -30,11 +29,11 @@ public class AfkMessage
             return;
         }
 
-        AfkCommand afkCommand = AppSettings.CommandList[(AfkCommandType)User.AfkType];
+        AfkCommand afkCommand = AppSettings.CommandList[User.AfkType];
         ComingBack = afkCommand.ComingBack.Replace("{username}", User.Username)
             .Replace("{time}", $"{TimeHelper.GetUnixDifference(User.AfkTime)} ago")
-            .Replace("{message}", User.AfkMessage.Decode());
-        ComingBack = string.IsNullOrEmpty(User.AfkMessage.Decode()) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
+            .Replace("{message}", User.AfkMessage);
+        ComingBack = string.IsNullOrEmpty(User.AfkMessage) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
 
         GoingAway = afkCommand.GoingAway.Replace("{username}", User.Username);
 

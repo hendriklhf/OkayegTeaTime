@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Collections;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -14,12 +15,13 @@ public class FillCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             List<string> messageParts = new();
             string[] split = ChatMessage.Split[1..];
-            int maxLength = AppSettings.MaxMessageLength - (ChatMessage.Channel.Emote.Length + 1);
+            string emote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
+            int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
             for (; ; )
             {
                 string? messagePart = split.Random();

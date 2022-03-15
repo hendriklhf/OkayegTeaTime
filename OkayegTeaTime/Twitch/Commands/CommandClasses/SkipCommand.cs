@@ -15,7 +15,7 @@ public class SkipCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix);
+        Regex pattern = PatternCreator.Create(Alias, Prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
@@ -23,10 +23,10 @@ public class SkipCommand : Command
             {
                 Task.Run(async () =>
                 {
-                    SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Channel.Name);
+                    SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Channel);
                     if (user is null)
                     {
-                        Response += $"you cant't skip songs of {ChatMessage.Channel.Name.Antiping()}, they have to register first";
+                        Response += $"you can't skip songs of {ChatMessage.Channel.Antiping()}, they have to register first";
                         return;
                     }
 

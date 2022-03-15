@@ -14,11 +14,11 @@ public class SuggestCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S{3,}");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S{3,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string suggestion = ChatMessage.Message[(ChatMessage.LowerSplit[0].Length + 1)..];
-            DbController.AddSugestion(ChatMessage.Username, ChatMessage.Channel.Name, suggestion);
+            DbController.AddSugestion(ChatMessage.Username, ChatMessage.Channel, suggestion);
             Response = $"{ChatMessage.Username}, your suggestion has been noted";
         }
     }

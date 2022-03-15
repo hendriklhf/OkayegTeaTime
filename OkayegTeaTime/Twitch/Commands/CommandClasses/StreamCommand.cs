@@ -17,7 +17,7 @@ public class StreamCommand : Command
 
     public override void Handle()
     {
-        Regex channelPattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+");
+        Regex channelPattern = PatternCreator.Create(Alias, Prefix, @"\s\w+");
         Stream? stream;
         Response = $"{ChatMessage.Username}, ";
 

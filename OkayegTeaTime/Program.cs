@@ -30,8 +30,15 @@ public static class Program
     public static void ConsoleOut(string value, ConsoleColor fontColor = ConsoleColor.Gray, bool logging = false)
     {
         Console.ForegroundColor = fontColor;
-        Console.WriteLine($"{DateTime.Now:HH:mm:ss} | {value}");
-        Console.ForegroundColor = ConsoleColor.Gray;
+        try
+        {
+            Console.WriteLine($"{DateTime.Now:HH:mm:ss} | {value}");
+        }
+        finally
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
         if (logging)
         {
             Logger.Log(value);
@@ -49,7 +56,7 @@ public static class Program
 
     public static void Restart()
     {
-        ConsoleOut($"[SYSTEM] RESTARTED", ConsoleColor.Red, true);
+        ConsoleOut("[SYSTEM] RESTARTED", ConsoleColor.Red, true);
         Process.Start($"./{AppSettings.AssemblyName}");
         _running = false;
         Environment.Exit(0);

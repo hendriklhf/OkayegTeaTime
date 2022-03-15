@@ -5,7 +5,6 @@ using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Logging;
 using SpotifyAPI.Web;
-using SpotifyModel = OkayegTeaTime.Database.Models.Spotify;
 
 namespace OkayegTeaTime.Spotify;
 
@@ -15,23 +14,28 @@ public static class SpotifyController
     {
         LoginRequest login = new(new("https://example.com/callback"), AppSettings.Spotify.ClientId, LoginRequest.ResponseType.Code)
         {
-            Scope = new[] { Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState }
+            Scope = new[]
+            {
+                Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState
+            }
         };
+
         return HttpUtility.UrlDecode(login.ToUri().AbsoluteUri).Replace(" ", "%20");
     }
 
     public static async Task RefreshAccessToken(string username)
     {
-        string? refreshToken = DbController.GetSpotifyUser(username)?.RefreshToken;
-        if (refreshToken is null)
+        Database.EntityFrameworkModels.Spotify? user = DbController.GetSpotifyUser(username);
+        if (user is null)
         {
             return;
         }
 
         try
         {
-            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
-            DbController.UpdateAccessToken(username, response.AccessToken);
+            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret,
+                user.RefreshToken));
+            DbController.SetSpotifyAccessToken(username, response.AccessToken);
         }
         catch (Exception ex)
         {
@@ -43,8 +47,9 @@ public static class SpotifyController
     {
         try
         {
-            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
-            DbController.AddNewToken(username, response.AccessToken, response.RefreshToken);
+            AuthorizationCodeTokenResponse response =
+                await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
+            DbController.AddSpotifyUser(username, response.AccessToken, response.RefreshToken);
         }
         catch (Exception ex)
         {
@@ -54,7 +59,7 @@ public static class SpotifyController
 
     public static async Task<SpotifyUser?> GetSpotifyUser(string username)
     {
-        SpotifyModel? user = DbController.GetSpotifyUser(username);
+        Database.EntityFrameworkModels.Spotify? user = DbController.GetSpotifyUser(username);
         if (user is null)
         {
             return null;

@@ -15,14 +15,14 @@ public class RafkCommand : Command
 
     public override void Handle()
     {
-        User? user = DbController.GetUser(ChatMessage.UserId, ChatMessage.Username);
+        User? user = DbControl.Users.GetUser(ChatMessage.UserId, ChatMessage.Username);
         if (user is null)
         {
             Response = $"{ChatMessage.Username}, can't resume your afk status, because you never went afk before";
             return;
         }
 
-        DbController.SetAfkStatus(ChatMessage.UserId, true);
-        Response = new AfkMessage(user.Id!).Resuming!;
+        user.IsAfk = true;
+        Response = new AfkMessage(user.Id).Resuming!;
     }
 }

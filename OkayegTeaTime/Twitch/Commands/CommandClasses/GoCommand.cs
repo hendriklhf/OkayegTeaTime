@@ -14,7 +14,7 @@ public class GoCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s.+");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
 

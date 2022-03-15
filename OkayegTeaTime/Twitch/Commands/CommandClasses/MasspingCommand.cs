@@ -1,4 +1,5 @@
-﻿using OkayegTeaTime.HttpRequests;
+﻿using OkayegTeaTime.Database;
+using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -13,13 +14,14 @@ public class MasspingCommand : Command
 
     public override void Handle()
     {
-        if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster && ChatMessage.Channel.Name != "moondye7")
+        if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster && ChatMessage.Channel != "moondye7")
         {
-            string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : ChatMessage.Channel.Emote;
+            string channelEmote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
+            string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
             List<string> chatters;
-            if (ChatMessage.Channel.Name != AppSettings.SecretOfflineChatChannel)
+            if (ChatMessage.Channel != AppSettings.SecretOfflineChatChannel)
             {
-                chatters = HttpRequest.GetChatters(ChatMessage.Channel.Name).Select(c => c.Username).ToList();
+                chatters = HttpRequest.GetChatters(ChatMessage.Channel).Select(c => c.Username).ToList();
                 if (chatters.Count == 0)
                 {
                     Response = string.Empty;

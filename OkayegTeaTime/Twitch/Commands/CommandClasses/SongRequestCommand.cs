@@ -13,9 +13,10 @@ public class SongRequestCommand : Command
     {
     }
 
+    //TODO: spotify users used here have to come from the cache
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\sme(\s|$)");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+\sme(\s|$)");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -47,7 +48,7 @@ public class SongRequestCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sme\s\w+");
+        pattern = PatternCreator.Create(Alias, Prefix, @"\sme\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -79,7 +80,7 @@ public class SongRequestCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\w+\s\S+");
+        pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -97,7 +98,7 @@ public class SongRequestCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\sme$");
+        pattern = PatternCreator.Create(Alias, Prefix, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -116,10 +117,10 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.Channel.Name);
+                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.Channel);
                 if (target is null)
                 {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Name.Antiping()} isn't registered yet, they have to register first";
+                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
                     return;
                 }
 
@@ -129,15 +130,15 @@ public class SongRequestCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, ChatMessage.Channel.Prefix, @"\s\S+$");
+        pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Channel.Name);
+                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Channel);
                 if (user is null)
                 {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Name.Antiping()} isn't registered yet, they have to register first";
+                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
                     return;
                 }
 
