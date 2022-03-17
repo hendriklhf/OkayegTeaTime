@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web;
 using HLE.Strings;
-using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Logging;
 using SpotifyAPI.Web;
@@ -23,23 +22,24 @@ public static class SpotifyController
         return HttpUtility.UrlDecode(login.ToUri().AbsoluteUri).Replace(" ", "%20");
     }
 
-    public static async Task RefreshAccessToken(string username)
+    public static async Task<string?> GetNewAccessToken(string username)
     {
-        Database.EntityFrameworkModels.Spotify? user = DbController.GetSpotifyUser(username);
+        Database.Models.SpotifyUser? user = DbControl.SpotifyUsers[username];
         if (user is null)
         {
-            return;
+            return null;
         }
 
         try
         {
-            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret,
-                user.RefreshToken));
-            DbController.SetSpotifyAccessToken(username, response.AccessToken);
+            AuthorizationCodeRefreshResponse response =
+                await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, user.RefreshToken));
+            return response.AccessToken;
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
+            return null;
         }
     }
 
@@ -55,23 +55,6 @@ public static class SpotifyController
         {
             Logger.Log(ex);
         }
-    }
-
-    public static async Task<SpotifyUser?> GetSpotifyUser(string username)
-    {
-        Database.EntityFrameworkModels.Spotify? user = DbController.GetSpotifyUser(username);
-        if (user is null)
-        {
-            return null;
-        }
-
-        if (user.Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(5).Milliseconds)
-        {
-            await RefreshAccessToken(username);
-            user = DbController.GetSpotifyUser(username);
-        }
-
-        return user is null ? null : new(user);
     }
 
     public static FullTrack? GetExcactTrackFromSearch(List<FullTrack>? tracks, List<string> query)

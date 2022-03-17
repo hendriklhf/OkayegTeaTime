@@ -10,7 +10,10 @@ public abstract class CacheModel
 
     protected CacheModel()
     {
-        _timer.Elapsed += (_, _) => _db?.SaveChanges();
+        _timer.Elapsed += (_, _) =>
+        {
+            _db?.SaveChanges();
+        };
     }
 
     ~CacheModel()

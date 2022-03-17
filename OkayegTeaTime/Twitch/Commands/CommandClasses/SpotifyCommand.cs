@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
@@ -23,7 +25,7 @@ public class SpotifyCommand : Command
         bool targetIsSender = username == ChatMessage.Username;
         Task.Run(async () =>
         {
-            SpotifyUser? user = await SpotifyController.GetSpotifyUser(username);
+            SpotifyUser? user = DbControl.SpotifyUsers[username];
             if (user is null)
             {
                 if (targetIsSender)

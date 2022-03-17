@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OkayegTeaTime.Spotify;
+using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -20,14 +21,14 @@ public class ListenCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = await SpotifyController.GetSpotifyUser(ChatMessage.Username);
+                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
                 if (user is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't listen to other users, you have to register first";
                     return;
                 }
 
-                SpotifyUser? target = await SpotifyController.GetSpotifyUser(ChatMessage.LowerSplit[1]);
+                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.LowerSplit[1]];
                 if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't listen to {ChatMessage.LowerSplit[1]}'s music, they have to register first";
@@ -37,7 +38,6 @@ public class ListenCommand : Command
                 await user.ListenTo(target);
                 Response = $"{ChatMessage.Username}, {user.Response}";
             }).Wait();
-            return;
         }
     }
 }
