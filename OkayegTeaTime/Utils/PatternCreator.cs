@@ -14,7 +14,7 @@ public static class PatternCreator
             ? '^' + Regex.Escape(alias + AppSettings.Suffix)
             : '^' + Regex.Escape(prefix + alias);
 
-        string patternKey = patternPrefix + addition;
+        string patternKey = patternPrefix + addition + @"(\s|$)";
 
         if (_cachedPatterns.TryGetValue(patternKey, out Regex? cachedPattern))
         {

@@ -48,7 +48,7 @@ public class CommandHandler : Handler
             foreach (string alias in AppSettings.CommandList[type].Alias)
             {
                 string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
-                Regex pattern = PatternCreator.Create(alias, prefix, @"(\s|$)");
+                Regex pattern = PatternCreator.Create(alias, prefix);
 
                 if (pattern.IsMatch(chatMessage.Message))
                 {
@@ -75,7 +75,7 @@ public class CommandHandler : Handler
             foreach (string alias in AppSettings.CommandList[type].Alias)
             {
                 string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
-                Regex pattern = PatternCreator.Create(alias, prefix, @"(\s|$)");
+                Regex pattern = PatternCreator.Create(alias, prefix);
 
                 if (pattern.IsMatch(chatMessage.Message))
                 {

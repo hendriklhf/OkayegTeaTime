@@ -16,7 +16,7 @@ public class SongRequestCommand : Command
     //TODO: spotify users used here have to come from the cache
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+\sme(\s|$)");
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>

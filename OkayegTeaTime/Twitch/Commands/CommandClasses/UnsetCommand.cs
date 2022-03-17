@@ -40,7 +40,7 @@ public class UnsetCommand : Command
             return;
         }
 
-        Regex reminderPattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+(\s|$)");
+        Regex reminderPattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+");
         if (reminderPattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";

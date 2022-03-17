@@ -61,7 +61,7 @@ public class TwitchChatMessage : TwitchMessage
 
     private Regex CommandPattern(string alias)
     {
-        return PatternCreator.Create(alias, DbControl.Channels[ChannelId]?.Prefix, @"(\s|$)");
+        return PatternCreator.Create(alias, DbControl.Channels[ChannelId]?.Prefix);
     }
 
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
