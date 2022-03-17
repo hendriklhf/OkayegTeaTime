@@ -17,6 +17,7 @@ public enum CommandType
     Go,
     Help,
     Id,
+    Invalidate,
     Join,
     Leave,
     Listen,

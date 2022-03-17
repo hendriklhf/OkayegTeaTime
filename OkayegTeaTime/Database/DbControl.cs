@@ -1,4 +1,6 @@
-﻿using OkayegTeaTime.Database.Cache;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
+using OkayegTeaTime.Database.Cache;
 
 namespace OkayegTeaTime.Database;
 
@@ -11,4 +13,24 @@ public static class DbControl
     //public static SpotifyUserCache SpotifyUsers { get; } = new();
 
     public static UserCache Users { get; } = new();
+
+    public static void Invalidate()
+    {
+        Channels.Invalidate();
+        Reminders.Invalidate();
+        Users.Invalidate();
+    }
+
+    public static IEnumerable<string> Invalidate(string cacheName)
+    {
+        Regex cachePattern = new($@"^{cacheName}$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+        var properties = typeof(DbControl).GetProperties().Where(p => cachePattern.IsMatch(p.Name)).ToArray();
+        foreach (PropertyInfo property in properties)
+        {
+            MethodInfo? method = property.PropertyType.GetMethod("Invalidate");
+            method?.Invoke(property.GetValue(null), null);
+        }
+
+        return properties.Select(p => p.Name).ToArray();
+    }
 }

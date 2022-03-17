@@ -10,6 +10,11 @@ public abstract class DbCache<T> : IEnumerable<T> where T : CacheModel
 
     private protected abstract void GetAllFromDb();
 
+    public void Invalidate()
+    {
+        _items.Clear();
+    }
+
     public abstract IEnumerator<T> GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
