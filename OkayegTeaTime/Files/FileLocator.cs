@@ -9,8 +9,11 @@ public static class FileLocator
     private static List<string>? _files;
 
     /// <summary>
-    /// Searches for a file in the current and all sub directories and returns the path of of it.
+    /// Searches for a file in the current and all sub directories and returns the path of it.
     /// </summary>
+    /// <exception cref="FileNotFoundException">
+    /// Thrown if a file couldn't be found.
+    /// </exception>
     public static string Find(string fileName)
     {
         if (_files is null)
@@ -19,7 +22,7 @@ public static class FileLocator
         }
 
         Regex filePattern = new($@"[\/\\]{fileName}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-        return _files?.FirstOrDefault(f => filePattern.IsMatch(f)) ?? throw new FileNotFoundException($"The file {fileName} could not be found in the current or any sub directory.");
+        return _files!.FirstOrDefault(f => filePattern.IsMatch(f)) ?? throw new FileNotFoundException($"The file {fileName} could not be found in the current or any sub directory.");
     }
 
     private static void BuildFileCache()

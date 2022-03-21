@@ -827,6 +827,22 @@
         "Sets your status to \"listening to music\""
       ],
       "Document": true
+    },
+    {
+      "Name": "fap",
+      "ComingBack": "{username} came back from fapping: {message} ({time})",
+      "GoingAway": "went fapping",
+      "Resuming": "{username} went back to fapping",
+      "Alias": [
+        "fap"
+      ],
+      "Parameter": [
+        "[message]"
+      ],
+      "Description": [
+        "Sets your status to \"fapping\""
+      ],
+      "Document": false
     }
   ]
 }
