@@ -831,7 +831,7 @@
     {
       "Name": "fap",
       "ComingBack": "{username} came back from fapping: {message} ({time})",
-      "GoingAway": "went fapping",
+      "GoingAway": "{username} went fapping",
       "Resuming": "{username} went back to fapping",
       "Alias": [
         "fap"

@@ -4,7 +4,7 @@ public enum AfkCommandType
 {
     Afk = 0,
     Brb = 1,
-    Fap = 15,
+    Fap = 16,
     Fat = 2,
     Game = 3,
     Gn = 4,

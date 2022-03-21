@@ -63,10 +63,10 @@ public class CommandList
     }
 
     [JsonIgnore]
-    public AfkCommand this[AfkCommandType type] => AfkCommands.FirstOrDefault(cmd => cmd.Name.ToLower() == type.ToString().ToLower());
+    public AfkCommand this[AfkCommandType type] => AfkCommands.FirstOrDefault(cmd => string.Equals(cmd.Name, type.ToString(), StringComparison.CurrentCultureIgnoreCase));
 
     [JsonIgnore]
-    public Command this[CommandType type] => Commands.FirstOrDefault(cmd => cmd.Name.ToLower() == type.ToString().ToLower());
+    public Command this[CommandType type] => Commands.FirstOrDefault(cmd => string.Equals(cmd.Name, type.ToString(), StringComparison.CurrentCultureIgnoreCase));
 
     [JsonIgnore]
     private List<string> _afkCommandAliases;
