@@ -42,4 +42,5 @@ public static class AppSettings
     public const short DelayBetweenSentMessages = 1300;
     public const short DelayBetweenReceivedMessages = 500;
     public const string Suffix = "eg";
+    public const string SettingsFileName = "Settings.json";
 }
