@@ -163,7 +163,7 @@ public class SpotifyUser : CacheModel
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = "an error occurred, you probably have to start your playback first";
+            Response = $"an error occurred, {Username.Antiping()} probably has to start their playback first";
         }
         catch (Exception ex)
         {
@@ -189,7 +189,7 @@ public class SpotifyUser : CacheModel
             }
 
             await client.Player.SkipNext(new());
-            Response = "skipped to next song in queue";
+            Response = $"skipped to next song in {Username.Antiping()}'s queue";
         }
         catch (Exception ex)
         {
@@ -209,7 +209,7 @@ public class SpotifyUser : CacheModel
         SpotifyItem? item = await target.GetCurrentlyPlayingItem();
         if (item is null)
         {
-            Response = $"{target.Username} isn't listening to anything at the moment";
+            Response = $"{target.Username.Antiping()} isn't listening to anything at the moment";
             return;
         }
 
@@ -231,7 +231,7 @@ public class SpotifyUser : CacheModel
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = "an error occurred, you probably have to start your playback first";
+            Response = $"an error occurred, {Username.Antiping()} probably has to start your playback first";
             return;
         }
         catch (Exception ex)
@@ -254,7 +254,7 @@ public class SpotifyUser : CacheModel
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = "an error occured while trying to play the song you wanted to listen to";
+            Response = $"an error occured while trying to play the song {Username.Antiping()} wanted to listen to";
             return;
         }
 
@@ -295,7 +295,7 @@ public class SpotifyUser : CacheModel
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = "an error occurred, you probably have to start your playback first";
+            Response = $"an error occurred, {Username.Antiping()} probably has to start your playback first";
             return;
         }
         catch (Exception ex)

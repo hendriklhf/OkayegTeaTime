@@ -61,7 +61,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.Message)
-                    .HasMaxLength(500)
+                    .HasMaxLength(1000)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Origin)
@@ -69,7 +69,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.StackTrace)
-                    .HasMaxLength(500)
+                    .HasMaxLength(3000)
                     .HasDefaultValueSql("'NULL'");
 
                 entity.Property(e => e.Type)
