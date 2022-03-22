@@ -231,7 +231,7 @@ public class SpotifyUser : CacheModel
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, {Username.Antiping()} probably has to start your playback first";
+            Response = $"an error occurred, {Username.Antiping()} probably has to start their playback first";
             return;
         }
         catch (Exception ex)
@@ -295,7 +295,7 @@ public class SpotifyUser : CacheModel
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, {Username.Antiping()} probably has to start your playback first";
+            Response = $"an error occurred, {Username.Antiping()} probably has to start their playback first";
             return;
         }
         catch (Exception ex)
