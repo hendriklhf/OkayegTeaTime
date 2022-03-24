@@ -6,14 +6,16 @@ namespace OkayegTeaTime.Logging;
 
 public static class Logger
 {
+    private const string _logsPath = "./Resources/Logs.log";
+
     public static void Log(string text)
     {
-        LogToFile(Path.Logs, text);
+        LogToFile(text);
     }
 
     public static void Log(TwitchChatMessage chatMessage)
     {
-        LogToFile(Path.Logs, $"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}");
+        LogToFile($"#{chatMessage.Channel}>{chatMessage.Username}: {chatMessage.Message}");
     }
 
     public static void Log(Exception ex)
@@ -28,8 +30,8 @@ public static class Logger
         return $"{DateTime.Now:dd.MM.yyyy HH:mm:ss} | {input}{Environment.NewLine}";
     }
 
-    private static void LogToFile(string path, string log)
+    private static void LogToFile(string log)
     {
-        File.AppendAllText(path, CreateLog(log));
+        File.AppendAllText(_logsPath, CreateLog(log));
     }
 }
