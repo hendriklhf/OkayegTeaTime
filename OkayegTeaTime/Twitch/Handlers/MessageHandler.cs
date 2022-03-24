@@ -44,14 +44,14 @@ public class MessageHandler : Handler
         User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user?.IsAfk == true)
         {
-            TwitchBot.SendComingBack(chatMessage);
+            _twitchBot.SendComingBack(chatMessage);
             if (!chatMessage.IsAfkCommmand)
             {
                 user.IsAfk = false;
             }
         }
 
-        DbController.CheckForReminder(TwitchBot, chatMessage);
+        DbController.CheckForReminder(_twitchBot, chatMessage);
 
         //if (!Throttler.CanBeProcessed(chatMessage))
         //{
@@ -73,8 +73,8 @@ public class MessageHandler : Handler
     {
         if (chatMessage.RoomId.ToInt() == _pajaChannelId && chatMessage.UserId.ToInt() == _pajaAlertUserId && _pajaAlertPattern.IsMatch(chatMessage.Message))
         {
-            TwitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
-            TwitchBot.TwitchClient.SendMessage(AppSettings.SecretOfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
+            _twitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
+            _twitchBot.TwitchClient.SendMessage(AppSettings.SecretOfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
         }
     }
 
@@ -85,7 +85,7 @@ public class MessageHandler : Handler
             string? uri = _linkRecognizer.FindSpotifyLink(chatMessage);
             if (!string.IsNullOrEmpty(uri))
             {
-                TwitchBot.Send(AppSettings.SecretOfflineChatChannel, uri);
+                _twitchBot.Send(AppSettings.SecretOfflineChatChannel, uri);
             }
         }
     }
@@ -97,11 +97,11 @@ public class MessageHandler : Handler
             string? prefix = DbControl.Channels[chatMessage.Channel]?.Prefix;
             if (string.IsNullOrEmpty(prefix))
             {
-                TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}");
+                _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}");
             }
             else
             {
-                TwitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {prefix}");
+                _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {prefix}");
             }
         }
     }

@@ -24,9 +24,8 @@ public class JoinCommand : Command
             }
 
             string channel = ChatMessage.LowerSplit[1];
-            string response = TwitchBot.JoinChannel(channel.Remove("#"));
+            string response = _twitchBot.JoinChannel(channel.Remove("#"));
             Response = $"{ChatMessage.Username}, {response}";
-            return;
         }
     }
 }

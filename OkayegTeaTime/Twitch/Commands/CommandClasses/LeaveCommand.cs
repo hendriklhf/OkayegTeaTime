@@ -24,7 +24,7 @@ public class LeaveCommand : Command
             }
 
             string channel = ChatMessage.LowerSplit[1].Remove("#");
-            string response = TwitchBot.LeaveChannel(channel);
+            string response = _twitchBot.LeaveChannel(channel);
             Response = $"{ChatMessage.Username}, {response}";
         }
     }

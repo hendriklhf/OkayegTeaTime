@@ -185,7 +185,7 @@ public class TwitchBot
     private void Initlialize()
     {
         MessageHandler = new(this);
-        WhisperHandler = new(this);
+        WhisperHandler = new();
         EmoteManagementNotificator = new(this);
         Restarter.Initialize();
         InitializeTimers();

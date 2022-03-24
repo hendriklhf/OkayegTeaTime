@@ -10,11 +10,11 @@ namespace OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 
 public class AfkCommandHandler
 {
-    public TwitchBot TwitchBot { get; }
+    private readonly TwitchBot _twitchBot;
 
     public AfkCommandHandler(TwitchBot twitchBot)
     {
-        TwitchBot = twitchBot;
+        _twitchBot = twitchBot;
     }
 
     public void Handle(TwitchChatMessage chatMessage, AfkCommandType type)
@@ -43,6 +43,6 @@ public class AfkCommandHandler
             return;
         }
 
-        TwitchBot.Send(chatMessage.Channel, afkMessage.GoingAway);
+        _twitchBot.Send(chatMessage.Channel, afkMessage.GoingAway);
     }
 }

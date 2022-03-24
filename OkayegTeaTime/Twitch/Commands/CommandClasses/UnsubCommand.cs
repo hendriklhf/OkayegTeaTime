@@ -21,7 +21,7 @@ public class UnsubCommand : Command
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsBroadcaster || ChatMessage.IsModerator)
             {
-                TwitchBot.EmoteManagementNotificator?.RemoveChannel(ChatMessage.Channel);
+                _twitchBot.EmoteManagementNotificator?.RemoveChannel(ChatMessage.Channel);
                 Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {

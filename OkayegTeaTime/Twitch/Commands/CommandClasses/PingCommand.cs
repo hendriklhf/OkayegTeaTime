@@ -13,7 +13,7 @@ public class PingCommand : Command
 
     public override void Handle()
     {
-        Response = $"Pongeg, I'm here! {TwitchBot.SystemInfo} || Ping: {GetPing()}ms";
+        Response = $"Pongeg, I'm here! {_twitchBot.SystemInfo} || Ping: {GetPing()}ms";
     }
 
     private long GetPing()

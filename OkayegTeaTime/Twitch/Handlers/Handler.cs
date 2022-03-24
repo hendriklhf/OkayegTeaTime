@@ -1,16 +1,15 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Handlers.Interfaces;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public abstract class Handler : IHandler
+public abstract class Handler
 {
-    public TwitchBot TwitchBot { get; }
+    private protected readonly TwitchBot _twitchBot;
 
     protected Handler(TwitchBot twitchBot)
     {
-        TwitchBot = twitchBot;
+        _twitchBot = twitchBot;
     }
 
     public abstract void Handle(TwitchChatMessage chatMessage);

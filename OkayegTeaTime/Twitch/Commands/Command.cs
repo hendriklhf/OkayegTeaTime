@@ -6,8 +6,6 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public abstract class Command
 {
-    public TwitchBot TwitchBot { get; }
-
     public TwitchChatMessage ChatMessage { get; }
 
     public string? Prefix { get; }
@@ -16,9 +14,11 @@ public abstract class Command
 
     public Response Response { get; protected set; } = new();
 
+    private protected readonly TwitchBot _twitchBot;
+
     public Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
-        TwitchBot = twitchBot;
+        _twitchBot = twitchBot;
         ChatMessage = chatMessage;
         Prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
         Alias = alias;
@@ -31,7 +31,7 @@ public abstract class Command
         string message = Response.Message;
         if (!message.IsNullOrEmptyOrWhitespace())
         {
-            TwitchBot.Send(ChatMessage.Channel, message);
+            _twitchBot.Send(ChatMessage.Channel, message);
         }
     }
 }

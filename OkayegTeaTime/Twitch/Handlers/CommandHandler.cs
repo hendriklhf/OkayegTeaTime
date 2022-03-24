@@ -59,9 +59,9 @@ public class CommandHandler : Handler
                         return;
                     }
 
-                    InvokeCommandHandle(type, TwitchBot, chatMessage, alias);
+                    InvokeCommandHandle(type, _twitchBot, chatMessage, alias);
                     CooldownController.AddCooldown(chatMessage.UserId, type);
-                    TwitchBot.CommandCount++;
+                    _twitchBot.CommandCount++;
                     return;
                 }
             }
@@ -86,7 +86,7 @@ public class CommandHandler : Handler
 
                     AfkCommandHandler.Handle(chatMessage, type);
                     CooldownController.AddAfkCooldown(chatMessage.UserId);
-                    TwitchBot.CommandCount++;
+                    _twitchBot.CommandCount++;
                     return;
                 }
             }

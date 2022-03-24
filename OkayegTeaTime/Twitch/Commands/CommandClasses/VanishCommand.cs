@@ -15,7 +15,7 @@ public class VanishCommand : Command
     {
         if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster && !ChatMessage.IsStaff)
         {
-            TwitchBot.TwitchClient.TimeoutUser(ChatMessage.Channel, ChatMessage.Username, TimeSpan.FromSeconds(1));
+            _twitchBot.TwitchClient.TimeoutUser(ChatMessage.Channel, ChatMessage.Username, TimeSpan.FromSeconds(1));
         }
     }
 }

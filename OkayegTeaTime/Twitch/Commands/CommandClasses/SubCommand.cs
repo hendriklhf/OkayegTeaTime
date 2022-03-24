@@ -24,7 +24,7 @@ public class SubCommand : Command
                 return;
             }
 
-            TwitchBot.EmoteManagementNotificator?.AddChannel(ChatMessage.Channel);
+            _twitchBot.EmoteManagementNotificator?.AddChannel(ChatMessage.Channel);
             Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {

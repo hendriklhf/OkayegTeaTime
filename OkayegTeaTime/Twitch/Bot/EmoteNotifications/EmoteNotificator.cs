@@ -5,15 +5,14 @@ namespace OkayegTeaTime.Twitch.Bot.EmoteNotifications;
 
 public abstract class EmoteNotificator
 {
-    public TwitchBot TwitchBot { get; }
-
     public abstract long CheckInterval { get; }
 
+    private readonly TwitchBot _twitchBot;
     private readonly Timer _timer;
 
     protected EmoteNotificator(TwitchBot twitchBot)
     {
-        TwitchBot = twitchBot;
+        _twitchBot = twitchBot;
         InitChannels();
         _timer = new(CheckInterval);
         _timer.Elapsed += Timer_OnElapsed!;
@@ -46,7 +45,7 @@ public abstract class EmoteNotificator
             _ => $"no message assigned for type {nameof(NotificationType)}.{type}"
         };
 
-        TwitchBot.Send(channel, message);
+        _twitchBot.Send(channel, message);
     }
 
     private void Timer_OnElapsed(object sender, ElapsedEventArgs e)

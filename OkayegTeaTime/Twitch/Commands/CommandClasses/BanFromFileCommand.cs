@@ -44,11 +44,11 @@ public class BanFromFileCommand : Command
                 {
                     if (_banPattern.IsMatch(f))
                     {
-                        TwitchBot.TwitchClient.SendMessage(ChatMessage.Channel, f);
+                        _twitchBot.TwitchClient.SendMessage(ChatMessage.Channel, f);
                     }
                     else
                     {
-                        TwitchBot.TwitchClient.SendMessage(ChatMessage.Channel, $"/ban {f}");
+                        _twitchBot.TwitchClient.SendMessage(ChatMessage.Channel, $"/ban {f}");
                     }
                 });
                 Response += "done :)";
@@ -58,7 +58,6 @@ public class BanFromFileCommand : Command
                 Logger.Log(ex);
                 Response += "something went wrong";
             }
-            return;
         }
     }
 }
