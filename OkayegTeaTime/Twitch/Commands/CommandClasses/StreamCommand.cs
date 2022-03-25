@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Numbers;
+using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot;
@@ -10,6 +11,11 @@ namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 
 public class StreamCommand : Command
 {
+    private readonly int[] _noViewerCount =
+    {
+        149489313
+    };
+
     public StreamCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
@@ -35,15 +41,23 @@ public class StreamCommand : Command
             Response += "this channel is currently not streaming";
             return;
         }
-        Response += $"{stream.UserName} is currently streaming {stream.GameName} with {stream.ViewerCount} viewer{(stream.ViewerCount > 1 ? 's' : string.Empty)} for ";
+
+        Response += $"{stream.UserName} is currently streaming {stream.GameName} ";
+        int userId = stream.UserId.ToInt();
+        if (ChatMessage.ChannelId != userId || !_noViewerCount.Contains(userId))
+        {
+            Response += $"with {stream.ViewerCount} viewer{(stream.ViewerCount > 1 ? 's' : string.Empty)} ";
+        }
+
+        Response += "for ";
         TimeSpan streamSpan = stream.StartedAt.Subtract(DateTime.Now);
         long milliseconds = streamSpan.TotalMilliseconds.ToLong() + TimeHelper.Now();
         if (!DateTime.Now.IsDaylightSavingTime())
         {
             milliseconds += new Hour().Milliseconds;
         }
+
         string streamTime = TimeHelper.GetUnixDifference(milliseconds).ToString();
         Response += streamTime;
-        return;
     }
 }
