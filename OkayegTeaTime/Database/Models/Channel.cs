@@ -63,7 +63,7 @@ public class Channel : CacheModel
         }
     }
 
-    public string[] Emotes => BttvEmotes.Concat(FfzEmotes).Concat(SevenTvEmotes).ToArray();
+    public IEnumerable<string> Emotes => BttvEmotes.Concat(FfzEmotes).Concat(SevenTvEmotes);
 
     public IEnumerable<string> BttvEmotes
     {
