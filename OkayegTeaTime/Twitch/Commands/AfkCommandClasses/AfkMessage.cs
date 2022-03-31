@@ -2,7 +2,7 @@
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.JsonClasses.CommandData;
+using OkayegTeaTime.Files.Jsons.CommandData;
 
 namespace OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 

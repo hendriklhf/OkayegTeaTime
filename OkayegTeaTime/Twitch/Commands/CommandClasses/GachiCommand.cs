@@ -1,7 +1,7 @@
 ﻿using HLE.Collections;
 using HLE.Emojis;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.JsonClasses;
+using OkayegTeaTime.Files.Jsons;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 

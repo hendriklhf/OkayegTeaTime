@@ -1,8 +1,8 @@
 ﻿using HLE.Collections;
 using HLE.Time;
-using OkayegTeaTime.Files.JsonClasses.HttpRequests.Bttv;
-using OkayegTeaTime.Files.JsonClasses.HttpRequests.Ffz;
-using OkayegTeaTime.Files.JsonClasses.HttpRequests.SevenTv;
+using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
+using OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
+using OkayegTeaTime.Files.Jsons.HttpRequests.SevenTv;
 using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Bot.EmoteNotifications.Enums;

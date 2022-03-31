@@ -518,7 +518,7 @@
         "Lets you listen along with another user"
       ],
       "Cooldown": 30000,
-      "Document": true
+      "Document": false
     },
     {
       "Name": "Cpp",

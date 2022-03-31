@@ -1,6 +1,6 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
-using JCommand = OkayegTeaTime.Files.JsonClasses.CommandData.Command;
+using JCommand = OkayegTeaTime.Files.Jsons.CommandData.Command;
 
 namespace OkayegTeaTime.Twitch.Commands.CommandClasses;
 

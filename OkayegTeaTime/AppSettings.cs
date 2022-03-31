@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.JsonClasses.CommandData;
-using JsonSettings = OkayegTeaTime.Files.JsonClasses.Settings;
+using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Files.Jsons.Settings;
 
 #nullable disable
 
@@ -15,11 +15,11 @@ public static class AppSettings
 
     public static CommandList CommandList => JsonController.CommandList;
 
-    public static JsonSettings::DbConnection DbConnection => JsonController.Settings.DatabaseConnection;
+    public static DbConnection DbConnection => JsonController.Settings.DatabaseConnection;
 
     public static string DebugChannel => JsonController.Settings.DebugChannel;
 
-    public static JsonSettings::Discord Discord => JsonController.Settings.Discord;
+    public static Files.Jsons.Settings.Discord Discord => JsonController.Settings.Discord;
 
     public static string RepositoryUrl => JsonController.Settings.RepositoryUrl;
 
@@ -27,11 +27,11 @@ public static class AppSettings
 
     public static List<string> SecretOfflineChatEmotes => JsonController.Settings.SecretOfflineChatEmotes;
 
-    public static JsonSettings::Spotify Spotify => JsonController.Settings.Spotify;
+    public static Files.Jsons.Settings.Spotify Spotify => JsonController.Settings.Spotify;
 
-    public static JsonSettings::Twitch Twitch => JsonController.Settings.Twitch;
+    public static Files.Jsons.Settings.Twitch Twitch => JsonController.Settings.Twitch;
 
-    public static JsonSettings::UserLists UserLists => JsonController.Settings.UserLists;
+    public static UserLists UserLists => JsonController.Settings.UserLists;
 
     public const short AfkCooldown = 10000;
     public const string DefaultEmote = "Okayeg";

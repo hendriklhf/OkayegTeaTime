@@ -3,9 +3,9 @@ using System.Linq;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.JsonClasses.CommandData;
+using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Twitch.Commands.Enums;
-using JCommand = OkayegTeaTime.Files.JsonClasses.CommandData.Command;
+using JCommand = OkayegTeaTime.Files.Jsons.CommandData.Command;
 
 namespace OkayegTeaTime.Tests;
 
