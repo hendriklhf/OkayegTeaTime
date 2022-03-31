@@ -1,8 +1,8 @@
-﻿using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
+using OkayegTeaTime.Spotify.Exceptions;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -29,7 +29,17 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyItem? playingItem = await user.GetCurrentlyPlayingItem();
+                SpotifyItem? playingItem;
+                try
+                {
+                    playingItem = await user.GetCurrentlyPlayingItem();
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                    return;
+                }
+
                 if (playingItem is null)
                 {
                     Response = $"{ChatMessage.Username}, you aren't listening to a song";
@@ -43,8 +53,23 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                await target.AddToQueue(playingItem.Uri);
-                Response = $"{ChatMessage.Username}, {target.Response}";
+                try
+                {
+                    SpotifyItem item = await target.AddToQueue(playingItem.Uri);
+                    if (item is SpotifyTrack track)
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                    }
+                    else if (item is SpotifyEpisode episode)
+                    {
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                    }
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                }
             }).Wait();
             return;
         }
@@ -68,15 +93,40 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyItem? currentlyPlaying = await target.GetCurrentlyPlayingItem();
+                SpotifyItem? currentlyPlaying;
+                try
+                {
+                    currentlyPlaying = await target.GetCurrentlyPlayingItem();
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                    return;
+                }
+
                 if (currentlyPlaying is null)
                 {
                     Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't listening to anything";
                     return;
                 }
 
-                await user.AddToQueue(currentlyPlaying.Uri);
-                Response = $"{ChatMessage.Username}, {user.Response}";
+                try
+                {
+                    SpotifyItem item = await user.AddToQueue(currentlyPlaying.Uri);
+                    if (item is SpotifyTrack track)
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                    }
+                    else if (item is SpotifyEpisode episode)
+                    {
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                    }
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                }
             }).Wait();
             return;
         }
@@ -93,8 +143,23 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                await user.AddToQueue(ChatMessage.Split[2]);
-                Response = $"{ChatMessage.Username}, {user.Response}";
+                try
+                {
+                    SpotifyItem item = await user.AddToQueue(ChatMessage.Split[2]);
+                    if (item is SpotifyTrack track)
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                    }
+                    else if (item is SpotifyEpisode episode)
+                    {
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                    }
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                }
             }).Wait();
             return;
         }
@@ -111,7 +176,17 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyItem? playingItem = await user.GetCurrentlyPlayingItem();
+                SpotifyItem? playingItem;
+                try
+                {
+                    playingItem = await user.GetCurrentlyPlayingItem();
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                    return;
+                }
+
                 if (playingItem is null)
                 {
                     Response = $"{ChatMessage.Username}, you aren't listening to anything";
@@ -125,8 +200,23 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                await target.AddToQueue(playingItem.Uri);
-                Response = $"{ChatMessage.Username}, {target.Response}";
+                try
+                {
+                    SpotifyItem item = await target.AddToQueue(playingItem.Uri);
+                    if (item is SpotifyTrack track)
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                    }
+                    else if (item is SpotifyEpisode episode)
+                    {
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                    }
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                }
             }).Wait();
             return;
         }
@@ -143,8 +233,23 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                await user.AddToQueue(ChatMessage.Split[1]);
-                Response = $"{ChatMessage.Username}, {user.Response}";
+                try
+                {
+                    SpotifyItem item = await user.AddToQueue(ChatMessage.Split[1]);
+                    if (item is SpotifyTrack track)
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                    }
+                    else if (item is SpotifyEpisode episode)
+                    {
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                    }
+                }
+                catch (SpotifyException ex)
+                {
+                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                }
             }).Wait();
         }
     }

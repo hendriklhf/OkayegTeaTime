@@ -515,9 +515,9 @@
         "[username]"
       ],
       "Description": [
-        "Listen to the currently playing song on Spotify of the provided to user"
+        "Lets you listen along with another user"
       ],
-      "Cooldown": 15000,
+      "Cooldown": 30000,
       "Document": true
     },
     {

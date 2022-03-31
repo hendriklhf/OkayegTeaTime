@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using System.Timers;
 using HLE.Time;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Spotify;
+using OkayegTeaTime.Spotify.Exceptions;
 using SpotifyAPI.Web;
 
 namespace OkayegTeaTime.Database.Models;
@@ -80,12 +82,14 @@ public class SpotifyUser : CacheModel
         }
     }
 
-    public string Response { get; private set; } = string.Empty;
+    public List<SpotifyUser> ListeningUsers { get; } = new();
 
     private string _accessToken;
     private string _refreshToken;
     private long _time;
     private bool _areSongRequestsEnabled;
+
+    private readonly Timer _timer = new();
 
     private const byte _trackIdPrefixLength = 14;
 
@@ -97,6 +101,8 @@ public class SpotifyUser : CacheModel
         _refreshToken = spotifyUser.RefreshToken;
         _time = spotifyUser.Time;
         _areSongRequestsEnabled = spotifyUser.SongRequestEnabled == true;
+
+        _timer.Elapsed += Timer_OnElapsed;
     }
 
     public SpotifyUser(int id, string username, string accessToken, string refreshToken)
@@ -106,6 +112,45 @@ public class SpotifyUser : CacheModel
         _accessToken = accessToken;
         _refreshToken = refreshToken;
         _time = TimeHelper.Now();
+
+        _timer.Elapsed += Timer_OnElapsed;
+    }
+
+    private async void Timer_OnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        SpotifyItem? song;
+        try
+        {
+            song = await GetCurrentlyPlayingItem();
+        }
+        catch (SpotifyException)
+        {
+            ListeningUsers.Clear();
+            _timer.Stop();
+            return;
+        }
+
+        if (song is null)
+        {
+            ListeningUsers.Clear();
+            _timer.Stop();
+            return;
+        }
+
+        _timer.Interval = song.Duration;
+        _timer.Start();
+
+        foreach (SpotifyUser user in ListeningUsers)
+        {
+            try
+            {
+                await user.ListenTo(song);
+            }
+            catch (SpotifyException)
+            {
+                ListeningUsers.Remove(user);
+            }
+        }
     }
 
     private async Task<SpotifyClient?> GetClient()
@@ -131,19 +176,17 @@ public class SpotifyUser : CacheModel
         return Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(30).Milliseconds;
     }
 
-    public async Task AddToQueue(string song)
+    public async Task<SpotifyItem> AddToQueue(string song)
     {
         string? uri = SpotifyController.ParseSongToUri(song);
         if (uri is null)
         {
-            Response = "invalid track link";
-            return;
+            throw new SpotifyException("invalid track link");
         }
 
         if (!AreSongRequestsEnabled)
         {
-            Response = $"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first";
-            return;
+            throw new SpotifyException($"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first");
         }
 
         try
@@ -151,24 +194,22 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new SpotifyException("you aren't registered, you have to register first");
             }
 
             await client.Player.AddToQueue(new(uri));
             FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..], new());
-            string[] artistNames = item.Artists.Select(a => a.Name).ToArray();
-            string artists = string.Join(", ", artistNames);
-            Response = $"{item.Name} by {artists} || {item.Uri} has been added to the queue of {Username.Antiping()}";
+            return new(item);
         }
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, {Username.Antiping()} probably has to start their playback first";
+            throw new SpotifyException($"an error occurred, {Username.Antiping()} probably has to start their playback first");
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, it might not be possible to add songs to {Username.Antiping()}'s queue";
+            throw new SpotifyException($"an error occurred, it might not be possible to add songs to {Username.Antiping()}'s queue");
         }
     }
 
@@ -176,8 +217,7 @@ public class SpotifyUser : CacheModel
     {
         if (!AreSongRequestsEnabled)
         {
-            Response = $"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first";
-            return;
+            throw new SpotifyException($"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first");
         }
 
         try
@@ -185,45 +225,97 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new SpotifyException("you aren't registered, you have to register first");
             }
 
             await client.Player.SkipNext(new());
-            Response = $"skipped to next song in {Username.Antiping()}'s queue";
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, it might not be possible to skip songs of {Username.Antiping()}'s queue";
+            throw new SpotifyException($"an error occurred, it might not be possible to skip songs of {Username.Antiping()}'s queue");
         }
     }
 
-    public async Task ListenTo(SpotifyUser target)
+    public async Task<SpotifyItem> ListenAlongWith(SpotifyUser target)
     {
         if (string.Equals(target.Username, Username, StringComparison.OrdinalIgnoreCase))
         {
-            Response = "you can't listen to your own songs :)";
-            return;
+            throw new SpotifyException("you can't listen to yourself :)");
         }
 
-        SpotifyItem? item = await target.GetCurrentlyPlayingItem();
-        if (item is null)
+        CurrentlyPlayingContext? playback = await target.GetCurrentlyPlayingContext();
+        if (playback is null)
         {
-            Response = $"{target.Username.Antiping()} isn't listening to anything at the moment";
-            return;
+            throw new SpotifyException($"{target.Username.Antiping()} isn't listening to anything at the moment");
         }
 
-        await ListenTo(item);
+        SpotifyItem item;
+        // ReSharper disable once ConstantConditionalAccessQualifier
+        if (playback.Item is FullTrack track)
+        {
+            item = new SpotifyTrack(track);
+        }
+        else if (playback.Item is FullEpisode episode)
+        {
+            item = new SpotifyEpisode(episode);
+        }
+        else
+        {
+            item = new(playback.Item);
+        }
+
+        int seekTo = playback.ProgressMs > 500 ? playback.ProgressMs : 0;
+        await ListenTo(item, seekTo);
+        ListeningUsers.Clear();
+        _timer.Stop();
+        if (!target.ListeningUsers.Contains(this))
+        {
+            target.ListeningUsers.Add(this);
+        }
+
+        int interval = item.Duration - playback.ProgressMs;
+        target.StartTimer(interval);
+        return item;
     }
 
-    public async Task ListenTo(SpotifyItem item)
+    private void StartTimer(int interval)
+    {
+        _timer.Stop();
+        _timer.Interval = interval + 500;
+        _timer.Start();
+    }
+
+    public SpotifyUser? GetListeningTo()
+    {
+        return DbControl.SpotifyUsers.FirstOrDefault(u => u.ListeningUsers.Contains(this) && u != this);
+    }
+
+    public async Task<SpotifyItem> ListenTo(SpotifyUser target, int seekToMs = default)
+    {
+        if (string.Equals(target.Username, Username, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new SpotifyException("you can't listen to your own songs :)");
+        }
+
+        CurrentlyPlayingContext? playback = await target.GetCurrentlyPlayingContext();
+        if (playback is null)
+        {
+            throw new SpotifyException($"{target.Username.Antiping()} isn't listening to anything at the moment");
+        }
+
+        SpotifyItem song = new(playback.Item);
+        return await ListenTo(song, seekToMs);
+    }
+
+    public async Task<SpotifyItem> ListenTo(SpotifyItem item, int seekToMs = default)
     {
         try
         {
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new SpotifyException("you aren't registered, you have to register first");
             }
 
             await client.Player.AddToQueue(new(item.Uri));
@@ -231,14 +323,12 @@ public class SpotifyUser : CacheModel
         catch (APIException ex)
         {
             Logger.Log(ex);
-            Response = $"an error occurred, {Username.Antiping()} probably has to start their playback first";
-            return;
+            throw new SpotifyException($"an error occurred, {Username.Antiping()} probably has to start their playback first");
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = "an error occurred, it might not be possible to listen to other people's songs";
-            return;
+            throw new SpotifyException("an error occurred, it might not be possible to listen to other people's songs");
         }
 
         try
@@ -246,107 +336,22 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new SpotifyException("you aren't registered, you have to register first");
             }
 
             await client.Player.SkipNext(new());
-        }
-        catch (Exception ex)
-        {
-            Logger.Log(ex);
-            Response = $"an error occured while trying to play the song {Username.Antiping()} wanted to listen to";
-            return;
-        }
-
-        if (item is SpotifyTrack track)
-        {
-            string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-            Response = $"now playing {track.Name} by {artists} || {track.Uri}";
-        }
-        else if (item is SpotifyEpisode episode)
-        {
-            Response = $"now playing {episode.Name} by {episode.Show.Name} || {episode.Uri}";
-        }
-        else
-        {
-            Response = "now listening to an unknown Spotify item type monkaS";
-        }
-    }
-
-    public async Task ListenTo(string song)
-    {
-        string? uri = SpotifyController.ParseSongToUri(song);
-        if (uri is null)
-        {
-            Response = "invalid track link";
-            return;
-        }
-
-        try
-        {
-            SpotifyClient? client = await GetClient();
-            if (client is null)
+            if (seekToMs != default)
             {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            await client.Player.AddToQueue(new(uri));
-        }
-        catch (APIException ex)
-        {
-            Logger.Log(ex);
-            Response = $"an error occurred, {Username.Antiping()} probably has to start their playback first";
-            return;
-        }
-        catch (Exception ex)
-        {
-            Logger.Log(ex);
-            Response = "an error occurred, it might not be possible to listen to other people's songs";
-            return;
-        }
-
-        try
-        {
-            SpotifyClient? client = await GetClient();
-            if (client is null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            await client.Player.SkipNext(new());
-        }
-        catch (Exception ex)
-        {
-            Logger.Log(ex);
-            Response = "an error occured while trying to play the song you wanted to listen to";
-            return;
-        }
-
-        try
-        {
-            SpotifyClient? client = await GetClient();
-            if (client is null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            FullTrack? track = await client.Tracks.Get(uri[_trackIdPrefixLength..], new());
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (track is not null)
-            {
-                string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                Response = $"now playing {track.Name} by {artists} || {track.Uri}";
-            }
-            else
-            {
-                Response = $"now playing {uri}, but failed to retrieve further info about the playing item";
+                await client.Player.SeekTo(new(seekToMs));
             }
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
-            Response = $"now playing {uri}, but failed to retrieve further info about the playing item";
+            throw new SpotifyException($"an error occured while trying to play the song {Username.Antiping()} wanted to listen to");
         }
+
+        return item;
     }
 
     public async Task<SpotifyItem?> GetCurrentlyPlayingItem()
@@ -357,16 +362,20 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new SpotifyException("you aren't registered, you have to register first");
             }
 
             currentlyPlaying = await client.Player.GetCurrentlyPlaying(new());
+
+            if (!currentlyPlaying.IsPlaying)
+            {
+                return null;
+            }
         }
         catch (Exception ex)
         {
-            Response = "an error occurred, it might not be possible to retrieve you currently playing song";
             Logger.Log(ex);
-            return null;
+            throw new SpotifyException("an error occurred, it might not be possible to retrieve you currently playing song");
         }
 
         SpotifyItem? item = null;
@@ -381,5 +390,23 @@ public class SpotifyUser : CacheModel
         }
 
         return item;
+    }
+
+    private async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContext()
+    {
+        SpotifyClient? client = await GetClient();
+        if (client is null)
+        {
+            throw new SpotifyException("you aren't registered, you have to register first");
+        }
+
+        CurrentlyPlayingContext playback = await client.Player.GetCurrentPlayback(new());
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+        if (playback is null || !playback.IsPlaying)
+        {
+            return null;
+        }
+
+        return playback;
     }
 }

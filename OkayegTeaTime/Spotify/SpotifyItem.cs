@@ -9,7 +9,7 @@ public class SpotifyItem
     /// <summary>
     /// Duration in milliseconds.
     /// </summary>
-    public long Duration { get; }
+    public int Duration { get; }
 
     public bool Explicit { get; }
 
