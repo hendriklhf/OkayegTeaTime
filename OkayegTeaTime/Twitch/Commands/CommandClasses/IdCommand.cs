@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using OkayegTeaTime.Twitch.Api;
+﻿using OkayegTeaTime.Twitch.Api;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 

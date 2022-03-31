@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Strings;
+﻿using HLE.Strings;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Models;
 

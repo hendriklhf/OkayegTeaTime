@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text.RegularExpressions;
 using HLE.Collections;
 
 namespace OkayegTeaTime.Files;

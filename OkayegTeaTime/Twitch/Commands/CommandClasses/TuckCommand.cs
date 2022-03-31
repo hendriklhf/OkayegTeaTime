@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Emojis;
+﻿using HLE.Emojis;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 

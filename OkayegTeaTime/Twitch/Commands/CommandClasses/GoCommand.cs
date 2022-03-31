@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using OkayegTeaTime.HttpRequests;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;

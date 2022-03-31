@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Collections;
+﻿using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;

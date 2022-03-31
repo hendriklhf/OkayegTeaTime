@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Collections;
+﻿using HLE.Collections;
 using HLE.HttpRequests;
 using HLE.Strings;
 using OkayegTeaTime.Logging;

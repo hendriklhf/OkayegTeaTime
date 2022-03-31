@@ -22,7 +22,7 @@ public class ReminderCache : DbCache<Reminder>
 
     public int?[] AddRange(IEnumerable<(string Creator, string Target, string Message, string Channel, long ToTime)> values)
     {
-        var reminders = values.ToArray();
+        (string Creator, string Target, string Message, string Channel, long ToTime)[]? reminders = values.ToArray();
         int?[] ids = DbController.AddReminders(reminders);
 
         for (int i = 0; i < reminders.Length; i++)

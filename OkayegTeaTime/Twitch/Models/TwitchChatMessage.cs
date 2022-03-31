@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using HLE.Strings;
+﻿using HLE.Strings;
 using OkayegTeaTime.Database;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
