@@ -74,14 +74,16 @@ public class Channel : CacheModel
                 return _bttvEmotes;
             }
 
-            IEnumerable<BttvSharedEmote>? emotes = HttpRequest.GetBttvEmotes(Id);
-            if (emotes is null)
+            BttvRequest? request = HttpRequest.GetBttvRequest(Id);
+            if (request is null)
             {
                 _bttvEmotes = Array.Empty<string>();
                 return _bttvEmotes;
             }
 
-            _bttvEmotes = emotes.Select(e => e.Name).ToArray();
+            IEnumerable<string> sharedEmotes = request.SharedEmotes.Select(e => e.Name);
+            IEnumerable<string> channelEmotes = request.ChannelEmotes.Select(e => e.Name);
+            _bttvEmotes = sharedEmotes.Concat(channelEmotes).ToArray();
             return _bttvEmotes;
         }
     }
