@@ -563,6 +563,22 @@
       ],
       "Cooldown": 10000,
       "Document": false
+    },
+    {
+      "Name": "Slots",
+      "Alias": [
+        "slots"
+      ],
+      "Parameter": [
+        "(none)",
+        "[regex]"
+      ],
+      "Description": [
+        "Rolls slots and picks 3 of all third party emotes",
+        "Rolls slots and picks 3 of all third party emotes matching the provided regex"
+      ],
+      "Cooldown": 10000,
+      "Document": true
     }
   ],
   "AfkCommands": [

@@ -29,6 +29,7 @@ public enum CommandType
     Remind,
     Set,
     Skip,
+    Slots,
     SongRequest,
     Spotify,
     Stream,
