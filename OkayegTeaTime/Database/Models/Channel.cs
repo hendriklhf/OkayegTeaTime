@@ -74,7 +74,7 @@ public class Channel : CacheModel
                 return _bttvEmotes;
             }
 
-            IEnumerable<BttvSharedEmote>? emotes = HttpRequest.GetBttvEmotes(Name);
+            IEnumerable<BttvSharedEmote>? emotes = HttpRequest.GetBttvEmotes(Id);
             if (emotes is null)
             {
                 _bttvEmotes = Array.Empty<string>();

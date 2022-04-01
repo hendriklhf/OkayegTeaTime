@@ -43,7 +43,7 @@ public static class HttpRequest
 
     public static IEnumerable<SevenTvEmote>? GetSevenTvEmotes(string channel, int count)
     {
-        IEnumerable<SevenTvEmote>? emotes = GetSevenTvEmotes(channel);
+        SevenTvEmote[]? emotes = GetSevenTvEmotes(channel)?.ToArray();
         NormalizeCount(emotes, ref count);
         return emotes?.Take(count);
     }
@@ -79,14 +79,26 @@ public static class HttpRequest
 
     public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel, int count)
     {
-        IEnumerable<BttvSharedEmote>? emotes = GetBttvEmotes(channel);
+        BttvSharedEmote[]? emotes = GetBttvEmotes(channel)?.ToArray();
         NormalizeCount(emotes, ref count);
         return emotes?.Take(count);
     }
 
     public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel)
     {
-        return GetBttvRequest(channel)?.SharedEmotes?.Reverse<BttvSharedEmote>();
+        return GetBttvRequest(channel)?.SharedEmotes;
+    }
+
+    public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(int channelId, int count)
+    {
+        BttvSharedEmote[]? emotes = GetBttvEmotes(channelId)?.ToArray();
+        NormalizeCount(emotes, ref count);
+        return emotes?.Take(count);
+    }
+
+    public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(int channelId)
+    {
+        return GetBttvRequest(channelId)?.SharedEmotes;
     }
 
     public static int GetChatterCount(string channel)
@@ -125,7 +137,7 @@ public static class HttpRequest
 
     public static IEnumerable<FfzEmote>? GetFfzEmotes(string channel, int count)
     {
-        IEnumerable<FfzEmote>? emotes = GetFfzEmotes(channel);
+        FfzEmote[]? emotes = GetFfzEmotes(channel)?.ToArray();
         NormalizeCount(emotes, ref count);
         return emotes?.Take(count);
     }

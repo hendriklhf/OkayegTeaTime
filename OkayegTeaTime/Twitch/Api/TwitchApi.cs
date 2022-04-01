@@ -28,7 +28,7 @@ public static class TwitchApi
         string? accessToken = GetAccessToken();
         if (accessToken is null)
         {
-            ArgumentNullException ex = new("Twitch API access token was null");
+            ArgumentNullException ex = new(nameof(accessToken));
             Logger.Log(ex);
             throw ex;
         }
@@ -44,12 +44,8 @@ public static class TwitchApi
                 new("client_secret", _api.Settings.Secret),
                 new("grant_type", "client_credentials")
             });
-        if (request.Data is null)
-        {
-            return null;
-        }
 
-        return request.Data.Value.GetProperty("access_token").GetString();
+        return request.Data?.GetProperty("access_token").GetString();
     }
 
     public static void RefreshAccessToken()
