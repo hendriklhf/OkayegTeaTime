@@ -194,7 +194,7 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new SpotifyException("you aren't registered, you have to register first");
+                throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
             }
 
             await client.Player.AddToQueue(new(uri));
@@ -225,7 +225,7 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new SpotifyException("you aren't registered, you have to register first");
+                throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
             }
 
             await client.Player.SkipNext(new());
@@ -315,7 +315,7 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new SpotifyException("you aren't registered, you have to register first");
+                throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
             }
 
             await client.Player.AddToQueue(new(item.Uri));
@@ -336,7 +336,7 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new SpotifyException("you aren't registered, you have to register first");
+                throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
             }
 
             await client.Player.SkipNext(new());
@@ -362,7 +362,7 @@ public class SpotifyUser : CacheModel
             SpotifyClient? client = await GetClient();
             if (client is null)
             {
-                throw new SpotifyException("you aren't registered, you have to register first");
+                throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
             }
 
             currentlyPlaying = await client.Player.GetCurrentlyPlaying(new());
@@ -375,7 +375,7 @@ public class SpotifyUser : CacheModel
         catch (Exception ex)
         {
             Logger.Log(ex);
-            throw new SpotifyException("an error occurred, it might not be possible to retrieve you currently playing song");
+            throw new SpotifyException($"an error occurred, it might not be possible to retrieve {Username.Antiping()}'s currently playing song");
         }
 
         SpotifyItem? item = null;
@@ -397,7 +397,7 @@ public class SpotifyUser : CacheModel
         SpotifyClient? client = await GetClient();
         if (client is null)
         {
-            throw new SpotifyException("you aren't registered, you have to register first");
+            throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
         }
 
         CurrentlyPlayingContext playback = await client.Player.GetCurrentPlayback(new());
