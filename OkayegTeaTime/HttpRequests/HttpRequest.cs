@@ -20,13 +20,7 @@ public static class HttpRequest
 
     private static readonly string[] _chatRoles =
     {
-        "broadcaster",
-        "vips",
-        "moderators",
-        "staff",
-        "admins",
-        "global_mods",
-        "viewers"
+        "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers"
     };
 
     private static void NormalizeCount<T>(IEnumerable<T>? collection, ref int count)
@@ -58,16 +52,20 @@ public static class HttpRequest
         try
         {
             HttpPost request = new("https://api.7tv.app/v2/gql",
-            new()
-            {
-                new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role {id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height },emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
-                new("variables", "{}")
-            });
+                new()
+                {
+                    new("query", "{user(id: \"" + channel + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
+                                 "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
+                                 "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
+                                 "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
+                    new("variables", "{}")
+                });
 
             if (request.Result is null)
             {
                 return null;
             }
+
             return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
         }
         catch (Exception ex)
@@ -75,6 +73,24 @@ public static class HttpRequest
             Logger.Log(ex);
             return null;
         }
+    }
+
+    public static IEnumerable<SevenTvGlobalEmote>? GetSevenTvGlobalEmotes()
+    {
+        HttpPost request = new("https://api.7tv.app/v2/gql",
+            new()
+            {
+                new("query",
+                    "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) {id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
+            });
+
+        if (request.Data is null)
+        {
+            return null;
+        }
+
+        string result = request.Data.Value.GetProperty("data").GetProperty("search_emotes").GetRawText();
+        return JsonSerializer.Deserialize<List<SevenTvGlobalEmote>>(result);
     }
 
     public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(string channel, int count)
@@ -99,6 +115,17 @@ public static class HttpRequest
     public static IEnumerable<BttvSharedEmote>? GetBttvEmotes(int channelId)
     {
         return GetBttvRequest(channelId)?.SharedEmotes;
+    }
+
+    public static IEnumerable<BttvSharedEmote>? GetBttvGlobalEmotes()
+    {
+        HttpGet request = new("https://api.betterttv.net/3/cached/emotes/global");
+        if (request.Result is null)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<List<BttvSharedEmote>>(request.Result);
     }
 
     public static int GetChatterCount(string channel)
@@ -130,6 +157,7 @@ public static class HttpRequest
             {
                 result.Add(new(chatterList[i].GetString()!, (ChatRole)pIdx));
             }
+
             pIdx++;
         });
         return result;
@@ -166,6 +194,25 @@ public static class HttpRequest
             Logger.Log(ex);
             return null;
         }
+    }
+
+    public static IEnumerable<FfzEmote>? GetFfzGlobalEmotes()
+    {
+        HttpGet request = new("https://api.frankerfacez.com/v1/set/global");
+        if (request.Data is null || request.Result is null)
+        {
+            return null;
+        }
+
+        int setId = request.Data.Value.GetProperty("default_sets")[0].GetInt32();
+        string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
+        JsonElement json = JsonSerializer.Deserialize<JsonElement>(result);
+        string firstSet = json.GetProperty("sets").GetProperty(FfzSetIdReplacement).GetProperty("emoticons").GetRawText();
+        string secondSet = json.GetProperty("sets").GetProperty("4330").GetProperty("emoticons").GetRawText();
+        FfzEmote[] firstEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(firstSet) ?? Array.Empty<FfzEmote>();
+        FfzEmote[] secondEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(secondSet) ?? Array.Empty<FfzEmote>();
+        FfzEmote[] emotes = firstEmoteSet.Concat(secondEmoteSet).ToArray();
+        return emotes.Any() ? emotes : null;
     }
 
     public static string GetMathResult(string expression)
