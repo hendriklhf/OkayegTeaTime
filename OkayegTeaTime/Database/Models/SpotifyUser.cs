@@ -199,7 +199,7 @@ public class SpotifyUser : CacheModel
 
             await client.Player.AddToQueue(new(uri));
             FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..], new());
-            return new(item);
+            return new SpotifyTrack(item);
         }
         catch (APIException ex)
         {
