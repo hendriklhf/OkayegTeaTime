@@ -19,18 +19,17 @@ public class ChattersCommand : Command
         {
             string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;
             DottedNumber chatterCount = HttpRequest.GetChatterCount(channel);
-            Response = $"{ChatMessage.Username}, ";
 
             switch (chatterCount)
             {
                 case > 1:
-                    Response += $"there are {chatterCount} chatters in the channel of {channel}";
+                    Response = $"{ChatMessage.Username}, there are {chatterCount} chatters in the channel of {channel.Antiping()}";
                     return;
                 case > 0:
-                    Response += $"there is {chatterCount} chatter in the channel of {channel}";
+                    Response = $"{ChatMessage.Username}, there is {chatterCount} chatter in the channel of {channel.Antiping()}";
                     return;
                 default:
-                    Response += $"there are no chatters in the channel of {channel}";
+                    Response = $"{ChatMessage.Username}, there are no chatters in the channel of {channel.Antiping()}";
                     return;
             }
         }
