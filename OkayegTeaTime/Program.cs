@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Bot;
@@ -23,7 +23,7 @@ public static class Program
 
         while (_running)
         {
-            Thread.Sleep(1000);
+            Task.Run(async () => await Task.Delay(1000)).Wait();
         }
     }
 

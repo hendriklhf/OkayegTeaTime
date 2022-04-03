@@ -77,7 +77,7 @@ public class CommandList
 
     public string GetCommandClassName(CommandType type)
     {
-        return $"{AppSettings.AssemblyName}.Twitch.Commands.CommandClasses.{type}Command";
+        return $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
     }
 
 #nullable enable

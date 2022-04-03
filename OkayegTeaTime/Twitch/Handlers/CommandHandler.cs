@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
-using OkayegTeaTime.Twitch.Bot.Cooldowns;
-using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
 using OkayegTeaTime.Twitch.Commands.Enums;
+using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;

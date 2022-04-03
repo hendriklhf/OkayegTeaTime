@@ -2,7 +2,7 @@
 using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Twitch.Commands.AfkCommandClasses;
+using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Bot;
