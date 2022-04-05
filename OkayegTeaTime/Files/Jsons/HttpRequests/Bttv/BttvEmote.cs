@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
 
-public class BttvChannelEmote
+public class BttvEmote
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
@@ -15,13 +15,13 @@ public class BttvChannelEmote
     [JsonPropertyName("imageType")]
     public string ImageType { get; set; }
 
-    [JsonPropertyName("userId")]
-    public string UserId { get; set; }
+    [JsonPropertyName("user")]
+    public BttvUser User { get; set; }
 
 #nullable enable
     public override bool Equals(object? obj)
     {
-        return obj is BttvChannelEmote emote && emote.Name == Name;
+        return obj is BttvEmote emote && emote.Id == Id;
     }
 
     public override string ToString()

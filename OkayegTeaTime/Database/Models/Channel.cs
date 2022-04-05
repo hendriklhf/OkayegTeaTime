@@ -1,8 +1,4 @@
 ﻿using HLE.Strings;
-using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
-using OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
-using OkayegTeaTime.Files.Jsons.HttpRequests.SevenTv;
-using OkayegTeaTime.HttpRequests;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -63,79 +59,9 @@ public class Channel : CacheModel
         }
     }
 
-    public IEnumerable<string> Emotes => BttvEmotes.Concat(FfzEmotes).Concat(SevenTvEmotes);
-
-    public IEnumerable<string> BttvEmotes
-    {
-        get
-        {
-            if (_bttvEmotes is not null)
-            {
-                return _bttvEmotes;
-            }
-
-            BttvRequest? request = HttpRequest.GetBttvRequest(Id);
-            if (request is null)
-            {
-                _bttvEmotes = Array.Empty<string>();
-                return _bttvEmotes;
-            }
-
-            IEnumerable<string> sharedEmotes = request.SharedEmotes.Select(e => e.Name);
-            IEnumerable<string> channelEmotes = request.ChannelEmotes.Select(e => e.Name);
-            _bttvEmotes = sharedEmotes.Concat(channelEmotes).ToArray();
-            return _bttvEmotes;
-        }
-    }
-
-    public IEnumerable<string> FfzEmotes
-    {
-        get
-        {
-            if (_ffzEmotes is not null)
-            {
-                return _ffzEmotes;
-            }
-
-            IEnumerable<FfzEmote>? emotes = HttpRequest.GetFfzEmotes(Name);
-            if (emotes is null)
-            {
-                _ffzEmotes = Array.Empty<string>();
-                return _ffzEmotes;
-            }
-
-            _ffzEmotes = emotes.Select(e => e.Name).ToArray();
-            return _ffzEmotes;
-        }
-    }
-
-    public IEnumerable<string> SevenTvEmotes
-    {
-        get
-        {
-            if (_sevenTvEmotes is not null)
-            {
-                return _sevenTvEmotes;
-            }
-
-            IEnumerable<SevenTvEmote>? emotes = HttpRequest.GetSevenTvEmotes(Name);
-            if (emotes is null)
-            {
-                _sevenTvEmotes = Array.Empty<string>();
-                return _sevenTvEmotes;
-            }
-
-            _sevenTvEmotes = emotes.Select(e => e.Name).ToArray();
-            return _sevenTvEmotes;
-        }
-    }
-
     private string? _emote;
     private string? _prefix;
     private bool _isEmoteNotificationSub;
-    private string[]? _bttvEmotes;
-    private string[]? _ffzEmotes;
-    private string[]? _sevenTvEmotes;
 
     public Channel(EntityFrameworkModels.Channel channel)
     {

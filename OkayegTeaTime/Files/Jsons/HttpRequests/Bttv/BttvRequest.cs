@@ -13,8 +13,8 @@ public class BttvRequest
     public List<string> Bots { get; set; }
 
     [JsonPropertyName("channelEmotes")]
-    public List<BttvChannelEmote> ChannelEmotes { get; set; }
+    public List<BttvEmote> ChannelEmotes { get; set; }
 
     [JsonPropertyName("sharedEmotes")]
-    public List<BttvSharedEmote> SharedEmotes { get; set; }
+    public List<BttvEmote> SharedEmotes { get; set; }
 }

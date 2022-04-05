@@ -1,78 +1,66 @@
-using System.Collections.Generic;
 using System.Linq;
-using HLE.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
 using OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
 using OkayegTeaTime.Files.Jsons.HttpRequests.SevenTv;
 using OkayegTeaTime.HttpRequests;
-using OkayegTeaTime.Twitch.Api;
-using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Twitch.Controller;
 
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
 public class ApiTests
 {
-    private const string _testChannel = "strbhlfe";
+    private const int _testChannel = 87633910;
 
     [TestMethod]
     public void GetSevenTvEmotesTest()
     {
-        int emoteCount = 5;
-        // FIXME: making HTTP call from tests. Should be mocked out to remove external dependency
-        List<SevenTvEmote> emotes = HttpRequest.GetSevenTvEmotes(_testChannel, emoteCount)?.ToList();
-        Assert.IsTrue(emotes?.Count == emoteCount);
-        emotes.ForEach(e =>
-        {
-            bool isMatch = e.Name.IsMatch(@"^\w+$");
-            Assert.IsTrue(isMatch);
-        });
+        JsonController.Initialize();
+        SevenTvEmote[] emotes = new EmoteController().GetSevenTvEmotes(_testChannel).ToArray();
+        Assert.IsTrue(emotes.Any());
     }
 
     [TestMethod]
     public void GetBttvEmotesTest()
     {
-        TwitchApi.Initialize();
-        int emoteCount = 5;
-        List<BttvSharedEmote> emotes = HttpRequest.GetBttvEmotes(_testChannel, emoteCount)?.ToList();
-        Assert.IsTrue(emotes?.Count == emoteCount);
-        emotes.ForEach(e =>
-        {
-            bool isMatch = e.Name.IsMatch(@"^\w+$");
-            Assert.IsTrue(isMatch);
-        });
-    }
-
-    [TestMethod]
-    public void GetChatterCountTest()
-    {
-        int chatterCount = HttpRequest.GetChatterCount(_testChannel);
-        Assert.IsNotNull(chatterCount);
-    }
-
-    [TestMethod]
-    public void GetChattersTest()
-    {
-        List<Chatter> chatters = HttpRequest.GetChatters(_testChannel).ToList();
-        chatters.ForEach(c =>
-        {
-            bool isMatch = c.Username.IsMatch(@"^\w+$");
-            Assert.IsTrue(isMatch);
-        });
+        JsonController.Initialize();
+        BttvEmote[] emotes = new EmoteController().GetBttvEmotes(_testChannel).ToArray();
+        Assert.IsTrue(emotes.Any());
     }
 
     [TestMethod]
     public void GetFfzEmotesTest()
     {
-        int emoteCount = 5;
-        List<FfzEmote> emotes = HttpRequest.GetFfzEmotes(_testChannel, emoteCount)?.ToList();
-        Assert.IsTrue(emotes?.Count == emoteCount);
-        emotes.ForEach(e =>
-        {
-            bool isMatch = e.Name.IsMatch(@"^\w+$");
-            Assert.IsTrue(isMatch);
-        });
+        JsonController.Initialize();
+        FfzEmote[] emotes = new EmoteController().GetFfzEmotes(_testChannel).ToArray();
+        Assert.IsTrue(emotes.Any());
+    }
+
+    [TestMethod]
+    public void GetSevenTvGlobalEmotes()
+    {
+        JsonController.Initialize();
+        SevenTvGlobalEmote[] emotes = new EmoteController().SevenTvGlobalEmotes.ToArray();
+        Assert.IsTrue(emotes.Any());
+    }
+
+
+    [TestMethod]
+    public void GetBttvGlobalEmotesTest()
+    {
+        JsonController.Initialize();
+        BttvEmote[] emotes = new EmoteController().BttvGlobalEmotes.ToArray();
+        Assert.IsTrue(emotes.Any());
+    }
+
+    [TestMethod]
+    public void GetFfzGlobalEmotesTest()
+    {
+        JsonController.Initialize();
+        FfzEmote[] emotes = new EmoteController().FfzGlobalEmotes.ToArray();
+        Assert.IsTrue(emotes.Any());
     }
 
     [TestMethod]

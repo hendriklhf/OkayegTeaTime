@@ -39,8 +39,15 @@ public class SlotsCommand : Command
             return;
         }
 
-        string[] emotes = channel.Emotes.ToArray();
-        if (emotes.Length == 0)
+        IEnumerable<string> ffzEmotes = _twitchBot.EmoteController.GetFfzEmotes(ChatMessage.ChannelId)
+            .Concat(_twitchBot.EmoteController.FfzGlobalEmotes).Select(e => e.Name);
+        IEnumerable<string> bttvEmotes = _twitchBot.EmoteController.GetBttvEmotes(ChatMessage.ChannelId)
+            .Concat(_twitchBot.EmoteController.BttvGlobalEmotes).Select(e => e.Name);
+        IEnumerable<string> sevenTvEmotes = _twitchBot.EmoteController.GetSevenTvEmotes(ChatMessage.ChannelId).Select(e => e.Name)
+            .Concat(_twitchBot.EmoteController.SevenTvGlobalEmotes.Select(e => e.Name));
+        string[] emotes = ffzEmotes.Concat(bttvEmotes).Concat(sevenTvEmotes).ToArray();
+
+        if (!emotes.Any())
         {
             Response = $"{ChatMessage.Username}, there are no third party emotes enabled in this channel";
             return;
@@ -51,7 +58,7 @@ public class SlotsCommand : Command
             emotes = emotes.Where(e => emotePattern.IsMatch(e)).ToArray();
         }
 
-        if (emotes.Length == 0)
+        if (!emotes.Any())
         {
             Response = $"{ChatMessage.Username}, there is no emote matching your provided pattern";
             return;
@@ -64,6 +71,6 @@ public class SlotsCommand : Command
         }
 
         string msgEmotes = string.Join(' ', randomEmotes);
-        Response = $"{ChatMessage.Username}, [ {msgEmotes} ] ({emotes.Length} emotes)";
+        Response = $"{ChatMessage.Username}, [ {msgEmotes} ] ({emotes.Length} emote{(emotes.Length > 1 ? 's' : string.Empty)})";
     }
 }

@@ -33,10 +33,8 @@ public enum CommandType
     SongRequest,
     Spotify,
     Stream,
-    Sub,
     Suggest,
     Tuck,
     Unset,
-    Unsub,
     Vanish
 }
