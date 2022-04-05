@@ -19,6 +19,7 @@ public static class JsonController
     public static void Initialize()
     {
         string settingsPath = FileLocator.Find(AppSettings.SettingsFileName);
+        ConsoleOut($"Found Settings file at: {settingsPath}");
         Settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(settingsPath));
         CommandList = JsonSerializer.Deserialize<CommandList>(FileController.Commands);
     }
