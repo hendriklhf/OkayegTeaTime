@@ -11,14 +11,12 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public class MessageHandler : Handler
 {
-    public CommandHandler CommandHandler { get; }
-
-    public Throttler Throttler { get; }
+    private readonly CommandHandler _commandHandler;
 
     private readonly LinkRecognizer _linkRecognizer = new();
 
-    private static readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-    private static readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     private const int _pajaAlertUserId = 82008718;
     private const int _pajaChannelId = 11148817;
@@ -29,8 +27,7 @@ public class MessageHandler : Handler
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
     {
-        CommandHandler = new(twitchBot);
-        Throttler = new(twitchBot);
+        _commandHandler = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
@@ -52,12 +49,7 @@ public class MessageHandler : Handler
 
         DbController.CheckForReminder(_twitchBot, chatMessage);
 
-        //if (!Throttler.CanBeProcessed(chatMessage))
-        //{
-        //    return;
-        //}
-
-        CommandHandler.Handle(chatMessage);
+        _commandHandler.Handle(chatMessage);
 
         HandleSpecificMessages(chatMessage);
     }

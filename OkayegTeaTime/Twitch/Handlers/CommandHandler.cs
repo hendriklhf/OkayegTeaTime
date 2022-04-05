@@ -9,39 +9,31 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public class CommandHandler : Handler
 {
-    public AfkCommandHandler AfkCommandHandler { get; }
-
-    public CooldownController CooldownController { get; }
-
-    public CommandType[] CommandTypes { get; } = (CommandType[])Enum.GetValues(typeof(CommandType));
-
-    public AfkCommandType[] AfkCommandTypes { get; } = (AfkCommandType[])Enum.GetValues(typeof(AfkCommandType));
-
-    private bool _handled;
+    private readonly AfkCommandHandler _afkCommandHandler;
+    private readonly CooldownController _cooldownController = new();
+    private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
+    private readonly AfkCommandType[] _afkCommandTypes = Enum.GetValues<AfkCommandType>();
 
     private const string _handleName = "Handle";
     private const string _sendResponseName = "SendResponse";
 
-    public CommandHandler(TwitchBot twitchBot)
-        : base(twitchBot)
+    public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
-        AfkCommandHandler = new(twitchBot);
-        CooldownController = new();
+        _afkCommandHandler = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
     {
-        _handled = false;
-        HandleCommand(chatMessage);
-        if (!_handled)
+        bool handled = HandleCommand(chatMessage);
+        if (!handled)
         {
             HandleAfkCommand(chatMessage);
         }
     }
 
-    private void HandleCommand(TwitchChatMessage chatMessage)
+    private bool HandleCommand(TwitchChatMessage chatMessage)
     {
-        foreach (CommandType type in CommandTypes)
+        foreach (CommandType type in _commandTypes)
         {
             foreach (string alias in AppSettings.CommandList[type].Alias)
             {
@@ -50,25 +42,25 @@ public class CommandHandler : Handler
 
                 if (pattern.IsMatch(chatMessage.Message))
                 {
-                    _handled = true;
-
-                    if (CooldownController.IsOnCooldown(chatMessage.UserId, type))
+                    if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
                     {
-                        return;
+                        return false;
                     }
 
                     InvokeCommandHandle(type, _twitchBot, chatMessage, alias);
-                    CooldownController.AddCooldown(chatMessage.UserId, type);
+                    _cooldownController.AddCooldown(chatMessage.UserId, type);
                     _twitchBot.CommandCount++;
-                    return;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
-    private void HandleAfkCommand(TwitchChatMessage chatMessage)
+    private bool HandleAfkCommand(TwitchChatMessage chatMessage)
     {
-        foreach (AfkCommandType type in AfkCommandTypes)
+        foreach (AfkCommandType type in _afkCommandTypes)
         {
             foreach (string alias in AppSettings.CommandList[type].Alias)
             {
@@ -77,18 +69,20 @@ public class CommandHandler : Handler
 
                 if (pattern.IsMatch(chatMessage.Message))
                 {
-                    if (CooldownController.IsOnAfkCooldown(chatMessage.UserId))
+                    if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
                     {
-                        return;
+                        return false;
                     }
 
-                    AfkCommandHandler.Handle(chatMessage, type);
-                    CooldownController.AddAfkCooldown(chatMessage.UserId);
+                    _afkCommandHandler.Handle(chatMessage, type);
+                    _cooldownController.AddAfkCooldown(chatMessage.UserId);
                     _twitchBot.CommandCount++;
-                    return;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     /// <summary>

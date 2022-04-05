@@ -13,7 +13,7 @@ public class CommandList
     public List<AfkCommand> AfkCommands { get; set; }
 
     [JsonIgnore]
-    public List<string> AfkCommandAliases
+    public IEnumerable<string> AfkCommandAliases
     {
         get
         {
@@ -30,7 +30,7 @@ public class CommandList
     }
 
     [JsonIgnore]
-    public List<string> CommandAliases
+    public IEnumerable<string> CommandAliases
     {
         get
         {
@@ -47,7 +47,7 @@ public class CommandList
     }
 
     [JsonIgnore]
-    public List<string> AllAliases
+    public IEnumerable<string> AllAliases
     {
         get
         {
@@ -69,11 +69,11 @@ public class CommandList
     public Command this[CommandType type] => Commands.FirstOrDefault(cmd => string.Equals(cmd.Name, type.ToString(), StringComparison.CurrentCultureIgnoreCase));
 
     [JsonIgnore]
-    private List<string> _afkCommandAliases;
+    private IEnumerable<string> _afkCommandAliases;
     [JsonIgnore]
-    private List<string> _commandAliases;
+    private IEnumerable<string> _commandAliases;
     [JsonIgnore]
-    private List<string> _allAliases;
+    private IEnumerable<string> _allAliases;
 
     public string GetCommandClassName(CommandType type)
     {

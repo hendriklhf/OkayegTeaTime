@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Jsons.CommandData;
@@ -12,15 +11,18 @@ namespace OkayegTeaTime.Tests;
 [TestClass]
 public class CommandTests
 {
+    private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
+    private readonly AfkCommandType[] _afkTypes = Enum.GetValues<AfkCommandType>();
+
     [TestMethod]
     public void CommandCompletenessTestFromEnum()
     {
         JsonController.Initialize();
-        ((CommandType[])Enum.GetValues(typeof(CommandType))).ForEach(type =>
+        foreach (CommandType type in _commandTypes)
         {
             JCommand command = AppSettings.CommandList[type];
             Assert.IsNotNull(command);
-        });
+        }
     }
 
     [TestMethod]
@@ -29,7 +31,7 @@ public class CommandTests
         JsonController.Initialize();
         AppSettings.CommandList.Commands.ForEach(cmd =>
         {
-            CommandType type = ((CommandType[])Enum.GetValues(typeof(CommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.Name.ToLower());
+            CommandType type = _commandTypes.SingleOrDefault(c => string.Equals(c.ToString(), cmd.Name, StringComparison.OrdinalIgnoreCase));
             Assert.IsNotNull(type);
         });
     }
@@ -38,11 +40,11 @@ public class CommandTests
     public void AfkCommandCompletenessTestFromEnum()
     {
         JsonController.Initialize();
-        ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).ForEach(type =>
+        foreach (AfkCommandType type in _afkTypes)
         {
             AfkCommand command = AppSettings.CommandList[type];
             Assert.IsNotNull(command);
-        });
+        }
     }
 
     [TestMethod]
@@ -51,7 +53,7 @@ public class CommandTests
         JsonController.Initialize();
         AppSettings.CommandList.AfkCommands.ForEach(cmd =>
         {
-            AfkCommandType type = ((AfkCommandType[])Enum.GetValues(typeof(AfkCommandType))).SingleOrDefault(c => c.ToString().ToLower() == cmd.Name);
+            AfkCommandType type = _afkTypes.SingleOrDefault(c => string.Equals(c.ToString(), cmd.Name, StringComparison.OrdinalIgnoreCase));
             Assert.IsNotNull(type);
         });
     }
