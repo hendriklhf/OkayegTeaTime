@@ -6,7 +6,6 @@ namespace OkayegTeaTime.Tools;
 public static class Program
 {
     private static readonly Regex _publisherPattern = NewRegex(@"^publish(er)?");
-    private static readonly Regex _formatterPattern = NewRegex(@"^format(ter)?");
     private static readonly Regex _readmeGeneratorPattern = NewRegex(@"^readme");
 
     private static void Main(string[] args)
@@ -16,11 +15,6 @@ public static class Program
         {
             Publisher publisher = new(args);
             publisher.Publish();
-        }
-        else if (_formatterPattern.IsMatch(argsStr))
-        {
-            Formatter formatter = new();
-            formatter.FormatFiles();
         }
         else if (_readmeGeneratorPattern.IsMatch(argsStr))
         {
