@@ -1,4 +1,5 @@
 ﻿using HLE.Time;
+using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Twitch.Commands.Enums;
 
 namespace OkayegTeaTime.Twitch.Bot.Cooldown;
@@ -11,11 +12,11 @@ public class Cooldown
 
     public long Time { get; }
 
-    public Cooldown(int userId, CommandType type)
+    public Cooldown(int userId, Command cmd, CommandType type)
     {
         UserId = userId;
         Type = type;
-        Time = TimeHelper.Now() + AppSettings.CommandList[type].Cooldown;
+        Time = TimeHelper.Now() + cmd.Cooldown;
     }
 
     public override bool Equals(object? obj)

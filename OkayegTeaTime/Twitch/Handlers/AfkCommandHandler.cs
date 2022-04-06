@@ -1,6 +1,7 @@
 ﻿using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Commands.Enums;
@@ -38,7 +39,8 @@ public class AfkCommandHandler
         user.AfkTime = TimeHelper.Now();
         user.IsAfk = true;
 
-        AfkMessage afkMessage = new(chatMessage.UserId);
+        AfkCommand cmd = _twitchBot.CommandController[type];
+        AfkMessage afkMessage = new(chatMessage.UserId, cmd);
         if (afkMessage.GoingAway is null)
         {
             return;

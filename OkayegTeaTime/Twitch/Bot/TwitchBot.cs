@@ -45,6 +45,8 @@ public class TwitchBot
 
     public EmoteController EmoteController { get; } = new();
 
+    public CommandController CommandController { get; } = new();
+
     public Restarter Restarter { get; } = new(new()
     {
         new(4, 0),
@@ -223,7 +225,7 @@ public class TwitchBot
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
-        ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.RemoveChatterinoChar().TrimAll()}");
+        ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
         MessageHandler?.CheckForPajaAlert(e.ChatMessage);
         MessageHandler?.Handle(new TwitchChatMessage(e.ChatMessage));
     }
@@ -301,7 +303,6 @@ public class TwitchBot
     {
         Bot.Timers.GetTimer(new Second().Milliseconds)!.Elapsed += OnTimer1000!;
         Bot.Timers.GetTimer(new Second(30).Milliseconds)!.Elapsed += OnTimer30000!;
-        Bot.Timers.GetTimer(new Minute().Milliseconds)!.Elapsed += OnTimer60000!;
         Bot.Timers.GetTimer(new Day(10).Milliseconds)!.Elapsed += OnTimer10Days!;
     }
 
@@ -313,11 +314,6 @@ public class TwitchBot
     private void OnTimer30000(object sender, ElapsedEventArgs e)
     {
         TimerFunctions.SetConsoleTitle(this);
-    }
-
-    private void OnTimer60000(object sender, ElapsedEventArgs e)
-    {
-        TimerFunctions.ReloadJsonFiles();
     }
 
     private void OnTimer10Days(object sender, ElapsedEventArgs e)

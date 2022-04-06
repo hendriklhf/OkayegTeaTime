@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Files.Jsons.Settings;
 
 #nullable disable
@@ -11,27 +10,25 @@ public static class AppSettings
 {
     public static string AssemblyName { get; } = Assembly.GetExecutingAssembly().GetName().Name;
 
-    public static string ChatterinoChar => JsonController.Settings.ChatterinoChar;
+    public static string ChatterinoChar => JsonController.GetSettings().ChatterinoChar;
 
-    public static CommandList CommandList => JsonController.CommandList;
+    public static DbConnection DbConnection => JsonController.GetSettings().DatabaseConnection;
 
-    public static DbConnection DbConnection => JsonController.Settings.DatabaseConnection;
+    public static string DebugChannel => JsonController.GetSettings().DebugChannel;
 
-    public static string DebugChannel => JsonController.Settings.DebugChannel;
+    public static Files.Jsons.Settings.Discord Discord => JsonController.GetSettings().Discord;
 
-    public static Files.Jsons.Settings.Discord Discord => JsonController.Settings.Discord;
+    public static string RepositoryUrl => JsonController.GetSettings().RepositoryUrl;
 
-    public static string RepositoryUrl => JsonController.Settings.RepositoryUrl;
+    public static string SecretOfflineChatChannel => JsonController.GetSettings().SecretOfflineChatChannel;
 
-    public static string SecretOfflineChatChannel => JsonController.Settings.SecretOfflineChatChannel;
+    public static List<string> SecretOfflineChatEmotes => JsonController.GetSettings().SecretOfflineChatEmotes;
 
-    public static List<string> SecretOfflineChatEmotes => JsonController.Settings.SecretOfflineChatEmotes;
+    public static Files.Jsons.Settings.Spotify Spotify => JsonController.GetSettings().Spotify;
 
-    public static Files.Jsons.Settings.Spotify Spotify => JsonController.Settings.Spotify;
+    public static Files.Jsons.Settings.Twitch Twitch => JsonController.GetSettings().Twitch;
 
-    public static Files.Jsons.Settings.Twitch Twitch => JsonController.Settings.Twitch;
-
-    public static UserLists UserLists => JsonController.Settings.UserLists;
+    public static UserLists UserLists => JsonController.GetSettings().UserLists;
 
     public const short AfkCooldown = 10000;
     public const string DefaultEmote = "Okayeg";

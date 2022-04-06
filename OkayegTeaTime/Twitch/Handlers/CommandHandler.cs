@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Twitch.Handlers;
 public class CommandHandler : Handler
 {
     private readonly AfkCommandHandler _afkCommandHandler;
-    private readonly CooldownController _cooldownController = new();
+    private readonly CooldownController _cooldownController;
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkCommandType[] _afkCommandTypes = Enum.GetValues<AfkCommandType>();
 
@@ -20,6 +20,7 @@ public class CommandHandler : Handler
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
+        _cooldownController = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
@@ -35,7 +36,7 @@ public class CommandHandler : Handler
     {
         foreach (CommandType type in _commandTypes)
         {
-            foreach (string alias in AppSettings.CommandList[type].Alias)
+            foreach (string alias in _twitchBot.CommandController[type].Alias)
             {
                 string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
@@ -62,7 +63,7 @@ public class CommandHandler : Handler
     {
         foreach (AfkCommandType type in _afkCommandTypes)
         {
-            foreach (string alias in AppSettings.CommandList[type].Alias)
+            foreach (string alias in _twitchBot.CommandController[type].Alias)
             {
                 string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
@@ -95,7 +96,7 @@ public class CommandHandler : Handler
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
     private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
-        string? commandClassName = AppSettings.CommandList.GetCommandClassName(type);
+        string? commandClassName = $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
 
         Type? commandClass = Type.GetType(commandClassName);
         if (commandClass is null)

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
-using OkayegTeaTime.Files;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Bot;
 
@@ -15,8 +14,6 @@ public static class Program
     {
         Console.Title = "OkayegTeaTime";
         Console.OutputEncoding = Encoding.UTF8;
-
-        JsonController.Initialize();
 
         TwitchBot twitchBot = args.Any() ? new(args) : new();
         twitchBot.Connect();

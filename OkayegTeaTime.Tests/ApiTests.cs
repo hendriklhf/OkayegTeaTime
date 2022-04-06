@@ -1,6 +1,5 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
 using OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
 using OkayegTeaTime.Files.Jsons.HttpRequests.SevenTv;
@@ -17,7 +16,6 @@ public class ApiTests
     [TestMethod]
     public void GetSevenTvEmotesTest()
     {
-        JsonController.Initialize();
         SevenTvEmote[] emotes = new EmoteController().GetSevenTvEmotes(_testChannel).ToArray();
         Assert.IsTrue(emotes.Any());
     }
@@ -25,7 +23,6 @@ public class ApiTests
     [TestMethod]
     public void GetBttvEmotesTest()
     {
-        JsonController.Initialize();
         BttvEmote[] emotes = new EmoteController().GetBttvEmotes(_testChannel).ToArray();
         Assert.IsTrue(emotes.Any());
     }
@@ -33,7 +30,6 @@ public class ApiTests
     [TestMethod]
     public void GetFfzEmotesTest()
     {
-        JsonController.Initialize();
         FfzEmote[] emotes = new EmoteController().GetFfzEmotes(_testChannel).ToArray();
         Assert.IsTrue(emotes.Any());
     }
@@ -41,7 +37,6 @@ public class ApiTests
     [TestMethod]
     public void GetSevenTvGlobalEmotes()
     {
-        JsonController.Initialize();
         SevenTvGlobalEmote[] emotes = new EmoteController().SevenTvGlobalEmotes.ToArray();
         Assert.IsTrue(emotes.Any());
     }
@@ -50,7 +45,6 @@ public class ApiTests
     [TestMethod]
     public void GetBttvGlobalEmotesTest()
     {
-        JsonController.Initialize();
         BttvEmote[] emotes = new EmoteController().BttvGlobalEmotes.ToArray();
         Assert.IsTrue(emotes.Any());
     }
@@ -58,7 +52,6 @@ public class ApiTests
     [TestMethod]
     public void GetFfzGlobalEmotesTest()
     {
-        JsonController.Initialize();
         FfzEmote[] emotes = new EmoteController().FfzGlobalEmotes.ToArray();
         Assert.IsTrue(emotes.Any());
     }

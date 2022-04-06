@@ -1,4 +1,6 @@
 ﻿using HLE.Time;
+using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Bot.Cooldown;
 using OkayegTeaTime.Twitch.Commands.Enums;
 
@@ -9,6 +11,13 @@ public class CooldownController
     public List<Cooldown> Cooldowns { get; } = new();
 
     public List<AfkCooldown> AfkCooldowns { get; } = new();
+
+    private readonly TwitchBot _twitchBot;
+
+    public CooldownController(TwitchBot twitchBot)
+    {
+        _twitchBot = twitchBot;
+    }
 
     public void AddCooldown(int userId, CommandType type)
     {
@@ -25,7 +34,8 @@ public class CooldownController
             Cooldowns.Remove(cooldown);
         }
 
-        Cooldowns.Add(new(userId, type));
+        Command cmd = _twitchBot.CommandController[type];
+        Cooldowns.Add(new(userId, cmd, type));
     }
 
     public void AddAfkCooldown(int userId)

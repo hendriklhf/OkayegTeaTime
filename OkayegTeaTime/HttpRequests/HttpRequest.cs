@@ -13,40 +13,44 @@ public static class HttpRequest
 {
     private static readonly string[] _chatRoles =
     {
-        "broadcaster", "vips", "moderators", "staff", "admins", "global_mods", "viewers"
+        "broadcaster",
+        "vips",
+        "moderators",
+        "staff",
+        "admins",
+        "global_mods",
+        "viewers"
     };
 
     public static int GetChatterCount(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
-        if (request.Data is null)
+        if (!request.IsValidJsonData)
         {
             return 0;
         }
 
-        return request.Data.Value.GetProperty("chatter_count").GetInt32();
+        return request.Data.GetProperty("chatter_count").GetInt32();
     }
 
     public static IEnumerable<Chatter> GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
         List<Chatter> result = new();
-        if (request.Data is null)
+        if (!request.IsValidJsonData)
         {
             return result;
         }
 
-        JsonElement chatters = request.Data.Value.GetProperty("chatters");
+        JsonElement chatters = request.Data.GetProperty("chatters");
         byte pIdx = 0;
         _chatRoles.ForEach(p =>
         {
             JsonElement chatterList = chatters.GetProperty(p);
             for (int i = 0; i < chatterList.GetArrayLength(); i++)
             {
-                result.Add(new(chatterList[i].GetString()!, (ChatRole)pIdx));
+                result.Add(new(chatterList[i].GetString()!, (ChatRole)pIdx++));
             }
-
-            pIdx++;
         });
         return result;
     }
@@ -54,7 +58,7 @@ public static class HttpRequest
     public static string GetMathResult(string expression)
     {
         HttpGet request = new($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
-        return request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetRawText() : request.Result ?? "api error";
+        return request.Result ?? "api error";
     }
 
     public static string GetCSharpOnlineCompilerResult(string input)
@@ -65,15 +69,14 @@ public static class HttpRequest
             return "HTTP encoding error";
         }
 
-        HttpPost request = new("https://dotnetfiddle.net/Home/Run",
-            new()
-            {
-                new("CodeBlock", encodedInput),
-                new("Compiler", "NetCore22"),
-                new("Language", "CSharp"),
-                new("ProjectType", "Console")
-            });
-        string? result = request.IsValidJsonData && request.Data is not null ? request.Data.Value.GetProperty("ConsoleOutput").GetString() : "compiler service error";
+        HttpPost request = new("https://dotnetfiddle.net/Home/Run", new[]
+        {
+            ("CodeBlock", encodedInput),
+            ("Compiler", "NetCore22"),
+            ("Language", "CSharp"),
+            ("ProjectType", "Console")
+        });
+        string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
             return result!.Length > 500 ? result[450..].NewLinesToSpaces() : result;
@@ -91,21 +94,20 @@ public static class HttpRequest
 
     public static string? GetGoLangOnlineCompilerResult(string code)
     {
-        HttpPost request = new("https://play.golang.org/compile",
-            new()
-            {
-                new("version", "2"),
-                new("body", GetGoLangOnlineCompilerTemplate(code)),
-                new("withVet", "true")
-            });
-        if (request.Data is null)
+        HttpPost request = new("https://play.golang.org/compile", new[]
+        {
+            ("version", "2"),
+            ("body", GetGoLangOnlineCompilerTemplate(code)),
+            ("withVet", "true")
+        });
+        if (!request.IsValidJsonData)
         {
             return null;
         }
 
-        string? error = request.Data.Value.GetProperty("Errors").GetString();
+        string? error = request.Data.GetProperty("Errors").GetString();
         bool hasError = !string.IsNullOrEmpty(error);
-        return hasError ? error : request.Data.Value.GetProperty("Events")[0].GetProperty("Message").GetString();
+        return hasError ? error : request.Data.GetProperty("Events")[0].GetProperty("Message").GetString();
     }
 
     private static string GetGoLangOnlineCompilerTemplate(string code)
@@ -115,17 +117,17 @@ public static class HttpRequest
 
     public static string GetCppOnlineCompilerResult(string code)
     {
-        HttpPost request = new("https://tpcg2.tutorialspoint.com/tpcg.php", new List<KeyValuePair<string, string>>
+        HttpPost request = new("https://tpcg2.tutorialspoint.com/tpcg.php", new[]
         {
-            new("lang", "cpp"),
-            new("device", string.Empty),
-            new("code", GetCppOnlineCompilerTemplate(code)),
-            new("stdinput", string.Empty),
-            new("ext", "cpp"),
-            new("compile", HttpUtility.HtmlEncode("g++ -o main *.cpp")),
-            new("execute", "main"),
-            new("mainfile", "main.cpp"),
-            new("uid", "968291")
+            ("lang", "cpp"),
+            ("device", string.Empty),
+            ("code", GetCppOnlineCompilerTemplate(code)),
+            ("stdinput", string.Empty),
+            ("ext", "cpp"),
+            ("compile", HttpUtility.HtmlEncode("g++ -o main *.cpp")),
+            ("execute", "main"),
+            ("mainfile", "main.cpp"),
+            ("uid", "968291")
         });
 
         if (request.Result is null)

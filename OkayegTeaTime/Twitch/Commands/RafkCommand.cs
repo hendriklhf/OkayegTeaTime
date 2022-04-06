@@ -1,5 +1,6 @@
 ﻿using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -22,6 +23,7 @@ public class RafkCommand : Command
         }
 
         user.IsAfk = true;
-        Response = new AfkMessage(user.Id).Resuming!;
+        AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
+        Response = new AfkMessage(user.Id, cmd).Resuming!;
     }
 }

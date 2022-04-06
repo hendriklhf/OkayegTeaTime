@@ -16,7 +16,7 @@ public class GachiCommand : Command
 
     public override void Handle()
     {
-        GachiSong? gachi = JsonController.GachiSongs.Random();
+        GachiSong? gachi = JsonController.GetGachiSongs().Random();
         if (gachi is null)
         {
             Response = $"couldn't find a song";

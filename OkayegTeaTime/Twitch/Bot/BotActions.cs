@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using HLE.Collections;
 using HLE.Time;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
 
@@ -11,7 +13,14 @@ public static class BotActions
 {
     public static void SendComingBack(this TwitchBot twitchBot, TwitchChatMessage chatMessage)
     {
-        string? afkMessage = new AfkMessage(chatMessage.UserId).ComingBack;
+        User? user = DbControl.Users[chatMessage.UserId];
+        if (user is null)
+        {
+            return;
+        }
+
+        AfkCommand cmd = twitchBot.CommandController[user.AfkType];
+        string? afkMessage = new AfkMessage(user.Id, cmd).ComingBack;
         if (afkMessage is null)
         {
             return;
@@ -43,6 +52,7 @@ public static class BotActions
                 }
             });
         }
+
         twitchBot.Send(chatMessage.Channel, builder.ToString());
     }
 
@@ -54,6 +64,7 @@ public static class BotActions
         {
             message += $": {reminder.Message}";
         }
+
         twitchBot.Send(reminder.Channel, message);
     }
 }

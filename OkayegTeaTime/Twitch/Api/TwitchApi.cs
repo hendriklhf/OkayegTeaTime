@@ -32,20 +32,23 @@ public static class TwitchApi
             Logger.Log(ex);
             throw ex;
         }
+
         _api.Settings.AccessToken = accessToken;
     }
 
     private static string? GetAccessToken()
     {
-        HttpPost request = new("https://id.twitch.tv/oauth2/token",
-            new()
-            {
-                new("client_id", _api.Settings.ClientId),
-                new("client_secret", _api.Settings.Secret),
-                new("grant_type", "client_credentials")
-            });
+        HttpPost request = new("https://id.twitch.tv/oauth2/token", new[]
+        {
+            ("client_id", _api.Settings.ClientId), ("client_secret", _api.Settings.Secret), ("grant_type", "client_credentials")
+        });
 
-        return request.Data?.GetProperty("access_token").GetString();
+        if (!request.IsValidJsonData)
+        {
+            return null;
+        }
+
+        return request.Data.GetProperty("access_token").GetString();
     }
 
     public static void RefreshAccessToken()
@@ -55,7 +58,10 @@ public static class TwitchApi
 
     public static User? GetUser(string username)
     {
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new() { username }).Result;
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new()
+        {
+            username
+        }).Result;
         return response.Users.FirstOrDefault();
     }
 
@@ -68,7 +74,10 @@ public static class TwitchApi
 
     public static User? GetUser(int id)
     {
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new() { id.ToString() }).Result;
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new()
+        {
+            id.ToString()
+        }).Result;
         return response.Users.FirstOrDefault();
     }
 
@@ -110,13 +119,19 @@ public static class TwitchApi
 
     public static Stream? GetStream(string channel)
     {
-        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new List<string> { channel }).Result;
+        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new List<string>
+        {
+            channel
+        }).Result;
         return response.Streams.FirstOrDefault();
     }
 
     public static Stream? GetStream(int id)
     {
-        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string> { id.ToString() }).Result;
+        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string>
+        {
+            id.ToString()
+        }).Result;
         return response.Streams.FirstOrDefault();
     }
 

@@ -4,23 +4,46 @@ using OkayegTeaTime.Files.Jsons;
 using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Files.Jsons.Settings;
 
-#nullable disable
-
 namespace OkayegTeaTime.Files;
 
 public static class JsonController
 {
-    public static Settings Settings { get; private set; }
+    private static Settings? _settings;
+    private static CommandList? _commandList;
+    private static IEnumerable<GachiSong>? _gachiSongs;
 
-    public static CommandList CommandList { get; private set; }
-
-    public static List<GachiSong> GachiSongs { get; } = JsonSerializer.Deserialize<List<GachiSong>>(FileController.GachiSongs);
-
-    public static void Initialize()
+    public static Settings GetSettings()
     {
+        if (_settings is not null)
+        {
+            return _settings;
+        }
+
         string settingsPath = FileLocator.Find(AppSettings.SettingsFileName);
         ConsoleOut($"Found Settings file at: {settingsPath}");
-        Settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(settingsPath));
-        CommandList = JsonSerializer.Deserialize<CommandList>(FileController.Commands);
+        _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(settingsPath));
+        return _settings ?? throw new ArgumentNullException(nameof(_settings));
+    }
+
+    public static CommandList GetCommandList()
+    {
+        if (_commandList is not null)
+        {
+            return _commandList;
+        }
+
+        _commandList = JsonSerializer.Deserialize<CommandList>(FileController.Commands);
+        return _commandList ?? throw new ArgumentNullException(nameof(_commandList));
+    }
+
+    public static IEnumerable<GachiSong> GetGachiSongs()
+    {
+        if (_gachiSongs is not null)
+        {
+            return _gachiSongs;
+        }
+
+        _gachiSongs = JsonSerializer.Deserialize<GachiSong[]>(FileController.GachiSongs);
+        return _gachiSongs ?? throw new ArgumentNullException(nameof(_gachiSongs));
     }
 }

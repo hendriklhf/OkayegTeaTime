@@ -1,5 +1,4 @@
 ﻿using HLE.Strings;
-using OkayegTeaTime.Database;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 using TwitchLib = TwitchLib.Client.Models;
@@ -48,20 +47,9 @@ public class TwitchChatMessage : TwitchMessage
 
     public long TmiSentTs { get; }
 
-    public bool IsAfkCommmand => AppSettings.CommandList.AfkCommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
-
-    public bool IsAnyCommand => AppSettings.CommandList.AllAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
-
-    public bool IsCommand => AppSettings.CommandList.CommandAliases.Any(alias => CommandPattern(alias).IsMatch(Message));
-
     public bool IsIgnoredUser => AppSettings.UserLists.IgnoredUsers.Contains(UserId);
 
     public bool IsBotModerator => AppSettings.UserLists.Moderators.Contains(UserId);
-
-    private Regex CommandPattern(string alias)
-    {
-        return PatternCreator.Create(alias, DbControl.Channels[ChannelId]?.Prefix);
-    }
 
     public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
         : base(chatMessage)

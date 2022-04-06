@@ -123,15 +123,14 @@ public class EmoteController
                 return null;
             }
 
-            HttpPost request = new("https://api.7tv.app/v2/gql",
-                new()
-                {
-                    new("query", "{user(id: \"" + channelName + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
-                                 "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
-                                 "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
-                                 "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
-                    new("variables", "{}")
-                });
+            HttpPost request = new("https://api.7tv.app/v2/gql", new[]
+            {
+                ("query", "{user(id: \"" + channelName + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
+                          "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
+                          "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
+                          "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
+                ("variables", "{}")
+            });
 
             if (request.Result is null)
             {
@@ -149,19 +148,18 @@ public class EmoteController
 
     private IEnumerable<SevenTvGlobalEmote> GetSevenTvGlobalEmotes()
     {
-        HttpPost request = new("https://api.7tv.app/v2/gql",
-            new()
+        HttpPost request = new("https://api.7tv.app/v2/gql", new[]
             {
-                new("query",
-                    "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) {id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
+                ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) " +
+                          "{id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
             });
 
-        if (request.Data is null)
+        if (!request.IsValidJsonData)
         {
             return Array.Empty<SevenTvGlobalEmote>();
         }
 
-        string result = request.Data.Value.GetProperty("data").GetProperty("search_emotes").GetRawText();
+        string result = request.Data.GetProperty("data").GetProperty("search_emotes").GetRawText();
         return JsonSerializer.Deserialize<List<SevenTvGlobalEmote>>(result) ?? new List<SevenTvGlobalEmote>();
     }
 
@@ -201,12 +199,12 @@ public class EmoteController
             }
 
             HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channelName}");
-            if (request.Data is null || request.Result is null)
+            if (!request.IsValidJsonData || request.Result is null)
             {
                 return null;
             }
 
-            int setId = request.Data.Value.GetProperty("room").GetProperty("set").GetInt32();
+            int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
             string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
             return JsonSerializer.Deserialize<FfzRequest>(result);
         }
@@ -220,12 +218,12 @@ public class EmoteController
     private IEnumerable<FfzEmote> GetFfzGlobalEmotes()
     {
         HttpGet request = new("https://api.frankerfacez.com/v1/set/global");
-        if (request.Data is null || request.Result is null)
+        if (!request.IsValidJsonData || request.Result is null)
         {
             return Array.Empty<FfzEmote>();
         }
 
-        int setId = request.Data.Value.GetProperty("default_sets")[0].GetInt32();
+        int setId = request.Data.GetProperty("default_sets")[0].GetInt32();
         string result = request.Result.Replace($"\"{setId}\":", $"\"{FfzSetIdReplacement}\":");
         JsonElement json = JsonSerializer.Deserialize<JsonElement>(result);
         string firstSet = json.GetProperty("sets").GetProperty(FfzSetIdReplacement).GetProperty("emoticons").GetRawText();

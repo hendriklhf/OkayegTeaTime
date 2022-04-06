@@ -16,27 +16,26 @@ public class AfkMessage
 
     public string? Resuming { get; private set; }
 
-    public AfkMessage(int userId, string? username = null)
+    public AfkMessage(int userId, AfkCommand cmd)
     {
-        User = DbControl.Users.GetUser(userId, username);
-        CreateMessages();
+        User = DbControl.Users[userId];
+        CreateMessages(cmd);
     }
 
-    private void CreateMessages()
+    private void CreateMessages(AfkCommand cmd)
     {
         if (User is null)
         {
             return;
         }
 
-        AfkCommand afkCommand = AppSettings.CommandList[User.AfkType];
-        ComingBack = afkCommand.ComingBack.Replace("{username}", User.Username)
+        ComingBack = cmd.ComingBack.Replace("{username}", User.Username)
             .Replace("{time}", $"{TimeHelper.GetUnixDifference(User.AfkTime)} ago")
             .Replace("{message}", User.AfkMessage);
-        ComingBack = string.IsNullOrEmpty(User.AfkMessage) ? ComingBack.Remove(":").ReplaceSpaces() : ComingBack;
+        ComingBack = string.IsNullOrEmpty(User.AfkMessage) ? ComingBack.Remove(":").TrimAll() : ComingBack;
 
-        GoingAway = afkCommand.GoingAway.Replace("{username}", User.Username);
+        GoingAway = cmd.GoingAway.Replace("{username}", User.Username);
 
-        Resuming = afkCommand.Resuming.Replace("{username}", User.Username);
+        Resuming = cmd.Resuming.Replace("{username}", User.Username);
     }
 }

@@ -16,7 +16,7 @@ public class CodeCommand : Command
         Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            JCommand? command = AppSettings.CommandList.FindCommand(ChatMessage.LowerSplit[1]);
+            JCommand? command = _twitchBot.CommandController.FindCommand(ChatMessage.LowerSplit[1]);
             if (command is null)
             {
                 Response = $"{ChatMessage.Username}, no matching command found";
