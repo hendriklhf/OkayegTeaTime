@@ -3,7 +3,7 @@ using System.Web;
 using HLE.Collections;
 using HLE.HttpRequests;
 using HLE.Strings;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Models.Enums;
 
@@ -89,7 +89,7 @@ public static class HttpRequest
 
     private static string? GetCSharpOnlineCompilerTemplate(string code)
     {
-        return FileController.OnlineCompilerTemplateCSharp?.Replace("{code}", code);
+        return ResourceController.CompilerTemplateCSharp?.Replace("{code}", code);
     }
 
     public static string? GetGoLangOnlineCompilerResult(string code)
@@ -112,7 +112,7 @@ public static class HttpRequest
 
     private static string GetGoLangOnlineCompilerTemplate(string code)
     {
-        return FileController.OnlineCompilerTemplateGo.Replace("{code}", code);
+        return ResourceController.CompilerTemplateGo.Replace("{code}", code);
     }
 
     public static string GetCppOnlineCompilerResult(string code)
@@ -148,6 +148,6 @@ public static class HttpRequest
 
     private static string GetCppOnlineCompilerTemplate(string code)
     {
-        return FileController.OnlineCompilerTemplateCpp.Replace("{code}", code);
+        return ResourceController.CompilerTemplateCpp.Replace("{code}", code);
     }
 }

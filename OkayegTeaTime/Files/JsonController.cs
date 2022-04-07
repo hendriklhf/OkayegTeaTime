@@ -3,6 +3,7 @@ using System.Text.Json;
 using OkayegTeaTime.Files.Jsons;
 using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Files.Jsons.Settings;
+using OkayegTeaTime.Resources;
 
 namespace OkayegTeaTime.Files;
 
@@ -32,7 +33,7 @@ public static class JsonController
             return _commandList;
         }
 
-        _commandList = JsonSerializer.Deserialize<CommandList>(FileController.Commands);
+        _commandList = JsonSerializer.Deserialize<CommandList>(ResourceController.Commands);
         return _commandList ?? throw new ArgumentNullException(nameof(_commandList));
     }
 
@@ -43,7 +44,7 @@ public static class JsonController
             return _gachiSongs;
         }
 
-        _gachiSongs = JsonSerializer.Deserialize<GachiSong[]>(FileController.GachiSongs);
+        _gachiSongs = JsonSerializer.Deserialize<GachiSong[]>(ResourceController.GachiSongs);
         return _gachiSongs ?? throw new ArgumentNullException(nameof(_gachiSongs));
     }
 }

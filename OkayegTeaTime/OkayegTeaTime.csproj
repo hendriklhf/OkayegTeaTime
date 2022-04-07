@@ -8,8 +8,8 @@
         <SignAssembly>false</SignAssembly>
         <Platforms>AnyCPU;x86;ARM64;ARM32</Platforms>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <ApplicationIcon>Resources\Okayeg.ico</ApplicationIcon>
-        <PackageIcon>Resources\Okayeg.ico</PackageIcon>
+        <ApplicationIcon>..\OkayegTeaTime.Resources\Okayeg.ico</ApplicationIcon>
+        <PackageIcon>..\OkayegTeaTime.Resources\Okayeg.ico</PackageIcon>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <Description>A Twitch bot.</Description>
         <NeutralLanguage>en</NeutralLanguage>
@@ -21,22 +21,17 @@
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DebugSymbols>false</DebugSymbols>
+      <DebugType>none</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugType>none</DebugType>
+    </PropertyGroup>
+
     <ItemGroup>
         <Compile Remove="Resources\OnlineCompilerTemplate.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Include="Resources\Commands.json" />
-        <EmbeddedResource Include="Resources\GachiSongs.json" />
-        <EmbeddedResource Include="Resources\OnlineCompilerTemplate.cpp" />
-        <EmbeddedResource Include="Resources\OnlineCompilerTemplate.cs" />
-        <EmbeddedResource Include="Resources\OnlineCompilerTemplate.go" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="Resources\Settings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -58,6 +53,10 @@
         <PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.10" />
         <PackageReference Include="SpotifyAPI.Web" Version="6.2.2" />
         <PackageReference Include="TwitchLib" Version="3.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj" />
     </ItemGroup>
 
 </Project>

@@ -37,7 +37,7 @@ public class Publisher
         List<string> runtimes = GetRuntimes();
         if (!runtimes.Any())
         {
-            Console.WriteLine($"The provided runtimes aren't matching any available runtime identifier.");
+            Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
             Environment.Exit(1);
             return;
         }
@@ -45,9 +45,9 @@ public class Publisher
         foreach (string r in runtimes)
         {
             Process cmd = new();
-            cmd.StartInfo = new("dotnet", $"publish -r {r} -c Release -o ./Build/{r}/ -p:PublishSingleFile=true --self-contained true ./OkayegTeaTime/OkayegTeaTime.csproj");
-            cmd.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
-            cmd.ErrorDataReceived += (sender, e) => Console.WriteLine(e.Data);
+            cmd.StartInfo = new("dotnet", $"publish -r {r} -c Release -o ./Build/{r}/ --self-contained ./OkayegTeaTime/OkayegTeaTime.csproj");
+            cmd.OutputDataReceived += (_, e) => Console.WriteLine(e.Data);
+            cmd.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
             cmd.Start();
             cmd.WaitForExit();
         }
