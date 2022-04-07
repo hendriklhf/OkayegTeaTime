@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
@@ -11,20 +12,12 @@ public class Publisher
 {
     public string[] Args { get; }
 
-    private static readonly string[] _runtimes =
+    private readonly Dictionary<string, Regex> _regexDic = new(new KeyValuePair<string, Regex>[]
     {
-        "win-x64",
-        "linux-arm",
-        "linux-x64",
-        "osx-x64"
-    };
-
-    private static readonly Dictionary<string, Regex> _regexDic = new(new KeyValuePair<string, Regex>[]
-    {
-        new(_runtimes[0], NewRegex("^win(dows)?(-?x?64)?$")),
-        new(_runtimes[1], NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
-        new(_runtimes[2], NewRegex("^linux(-?x?64)?$")),
-        new(_runtimes[3], NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
+        new("win-x64", NewRegex("^win(dows)?(-?x?64)?$")),
+        new("linux-arm", NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
+        new("linux-x64", NewRegex("^linux(-?x?64)?$")),
+        new("osx-x64", NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
     });
 
     public Publisher(string[] args)
@@ -45,7 +38,9 @@ public class Publisher
         foreach (string r in runtimes)
         {
             Process cmd = new();
-            cmd.StartInfo = new("dotnet", $"publish -r {r} -c Release -o ./Build/{r}/ --self-contained ./OkayegTeaTime/OkayegTeaTime.csproj");
+            string outputDir = $"./Build/{r}/";
+            ClearOutputDir(outputDir);
+            cmd.StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime/OkayegTeaTime.csproj");
             cmd.OutputDataReceived += (_, e) => Console.WriteLine(e.Data);
             cmd.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
             cmd.Start();
@@ -64,5 +59,15 @@ public class Publisher
             }
         });
         return result;
+    }
+
+    private void ClearOutputDir(string dir)
+    {
+        if (!Directory.Exists(dir))
+        {
+            return;
+        }
+
+        Directory.Delete(dir, true);
     }
 }
