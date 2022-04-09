@@ -20,7 +20,7 @@ public static class Program
 
         while (_running)
         {
-            Task.Run(async () => await Task.Delay(1000)).Wait();
+            Task.Delay(1000).Wait();
         }
     }
 

@@ -6,7 +6,7 @@ namespace OkayegTeaTime.Logging;
 
 public static class Logger
 {
-    private const string _logsPath = "./Resources/Logs.log";
+    private const string _logsPath = "./Logs.log";
 
     public static void Log(string text)
     {
