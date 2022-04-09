@@ -129,8 +129,9 @@ public class TwitchBot
         string emote = DbControl.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
         if (!MessageHelper.IsMessageTooLong(message, channel))
         {
-            message = message == LastMessagesDictionary[channel] ? $"{message} {AppSettings.ChatterinoChar}" : message;
-            message = $"{emote} {message}";
+            message = message == LastMessagesDictionary[channel]
+                ? string.Join(' ', emote, message, AppSettings.ChatterinoChar)
+                : string.Join(' ', emote, message);
             TwitchClient.SendMessage(channel, message);
             LastMessagesDictionary[channel] = message;
         }
