@@ -22,6 +22,7 @@ public class SkipCommand : Command
             if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
             {
                 Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+                return;
             }
 
             Task.Run(async () =>
