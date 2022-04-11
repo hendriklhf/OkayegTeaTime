@@ -10,7 +10,7 @@ public static class AppSettings
 {
     public static string AssemblyName { get; } = Assembly.GetExecutingAssembly().GetName().Name;
 
-    public static string ChatterinoChar => JsonController.GetSettings().ChatterinoChar;
+    public static string ChatterinoChar => "\uDB40\uDC00";
 
     public static DbConnection DbConnection => JsonController.GetSettings().DatabaseConnection;
 

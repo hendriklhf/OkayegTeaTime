@@ -21,7 +21,7 @@ public class ChatMessage
     public ChatMessage(TwitchLibMessage twitchLibMessage)
     {
         DisplayName = twitchLibMessage.DisplayName;
-        Message = GetMessage(twitchLibMessage).TrimAll();
+        Message = GetMessage(twitchLibMessage).Remove(AppSettings.ChatterinoChar).TrimAll();
         LowerSplit = GetLowerSplit();
         Split = GetSplit();
         Username = twitchLibMessage.Username;

@@ -16,8 +16,6 @@ public class Settings
 
     public string RepositoryUrl { get; set; }
 
-    public string ChatterinoChar { get; set; }
-
     public string DebugChannel { get; set; }
 
     public string SecretOfflineChatChannel { get; set; }

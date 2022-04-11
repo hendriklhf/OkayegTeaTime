@@ -39,6 +39,8 @@ public class TwitchChatMessage : TwitchMessage
 
     public bool IsVip { get; }
 
+    public new string Message { get; }
+
     public Noisy Noisy { get; }
 
     public int ChannelId { get; }
@@ -70,6 +72,7 @@ public class TwitchChatMessage : TwitchMessage
         IsStaff = chatMessage.IsStaff;
         IsSubscriber = chatMessage.IsSubscriber;
         IsVip = chatMessage.IsVip;
+        Message = chatMessage.Message.Remove(AppSettings.ChatterinoChar).TrimAll();
         Noisy = chatMessage.Noisy;
         ChannelId = chatMessage.RoomId.ToInt();
         SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
