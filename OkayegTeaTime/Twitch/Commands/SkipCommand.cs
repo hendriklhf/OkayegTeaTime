@@ -16,46 +16,42 @@ public class SkipCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix);
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
         {
-            if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+            Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+            return;
+        }
+
+        Task.Run(async () =>
+        {
+            SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Channel];
+            if (user is null)
             {
-                Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+                Response = $"{ChatMessage.Username}, you can't skip songs of {ChatMessage.Channel.Antiping()}, they have to register first";
                 return;
             }
 
-            Task.Run(async () =>
+            try
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Channel];
-                if (user is null)
-                {
-                    Response = $"{ChatMessage.Username}, you can't skip songs of {ChatMessage.Channel.Antiping()}, they have to register first";
-                    return;
-                }
+                await user.Skip();
+                Response = $"{ChatMessage.Username}, skipped to the next song in {ChatMessage.Channel.Antiping()}'s queue";
+            }
+            catch (SpotifyException ex)
+            {
+                Response = $"{ChatMessage.Username}, {ex.Message}";
+            }
 
+            foreach (SpotifyUser u in user.ListeningUsers)
+            {
                 try
                 {
-                    await user.Skip();
-                    Response = $"{ChatMessage.Username}, skipped to the next song in {ChatMessage.Channel.Antiping()}'s queue";
+                    await u.ListenAlongWith(user);
                 }
-                catch (SpotifyException ex)
+                catch (SpotifyException)
                 {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                    user.ListeningUsers.Remove(u);
                 }
-
-                foreach (SpotifyUser u in user.ListeningUsers)
-                {
-                    try
-                    {
-                        await u.ListenAlongWith(user);
-                    }
-                    catch (SpotifyException)
-                    {
-                        user.ListeningUsers.Remove(u);
-                    }
-                }
-            }).Wait();
-        }
+            }
+        }).Wait();
     }
 }
