@@ -63,11 +63,7 @@ public static class HttpRequest
 
     public static string GetCSharpOnlineCompilerResult(string input)
     {
-        string? encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
-        if (encodedInput is null)
-        {
-            return "HTTP encoding error";
-        }
+        string encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
 
         HttpPost request = new("https://dotnetfiddle.net/Home/Run", new[]
         {
@@ -79,17 +75,15 @@ public static class HttpRequest
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
-            return result!.Length > 500 ? result[..450].NewLinesToSpaces() : result;
+            return (result!.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
         }
-        else
-        {
-            return "compiled successfully";
-        }
+
+        return "compiled successfully";
     }
 
-    private static string? GetCSharpOnlineCompilerTemplate(string code)
+    private static string GetCSharpOnlineCompilerTemplate(string code)
     {
-        return ResourceController.CompilerTemplateCSharp?.Replace("{code}", code);
+        return ResourceController.CompilerTemplateCSharp.Replace("{code}", code);
     }
 
     public static string? GetGoLangOnlineCompilerResult(string code)
@@ -105,9 +99,10 @@ public static class HttpRequest
             return null;
         }
 
-        string? error = request.Data.GetProperty("Errors").GetString();
+        string error = request.Data.GetProperty("Errors").GetString()!;
         bool hasError = !string.IsNullOrEmpty(error);
-        return hasError ? error : request.Data.GetProperty("Events")[0].GetProperty("Message").GetString();
+        string result = hasError ? error : request.Data.GetProperty("Events")[0].GetProperty("Message").GetString()!;
+        return (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
     }
 
     private static string GetGoLangOnlineCompilerTemplate(string code)
@@ -140,10 +135,8 @@ public static class HttpRequest
         {
             return "compiled successfully";
         }
-        else
-        {
-            return result.Length > 500 ? $"{result[450..]}..." : result;
-        }
+
+        return (result.Length > 450 ? $"{result[450..]}..." : result).NewLinesToSpaces();
     }
 
     private static string GetCppOnlineCompilerTemplate(string code)

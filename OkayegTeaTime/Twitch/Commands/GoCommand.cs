@@ -16,9 +16,7 @@ public class GoCommand : Command
         Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-
             Response = $"{ChatMessage.Username}, {HttpRequest.GetGoLangOnlineCompilerResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..])}";
-            return;
         }
     }
 }
