@@ -79,7 +79,7 @@ public static class HttpRequest
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
         {
-            return result!.Length > 500 ? result[450..].NewLinesToSpaces() : result;
+            return result!.Length > 500 ? result[..450].NewLinesToSpaces() : result;
         }
         else
         {
