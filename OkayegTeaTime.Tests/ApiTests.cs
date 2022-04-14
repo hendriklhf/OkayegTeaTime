@@ -74,7 +74,7 @@ public class ApiTests
     public void GetGoLangOnlineCompilerResultTest()
     {
         string result = HttpRequest.GetGoLangOnlineCompilerResult("fmt.Println(\"test\");");
-        Assert.AreEqual("test\n", result);
+        Assert.AreEqual("test ", result);
     }
 
     [TestMethod]

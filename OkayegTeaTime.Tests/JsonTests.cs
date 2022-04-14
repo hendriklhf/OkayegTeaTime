@@ -10,10 +10,10 @@ public class JsonTests
     [TestMethod]
     public void JsonSettingsContentTest()
     {
-        Assert.IsTrue(AppSettings.UserLists.Moderators is not null);
-        Assert.IsTrue(AppSettings.UserLists.Owners is not null);
-        Assert.IsTrue(AppSettings.UserLists.SecretUsers is not null);
-        Assert.IsTrue(AppSettings.UserLists.IgnoredUsers is not null);
+        Assert.IsNotNull(AppSettings.UserLists.Moderators);
+        Assert.IsNotNull(AppSettings.UserLists.Owners);
+        Assert.IsNotNull(AppSettings.UserLists.SecretUsers);
+        Assert.IsNotNull(AppSettings.UserLists.IgnoredUsers);
     }
 
     [TestMethod]
