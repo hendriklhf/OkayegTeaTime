@@ -59,11 +59,12 @@ public class SongRequestCommand : Command
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                     }
                     else if (item is SpotifyEpisode episode)
                     {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
+                                   $"{target.Username.Antiping()}";
                     }
                 }
                 catch (SpotifyException ex)
@@ -116,11 +117,12 @@ public class SongRequestCommand : Command
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                     }
                     else if (item is SpotifyEpisode episode)
                     {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
+                                   $"{target.Username.Antiping()}";
                     }
                 }
                 catch (SpotifyException ex)
@@ -136,8 +138,8 @@ public class SongRequestCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.LowerSplit[1]];
-                if (user is null)
+                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.LowerSplit[1]];
+                if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[1].Antiping()} isn't registered yet, they have to register first";
                     return;
@@ -145,15 +147,16 @@ public class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyItem item = await user.AddToQueue(ChatMessage.Split[2]);
+                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[2]);
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                     }
                     else if (item is SpotifyEpisode episode)
                     {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
+                                   $"{target.Username.Antiping()}";
                     }
                 }
                 catch (SpotifyException ex)
@@ -206,11 +209,12 @@ public class SongRequestCommand : Command
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                     }
                     else if (item is SpotifyEpisode episode)
                     {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
+                                   $"{target.Username.Antiping()}";
                     }
                 }
                 catch (SpotifyException ex)
@@ -226,8 +230,8 @@ public class SongRequestCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Channel];
-                if (user is null)
+                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.Channel];
+                if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
                     return;
@@ -235,15 +239,16 @@ public class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyItem item = await user.AddToQueue(ChatMessage.Split[1]);
+                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[1]);
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {track.Uri}";
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                     }
                     else if (item is SpotifyEpisode episode)
                     {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {episode.Uri}";
+                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
+                                   $"{target.Username.Antiping()}";
                     }
                 }
                 catch (SpotifyException ex)

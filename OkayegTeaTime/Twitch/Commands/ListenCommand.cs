@@ -75,19 +75,21 @@ public class ListenCommand : Command
                     return;
                 }
 
-                if (item is SpotifyTrack track)
+                switch (item)
                 {
-                    string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                    Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
-                }
-                else if (item is SpotifyEpisode episode)
-                {
-                    Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing " +
-                               $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
-                }
-                else
-                {
-                    Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing an unknown item type monkaS";
+                    case SpotifyTrack track:
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
+                        break;
+                    }
+                    case SpotifyEpisode episode:
+                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing " +
+                                   $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        break;
+                    default:
+                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing an unknown item type monkaS";
+                        break;
                 }
             }).Wait();
             return;
@@ -123,20 +125,22 @@ public class ListenCommand : Command
                     return;
                 }
 
-                if (item is SpotifyTrack track)
+                switch (item)
                 {
-                    string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                    Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
-                               $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
-                }
-                else if (item is SpotifyEpisode episode)
-                {
-                    Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
-                               $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
-                }
-                else
-                {
-                    Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} and playing an unknown item type monkaS";
+                    case SpotifyTrack track:
+                    {
+                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
+                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
+                                   $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
+                        break;
+                    }
+                    case SpotifyEpisode episode:
+                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
+                                   $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        break;
+                    default:
+                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} and playing an unknown item type monkaS";
+                        break;
                 }
             }).Wait();
         }
