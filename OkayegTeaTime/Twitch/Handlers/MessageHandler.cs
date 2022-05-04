@@ -1,37 +1,31 @@
-﻿using HLE.Emojis;
-using HLE.Strings;
-using OkayegTeaTime.Database;
+﻿using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
-using TwitchLib = TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
 public class MessageHandler : Handler
 {
     private readonly CommandHandler _commandHandler;
+    private readonly PajaAlertHandler _pajaAlertHandler;
 
     private readonly LinkRecognizer _linkRecognizer = new();
 
-    private readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-
-    private const int _pajaAlertUserId = 82008718;
-    private const int _pajaChannelId = 11148817;
-    private const string _pajaAlertChannel = "pajlada";
-    private const string _pajaAlertEmote = "pajaStare";
-    private const string _pajaAlertMessage = $"/me {_pajaAlertEmote} {Emoji.RotatingLight} OBACHT";
 
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
     {
         _commandHandler = new(twitchBot);
+        _pajaAlertHandler = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
     {
+        _pajaAlertHandler.Handle(chatMessage);
+
         if (chatMessage.IsIgnoredUser)
         {
             return;
@@ -60,23 +54,14 @@ public class MessageHandler : Handler
         CheckForForgottenPrefix(chatMessage);
     }
 
-    public void CheckForPajaAlert(TwitchLib::ChatMessage chatMessage)
-    {
-        if (chatMessage.RoomId.ToInt() == _pajaChannelId && chatMessage.UserId.ToInt() == _pajaAlertUserId && _pajaAlertPattern.IsMatch(chatMessage.Message))
-        {
-            _twitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
-            _twitchBot.TwitchClient.SendMessage(AppSettings.SecretOfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
-        }
-    }
-
     private void CheckForSpotifyUri(TwitchChatMessage chatMessage)
     {
-        if (chatMessage.Channel == AppSettings.SecretOfflineChatChannel)
+        if (chatMessage.Channel == AppSettings.OfflineChatChannel)
         {
             string? uri = _linkRecognizer.FindSpotifyLink(chatMessage);
             if (!string.IsNullOrEmpty(uri))
             {
-                _twitchBot.Send(AppSettings.SecretOfflineChatChannel, uri);
+                _twitchBot.Send(AppSettings.OfflineChatChannel, uri);
             }
         }
     }
