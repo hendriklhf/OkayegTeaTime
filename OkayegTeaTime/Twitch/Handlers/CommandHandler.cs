@@ -11,6 +11,7 @@ public class CommandHandler : Handler
 {
     private readonly AfkCommandHandler _afkCommandHandler;
     private readonly CooldownController _cooldownController;
+
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkCommandType[] _afkCommandTypes = Enum.GetValues<AfkCommandType>();
 
@@ -96,7 +97,7 @@ public class CommandHandler : Handler
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
     private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
-        string? commandClassName = $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
+        string commandClassName = $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
 
         Type? commandClass = Type.GetType(commandClassName);
         if (commandClass is null)

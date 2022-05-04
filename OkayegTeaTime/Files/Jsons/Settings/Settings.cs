@@ -8,7 +8,7 @@ public class Settings
 
     public Discord Discord { get; set; }
 
-    public List<string> SecretOfflineChatEmotes { get; set; }
+    public List<string> OfflineChatEmotes { get; set; }
 
     public Spotify Spotify { get; set; }
 
@@ -18,7 +18,7 @@ public class Settings
 
     public string DebugChannel { get; set; }
 
-    public string SecretOfflineChatChannel { get; set; }
+    public string OfflineChatChannel { get; set; }
 
     public DbConnection DatabaseConnection { get; set; }
 }

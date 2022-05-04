@@ -40,7 +40,9 @@ public static class TwitchApi
     {
         HttpPost request = new("https://id.twitch.tv/oauth2/token", new[]
         {
-            ("client_id", _api.Settings.ClientId), ("client_secret", _api.Settings.Secret), ("grant_type", "client_credentials")
+            ("client_id", _api.Settings.ClientId),
+            ("client_secret", _api.Settings.Secret),
+            ("grant_type", "client_credentials")
         });
 
         if (!request.IsValidJsonData)

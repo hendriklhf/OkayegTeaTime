@@ -227,7 +227,6 @@ public class TwitchBot
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
-        MessageHandler?.CheckForPajaAlert(e.ChatMessage);
         MessageHandler?.Handle(new TwitchChatMessage(e.ChatMessage));
     }
 
@@ -267,7 +266,7 @@ public class TwitchBot
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
     {
-        if (e.Channel != AppSettings.SecretOfflineChatChannel)
+        if (e.Channel != AppSettings.OfflineChatChannel)
         {
             return;
         }
@@ -280,7 +279,7 @@ public class TwitchBot
 
         if (!AppSettings.UserLists.SecretUsers.Contains(user.Id.ToInt()))
         {
-            Send(AppSettings.SecretOfflineChatChannel, $"{e.Username} joined the chat Stare");
+            Send(AppSettings.OfflineChatChannel, $"{e.Username} joined the chat Stare");
         }
     }
 

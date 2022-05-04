@@ -26,7 +26,7 @@ public class RemindCommand : Command
         long toTime = 0;
 
         Regex timedPattern = PatternCreator.Create(Alias, Prefix, Pattern.ReminderInTime);
-        Regex nextMessagePattern = PatternCreator.Create(Alias, Prefix, @"\s\w+(\s\S+)*");
+        Regex nextMessagePattern = PatternCreator.Create(Alias, Prefix, @"\s\w+(\s\S+)*.*");
         if (timedPattern.IsMatch(ChatMessage.Message))
         {
             targets = GetTargets();

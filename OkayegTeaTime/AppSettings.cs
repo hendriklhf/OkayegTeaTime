@@ -20,9 +20,9 @@ public static class AppSettings
 
     public static string RepositoryUrl => JsonController.GetSettings().RepositoryUrl;
 
-    public static string SecretOfflineChatChannel => JsonController.GetSettings().SecretOfflineChatChannel;
+    public static string OfflineChatChannel => JsonController.GetSettings().OfflineChatChannel;
 
-    public static List<string> SecretOfflineChatEmotes => JsonController.GetSettings().SecretOfflineChatEmotes;
+    public static List<string> OfflineChatEmotes => JsonController.GetSettings().OfflineChatEmotes;
 
     public static Files.Jsons.Settings.Spotify Spotify => JsonController.GetSettings().Spotify;
 
