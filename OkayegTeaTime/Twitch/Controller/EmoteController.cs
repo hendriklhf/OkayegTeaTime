@@ -160,7 +160,7 @@ public class EmoteController
         }
 
         string result = request.Data.GetProperty("data").GetProperty("search_emotes").GetRawText();
-        return JsonSerializer.Deserialize<List<SevenTvGlobalEmote>>(result) ?? new List<SevenTvGlobalEmote>();
+        return JsonSerializer.Deserialize<SevenTvGlobalEmote[]>(result) ?? Array.Empty<SevenTvGlobalEmote>();
     }
 
     private IEnumerable<BttvEmote> GetBttvGlobalEmotes()
@@ -171,7 +171,7 @@ public class EmoteController
             return Array.Empty<BttvEmote>();
         }
 
-        return JsonSerializer.Deserialize<List<BttvEmote>>(request.Result) ?? new List<BttvEmote>();
+        return JsonSerializer.Deserialize<BttvEmote[]>(request.Result) ?? Array.Empty<BttvEmote>();
     }
 
     private BttvRequest? GetBttvRequest(int channelId)
@@ -231,6 +231,6 @@ public class EmoteController
         FfzEmote[] firstEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(firstSet) ?? Array.Empty<FfzEmote>();
         FfzEmote[] secondEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(secondSet) ?? Array.Empty<FfzEmote>();
         FfzEmote[] emotes = firstEmoteSet.Concat(secondEmoteSet).ToArray();
-        return emotes.Any() ? emotes : new List<FfzEmote>();
+        return emotes.Any() ? emotes : Array.Empty<FfzEmote>();
     }
 }
