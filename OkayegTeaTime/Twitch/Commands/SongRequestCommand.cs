@@ -117,12 +117,12 @@ public class SongRequestCommand : Command
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
+                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {user.Username.Antiping()}";
                     }
                     else if (item is SpotifyEpisode episode)
                     {
                         Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                   $"{target.Username.Antiping()}";
+                                   $"{user.Username.Antiping()}";
                     }
                 }
                 catch (SpotifyException ex)
