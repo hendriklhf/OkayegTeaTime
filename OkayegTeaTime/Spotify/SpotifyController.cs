@@ -15,7 +15,8 @@ public static class SpotifyController
         {
             Scope = new[]
             {
-                Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState
+                Scopes.UserReadPlaybackState,
+                Scopes.UserModifyPlaybackState
             }
         };
 
@@ -57,31 +58,24 @@ public static class SpotifyController
         }
     }
 
-    public static FullTrack? GetExcactTrackFromSearch(List<FullTrack>? tracks, List<string> query)
-    {
-        return tracks?.FirstOrDefault(t =>
-            query.Any(q => t.Name.IsMatch(q))
-            || query.Any(q => t.Artists.Any(a => a.Name.IsMatch(q))));
-    }
-
     public static string? ParseSongToUri(string input)
     {
         if (input.IsMatch(Pattern.SpotifyUri))
         {
             return input;
         }
-        else if (input.IsMatch(Pattern.SpotifyLink))
+
+        if (input.IsMatch(Pattern.SpotifyLink))
         {
-            string uriCode = input.Match(@"track/\w+\?").Remove("track/").Remove("?");
+            string uriCode = input.Match(@"track/\w+")[6..];
             return $"spotify:track:{uriCode}";
         }
-        else if (input.IsMatch(@"^\w{22}$"))
+
+        if (input.IsMatch(@"^\w{22}$"))
         {
             return $"spotify:track:{input}";
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 }
