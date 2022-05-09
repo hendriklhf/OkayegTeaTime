@@ -420,6 +420,11 @@ public class SpotifyUser : CacheModel
         if (currentlyPlaying?.Item is FullTrack track)
         {
             item = new SpotifyTrack(track);
+            if (item.IsLocal)
+            {
+                return item;
+            }
+
             if (!AppSettings.UserLists.SecretUsers.Contains(Id))
             {
                 return item;
