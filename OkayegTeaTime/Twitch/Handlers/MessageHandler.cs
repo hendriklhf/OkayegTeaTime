@@ -1,6 +1,8 @@
-﻿using OkayegTeaTime.Database;
+﻿using System.Threading.Tasks;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
+using OkayegTeaTime.Spotify.Exceptions;
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -11,9 +13,9 @@ public class MessageHandler : Handler
     private readonly CommandHandler _commandHandler;
     private readonly PajaAlertHandler _pajaAlertHandler;
 
-    private readonly LinkRecognizer _linkRecognizer = new();
-
     private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private readonly Regex _spotifyUriPattern = new(Pattern.SpotifyUri, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private readonly Regex _spotifyUrlPattern = new(Pattern.SpotifyLink, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
@@ -56,13 +58,29 @@ public class MessageHandler : Handler
 
     private void CheckForSpotifyUri(TwitchChatMessage chatMessage)
     {
-        if (chatMessage.Channel == AppSettings.OfflineChatChannel)
+        if (chatMessage.Channel != AppSettings.OfflineChatChannel)
         {
-            string? uri = _linkRecognizer.FindSpotifyLink(chatMessage);
-            if (!string.IsNullOrEmpty(uri))
+            return;
+        }
+
+        IEnumerable<string> songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty);
+        SpotifyUser? playlistUser = DbControl.SpotifyUsers["strbhlfe"];
+        if (playlistUser is null)
+        {
+            return;
+        }
+
+        try
+        {
+            foreach (string song in songs)
             {
-                _twitchBot.Send(AppSettings.OfflineChatChannel, uri);
+                playlistUser.AddToPlaylist(AppSettings.Spotify.ChatPlaylistId, song).Wait();
+                Task.Delay(500).Wait();
             }
+        }
+        catch (SpotifyException)
+        {
+            // ignored
         }
     }
 

@@ -176,6 +176,43 @@ public class SpotifyUser : CacheModel
         return Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(30).Milliseconds;
     }
 
+    public async Task AddToPlaylist(string playlistId, string song)
+    {
+        string? uri = SpotifyController.ParseSongToUri(song);
+        if (uri is null)
+        {
+            throw new SpotifyException("invalid track link");
+        }
+
+        SpotifyClient? client = await GetClient();
+        if (client is null)
+        {
+            throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
+        }
+
+        try
+        {
+            ///TODO: cache content
+            FullPlaylist playlist = await client.Playlists.Get(playlistId, new());
+            string[]? uris = playlist?.Tracks?.Items?.Select(i => new SpotifyItem(i.Track).Uri).ToArray();
+            if (uris is not null)
+            {
+                if (!uris.Contains(uri))
+                {
+                    await client.Playlists.AddItems(playlistId, new(new List<string>
+                    {
+                        uri
+                    }));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(ex);
+            throw new SpotifyException("Something went wrong trying to add the song to the playlist");
+        }
+    }
+
     public async Task<SpotifyItem> AddToQueue(string song)
     {
         string? uri = SpotifyController.ParseSongToUri(song);
@@ -383,6 +420,25 @@ public class SpotifyUser : CacheModel
         if (currentlyPlaying?.Item is FullTrack track)
         {
             item = new SpotifyTrack(track);
+            if (!AppSettings.UserLists.SecretUsers.Contains(Id))
+            {
+                return item;
+            }
+
+            SpotifyUser? playlistUser = DbControl.SpotifyUsers["strbhlfe"];
+            if (playlistUser is null)
+            {
+                return item;
+            }
+
+            try
+            {
+                await playlistUser.AddToPlaylist(AppSettings.Spotify.ChatPlaylistId, item.Uri);
+            }
+            catch (SpotifyException)
+            {
+                // ignored
+            }
         }
         else if (currentlyPlaying?.Item is FullEpisode episode)
         {

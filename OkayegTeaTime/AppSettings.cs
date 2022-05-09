@@ -16,7 +16,7 @@ public static class AppSettings
 
     public static string DebugChannel => JsonController.GetSettings().DebugChannel;
 
-    public static Files.Jsons.Settings.Discord Discord => JsonController.GetSettings().Discord;
+    public static Discord Discord => JsonController.GetSettings().Discord;
 
     public static string RepositoryUrl => JsonController.GetSettings().RepositoryUrl;
 
