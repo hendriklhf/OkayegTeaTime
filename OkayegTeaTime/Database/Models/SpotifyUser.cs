@@ -91,6 +91,8 @@ public class SpotifyUser : CacheModel
 
     private readonly Timer _timer = new();
 
+    private static List<string>? _chatPlaylistUris;
+
     private const byte _trackIdPrefixLength = 14;
 
     public SpotifyUser(EntityFrameworkModels.Spotify spotifyUser)
@@ -176,7 +178,7 @@ public class SpotifyUser : CacheModel
         return Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(30).Milliseconds;
     }
 
-    public async Task AddToPlaylist(string playlistId, string song)
+    public async Task AddToChatPlaylist(string song)
     {
         string? uri = SpotifyController.ParseSongToUri(song);
         if (uri is null)
@@ -192,19 +194,21 @@ public class SpotifyUser : CacheModel
 
         try
         {
-            ///TODO: cache content
-            FullPlaylist playlist = await client.Playlists.Get(playlistId, new());
-            string[]? uris = playlist?.Tracks?.Items?.Select(i => new SpotifyItem(i.Track).Uri).ToArray();
-            if (uris is not null)
+            if (_chatPlaylistUris is null)
             {
-                if (!uris.Contains(uri))
-                {
-                    await client.Playlists.AddItems(playlistId, new(new List<string>
-                    {
-                        uri
-                    }));
-                }
+                FullPlaylist playlist = await client.Playlists.Get(AppSettings.Spotify.ChatPlaylistId, new());
+                _chatPlaylistUris = playlist?.Tracks?.Items?.Select(i => new SpotifyItem(i.Track).Uri).ToList() ?? new();
             }
+
+            if (!_chatPlaylistUris.Contains(uri))
+            {
+                await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(new List<string>
+                {
+                    uri
+                }));
+            }
+
+            _chatPlaylistUris.Add(uri);
         }
         catch (Exception ex)
         {
@@ -438,7 +442,7 @@ public class SpotifyUser : CacheModel
 
             try
             {
-                await playlistUser.AddToPlaylist(AppSettings.Spotify.ChatPlaylistId, item.Uri);
+                await playlistUser.AddToChatPlaylist(item.Uri);
             }
             catch (SpotifyException)
             {

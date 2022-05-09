@@ -74,7 +74,7 @@ public class MessageHandler : Handler
         {
             foreach (string song in songs)
             {
-                playlistUser.AddToPlaylist(AppSettings.Spotify.ChatPlaylistId, song).Wait();
+                playlistUser.AddToChatPlaylist(song).Wait();
                 Task.Delay(500).Wait();
             }
         }
