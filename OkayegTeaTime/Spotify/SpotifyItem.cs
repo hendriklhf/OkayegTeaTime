@@ -27,6 +27,8 @@ public class SpotifyItem
 
     public string Uri { get; }
 
+    public string Url { get; }
+
     public bool IsLocal { get; }
 
     public bool IsTrack { get; }
@@ -50,6 +52,7 @@ public class SpotifyItem
             IsPlayable = track.IsPlayable;
             Name = track.Name;
             Uri = track.Uri;
+            Url = $"https://open.spotify.com/track/{Id}";
             IsLocal = track.IsLocal;
             IsTrack = true;
         }
@@ -63,6 +66,7 @@ public class SpotifyItem
             IsPlayable = episode.IsPlayable;
             Name = episode.Name;
             Uri = episode.Uri;
+            Url = $"https://open.spotify.com/episode/{Id}";
             IsLocal = false;
             IsEpisode = true;
         }

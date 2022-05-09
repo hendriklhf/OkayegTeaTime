@@ -10,6 +10,8 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class SpotifyCommand : Command
 {
+    private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+
     public SpotifyCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
@@ -22,6 +24,7 @@ public class SpotifyCommand : Command
                 ? ChatMessage.Username
                 : ChatMessage.LowerSplit[1]
             : ChatMessage.Channel;
+        bool returnUrl = ChatMessage.LowerSplit.Any(s => _urlPattern.IsMatch(s));
         bool targetIsSender = username == ChatMessage.Username;
         Task.Run(async () =>
         {
@@ -57,12 +60,12 @@ public class SpotifyCommand : Command
                 case SpotifyTrack track:
                 {
                     string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                    Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
+                    Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : returnUrl ? track.Url : track.Uri)}";
                     break;
                 }
                 case SpotifyEpisode episode:
                 {
-                    Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                    Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : returnUrl ? episode.Url : episode.Uri)}";
                     break;
                 }
                 default:
