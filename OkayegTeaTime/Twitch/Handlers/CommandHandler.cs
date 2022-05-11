@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Bot;
+using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
@@ -14,9 +15,6 @@ public class CommandHandler : Handler
 
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkCommandType[] _afkCommandTypes = Enum.GetValues<AfkCommandType>();
-
-    private const string _handleName = "Handle";
-    private const string _sendResponseName = "SendResponse";
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
@@ -107,7 +105,9 @@ public class CommandHandler : Handler
 
         ConstructorInfo? constructor = commandClass.GetConstructor(new[]
         {
-            typeof(TwitchBot), typeof(TwitchChatMessage), typeof(string)
+            typeof(TwitchBot),
+            typeof(TwitchChatMessage),
+            typeof(string)
         });
         if (constructor is null)
         {
@@ -116,10 +116,12 @@ public class CommandHandler : Handler
 
         object handlerInstance = constructor.Invoke(new object[]
         {
-            twitchBot, chatMessage, alias
+            twitchBot,
+            chatMessage,
+            alias
         });
 
-        MethodInfo? handleMethod = commandClass.GetMethod(_handleName);
+        MethodInfo? handleMethod = commandClass.GetMethod(nameof(Command.Handle));
         if (handleMethod is null)
         {
             throw new InvalidOperationException($"Could not get handler method for command class {commandClassName}");
@@ -127,7 +129,7 @@ public class CommandHandler : Handler
 
         handleMethod.Invoke(handlerInstance, null);
 
-        MethodInfo? sendMethod = commandClass.GetMethod(_sendResponseName);
+        MethodInfo? sendMethod = commandClass.GetMethod(nameof(Command.SendResponse));
         if (sendMethod is null)
         {
             throw new InvalidOperationException($"Could not get send method for command class {commandClassName}");

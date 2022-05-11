@@ -178,13 +178,10 @@ public class SpotifyUser : CacheModel
         return Time + new Hour().Milliseconds <= TimeHelper.Now() + new Second(30).Milliseconds;
     }
 
-    public async Task AddToChatPlaylist(string song)
+    public async Task AddToChatPlaylist(params string[] songs)
     {
-        string? uri = SpotifyController.ParseSongToUri(song);
-        if (uri is null)
-        {
-            throw new SpotifyException("invalid track link");
-        }
+        List<string> uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
+            .Where(u => !string.IsNullOrEmpty(u) && _chatPlaylistUris?.Contains(u) == false).ToList();
 
         SpotifyClient? client = await GetClient();
         if (client is null)
@@ -200,15 +197,9 @@ public class SpotifyUser : CacheModel
                 _chatPlaylistUris = playlist?.Tracks?.Items?.Select(i => new SpotifyItem(i.Track).Uri).ToList() ?? new();
             }
 
-            if (!_chatPlaylistUris.Contains(uri))
-            {
-                await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(new List<string>
-                {
-                    uri
-                }));
-            }
+            await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
 
-            _chatPlaylistUris.Add(uri);
+            _chatPlaylistUris.AddRange(uris);
         }
         catch (Exception ex)
         {

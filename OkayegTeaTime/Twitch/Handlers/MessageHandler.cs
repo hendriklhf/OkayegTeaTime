@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using OkayegTeaTime.Database;
+﻿using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Spotify.Exceptions;
@@ -63,7 +62,7 @@ public class MessageHandler : Handler
             return;
         }
 
-        IEnumerable<string> songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty);
+        string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty).ToArray();
         SpotifyUser? playlistUser = DbControl.SpotifyUsers["strbhlfe"];
         if (playlistUser is null)
         {
@@ -72,11 +71,7 @@ public class MessageHandler : Handler
 
         try
         {
-            foreach (string song in songs)
-            {
-                playlistUser.AddToChatPlaylist(song).Wait();
-                Task.Delay(500).Wait();
-            }
+            playlistUser.AddToChatPlaylist(songs).Wait();
         }
         catch (SpotifyException)
         {
