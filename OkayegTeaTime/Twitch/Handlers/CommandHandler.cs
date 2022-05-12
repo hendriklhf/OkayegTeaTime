@@ -58,7 +58,7 @@ public class CommandHandler : Handler
         return false;
     }
 
-    private bool HandleAfkCommand(TwitchChatMessage chatMessage)
+    private void HandleAfkCommand(TwitchChatMessage chatMessage)
     {
         foreach (AfkCommandType type in _afkCommandTypes)
         {
@@ -71,18 +71,16 @@ public class CommandHandler : Handler
                 {
                     if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
                     {
-                        return false;
+                        return;
                     }
 
                     _afkCommandHandler.Handle(chatMessage, type);
                     _cooldownController.AddAfkCooldown(chatMessage.UserId);
                     _twitchBot.CommandCount++;
-                    return true;
+                    return;
                 }
             }
         }
-
-        return false;
     }
 
     /// <summary>

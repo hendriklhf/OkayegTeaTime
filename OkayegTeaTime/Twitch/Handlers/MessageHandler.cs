@@ -81,17 +81,19 @@ public class MessageHandler : Handler
 
     private void CheckForForgottenPrefix(TwitchChatMessage chatMessage)
     {
-        if (_forgottenPrefixPattern.IsMatch(chatMessage.Message))
+        if (!_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {
-            string? prefix = DbControl.Channels[chatMessage.Channel]?.Prefix;
-            if (string.IsNullOrEmpty(prefix))
-            {
-                _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}");
-            }
-            else
-            {
-                _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {prefix}");
-            }
+            return;
+        }
+
+        string? prefix = DbControl.Channels[chatMessage.Channel]?.Prefix;
+        if (string.IsNullOrEmpty(prefix))
+        {
+            _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}");
+        }
+        else
+        {
+            _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {prefix}");
         }
     }
 }

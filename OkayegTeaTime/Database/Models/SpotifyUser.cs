@@ -183,6 +183,11 @@ public class SpotifyUser : CacheModel
         List<string> uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
             .Where(u => !string.IsNullOrEmpty(u) && _chatPlaylistUris?.Contains(u) == false).ToList();
 
+        if (uris.Count == 0)
+        {
+            return;
+        }
+
         SpotifyClient? client = await GetClient();
         if (client is null)
         {
