@@ -180,10 +180,10 @@ public class SpotifyUser : CacheModel
 
     public async Task AddToChatPlaylist(params string[] songs)
     {
-        List<string> uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
-            .Where(u => !string.IsNullOrEmpty(u) && _chatPlaylistUris?.Contains(u) == false).ToList();
+        string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
+            .Where(u => !string.IsNullOrEmpty(u)).ToArray();
 
-        if (uris.Count == 0)
+        if (uris.Length == 0)
         {
             return;
         }
@@ -201,6 +201,8 @@ public class SpotifyUser : CacheModel
                 FullPlaylist playlist = await client.Playlists.Get(AppSettings.Spotify.ChatPlaylistId, new());
                 _chatPlaylistUris = playlist?.Tracks?.Items?.Select(i => new SpotifyItem(i.Track).Uri).ToList() ?? new();
             }
+
+            uris = uris.Where(u => !_chatPlaylistUris.Contains(u)).ToArray();
 
             await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
 
@@ -420,6 +422,7 @@ public class SpotifyUser : CacheModel
         if (currentlyPlaying?.Item is FullTrack track)
         {
             item = new SpotifyTrack(track);
+#if !DEBUG
             if (item.IsLocal)
             {
                 return item;
@@ -444,6 +447,7 @@ public class SpotifyUser : CacheModel
             {
                 // ignored
             }
+#endif
         }
         else if (currentlyPlaying?.Item is FullEpisode episode)
         {
