@@ -48,7 +48,7 @@ public class ReminderCache : DbCache<Reminder>
             return false;
         }
 
-        Reminder? reminder = _items.FirstOrDefault(r => r.Id == reminderId);
+        Reminder? reminder = this.FirstOrDefault(r => r.Id == reminderId);
         if (reminder is null)
         {
             return removed;
@@ -72,14 +72,17 @@ public class ReminderCache : DbCache<Reminder>
             };
         }
 
-        return _items.Where(r => string.Equals(r.Target, username, StringComparison.OrdinalIgnoreCase) && EvaluateReminderType(r) && !r.HasBeenSent);
+        return this.Where(r => string.Equals(r.Target, username, StringComparison.OrdinalIgnoreCase) && EvaluateReminderType(r) && !r.HasBeenSent);
     }
 
-    public IEnumerable<Reminder> GetExpiredReminders() => _items.Where(r => r.ToTime > 0 && r.ToTime <= TimeHelper.Now() && !r.HasBeenSent);
+    public IEnumerable<Reminder> GetExpiredReminders()
+    {
+        return this.Where(r => r.ToTime > 0 && r.ToTime <= TimeHelper.Now() && !r.HasBeenSent);
+    }
 
     private Reminder? GetReminder(int id)
     {
-        Reminder? reminder = _items.FirstOrDefault(r => r.Id == id);
+        Reminder? reminder = this.FirstOrDefault(r => r.Id == id);
         if (reminder is not null)
         {
             return reminder;
@@ -98,6 +101,11 @@ public class ReminderCache : DbCache<Reminder>
 
     private protected override void GetAllFromDb()
     {
+        if (_containsAll)
+        {
+            return;
+        }
+
         List<EntityFrameworkModels.Reminder> reminders = DbController.GetReminders();
         reminders.ForEach(rr =>
         {
@@ -111,13 +119,7 @@ public class ReminderCache : DbCache<Reminder>
 
     public override IEnumerator<Reminder> GetEnumerator()
     {
-        if (_containsAll)
-        {
-            return _items.GetEnumerator();
-        }
-
         GetAllFromDb();
-
         return _items.GetEnumerator();
     }
 }
