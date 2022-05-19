@@ -1,4 +1,5 @@
-﻿using OkayegTeaTime.Database.Cache.Enums;
+﻿using HLE.Time;
+using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
@@ -22,7 +23,7 @@ public class ReminderCache : DbCache<Reminder>
 
     public int?[] AddRange(IEnumerable<(string Creator, string Target, string Message, string Channel, long ToTime)> values)
     {
-        (string Creator, string Target, string Message, string Channel, long ToTime)[]? reminders = values.ToArray();
+        (string Creator, string Target, string Message, string Channel, long ToTime)[] reminders = values.ToArray();
         int?[] ids = DbController.AddReminders(reminders);
 
         for (int i = 0; i < reminders.Length; i++)
@@ -53,26 +54,12 @@ public class ReminderCache : DbCache<Reminder>
             return removed;
         }
 
-        _items.Remove(reminder);
+        //wasn't sent, but basically equals deletion
+        reminder.HasBeenSent = true;
         return true;
     }
 
-    public void RemoveRange(IEnumerable<int> reminderIds)
-    {
-        foreach (int id in reminderIds)
-        {
-            Reminder? r = this[id];
-            if (r is null)
-            {
-                continue;
-            }
-
-            _items.Remove(r);
-            DbController.RemoveReminder(r.Id);
-        }
-    }
-
-    public Reminder[] GetReminderFor(string name, ReminderType type = ReminderType.All)
+    public IEnumerable<Reminder> GetRemindersFor(string username, ReminderType type = ReminderType.All)
     {
         bool EvaluateReminderType(Reminder r)
         {
@@ -85,8 +72,10 @@ public class ReminderCache : DbCache<Reminder>
             };
         }
 
-        return _items.Where(r => string.Equals(r.Target, name, StringComparison.OrdinalIgnoreCase) && EvaluateReminderType(r)).ToArray();
+        return _items.Where(r => string.Equals(r.Target, username, StringComparison.OrdinalIgnoreCase) && EvaluateReminderType(r) && !r.HasBeenSent);
     }
+
+    public IEnumerable<Reminder> GetExpiredReminders() => _items.Where(r => r.ToTime > 0 && r.ToTime <= TimeHelper.Now() && !r.HasBeenSent);
 
     private Reminder? GetReminder(int id)
     {

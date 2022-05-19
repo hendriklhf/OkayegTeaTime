@@ -29,11 +29,16 @@ public static class BotActions
         twitchBot.Send(chatMessage.Channel, afkMessage);
     }
 
-    public static void SendReminder(this TwitchBot twitchBot, TwitchChatMessage chatMessage, IEnumerable<Reminder> reminders)
+    public static void SendReminder(this TwitchBot twitchBot, string channel, IEnumerable<Reminder> reminders)
     {
         Reminder[] rmndrs = reminders.ToArray();
+        if (rmndrs.Length == 0)
+        {
+            return;
+        }
+
         string creator = rmndrs[0].Creator == rmndrs[0].Target ? "yourself" : rmndrs[0].Creator;
-        string message = $"{chatMessage.Username}, reminder from {creator} ({TimeHelper.GetUnixDifference(rmndrs[0].Time)} ago)";
+        string message = $"{rmndrs[0].Target}, reminder from {creator} ({TimeHelper.GetUnixDifference(rmndrs[0].Time)} ago)";
         StringBuilder builder = new(message);
         if (rmndrs[0].Message?.Length > 0)
         {
@@ -53,7 +58,8 @@ public static class BotActions
             });
         }
 
-        twitchBot.Send(chatMessage.Channel, builder.ToString());
+        rmndrs.ForEach(r => r.HasBeenSent = true);
+        twitchBot.Send(channel, builder.ToString());
     }
 
     public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
@@ -65,6 +71,7 @@ public static class BotActions
             message += $": {reminder.Message}";
         }
 
+        reminder.HasBeenSent = true;
         twitchBot.Send(reminder.Channel, message);
     }
 }

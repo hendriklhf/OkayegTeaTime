@@ -19,6 +19,8 @@ public class Reminder : CacheModel
 
     public long ToTime { get; }
 
+    public bool HasBeenSent { get; set; }
+
     public Reminder(EntityFrameworkModels.Reminder reminder)
     {
         Id = reminder.Id;

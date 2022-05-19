@@ -3,9 +3,7 @@ using HLE.Strings;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.EntityFrameworkModels;
-using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Commands.Enums;
-using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Database;
 
@@ -106,38 +104,6 @@ public static class DbController
     {
         using OkayegTeaTimeContext database = new();
         database.Suggestions.Add(new(username, suggestion.Encode(), channel));
-        database.SaveChanges();
-    }
-
-    //TODO: don't pass TwitchBot into here, don't delete reminders here
-    [Obsolete("needs refactoring")]
-    public static void CheckForReminder(TwitchBot twitchBot, TwitchChatMessage chatMessage)
-    {
-        using OkayegTeaTimeContext database = new();
-        List<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime == 0 && r.Target == chatMessage.Username).ToList();
-        if (!reminders.Any())
-        {
-            return;
-        }
-
-        twitchBot.SendReminder(chatMessage, reminders.Select(r => new Models.Reminder(r)));
-        database.Reminders.RemoveRange(reminders);
-        database.SaveChanges();
-    }
-
-    //TODO: don't pass TwitchBot into here, don't delete reminders here
-    [Obsolete("needs refactoring")]
-    public static void CheckForTimedReminder(TwitchBot twitchBot)
-    {
-        using OkayegTeaTimeContext database = new();
-        IEnumerable<Reminder> reminders = database.Reminders.AsQueryable().Where(r => r.ToTime != 0 && r.ToTime <= TimeHelper.Now());
-        if (!reminders.Any())
-        {
-            return;
-        }
-
-        reminders.Select(r => new Models.Reminder(r)).ForEach(twitchBot.SendTimedReminder);
-        database.Reminders.RemoveRange(reminders);
         database.SaveChanges();
     }
 

@@ -1,7 +1,10 @@
 ﻿using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
+#if !DEBUG
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Spotify.Exceptions;
+#endif
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
@@ -13,8 +16,10 @@ public class MessageHandler : Handler
     private readonly PajaAlertHandler _pajaAlertHandler;
 
     private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+#if !DEBUG
     private readonly Regex _spotifyUriPattern = new(Pattern.SpotifyUri, RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private readonly Regex _spotifyUrlPattern = new(Pattern.SpotifyLink, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+#endif
 
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
@@ -32,17 +37,9 @@ public class MessageHandler : Handler
             return;
         }
 
-        User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
-        if (user?.IsAfk == true)
-        {
-            _twitchBot.SendComingBack(chatMessage);
-            if (!_twitchBot.CommandController.IsAfkCommand(chatMessage))
-            {
-                user.IsAfk = false;
-            }
-        }
+        CheckForAfk(chatMessage);
 
-        DbController.CheckForReminder(_twitchBot, chatMessage);
+        CheckForReminder(chatMessage.Username, chatMessage.Channel);
 
         _commandHandler.Handle(chatMessage);
 
@@ -51,10 +48,34 @@ public class MessageHandler : Handler
 
     private void HandleSpecificMessages(TwitchChatMessage chatMessage)
     {
+#if !DEBUG
         CheckForSpotifyUri(chatMessage);
+#endif
         CheckForForgottenPrefix(chatMessage);
     }
 
+    private void CheckForAfk(TwitchChatMessage chatMessage)
+    {
+        User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
+        if (user?.IsAfk != true)
+        {
+            return;
+        }
+
+        _twitchBot.SendComingBack(chatMessage);
+        if (!_twitchBot.CommandController.IsAfkCommand(chatMessage))
+        {
+            user.IsAfk = false;
+        }
+    }
+
+    private void CheckForReminder(string username, string channel)
+    {
+        IEnumerable<Reminder> reminders = DbControl.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
+        _twitchBot.SendReminder(channel, reminders);
+    }
+
+#if !DEBUG
     private void CheckForSpotifyUri(TwitchChatMessage chatMessage)
     {
         if (chatMessage.Channel != AppSettings.OfflineChatChannel)
@@ -62,7 +83,7 @@ public class MessageHandler : Handler
             return;
         }
 
-        string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty).ToArray();
+        string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
         SpotifyUser? playlistUser = DbControl.SpotifyUsers["strbhlfe"];
         if (playlistUser is null)
         {
@@ -78,6 +99,7 @@ public class MessageHandler : Handler
             // ignored
         }
     }
+#endif
 
     private void CheckForForgottenPrefix(TwitchChatMessage chatMessage)
     {
