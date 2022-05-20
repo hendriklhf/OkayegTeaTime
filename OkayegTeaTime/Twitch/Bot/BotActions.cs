@@ -58,7 +58,11 @@ public static class BotActions
             });
         }
 
-        rmndrs.ForEach(r => r.HasBeenSent = true);
+        rmndrs.ForEach(r =>
+        {
+            r.HasBeenSent = true;
+            DbController.RemoveReminder(r.Id);
+        });
         twitchBot.Send(channel, builder.ToString());
     }
 
@@ -72,6 +76,7 @@ public static class BotActions
         }
 
         reminder.HasBeenSent = true;
+        DbController.RemoveReminder(reminder.Id);
         twitchBot.Send(reminder.Channel, message);
     }
 }

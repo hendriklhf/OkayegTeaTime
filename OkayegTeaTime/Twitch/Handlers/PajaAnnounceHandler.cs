@@ -1,15 +1,23 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
 public class PajaAnnounceHandler : PajaHandler
 {
-    // TODO: create pattern
-    protected override Regex Pattern { get; } = new("", RegexOptions.Compiled);
-    protected override string Message => "/announce xd";
+    protected override Regex Pattern { get; } = new(@"^\s*/announce n($|\s+.*)", RegexOptions.Compiled);
 
-    // TODO: implement class
+    protected override string Message => " /announce o miniDank";
+
     public PajaAnnounceHandler(TwitchBot twitchBot) : base(twitchBot)
     {
+    }
+
+    public override void Handle(TwitchChatMessage chatMessage)
+    {
+        if (chatMessage.ChannelId == _pajaChannelId && Pattern.IsMatch(chatMessage.Message))
+        {
+            _twitchBot.TwitchClient.SendMessage(_pajaAlertChannel, Message);
+        }
     }
 }

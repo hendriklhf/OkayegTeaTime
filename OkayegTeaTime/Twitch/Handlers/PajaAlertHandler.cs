@@ -15,7 +15,12 @@ public class PajaAlertHandler : PajaHandler
 
     public override void Handle(TwitchChatMessage chatMessage)
     {
-        base.Handle(chatMessage);
+        if (chatMessage.ChannelId != _pajaChannelId || chatMessage.UserId != _pajaAlertUserId || !Pattern.IsMatch(chatMessage.Message))
+        {
+            return;
+        }
+
+        _twitchBot.TwitchClient.SendMessage(_pajaAlertChannel, Message);
         _twitchBot.TwitchClient.SendMessage(AppSettings.OfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
     }
 }

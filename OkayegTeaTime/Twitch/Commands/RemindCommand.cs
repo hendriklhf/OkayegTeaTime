@@ -12,7 +12,7 @@ public class RemindCommand : Command
 {
     private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleReminderTargets}", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _timeSplitPattern = new($@"\b{Pattern.TimeSplit}\b", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-    private static readonly Regex _exceptMessagePattern = new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _exceptMessagePattern = new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?\s*", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
