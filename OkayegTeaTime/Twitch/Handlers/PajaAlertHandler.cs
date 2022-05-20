@@ -4,15 +4,10 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public class PajaAlertHandler : Handler
+public class PajaAlertHandler : PajaHandler
 {
-    private readonly Regex _pajaAlertPattern = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-
-    private const int _pajaAlertUserId = 82008718;
-    private const int _pajaChannelId = 11148817;
-    private const string _pajaAlertChannel = "pajlada";
-    private const string _pajaAlertEmote = "pajaStare";
-    private const string _pajaAlertMessage = $"/me {_pajaAlertEmote} {Emoji.RotatingLight} OBACHT";
+    protected override Regex Pattern { get; } = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled);
+    protected override string Message => $"/me pajaStare {Emoji.RotatingLight} OBACHT";
 
     public PajaAlertHandler(TwitchBot twitchBot) : base(twitchBot)
     {
@@ -20,12 +15,7 @@ public class PajaAlertHandler : Handler
 
     public override void Handle(TwitchChatMessage chatMessage)
     {
-        if (chatMessage.ChannelId != _pajaChannelId || chatMessage.UserId != _pajaAlertUserId || !_pajaAlertPattern.IsMatch(chatMessage.Message))
-        {
-            return;
-        }
-
-        _twitchBot.TwitchClient.SendMessage(_pajaAlertChannel, _pajaAlertMessage);
+        base.Handle(chatMessage);
         _twitchBot.TwitchClient.SendMessage(AppSettings.OfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
     }
 }
