@@ -24,7 +24,7 @@ public static class HttpRequest
 
     public static int GetChatterCount(string channel)
     {
-        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
+        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
         if (!request.IsValidJsonData)
         {
             return 0;
@@ -35,7 +35,7 @@ public static class HttpRequest
 
     public static IEnumerable<Chatter> GetChatters(string channel)
     {
-        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel.Remove("#")}/chatters");
+        HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
         List<Chatter> result = new();
         if (!request.IsValidJsonData)
         {
