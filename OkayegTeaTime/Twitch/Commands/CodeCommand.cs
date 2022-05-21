@@ -23,7 +23,7 @@ public class CodeCommand : Command
                 return;
             }
 
-            Response = $"{ChatMessage.Username}, https://github.com/Sterbehilfe/OkayegTeaTimeCSharp/blob/master/OkayegTeaTime/Twitch/Commands/{command.Name}Command.cs";
+            Response = $"{ChatMessage.Username}, https://github.com/Sterbehilfe/OkayegTeaTime/blob/master/OkayegTeaTime/Twitch/Commands/{command.Name}Command.cs";
         }
     }
 }
