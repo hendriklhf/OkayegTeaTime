@@ -70,7 +70,8 @@ public static class HttpRequest
             ("CodeBlock", encodedInput),
             ("Compiler", "NetCore22"),
             ("Language", "CSharp"),
-            ("ProjectType", "Console")
+            ("ProjectType", "Console"),
+            ("NuGetPackageVersionIds", "102202")
         });
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
