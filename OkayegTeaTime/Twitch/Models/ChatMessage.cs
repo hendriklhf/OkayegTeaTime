@@ -7,13 +7,40 @@ public class ChatMessage
 {
     public string DisplayName { get; }
 
-    public string[] LowerSplit { get; }
+    public string[] LowerSplit
+    {
+        get
+        {
+            if (_lowerSplit is not null)
+            {
+                return _lowerSplit;
+            }
+
+            _lowerSplit = GetLowerSplit();
+            return _lowerSplit;
+        }
+    }
 
     public string Message { get; }
 
-    public string[] Split { get; }
+    public string[] Split
+    {
+        get
+        {
+            if (_split is not null)
+            {
+                return _split;
+            }
+
+            _split = GetSplit();
+            return _split;
+        }
+    }
 
     public string Username { get; }
+
+    private string[]? _lowerSplit;
+    private string[]? _split;
 
     private static readonly Regex _messagePattern = new(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _messageReplacePattern = new(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
@@ -22,8 +49,6 @@ public class ChatMessage
     {
         DisplayName = twitchLibMessage.DisplayName;
         Message = GetMessage(twitchLibMessage).Remove(AppSettings.ChatterinoChar).TrimAll();
-        LowerSplit = GetLowerSplit();
-        Split = GetSplit();
         Username = twitchLibMessage.Username;
     }
 
