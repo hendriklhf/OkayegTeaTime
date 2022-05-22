@@ -5,7 +5,7 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public class PajaAnnounceHandler : PajaHandler
 {
-    protected override Regex Pattern { get; } = new(@"^\s*/announce n($|\s+.*)", RegexOptions.Compiled);
+    protected override Regex Pattern { get; } = new(@"^\s*/announce n($|\s)", RegexOptions.Compiled);
 
     protected override string Message => " /announce o miniDank";
 
