@@ -91,8 +91,6 @@ public class SpotifyUser : CacheModel
 
     private readonly Timer _timer = new();
 
-    private static List<string>? _chatPlaylistUris;
-
     private const byte _trackIdPrefixLength = 14;
 
     public SpotifyUser(EntityFrameworkModels.Spotify spotifyUser)
@@ -196,23 +194,62 @@ public class SpotifyUser : CacheModel
 
         try
         {
-            if (_chatPlaylistUris is null)
+            uris = uris.Where(u => !DbControl.SpotifyUsers.ChatPlaylistUris.Contains(u)).ToArray();
+            if (uris.Length == 0)
             {
-                FullPlaylist playlist = await client.Playlists.Get(AppSettings.Spotify.ChatPlaylistId, new());
-                _chatPlaylistUris = playlist?.Tracks?.Items?.Select(i => new SpotifyItem(i.Track).Uri).ToList() ?? new();
+                return;
             }
 
-            uris = uris.Where(u => !_chatPlaylistUris.Contains(u)).ToArray();
-
             await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
-
-            _chatPlaylistUris.AddRange(uris);
+            DbControl.SpotifyUsers.ChatPlaylistUris.AddRange(uris);
         }
         catch (Exception ex)
         {
             Logger.Log(ex);
             throw new SpotifyException("Something went wrong trying to add the song to the playlist");
         }
+    }
+
+    public async Task<IEnumerable<SpotifyTrack>> GetPlaylistItems(string playlistUri)
+    {
+        SpotifyClient? client = await GetClient();
+        if (client is null)
+        {
+            throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
+        }
+
+        List<SpotifyTrack> result = new();
+        int offset = 0;
+        while (true)
+        {
+            try
+            {
+                Paging<PlaylistTrack<IPlayableItem>> playlistItems = await client.Playlists.GetItems(playlistUri, new()
+                {
+                    Offset = offset
+                });
+                SpotifyTrack[]? items = playlistItems?.Items?.Select(i => new SpotifyTrack(i.Track)).ToArray();
+                if (items is null)
+                {
+                    break;
+                }
+
+                result.AddRange(items);
+                if (items.Length < 100)
+                {
+                    break;
+                }
+
+                offset += 100;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+                break;
+            }
+        }
+
+        return result;
     }
 
     public async Task<SpotifyItem> AddToQueue(string song)

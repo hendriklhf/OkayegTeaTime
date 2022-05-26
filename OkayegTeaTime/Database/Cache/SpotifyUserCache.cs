@@ -1,10 +1,41 @@
-﻿using OkayegTeaTime.Database.Models;
+﻿using System.Threading.Tasks;
+using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Spotify;
 
 namespace OkayegTeaTime.Database.Cache;
 
 public class SpotifyUserCache : DbCache<SpotifyUser>
 {
     public SpotifyUser? this[string username] => GetSpotifyUser(username);
+
+    public List<string> ChatPlaylistUris
+    {
+        get
+        {
+            if (_chatPlaylistUris is not null)
+            {
+                return _chatPlaylistUris;
+            }
+
+            async Task GetPlaylistTracks()
+            {
+                SpotifyUser? user = this["strbhlfe"];
+                if (user is null)
+                {
+                    return;
+                }
+
+                IEnumerable<SpotifyTrack> tracks = await user.GetPlaylistItems(AppSettings.Spotify.ChatPlaylistId);
+                _chatPlaylistUris = tracks.Select(t => t.Uri).ToList();
+            }
+
+            GetPlaylistTracks().Wait();
+            _chatPlaylistUris ??= new();
+            return _chatPlaylistUris;
+        }
+    }
+
+    private List<string>? _chatPlaylistUris;
 
     public void Add(string username, string accessToken, string refreshToken)
     {
