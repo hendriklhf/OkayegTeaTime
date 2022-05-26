@@ -13,6 +13,8 @@ public static class JsonController
     private static CommandList? _commandList;
     private static IEnumerable<GachiSong>? _gachiSongs;
 
+    public static string? SettingsPath { get; set; }
+
     public static Settings GetSettings()
     {
         if (_settings is not null)
@@ -20,9 +22,13 @@ public static class JsonController
             return _settings;
         }
 
-        string settingsPath = FileLocator.Find(AppSettings.SettingsFileName);
-        ConsoleOut($"Found Settings file at: {settingsPath}");
-        _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(settingsPath));
+        if (string.IsNullOrEmpty(SettingsPath))
+        {
+            SettingsPath = FileLocator.Find(AppSettings.SettingsFileName);
+            ConsoleOut($"Found Settings file at: {SettingsPath}");
+        }
+
+        _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(SettingsPath));
         return _settings ?? throw new ArgumentNullException(nameof(_settings));
     }
 

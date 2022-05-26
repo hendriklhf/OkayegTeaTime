@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using OkayegTeaTime.Files;
 using OkayegTeaTime.Logging;
 using OkayegTeaTime.Twitch.Bot;
 
@@ -15,7 +16,14 @@ public static class Program
         Console.Title = "OkayegTeaTime";
         Console.OutputEncoding = Encoding.UTF8;
 
-        TwitchBot twitchBot = args.Any() ? new(args) : new();
+        ArgsResolver argsResolver = new(args);
+        argsResolver.Resolve();
+        if (argsResolver.SettingsPath is not null)
+        {
+            JsonController.SettingsPath = argsResolver.SettingsPath;
+        }
+
+        TwitchBot twitchBot = argsResolver.Channels is null ? new() : new(argsResolver.Channels);
         twitchBot.Connect();
 
         while (_running)
