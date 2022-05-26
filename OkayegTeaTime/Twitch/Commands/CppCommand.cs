@@ -1,4 +1,6 @@
-﻿using OkayegTeaTime.HttpRequests;
+﻿#if DEBUG
+using OkayegTeaTime.HttpRequests;
+#endif
 using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
 
