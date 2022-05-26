@@ -62,8 +62,6 @@ public class TwitchBot
 
     public string SystemInfo => GetSystemInfo();
 
-    public string MemoryUsage => GetMemoryUsage();
-
     public string Runtime => GetUnixDifference(_runtime).ToString();
 
     public static List<Timer> Timers { get; } = new();
