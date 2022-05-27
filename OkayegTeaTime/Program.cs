@@ -23,7 +23,7 @@ public static class Program
             JsonController.SettingsPath = argsResolver.SettingsPath;
         }
 
-        TwitchBot twitchBot = argsResolver.Channels is null ? new() : new(argsResolver.Channels);
+        TwitchBot twitchBot = new(argsResolver.Channels);
         twitchBot.Connect();
 
         while (_running)
