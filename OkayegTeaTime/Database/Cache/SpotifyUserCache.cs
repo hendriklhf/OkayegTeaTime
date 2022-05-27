@@ -70,14 +70,14 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
 
     private protected override void GetAllFromDb()
     {
-        List<EntityFrameworkModels.Spotify> users = DbController.GetSpotifyUsers();
-        users.ForEach(uu =>
+        EntityFrameworkModels.Spotify[] users = DbController.GetSpotifyUsers();
+        foreach (EntityFrameworkModels.Spotify uu in users)
         {
             if (_items.All(u => u.Id != uu.Id))
             {
                 _items.Add(new(uu));
             }
-        });
+        }
         _containsAll = true;
     }
 

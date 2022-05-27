@@ -106,14 +106,15 @@ public class ReminderCache : DbCache<Reminder>
             return;
         }
 
-        List<EntityFrameworkModels.Reminder> reminders = DbController.GetReminders();
-        reminders.ForEach(rr =>
+        EntityFrameworkModels.Reminder[] reminders = DbController.GetReminders();
+        foreach (EntityFrameworkModels.Reminder rr in reminders)
         {
             if (_items.All(r => r.Id != rr.Id))
             {
                 _items.Add(new(rr));
             }
-        });
+        }
+
         _containsAll = true;
     }
 

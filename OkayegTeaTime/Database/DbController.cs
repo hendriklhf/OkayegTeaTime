@@ -119,10 +119,10 @@ public static class DbController
         return database.Channels.FirstOrDefault(c => c.Id == id);
     }
 
-    public static List<Channel> GetChannels()
+    public static Channel[] GetChannels()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Channels.ToList();
+        return database.Channels.ToArray();
     }
 
     public static Reminder? GetReminder(int id)
@@ -131,10 +131,10 @@ public static class DbController
         return database.Reminders.FirstOrDefault(r => r.Id == id);
     }
 
-    public static List<Reminder> GetReminders()
+    public static Reminder[] GetReminders()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Reminders.ToList();
+        return database.Reminders.ToArray();
     }
 
     public static EntityFrameworkModels.Spotify? GetSpotifyUser(string username)
@@ -143,10 +143,10 @@ public static class DbController
         return database.Spotify.FirstOrDefault(s => s.Username == username);
     }
 
-    public static List<EntityFrameworkModels.Spotify> GetSpotifyUsers()
+    public static EntityFrameworkModels.Spotify[] GetSpotifyUsers()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Spotify.ToList();
+        return database.Spotify.ToArray();
     }
 
     public static User? GetUser(int userId, string? username = null)
@@ -168,10 +168,10 @@ public static class DbController
         return user;
     }
 
-    public static List<User> GetUsers()
+    public static User[] GetUsers()
     {
         using OkayegTeaTimeContext database = new();
-        return database.Users.ToList();
+        return database.Users.ToArray();
     }
 
     public static bool HasTooManyRemindersSet(string target, bool isTimedReminder)
@@ -246,9 +246,7 @@ public static class DbController
             return false;
         }
 
-        if (reminder.Creator == username
-            || reminder.Target == username && reminder.ToTime != 0
-            || AppSettings.UserLists.Moderators.Contains(userId))
+        if (reminder.Creator == username || reminder.Target == username && reminder.ToTime != 0 || AppSettings.UserLists.Moderators.Contains(userId))
         {
             database.Reminders.Remove(reminder);
             database.SaveChanges();
@@ -256,19 +254,6 @@ public static class DbController
         }
 
         return false;
-    }
-
-    public static void SetSpotifyAccessToken(string username, string accessToken)
-    {
-        using OkayegTeaTimeContext database = new();
-        EntityFrameworkModels.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
-        if (user is null)
-        {
-            return;
-        }
-
-        user.AccessToken = accessToken;
-        database.SaveChanges();
     }
 
     public static bool SetSongRequestState(string username, bool enabled)

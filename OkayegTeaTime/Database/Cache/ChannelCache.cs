@@ -79,14 +79,14 @@ public class ChannelCache : DbCache<Channel>
 
     private protected override void GetAllFromDb()
     {
-        List<EntityFrameworkModels.Channel> channels = DbController.GetChannels();
-        channels.ForEach(ch =>
+        EntityFrameworkModels.Channel[] channels = DbController.GetChannels();
+        foreach (EntityFrameworkModels.Channel ch in channels)
         {
             if (_items.All(c => c.Id != ch.Id))
             {
                 _items.Add(new(ch));
             }
-        });
+        }
         _containsAll = true;
     }
 
