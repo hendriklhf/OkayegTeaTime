@@ -14,7 +14,9 @@ public static class AppSettings
 
     public static DbConnection DbConnection => JsonController.GetSettings().DatabaseConnection;
 
+#if DEBUG
     public static string DebugChannel => JsonController.GetSettings().DebugChannel;
+#endif
 
     public static Discord Discord => JsonController.GetSettings().Discord;
 
@@ -37,7 +39,6 @@ public static class AppSettings
     public const byte MaxPrefixLength = 10;
     public const byte MaxReminders = 10;
     public const short DelayBetweenSentMessages = 1300;
-    public const short DelayBetweenReceivedMessages = 500;
     public const string Suffix = "eg";
     public const string SettingsFileName = "Settings.json";
 }

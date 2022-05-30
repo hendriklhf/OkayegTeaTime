@@ -18,10 +18,8 @@ public static class Program
 
         ArgsResolver argsResolver = new(args);
         argsResolver.Resolve();
-        if (argsResolver.SettingsPath is not null)
-        {
-            JsonController.SettingsPath = argsResolver.SettingsPath;
-        }
+
+        JsonController.SettingsPath = argsResolver.SettingsPath;
 
         TwitchBot twitchBot = new(argsResolver.Channels);
         twitchBot.Connect();

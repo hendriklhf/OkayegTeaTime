@@ -112,13 +112,9 @@ public class MessageHandler : Handler
         }
 
         string? prefix = DbControl.Channels[chatMessage.Channel]?.Prefix;
-        if (string.IsNullOrEmpty(prefix))
-        {
-            _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}");
-        }
-        else
-        {
-            _twitchBot.Send(chatMessage.Channel, $"{chatMessage.Username}, Prefix: {prefix}");
-        }
+        string message = string.IsNullOrEmpty(prefix)
+            ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}"
+            : $"{chatMessage.Username}, Prefix: {prefix}";
+        _twitchBot.Send(chatMessage.Channel, message);
     }
 }
