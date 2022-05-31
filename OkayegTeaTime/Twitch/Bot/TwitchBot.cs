@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Timers;
+using HLE.Collections;
 using HLE.Emojis;
 using HLE.Numbers;
 using HLE.Strings;
-using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Logging;
@@ -39,7 +39,7 @@ public class TwitchBot
 
     public MessageHandler? MessageHandler { get; private set; }
 
-    public WhisperHandler? WhisperHandler { get; private set; }
+    public WhisperHandler WhisperHandler { get; } = new();
 
     public LastMessagesDictionary LastMessagesDictionary { get; } = new();
 
@@ -62,10 +62,7 @@ public class TwitchBot
 
     public string SystemInfo => GetSystemInfo();
 
-    public string Runtime => GetUnixDifference(_runtime).ToString();
-
-    public static List<Timer> Timers { get; } = new();
-
+    private readonly TimerController _timerController = new();
     private readonly long _runtime = Now();
 
     public TwitchBot(IEnumerable<string>? channels = null)
@@ -97,7 +94,7 @@ public class TwitchBot
                 AppSettings.DebugChannel
             };
 #else
-            Channels = DbController.GetChannels().Select(c => c.Name).ToList();
+            Channels = DbControl.Channels.Select(c => c.Name).ToList();
 #endif
         }
 
@@ -186,7 +183,6 @@ public class TwitchBot
     private void Initlialize()
     {
         MessageHandler = new(this);
-        WhisperHandler = new();
         Restarter.Initialize();
         InitializeTimers();
     }
@@ -195,10 +191,10 @@ public class TwitchBot
 
     private string GetSystemInfo()
     {
-        return $"Uptime: {Runtime} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
+        return $"Uptime: {GetUnixDifference(_runtime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
     }
 
-    private string GetMemoryUsage()
+    private static string GetMemoryUsage()
     {
         return $"{Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100}MB / 8000MB";
     }
@@ -287,36 +283,25 @@ public class TwitchBot
 
     private void InitializeTimers()
     {
-        Bot.Timers.CreateTimers();
-        AddTimerFunction();
-        StartTimers();
+        _timerController.Add(OnTimer1000, 1000);
+        _timerController.Add(OnTimer30000, 30000);
+        _timerController.Add(OnTimer10Days, TimeSpan.FromDays(10).TotalMilliseconds);
     }
 
-    private static void StartTimers()
+    private void OnTimer1000(object? sender, ElapsedEventArgs e)
     {
-        Timers.ForEach(t => t.Start());
+        IEnumerable<Reminder> reminders = DbControl.Reminders.GetExpiredReminders();
+        reminders.ForEach(this.SendTimedReminder);
     }
 
-    private void AddTimerFunction()
+    private void OnTimer30000(object? sender, ElapsedEventArgs e)
     {
-        Bot.Timers.GetTimer(new Second().Milliseconds)!.Elapsed += OnTimer1000!;
-        Bot.Timers.GetTimer(new Second(30).Milliseconds)!.Elapsed += OnTimer30000!;
-        Bot.Timers.GetTimer(new Day(10).Milliseconds)!.Elapsed += OnTimer10Days!;
+        Console.Title = $"OkayegTeaTime - {SystemInfo}";
     }
 
-    private void OnTimer1000(object sender, ElapsedEventArgs e)
+    private static void OnTimer10Days(object? sender, ElapsedEventArgs e)
     {
-        TimerFunctions.CheckForTimedReminders(this);
-    }
-
-    private void OnTimer30000(object sender, ElapsedEventArgs e)
-    {
-        TimerFunctions.SetConsoleTitle(this);
-    }
-
-    private void OnTimer10Days(object sender, ElapsedEventArgs e)
-    {
-        TimerFunctions.TwitchApiRefreshAccessToken();
+        TwitchApi.RefreshAccessToken();
     }
 
     #endregion Timer
