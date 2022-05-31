@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class StreamCommand : Command
 {
-    private readonly int[] _noViewerCount =
+    private readonly long[] _noViewerCount =
     {
         149489313
     };
@@ -23,18 +23,9 @@ public class StreamCommand : Command
     public override void Handle()
     {
         Regex channelPattern = PatternCreator.Create(Alias, Prefix, @"\s\w+");
-        Stream? stream;
         Response = $"{ChatMessage.Username}, ";
 
-        if (channelPattern.IsMatch(ChatMessage.Message))
-        {
-            stream = TwitchApi.GetStream(ChatMessage.Split[1]);
-        }
-        else
-        {
-            stream = TwitchApi.GetStream(ChatMessage.ChannelId);
-        }
-
+        Stream? stream = channelPattern.IsMatch(ChatMessage.Message) ? TwitchApi.GetStream(ChatMessage.Split[1]) : TwitchApi.GetStream(ChatMessage.ChannelId);
         if (stream is null)
         {
             Response += "this channel is currently not streaming";
@@ -42,7 +33,7 @@ public class StreamCommand : Command
         }
 
         Response += $"{stream.UserName} is currently streaming {stream.GameName} ";
-        int userId = stream.UserId.ToInt();
+        long userId = stream.UserId.ToLong();
         if (ChatMessage.ChannelId != userId || !_noViewerCount.Contains(userId))
         {
             Response += $"with {stream.ViewerCount} viewer{(stream.ViewerCount > 1 ? 's' : string.Empty)} ";

@@ -4,7 +4,7 @@ namespace OkayegTeaTime.Database.Models;
 
 public class Channel : CacheModel
 {
-    public int Id { get; }
+    public long Id { get; }
 
     public string Name { get; }
 
@@ -77,7 +77,7 @@ public class Channel : CacheModel
         _isEmoteNotificationSub = channel.EmoteManagementSub == true;
     }
 
-    public Channel(int id, string name)
+    public Channel(long id, string name)
     {
         Id = id;
         Name = name;

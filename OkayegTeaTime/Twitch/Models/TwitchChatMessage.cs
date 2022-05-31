@@ -43,7 +43,7 @@ public class TwitchChatMessage : TwitchMessage
 
     public Noisy Noisy { get; }
 
-    public int ChannelId { get; }
+    public long ChannelId { get; }
 
     public int SubcsribedMonthCount { get; }
 

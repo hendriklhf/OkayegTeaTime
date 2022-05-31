@@ -17,7 +17,7 @@ public class TwitchMessage : ChatMessage
 
     public string RawIrcMessage { get; }
 
-    public int UserId { get; }
+    public long UserId { get; }
 
     public UserType UserType { get; }
 

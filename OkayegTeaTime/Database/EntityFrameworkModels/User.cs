@@ -7,14 +7,14 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
 {
     public class User
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Username { get; set; }
         public byte[] AfkMessage { get; set; } = Array.Empty<byte>();
         public int AfkType { get; set; }
         public long AfkTime { get; set; } = TimeHelper.Now();
         public bool? IsAfk { get; set; }
 
-        public User(int id, string username, byte[] afkMessage, int afkType, long afkTime, bool? isAfk)
+        public User(long id, string username, byte[] afkMessage, int afkType, long afkTime, bool? isAfk)
         {
             Id = id;
             Username = username;
@@ -24,7 +24,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
             IsAfk = isAfk;
         }
 
-        public User(int id, string username, AfkCommandType type)
+        public User(long id, string username, AfkCommandType type)
         {
             Id = id;
             Username = username;

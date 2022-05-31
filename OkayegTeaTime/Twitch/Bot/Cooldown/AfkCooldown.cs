@@ -4,11 +4,11 @@ namespace OkayegTeaTime.Twitch.Bot.Cooldown;
 
 public class AfkCooldown
 {
-    public int UserId { get; }
+    public long UserId { get; }
 
     public long Time { get; }
 
-    public AfkCooldown(int userId)
+    public AfkCooldown(long userId)
     {
         UserId = userId;
         Time = TimeHelper.Now() + AppSettings.AfkCooldown;

@@ -6,7 +6,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
 {
     public class Spotify
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Username { get; set; }
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
@@ -20,7 +20,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
             RefreshToken = refreshToken;
         }
 
-        public Spotify(int id, string username, string accessToken, string refreshToken, long time)
+        public Spotify(long id, string username, string accessToken, string refreshToken, long time)
         {
             Id = id;
             Username = username;

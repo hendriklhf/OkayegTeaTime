@@ -7,5 +7,5 @@ namespace OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
 public class FfzBotBadgeIds
 {
     [JsonPropertyName("2")]
-    public List<int> UserIds { get; set; }
+    public List<long> UserIds { get; set; }
 }

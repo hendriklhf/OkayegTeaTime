@@ -58,11 +58,11 @@ public class EmoteController
     private IEnumerable<BttvEmote>? _bttvGlobalEmotes;
     private IEnumerable<SevenTvGlobalEmote>? _sevenTvGlobalEmotes;
 
-    private readonly Dictionary<int, IEnumerable<FfzEmote>> _ffzChannelsEmotes = new();
-    private readonly Dictionary<int, IEnumerable<BttvEmote>> _bttvEmotes = new();
-    private readonly Dictionary<int, IEnumerable<SevenTvEmote>> _sevenTvChannelEmotes = new();
+    private readonly Dictionary<long, IEnumerable<FfzEmote>> _ffzChannelsEmotes = new();
+    private readonly Dictionary<long, IEnumerable<BttvEmote>> _bttvEmotes = new();
+    private readonly Dictionary<long, IEnumerable<SevenTvEmote>> _sevenTvChannelEmotes = new();
 
-    public IEnumerable<FfzEmote> GetFfzEmotes(int channelId, bool loadFromCache = true)
+    public IEnumerable<FfzEmote> GetFfzEmotes(long channelId, bool loadFromCache = true)
     {
         if (loadFromCache && _ffzChannelsEmotes.TryGetValue(channelId, out IEnumerable<FfzEmote>? result))
         {
@@ -79,7 +79,7 @@ public class EmoteController
         return emotes;
     }
 
-    public IEnumerable<BttvEmote> GetBttvEmotes(int channelId, bool loadFromCache = true)
+    public IEnumerable<BttvEmote> GetBttvEmotes(long channelId, bool loadFromCache = true)
     {
         if (loadFromCache && _bttvEmotes.TryGetValue(channelId, out IEnumerable<BttvEmote>? result))
         {
@@ -96,7 +96,7 @@ public class EmoteController
         return emotes;
     }
 
-    public IEnumerable<SevenTvEmote> GetSevenTvEmotes(int channelId, bool loadFromCache = true)
+    public IEnumerable<SevenTvEmote> GetSevenTvEmotes(long channelId, bool loadFromCache = true)
     {
         if (loadFromCache && _sevenTvChannelEmotes.TryGetValue(channelId, out IEnumerable<SevenTvEmote>? result))
         {
@@ -113,7 +113,7 @@ public class EmoteController
         return emotes;
     }
 
-    private SevenTvRequest? GetSevenTvRequest(int channelId)
+    private SevenTvRequest? GetSevenTvRequest(long channelId)
     {
         try
         {
@@ -174,7 +174,7 @@ public class EmoteController
         return JsonSerializer.Deserialize<BttvEmote[]>(request.Result) ?? Array.Empty<BttvEmote>();
     }
 
-    private BttvRequest? GetBttvRequest(int channelId)
+    private BttvRequest? GetBttvRequest(long channelId)
     {
         try
         {
@@ -188,7 +188,7 @@ public class EmoteController
         }
     }
 
-    private FfzRequest? GetFfzRequest(int channelId)
+    private FfzRequest? GetFfzRequest(long channelId)
     {
         try
         {

@@ -11,7 +11,7 @@ namespace OkayegTeaTime.Tests;
 [TestClass]
 public class ApiTests
 {
-    private const int _testChannel = 87633910;
+    private const long _testChannel = 87633910;
 
     [TestMethod]
     public void GetSevenTvEmotesTest()

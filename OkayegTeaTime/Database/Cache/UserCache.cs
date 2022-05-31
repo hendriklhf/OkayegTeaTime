@@ -5,16 +5,16 @@ namespace OkayegTeaTime.Database.Cache;
 
 public class UserCache : DbCache<User>
 {
-    public User? this[int id] => GetUser(id);
+    public User? this[long id] => GetUser(id);
 
-    public void Add(int id, string username, AfkCommandType type)
+    public void Add(long id, string username, AfkCommandType type)
     {
         User user = new(id, username, type);
         DbController.AddUser(id, username, type);
         _items.Add(user);
     }
 
-    public User? GetUser(int id, string? username = null)
+    public User? GetUser(long id, string? username = null)
     {
         User? user = _items.FirstOrDefault(u => u.Id == id);
         if (user is not null)

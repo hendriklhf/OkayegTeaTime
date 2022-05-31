@@ -39,7 +39,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
 
     public void Add(string username, string accessToken, string refreshToken)
     {
-        int? id = DbController.AddSpotifyUser(username, accessToken, refreshToken);
+        long? id = DbController.AddSpotifyUser(username, accessToken, refreshToken);
         if (!id.HasValue)
         {
             return;

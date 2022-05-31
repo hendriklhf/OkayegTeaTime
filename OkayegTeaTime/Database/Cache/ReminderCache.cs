@@ -40,7 +40,7 @@ public class ReminderCache : DbCache<Reminder>
         return ids;
     }
 
-    public bool Remove(int userId, string username, int reminderId)
+    public bool Remove(long userId, string username, int reminderId)
     {
         bool removed = DbController.RemoveReminder(userId, username, reminderId);
         if (!removed)

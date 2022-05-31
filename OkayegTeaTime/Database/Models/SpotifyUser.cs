@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Database.Models;
 
 public class SpotifyUser : CacheModel
 {
-    public int Id { get; }
+    public long Id { get; }
 
     public string Username { get; }
 
@@ -105,7 +105,7 @@ public class SpotifyUser : CacheModel
         _timer.Elapsed += Timer_OnElapsed;
     }
 
-    public SpotifyUser(int id, string username, string accessToken, string refreshToken)
+    public SpotifyUser(long id, string username, string accessToken, string refreshToken)
     {
         Id = id;
         Username = username;

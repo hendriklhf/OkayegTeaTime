@@ -23,7 +23,7 @@ public class CheckCommand : Command
         {
             Response = $"{ChatMessage.Username}, ";
             string username = ChatMessage.LowerSplit[2];
-            int? userId = TwitchApi.GetUserId(username);
+            long? userId = TwitchApi.GetUserId(username);
             if (!userId.HasValue)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;

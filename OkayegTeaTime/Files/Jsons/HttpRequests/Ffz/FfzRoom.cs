@@ -10,7 +10,7 @@ public class FfzRoom
     public int Id { get; set; }
 
     [JsonPropertyName("twitch_id")]
-    public int TwitchUserId { get; set; }
+    public long TwitchUserId { get; set; }
 
     [JsonPropertyName("youtube_id")]
     public int? YoutubeUserId { get; set; }

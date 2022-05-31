@@ -36,7 +36,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
         {
             modelBuilder.Entity<Channel>(entity =>
             {
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasColumnType("bigint");
 
                 entity.Property(e => e.EmoteInFront)
                     .HasMaxLength(100)
@@ -108,7 +108,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
             {
                 entity.ToTable("Spotify");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasColumnType("bigint");
 
                 entity.Property(e => e.AccessToken)
                     .IsRequired()
@@ -171,7 +171,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasColumnType("bigint");
 
                 entity.Property(e => e.AfkMessage)
                     .HasMaxLength(2000)

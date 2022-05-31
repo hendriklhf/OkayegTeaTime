@@ -6,13 +6,13 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
 {
     public class Channel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public byte[] EmoteInFront { get; set; }
         public byte[] Prefix { get; set; }
         public bool? EmoteManagementSub { get; set; }
 
-        public Channel(int id, string name, string emote = null, string prefix = null, bool emoteManagementSub = false)
+        public Channel(long id, string name, string emote = null, string prefix = null, bool emoteManagementSub = false)
         {
             Id = id;
             Name = name;
@@ -21,7 +21,7 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
             EmoteManagementSub = emoteManagementSub;
         }
 
-        public Channel(int id, string name, byte[] emoteInFront, byte[] prefix, bool? emoteManagementSub = false)
+        public Channel(long id, string name, byte[] emoteInFront, byte[] prefix, bool? emoteManagementSub = false)
         {
             Id = id;
             Name = name;

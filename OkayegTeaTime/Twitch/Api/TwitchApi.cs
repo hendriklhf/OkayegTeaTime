@@ -74,7 +74,7 @@ public static class TwitchApi
         return users.ToDictionary(username => username, username => response.Users.FirstOrDefault(u => string.Equals(u.DisplayName, username, StringComparison.CurrentCultureIgnoreCase)));
     }
 
-    public static User? GetUser(int id)
+    public static User? GetUser(long id)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new()
         {
@@ -83,16 +83,16 @@ public static class TwitchApi
         return response.Users.FirstOrDefault();
     }
 
-    public static Dictionary<int, User?> GetUsers(IEnumerable<int> ids)
+    public static Dictionary<long, User?> GetUsers(IEnumerable<long> ids)
     {
-        List<int> idss = ids.ToList();
+        List<long> idss = ids.ToList();
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: idss.Select(i => i.ToString()).ToList()).Result;
-        return idss.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => u.Id.ToInt() == id));
+        return idss.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => u.Id.ToLong() == id));
     }
 
-    public static int? GetUserId(string username)
+    public static long? GetUserId(string username)
     {
-        return GetUser(username)?.Id?.ToInt();
+        return GetUser(username)?.Id?.ToLong();
     }
 
     public static bool DoesUserExist(string username)
@@ -107,15 +107,15 @@ public static class TwitchApi
         return new(result);
     }
 
-    public static bool DoesUserExist(int id)
+    public static bool DoesUserExist(long id)
     {
         return GetUser(id) is not null;
     }
 
-    public static Dictionary<int, bool> DoUsersExist(IEnumerable<int> ids)
+    public static Dictionary<long, bool> DoUsersExist(IEnumerable<long> ids)
     {
-        Dictionary<int, User?> users = GetUsers(ids);
-        IEnumerable<KeyValuePair<int, bool>> result = users.Select(u => new KeyValuePair<int, bool>(u.Key, u.Value is not null));
+        Dictionary<long, User?> users = GetUsers(ids);
+        IEnumerable<KeyValuePair<long, bool>> result = users.Select(u => new KeyValuePair<long, bool>(u.Key, u.Value is not null));
         return new(result);
     }
 
@@ -128,7 +128,7 @@ public static class TwitchApi
         return response.Streams.FirstOrDefault();
     }
 
-    public static Stream? GetStream(int id)
+    public static Stream? GetStream(long id)
     {
         GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string>
         {
@@ -142,18 +142,18 @@ public static class TwitchApi
         return GetStream(channel) is not null;
     }
 
-    public static bool IsLive(int id)
+    public static bool IsLive(long id)
     {
         return GetStream(id) is not null;
     }
 
     public static ChannelEmote[] GetSubEmotes(string channel)
     {
-        int? channelId = GetUserId(channel);
+        long? channelId = GetUserId(channel);
         return channelId is null ? Array.Empty<ChannelEmote>() : GetSubEmotes(channelId.Value);
     }
 
-    public static ChannelEmote[] GetSubEmotes(int channelId)
+    public static ChannelEmote[] GetSubEmotes(long channelId)
     {
         GetChannelEmotesResponse response = _api.Helix.Chat.GetChannelEmotesAsync(channelId.ToString()).Result;
         return response.ChannelEmotes;

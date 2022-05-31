@@ -16,7 +16,7 @@ public class AfkMessage
 
     public string? Resuming { get; private set; }
 
-    public AfkMessage(int userId, AfkCommand cmd)
+    public AfkMessage(long userId, AfkCommand cmd)
     {
         User = DbControl.Users[userId];
         CreateMessages(cmd);

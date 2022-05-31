@@ -19,7 +19,7 @@ public class CooldownController
         _twitchBot = twitchBot;
     }
 
-    public void AddCooldown(int userId, CommandType type)
+    public void AddCooldown(long userId, CommandType type)
     {
 #if !DEBUG
         if (AppSettings.UserLists.Moderators.Contains(userId))
@@ -38,7 +38,7 @@ public class CooldownController
         Cooldowns.Add(new(userId, cmd, type));
     }
 
-    public void AddAfkCooldown(int userId)
+    public void AddAfkCooldown(long userId)
     {
 #if !DEBUG
         if (AppSettings.UserLists.Moderators.Contains(userId))
@@ -56,12 +56,12 @@ public class CooldownController
         AfkCooldowns.Add(new(userId));
     }
 
-    public bool IsOnCooldown(int userId, CommandType type)
+    public bool IsOnCooldown(long userId, CommandType type)
     {
         return Cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > TimeHelper.Now());
     }
 
-    public bool IsOnAfkCooldown(int userId)
+    public bool IsOnAfkCooldown(long userId)
     {
         return AfkCooldowns.Any(c => c.UserId == userId && c.Time > TimeHelper.Now());
     }

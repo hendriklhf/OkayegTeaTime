@@ -9,7 +9,7 @@ namespace OkayegTeaTime.Database;
 
 public static class DbController
 {
-    public static void AddChannel(int id, string channel)
+    public static void AddChannel(long id, string channel)
     {
         // FIXME: all operations create a Context, act on it and dispose straight away
         // Would be better to make this class non-static (treat as a Repository) & pool connections (see the following:
@@ -19,12 +19,12 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void AddUser(int userId, string username, AfkCommandType type, bool checkIfUserExists = false)
+    public static void AddUser(long userId, string username, AfkCommandType type, bool checkIfUserExists = false)
     {
         _ = AddUserAndReturn(userId, username, type, checkIfUserExists);
     }
 
-    public static User? AddUserAndReturn(int userId, string username, AfkCommandType type, bool checkIfUserExists = false)
+    public static User? AddUserAndReturn(long userId, string username, AfkCommandType type, bool checkIfUserExists = false)
     {
         User? user;
         if (checkIfUserExists)
@@ -43,7 +43,7 @@ public static class DbController
         return user;
     }
 
-    public static int? AddSpotifyUser(string username, string accessToken, string refreshToken)
+    public static long? AddSpotifyUser(string username, string accessToken, string refreshToken)
     {
         using OkayegTeaTimeContext database = new();
         EntityFrameworkModels.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
@@ -113,7 +113,7 @@ public static class DbController
         return database.Channels.FirstOrDefault(c => c.Name == channel);
     }
 
-    public static Channel? GetChannel(int id)
+    public static Channel? GetChannel(long id)
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.FirstOrDefault(c => c.Id == id);
@@ -149,7 +149,7 @@ public static class DbController
         return database.Spotify.ToArray();
     }
 
-    public static User? GetUser(int userId, string? username = null)
+    public static User? GetUser(long userId, string? username = null)
     {
         using OkayegTeaTimeContext database = new();
         User? user = database.Users.FirstOrDefault(u => u.Id == userId);
@@ -195,7 +195,7 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void RemoveChannel(int id)
+    public static void RemoveChannel(long id)
     {
         using OkayegTeaTimeContext database = new();
         Channel? chnl = database.Channels.FirstOrDefault(c => c.Id == id);
@@ -237,7 +237,7 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static bool RemoveReminder(int userId, string username, int reminderId)
+    public static bool RemoveReminder(long userId, string username, int reminderId)
     {
         using OkayegTeaTimeContext database = new();
         Reminder? reminder = database.Reminders.FirstOrDefault(r => r.Id == reminderId);

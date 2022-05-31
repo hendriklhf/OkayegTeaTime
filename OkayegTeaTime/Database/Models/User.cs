@@ -5,7 +5,7 @@ namespace OkayegTeaTime.Database.Models;
 
 public class User : CacheModel
 {
-    public int Id { get; }
+    public long Id { get; }
 
     public string Username { get; }
 
@@ -92,7 +92,7 @@ public class User : CacheModel
         _isAfk = user.IsAfk == true;
     }
 
-    public User(int id, string username, AfkCommandType type)
+    public User(long id, string username, AfkCommandType type)
     {
         Id = id;
         Username = username;

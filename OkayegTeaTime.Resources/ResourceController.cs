@@ -123,9 +123,8 @@ public static class ResourceController
 
     private static void ReadFile(string propertyName)
     {
-        Assembly assembly = Assembly.GetCallingAssembly();
         string fileName = GetFileName(propertyName);
-        string resourcePath = string.Join('.', assembly.GetName().Name, fileName);
+        string resourcePath = string.Join('.', _assembly.GetName().Name, fileName);
         using Stream? stream = _assembly.GetManifestResourceStream(resourcePath);
         if (stream is null)
         {

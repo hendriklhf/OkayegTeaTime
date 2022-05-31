@@ -4,18 +4,18 @@ namespace OkayegTeaTime.Database.Cache;
 
 public class ChannelCache : DbCache<Channel>
 {
-    public Channel? this[int id] => GetChannel(id);
+    public Channel? this[long id] => GetChannel(id);
 
     public Channel? this[string name] => GetChannel(name);
 
-    public void Add(int id, string name)
+    public void Add(long id, string name)
     {
         Channel channel = new(id, name);
         DbController.AddChannel(id, name);
         _items.Add(channel);
     }
 
-    public void Remove(int id)
+    public void Remove(long id)
     {
         Channel? channel = this[id];
         if (channel is null)
@@ -39,7 +39,7 @@ public class ChannelCache : DbCache<Channel>
         DbController.RemoveChannel(name);
     }
 
-    private Channel? GetChannel(int id)
+    private Channel? GetChannel(long id)
     {
         Channel? channel = _items.FirstOrDefault(c => c.Id == id);
         if (channel is not null)

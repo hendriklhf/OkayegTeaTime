@@ -6,13 +6,13 @@ namespace OkayegTeaTime.Twitch.Bot.Cooldown;
 
 public class Cooldown
 {
-    public int UserId { get; }
+    public long UserId { get; }
 
     public CommandType Type { get; }
 
     public long Time { get; }
 
-    public Cooldown(int userId, Command cmd, CommandType type)
+    public Cooldown(long userId, Command cmd, CommandType type)
     {
         UserId = userId;
         Type = type;
