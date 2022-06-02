@@ -24,14 +24,14 @@ public class DividedMessage
 
     public void StartSending()
     {
-        _twitchBot.TwitchClient.SendMessage(Channel, $"{EmoteInFront} {Messages[0]}");
+        _twitchBot.SendText(Channel, $"{EmoteInFront} {Messages[0]}");
         Messages.RemoveAt(0);
         if (Messages.Count > 0)
         {
             Thread.Sleep(AppSettings.DelayBetweenSentMessages);
             Messages.ForEach(str =>
             {
-                _twitchBot.TwitchClient.SendMessage(Channel, str);
+                _twitchBot.SendText(Channel, str);
                 Thread.Sleep(AppSettings.DelayBetweenSentMessages);
             });
         }

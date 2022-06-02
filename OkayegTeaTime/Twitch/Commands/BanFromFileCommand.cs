@@ -43,11 +43,11 @@ public class BanFromFileCommand : Command
                 {
                     if (_banPattern.IsMatch(f))
                     {
-                        _twitchBot.TwitchClient.SendMessage(ChatMessage.Channel, f);
+                        _twitchBot.SendText(ChatMessage.Channel, f);
                     }
                     else
                     {
-                        _twitchBot.TwitchClient.SendMessage(ChatMessage.Channel, $"/ban {f}");
+                        _twitchBot.SendText(ChatMessage.Channel, $"/ban {f}");
                     }
                 });
                 Response += "done :)";

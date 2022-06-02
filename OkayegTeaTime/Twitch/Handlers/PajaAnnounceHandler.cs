@@ -17,7 +17,7 @@ public class PajaAnnounceHandler : PajaHandler
     {
         if (chatMessage.ChannelId == _pajaChannelId && Pattern.IsMatch(chatMessage.Message))
         {
-            _twitchBot.TwitchClient.SendMessage(_pajaAlertChannel, Message);
+            _twitchBot.SendText(_pajaAlertChannel, Message);
         }
     }
 }

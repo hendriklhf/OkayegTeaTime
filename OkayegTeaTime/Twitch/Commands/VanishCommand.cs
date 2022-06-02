@@ -1,6 +1,5 @@
 ﻿using OkayegTeaTime.Twitch.Bot;
 using OkayegTeaTime.Twitch.Models;
-using TwitchLib.Client.Extensions;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -15,7 +14,7 @@ public class VanishCommand : Command
     {
         if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster && !ChatMessage.IsStaff)
         {
-            _twitchBot.TwitchClient.TimeoutUser(ChatMessage.Channel, ChatMessage.Username, TimeSpan.FromSeconds(1));
+            _twitchBot.SendText(ChatMessage.Channel, $"/timeout {ChatMessage.Username} 1");
         }
     }
 }

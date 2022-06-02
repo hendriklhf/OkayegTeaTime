@@ -1,4 +1,5 @@
-﻿using HLE.Time;
+﻿using HLE.Collections;
+using HLE.Time;
 using Timer = System.Timers;
 
 namespace OkayegTeaTime.Twitch.Bot;
@@ -7,11 +8,11 @@ public class Restarter
 {
     private readonly List<Timer::Timer> _restartTimers = new();
 
-    private List<(int Hour, int Minute)> _restartTimes;
+    private (int Hour, int Minute)[] _restartTimes;
 
-    public Restarter(List<(int, int)> restartTimes)
+    public Restarter(IEnumerable<(int, int)> restartTimes)
     {
-        _restartTimes = restartTimes;
+        _restartTimes = restartTimes.ToArray();
     }
 
     public void Initialize()
@@ -19,9 +20,9 @@ public class Restarter
         Initialize(_restartTimes);
     }
 
-    public void Initialize(List<(int, int)> hoursOfDay)
+    public void Initialize(IEnumerable<(int, int)> hoursOfDay)
     {
-        _restartTimes = hoursOfDay;
+        _restartTimes = hoursOfDay.ToArray();
         Stop();
         _restartTimes.ForEach(r => _restartTimers.Add(new(TimeHelper.MillisecondsUntil(r.Hour, r.Minute))));
         _restartTimers.ForEach(t =>
@@ -41,7 +42,7 @@ public class Restarter
         _restartTimers.Clear();
     }
 
-    private void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
+    private static void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
     {
         (sender as Timer::Timer)!.Interval = new Day().Milliseconds;
         Restart();
