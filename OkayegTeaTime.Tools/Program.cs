@@ -7,6 +7,8 @@ public static class Program
 {
     private static readonly Regex _publisherPattern = NewRegex(@"^publish(er)?");
     private static readonly Regex _readmeGeneratorPattern = NewRegex(@"^readme");
+    private static readonly Regex _syncerDownloadPattern = NewRegex(@"^(resource)?sync(er)?\sdown(load)?");
+    private static readonly Regex _syncerUploadPattern = NewRegex(@"^(resource)?sync(er)?\sup(load)?");
 
     private static void Main(string[] args)
     {
@@ -20,6 +22,16 @@ public static class Program
         {
             ReadMeGenerator generator = new();
             generator.GenerateReadMe();
+        }
+        else if (_syncerDownloadPattern.IsMatch(argsStr))
+        {
+            ResourceSyncer syncer = new();
+            syncer.Download();
+        }
+        else if (_syncerUploadPattern.IsMatch(argsStr))
+        {
+            ResourceSyncer syncer = new();
+            syncer.Upload();
         }
     }
 
