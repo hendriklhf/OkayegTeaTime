@@ -35,6 +35,11 @@ public class UserCache : DbCache<User>
 
     private protected override void GetAllFromDb()
     {
+        if (_containsAll)
+        {
+            return;
+        }
+
         EntityFrameworkModels.User[] users = DbController.GetUsers();
         foreach (EntityFrameworkModels.User uu in users)
         {
@@ -43,11 +48,7 @@ public class UserCache : DbCache<User>
                 _items.Add(new(uu));
             }
         }
-        _containsAll = true;
-    }
 
-    public override IEnumerator<User> GetEnumerator()
-    {
-        throw new NotImplementedException();
+        _containsAll = true;
     }
 }

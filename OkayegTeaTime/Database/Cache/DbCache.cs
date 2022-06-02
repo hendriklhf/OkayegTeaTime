@@ -15,7 +15,11 @@ public abstract class DbCache<T> : IEnumerable<T> where T : CacheModel
         _items.Clear();
     }
 
-    public abstract IEnumerator<T> GetEnumerator();
+    public IEnumerator<T> GetEnumerator()
+    {
+        GetAllFromDb();
+        return _items.GetEnumerator();
+    }
 
     IEnumerator IEnumerable.GetEnumerator()
     {

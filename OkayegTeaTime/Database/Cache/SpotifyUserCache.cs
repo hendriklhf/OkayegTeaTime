@@ -70,6 +70,11 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
 
     private protected override void GetAllFromDb()
     {
+        if (_containsAll)
+        {
+            return;
+        }
+
         EntityFrameworkModels.Spotify[] users = DbController.GetSpotifyUsers();
         foreach (EntityFrameworkModels.Spotify uu in users)
         {
@@ -78,18 +83,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
                 _items.Add(new(uu));
             }
         }
+
         _containsAll = true;
-    }
-
-    public override IEnumerator<SpotifyUser> GetEnumerator()
-    {
-        if (_containsAll)
-        {
-            return _items.GetEnumerator();
-        }
-
-        GetAllFromDb();
-
-        return _items.GetEnumerator();
     }
 }

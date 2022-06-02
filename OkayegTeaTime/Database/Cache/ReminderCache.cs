@@ -117,10 +117,4 @@ public class ReminderCache : DbCache<Reminder>
 
         _containsAll = true;
     }
-
-    public override IEnumerator<Reminder> GetEnumerator()
-    {
-        GetAllFromDb();
-        return _items.GetEnumerator();
-    }
 }

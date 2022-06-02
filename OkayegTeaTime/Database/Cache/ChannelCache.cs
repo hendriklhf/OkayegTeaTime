@@ -79,6 +79,11 @@ public class ChannelCache : DbCache<Channel>
 
     private protected override void GetAllFromDb()
     {
+        if (_containsAll)
+        {
+            return;
+        }
+
         EntityFrameworkModels.Channel[] channels = DbController.GetChannels();
         foreach (EntityFrameworkModels.Channel ch in channels)
         {
@@ -87,18 +92,7 @@ public class ChannelCache : DbCache<Channel>
                 _items.Add(new(ch));
             }
         }
+
         _containsAll = true;
-    }
-
-    public override IEnumerator<Channel> GetEnumerator()
-    {
-        if (_containsAll)
-        {
-            return _items.GetEnumerator();
-        }
-
-        GetAllFromDb();
-
-        return _items.GetEnumerator();
     }
 }
