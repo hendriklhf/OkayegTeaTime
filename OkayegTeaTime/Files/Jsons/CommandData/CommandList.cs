@@ -4,7 +4,7 @@
 
 public class CommandList
 {
-    public List<Command> Commands { get; set; }
+    public Command[] Commands { get; set; }
 
-    public List<AfkCommand> AfkCommands { get; set; }
+    public AfkCommand[] AfkCommands { get; set; }
 }

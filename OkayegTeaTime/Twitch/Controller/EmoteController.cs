@@ -70,7 +70,7 @@ public class EmoteController
         }
 
         FfzRequest? request = GetFfzRequest(channelId);
-        IEnumerable<FfzEmote> emotes = request?.Set?.EmoteSet?.Emotes ?? new List<FfzEmote>();
+        IEnumerable<FfzEmote> emotes = request?.Set?.EmoteSet?.Emotes ?? Array.Empty<FfzEmote>();
         if (!_ffzChannelsEmotes.TryAdd(channelId, emotes))
         {
             _ffzChannelsEmotes[channelId] = emotes;
@@ -149,10 +149,10 @@ public class EmoteController
     private IEnumerable<SevenTvGlobalEmote> GetSevenTvGlobalEmotes()
     {
         HttpPost request = new("https://api.7tv.app/v2/gql", new[]
-            {
-                ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) " +
-                          "{id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
-            });
+        {
+            ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) " +
+                      "{id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
+        });
 
         if (!request.IsValidJsonData)
         {

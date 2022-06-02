@@ -18,11 +18,11 @@ public class MasspingCommand : Command
         {
             string channelEmote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
-            List<string> chatters;
+            string[] chatters;
             if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
             {
-                chatters = HttpRequest.GetChatters(ChatMessage.Channel).Select(c => c.Username).ToList();
-                if (chatters.Count == 0)
+                chatters = HttpRequest.GetChatters(ChatMessage.Channel).Select(c => c.Username).ToArray();
+                if (chatters.Length == 0)
                 {
                     Response = string.Empty;
                     return;
@@ -33,6 +33,7 @@ public class MasspingCommand : Command
                 Response = $"OkayegTeaTime {emote} ";
                 chatters = AppSettings.OfflineChatEmotes;
             }
+
             Response += string.Join($" {emote} ", chatters);
         }
         else

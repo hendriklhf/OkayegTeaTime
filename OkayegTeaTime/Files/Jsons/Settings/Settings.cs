@@ -8,7 +8,7 @@ public class Settings
 
     public Discord Discord { get; set; }
 
-    public List<string> OfflineChatEmotes { get; set; }
+    public string[] OfflineChatEmotes { get; set; }
 
     public Spotify Spotify { get; set; }
 

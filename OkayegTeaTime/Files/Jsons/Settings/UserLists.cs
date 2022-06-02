@@ -4,11 +4,11 @@ namespace OkayegTeaTime.Files.Jsons.Settings;
 
 public class UserLists
 {
-    public List<long> Owners { get; set; }
+    public long Owner { get; set; }
 
-    public List<long> Moderators { get; set; }
+    public long[] Moderators { get; set; }
 
-    public List<long> IgnoredUsers { get; set; }
+    public long[] IgnoredUsers { get; set; }
 
-    public List<long> SecretUsers { get; set; }
+    public long[] SecretUsers { get; set; }
 }

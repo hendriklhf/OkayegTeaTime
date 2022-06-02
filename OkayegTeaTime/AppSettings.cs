@@ -24,7 +24,7 @@ public static class AppSettings
 
     public static string OfflineChatChannel => JsonController.GetSettings().OfflineChatChannel;
 
-    public static List<string> OfflineChatEmotes => JsonController.GetSettings().OfflineChatEmotes;
+    public static string[] OfflineChatEmotes => JsonController.GetSettings().OfflineChatEmotes;
 
     public static Files.Jsons.Settings.Spotify Spotify => JsonController.GetSettings().Spotify;
 

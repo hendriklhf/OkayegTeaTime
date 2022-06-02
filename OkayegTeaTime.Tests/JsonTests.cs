@@ -11,7 +11,7 @@ public class JsonTests
     public void JsonSettingsContentTest()
     {
         Assert.IsNotNull(AppSettings.UserLists.Moderators);
-        Assert.IsNotNull(AppSettings.UserLists.Owners);
+        Assert.IsTrue(AppSettings.UserLists.Owner != default);
         Assert.IsNotNull(AppSettings.UserLists.SecretUsers);
         Assert.IsNotNull(AppSettings.UserLists.IgnoredUsers);
     }
