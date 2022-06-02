@@ -49,13 +49,13 @@ public class TwitchBot
 
     public Restarter Restarter { get; } = new(new()
     {
-        new(4, 0),
-        new(4, 10),
-        new(4, 20),
-        new(4, 30),
-        new(4, 40),
-        new(4, 50),
-        new(5, 0)
+        (4, 0),
+        (4, 10),
+        (4, 20),
+        (4, 30),
+        (4, 40),
+        (4, 50),
+        (5, 0)
     });
 
     public DottedNumber CommandCount { get; set; } = 1;
