@@ -41,7 +41,7 @@ public class ChannelCache : DbCache<Channel>
 
     private Channel? GetChannel(long id)
     {
-        Channel? channel = _items.FirstOrDefault(c => c.Id == id);
+        Channel? channel = this.FirstOrDefault(c => c.Id == id);
         if (channel is not null)
         {
             return channel;
@@ -60,7 +60,7 @@ public class ChannelCache : DbCache<Channel>
 
     private Channel? GetChannel(string name)
     {
-        Channel? c = _items.FirstOrDefault(c => string.Equals(name, c.Name, StringComparison.OrdinalIgnoreCase));
+        Channel? c = this.FirstOrDefault(c => string.Equals(name, c.Name, StringComparison.OrdinalIgnoreCase));
         if (c is not null)
         {
             return c;

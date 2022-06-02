@@ -51,7 +51,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
 
     private SpotifyUser? GetSpotifyUser(string username)
     {
-        SpotifyUser? user = _items.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
+        SpotifyUser? user = this.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
         if (user is not null)
         {
             return user;

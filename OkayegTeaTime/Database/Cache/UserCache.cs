@@ -16,7 +16,7 @@ public class UserCache : DbCache<User>
 
     public User? GetUser(long id, string? username = null)
     {
-        User? user = _items.FirstOrDefault(u => u.Id == id);
+        User? user = this.FirstOrDefault(u => u.Id == id);
         if (user is not null)
         {
             return user;
