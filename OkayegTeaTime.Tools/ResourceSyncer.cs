@@ -12,7 +12,6 @@ public class ResourceSyncer
 
     private readonly Regex _fileNamePattern = NewRegex(@"[\\/][^\\/]+$");
 
-
     public void Download()
     {
         if (!CheckForPathExistance())
