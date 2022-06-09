@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SpotifyAPI.Web;
 
 #nullable disable
@@ -48,5 +49,11 @@ public class SpotifyTrack : SpotifyItem
         Popularity = track.Popularity;
         PreviewUrl = track.PreviewUrl;
         TrackNumber = track.TrackNumber;
+    }
+
+    public override string ToString()
+    {
+        string artists = string.Join(", ", Artists.Select(a => a.Name));
+        return $"{Name} by {artists}";
     }
 }

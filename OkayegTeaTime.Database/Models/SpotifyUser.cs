@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using HLE.Time;
@@ -259,15 +260,21 @@ public class SpotifyUser : CacheModel
 
     public async Task<SpotifyItem> AddToQueue(string song)
     {
-        string? uri = SpotifyController.ParseSongToUri(song);
-        if (uri is null)
-        {
-            throw new SpotifyException("invalid track link");
-        }
-
         if (!AreSongRequestsEnabled)
         {
             throw new SpotifyException($"song requests are currently not enabled, {Username.Antiping()} or a moderator has to enable it first");
+        }
+
+        string? uri = SpotifyController.ParseSongToUri(song);
+        if (uri is null)
+        {
+            SpotifyTrack? searchResult = await Search(song);
+            uri = searchResult?.Uri;
+        }
+
+        if (uri is null)
+        {
+            throw new SpotifyException("no matching track could be found");
         }
 
         try
@@ -497,6 +504,38 @@ public class SpotifyUser : CacheModel
         }
 
         return item;
+    }
+
+    public async Task<SpotifyTrack?> Search(string query)
+    {
+        SpotifyClient? client = await GetClient();
+        if (client is null)
+        {
+            throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
+        }
+
+        SearchResponse searchResult = await client.Search.Item(new(SearchRequest.Types.Track, query));
+        Regex[] patterns = query.Split().Select(q => new Regex(q, RegexOptions.Compiled | RegexOptions.IgnoreCase)).ToArray();
+        if (searchResult.Tracks.Items is null)
+        {
+            return null;
+        }
+
+        Dictionary<SpotifyTrack, int> trackMatches = searchResult.Tracks.Items.ToDictionary(t => new SpotifyTrack(t), _ => 0);
+        foreach (SpotifyTrack track in trackMatches.Keys)
+        {
+            List<string> values = new();
+            values.AddRange(track.Artists.Select(a => a.Name));
+            values.AddRange(track.Name.Split());
+
+            foreach (Regex pattern in patterns)
+            {
+                trackMatches[track] += values.Count(v => pattern.IsMatch(v));
+            }
+        }
+
+        int max = trackMatches.Values.Max();
+        return trackMatches.First(t => t.Value == max).Key;
     }
 
     private async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContext()

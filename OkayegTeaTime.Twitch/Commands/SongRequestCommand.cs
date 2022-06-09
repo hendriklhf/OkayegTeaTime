@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
@@ -149,7 +150,7 @@ public class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[2]);
+                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[2..].JoinToString(' '));
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
@@ -227,7 +228,7 @@ public class SongRequestCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+$");
+        pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -241,7 +242,7 @@ public class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[1]);
+                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[1..].JoinToString(' '));
                     if (item is SpotifyTrack track)
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
