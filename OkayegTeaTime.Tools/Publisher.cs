@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Tools;
 
 public class Publisher
 {
-    public string[] Args { get; }
+    private readonly string[] _args;
 
     private readonly Dictionary<string, Regex> _regexDic = new(new KeyValuePair<string, Regex>[]
     {
@@ -22,7 +22,7 @@ public class Publisher
 
     public Publisher(string[] args)
     {
-        Args = args;
+        _args = args;
     }
 
     public void Publish()
@@ -53,7 +53,7 @@ public class Publisher
         List<string> result = new();
         _regexDic.ForEach(v =>
         {
-            if (Args.Any(a => v.Value.IsMatch(a)))
+            if (_args.Any(a => v.Value.IsMatch(a)))
             {
                 result.Add(v.Key);
             }

@@ -2,9 +2,10 @@
 using System.Linq;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Files.Jsons.CommandData;
-using OkayegTeaTime.Twitch.Commands.Enums;
 using OkayegTeaTime.Twitch.Controller;
+using OkayegTeaTime.Twitch.Models;
 using JCommand = OkayegTeaTime.Files.Jsons.CommandData.Command;
 
 namespace OkayegTeaTime.Tests;
@@ -13,7 +14,7 @@ namespace OkayegTeaTime.Tests;
 public class CommandTests
 {
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
-    private readonly AfkCommandType[] _afkTypes = Enum.GetValues<AfkCommandType>();
+    private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
     private readonly CommandController _commandController = new();
 
     [TestMethod]
@@ -39,7 +40,7 @@ public class CommandTests
     [TestMethod]
     public void AfkCommandCompletenessTestFromEnum()
     {
-        foreach (AfkCommandType type in _afkTypes)
+        foreach (AfkType type in _afkTypes)
         {
             AfkCommand command = _commandController[type];
             Assert.IsNotNull(command);
@@ -51,7 +52,7 @@ public class CommandTests
     {
         _commandController.AfkCommands.ForEach(cmd =>
         {
-            AfkCommandType type = _afkTypes.SingleOrDefault(c => string.Equals(c.ToString(), cmd.Name, StringComparison.OrdinalIgnoreCase));
+            AfkType type = _afkTypes.SingleOrDefault(c => string.Equals(c.ToString(), cmd.Name, StringComparison.OrdinalIgnoreCase));
             Assert.IsNotNull(type);
         });
     }

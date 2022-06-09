@@ -2,8 +2,17 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+        <SignAssembly>false</SignAssembly>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <NeutralLanguage>en</NeutralLanguage>
+        <NoWin32Manifest>true</NoWin32Manifest>
+        <DebugType>embedded</DebugType>
         <Nullable>enable</Nullable>
-        <NeutralLanguage>en-US</NeutralLanguage>
+        <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

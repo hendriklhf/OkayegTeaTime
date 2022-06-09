@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Tests;
 
@@ -20,9 +21,6 @@ public class JsonTests
     public void AppSettingsCompletePropertiesTest()
     {
         PropertyInfo[] properties = typeof(AppSettings).GetProperties();
-        properties.ForEach(p =>
-        {
-            Assert.IsNotNull(p.GetValue(null, null));
-        });
+        properties.ForEach(p => Assert.IsNotNull(p.GetValue(null, null)));
     }
 }

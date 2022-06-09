@@ -6,7 +6,7 @@
         <StartupObject>OkayegTeaTime.Program</StartupObject>
         <RepositoryUrl>https://github.com/Sterbehilfe/OkayegTeaTime</RepositoryUrl>
         <SignAssembly>false</SignAssembly>
-        <Platforms>AnyCPU;x86;ARM64;ARM32</Platforms>
+        <Platforms>AnyCPU</Platforms>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <ApplicationIcon>..\OkayegTeaTime.Resources\Okayeg.ico</ApplicationIcon>
         <PackageIcon>..\OkayegTeaTime.Resources\Okayeg.ico</PackageIcon>
@@ -22,40 +22,22 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DebugSymbols>false</DebugSymbols>
-      <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DebugType>none</DebugType>
+        <DebugType>none</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Resources\OnlineCompilerTemplate.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="HLE" Version="1.3.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.13" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="5.0.13" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.13">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.13" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.13">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="MySql.Data.EntityFramework" Version="8.0.28" />
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.10" />
-        <PackageReference Include="SpotifyAPI.Web" Version="6.2.2" />
-        <PackageReference Include="TwitchLib" Version="3.3.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj" />
+        <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj" />
+        <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj" />
+        <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj" />
     </ItemGroup>
 
 </Project>
