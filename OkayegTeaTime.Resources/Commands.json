@@ -117,7 +117,7 @@
         "tuck"
       ],
       "Parameter": [
-        "(none)"
+        "[username] [emote]"
       ],
       "Description": [
         "Tucks the given user to bed"
