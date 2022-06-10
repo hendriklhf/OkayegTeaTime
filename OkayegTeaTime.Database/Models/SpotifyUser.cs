@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using HLE.Time;
@@ -455,7 +454,7 @@ public class SpotifyUser : CacheModel
 
             currentlyPlaying = await client.Player.GetCurrentlyPlaying(new());
 
-            if (!currentlyPlaying?.IsPlaying == false)
+            if (currentlyPlaying?.IsPlaying == false)
             {
                 return null;
             }
@@ -515,27 +514,13 @@ public class SpotifyUser : CacheModel
         }
 
         SearchResponse searchResult = await client.Search.Item(new(SearchRequest.Types.Track, query));
-        Regex[] patterns = query.Split().Select(q => new Regex(q, RegexOptions.Compiled | RegexOptions.IgnoreCase)).ToArray();
-        if (searchResult.Tracks.Items is null)
+        if (searchResult.Tracks.Items is null || searchResult.Tracks.Items.Count < 1)
         {
             return null;
         }
 
-        Dictionary<SpotifyTrack, int> trackMatches = searchResult.Tracks.Items.ToDictionary(t => new SpotifyTrack(t), _ => 0);
-        foreach (SpotifyTrack track in trackMatches.Keys)
-        {
-            List<string> values = new();
-            values.AddRange(track.Artists.Select(a => a.Name));
-            values.AddRange(track.Name.Split());
-
-            foreach (Regex pattern in patterns)
-            {
-                trackMatches[track] += values.Count(v => pattern.IsMatch(v));
-            }
-        }
-
-        int max = trackMatches.Values.Max();
-        return trackMatches.First(t => t.Value == max).Key;
+        FullTrack result = searchResult.Tracks.Items[0];
+        return new(result);
     }
 
     private async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContext()
