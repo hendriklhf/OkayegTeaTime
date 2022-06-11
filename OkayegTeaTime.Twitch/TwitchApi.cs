@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HLE.HttpRequests;
-using HLE.Strings;
+using HLE;
+using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
 using TwitchLib.Api.Core.Enums;

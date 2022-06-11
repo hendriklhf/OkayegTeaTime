@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using HLE.Strings;
+using HLE;
 using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Database.Models;

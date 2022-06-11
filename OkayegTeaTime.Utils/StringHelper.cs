@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Strings;
+using HLE;
 
 namespace OkayegTeaTime.Utils;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Strings;
+using HLE;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Models;

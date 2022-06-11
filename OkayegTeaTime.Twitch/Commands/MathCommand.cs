@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
-using HLE.HttpRequests;
+using HLE.Http;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 

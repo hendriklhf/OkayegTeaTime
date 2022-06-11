@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using HLE.Strings;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Utils;
 using SpotifyAPI.Web;
@@ -56,18 +56,18 @@ public static class SpotifyController
 
     public static string? ParseSongToUri(string input)
     {
-        if (input.IsMatch(Pattern.SpotifyUri))
+        if (Regex.IsMatch(input, Pattern.SpotifyUri))
         {
             return input;
         }
 
-        if (input.IsMatch(Pattern.SpotifyLink))
+        if (Regex.IsMatch(input, Pattern.SpotifyLink))
         {
-            string uriCode = input.Match(@"track/\w+")[6..];
+            string uriCode = Regex.Match(input, @"track/\w+").Value[6..];
             return $"spotify:track:{uriCode}";
         }
 
-        if (input.IsMatch(@"^\w{22}$"))
+        if (Regex.IsMatch(input, @"^\w{22}$"))
         {
             return $"spotify:track:{input}";
         }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
-using HLE.Strings;
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Models;
@@ -15,7 +15,16 @@ public class RemindCommand : Command
 {
     private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleReminderTargets}", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _timeSplitPattern = new($@"\b{Pattern.TimeSplit}\b", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-    private static readonly Regex _exceptMessagePattern = new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?\s*", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+
+    private static readonly Regex _beginningNumberPattern = new(@"^\d+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _yearPattern = new(@"^\d+y(ear)?s?$", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _dayPattern = new(@"^\d+d(ay)?s?$", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _hourPattern = new(@"^\d+h(our)?s?$", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _minutePattern = new(@"^\d+m(in(ute)?)?s?$", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _secondPattern = new(@"^\d+s(ec(ond)?)?s?$", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+
+    private static readonly Regex _exceptMessagePattern =
+        new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?\s*", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
@@ -74,7 +83,7 @@ public class RemindCommand : Command
                 .Select<string, (string, string, string, string, long)>(t => new(ChatMessage.Username, t, message, ChatMessage.Channel, toTime))
                 .ToArray();
             int?[] ids = DbControl.Reminders.AddRange(values);
-            bool multi = ids.Count(i => i != default) > 1;
+            bool multi = ids.Count(i => i.HasValue) > 1;
             if (!multi)
             {
                 Response += PredefinedMessages.TooManyRemindersMessage;
@@ -104,8 +113,8 @@ public class RemindCommand : Command
     private long GetToTime()
     {
         MatchCollection matches = _timeSplitPattern.Matches(ChatMessage.Message);
-        List<string> captures = matches.Select(m => m.Value).ToList();
-        return TimeHelper.ConvertTimeToMilliseconds(captures) + TimeHelper.Now();
+        string[] captures = matches.Select(m => m.Value).ToArray();
+        return ConvertTimeToMilliseconds(captures) + TimeHelper.Now();
     }
 
     private string[] GetTargets()
@@ -118,5 +127,40 @@ public class RemindCommand : Command
             .Distinct()
             .Take(5)
             .ToArray();
+    }
+
+    private static long ConvertTimeToMilliseconds(IEnumerable<string> input)
+    {
+        long result = 0;
+        foreach (string s in input)
+        {
+            if (_yearPattern.IsMatch(s))
+            {
+                int match = _beginningNumberPattern.Match(s).Value.ToInt();
+                result += (long)TimeSpan.FromDays(365 * match).TotalMilliseconds;
+            }
+            else if (_dayPattern.IsMatch(s))
+            {
+                int match = _beginningNumberPattern.Match(s).Value.ToInt();
+                result += (long)TimeSpan.FromDays(match).TotalMilliseconds;
+            }
+            else if (_hourPattern.IsMatch(s))
+            {
+                int match = _beginningNumberPattern.Match(s).Value.ToInt();
+                result += (long)TimeSpan.FromHours(match).TotalMilliseconds;
+            }
+            else if (_minutePattern.IsMatch(s))
+            {
+                int match = _beginningNumberPattern.Match(s).Value.ToInt();
+                result += (long)TimeSpan.FromMinutes(match).TotalMilliseconds;
+            }
+            else if (_secondPattern.IsMatch(s))
+            {
+                int match = _beginningNumberPattern.Match(s).Value.ToInt();
+                result += (long)TimeSpan.FromSeconds(match).TotalMilliseconds;
+            }
+        }
+
+        return result;
     }
 }

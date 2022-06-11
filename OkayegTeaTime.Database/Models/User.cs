@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using HLE.Strings;
+using HLE;
 using OkayegTeaTime.Database.Cache.Enums;
 
 namespace OkayegTeaTime.Database.Models;

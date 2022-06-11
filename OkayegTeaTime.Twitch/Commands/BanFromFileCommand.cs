@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
-using HLE.HttpRequests;
-using HLE.Strings;
+using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;

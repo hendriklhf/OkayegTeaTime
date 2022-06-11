@@ -1,4 +1,4 @@
-﻿using HLE.Strings;
+﻿using HLE;
 using HLE.Time;
 
 namespace OkayegTeaTime.Database.Models;

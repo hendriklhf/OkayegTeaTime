@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using HLE.Strings;
+using HLE;
 using OkayegTeaTime.Files;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;

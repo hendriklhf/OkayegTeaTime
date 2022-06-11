@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HLE.Numbers;
-using HLE.Strings;
+using HLE;
 using HLE.Time;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -43,10 +42,10 @@ public class StreamCommand : Command
 
         Response += "for ";
         TimeSpan streamSpan = stream.StartedAt.Subtract(DateTime.Now);
-        long milliseconds = streamSpan.TotalMilliseconds.ToLong() + TimeHelper.Now();
+        long milliseconds = (long)streamSpan.TotalMilliseconds + TimeHelper.Now();
         if (!DateTime.Now.IsDaylightSavingTime())
         {
-            milliseconds += new Hour().Milliseconds;
+            milliseconds += (long)TimeSpan.FromHours(1).TotalMilliseconds;
         }
 
         string streamTime = TimeHelper.GetUnixDifference(milliseconds).ToString();

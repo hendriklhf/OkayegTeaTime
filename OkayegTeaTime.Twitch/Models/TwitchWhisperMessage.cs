@@ -1,4 +1,4 @@
-﻿using HLE.Strings;
+﻿using HLE;
 using TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Models;

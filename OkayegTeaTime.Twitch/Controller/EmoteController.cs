@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using HLE.HttpRequests;
+using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;

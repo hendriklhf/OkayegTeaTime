@@ -1,4 +1,4 @@
-﻿using HLE.Strings;
+﻿using HLE;
 
 #nullable disable
 

@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Linq;
-using HLE.Strings;
+using HLE;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 

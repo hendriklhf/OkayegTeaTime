@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using HLE.Strings;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -80,11 +79,11 @@ public class SetCommand : Command
             }
 
             bool? state = null;
-            if (ChatMessage.Split[2].IsMatch(@"(1|true|enabled?)"))
+            if (Regex.IsMatch(ChatMessage.Split[2], @"(1|true|enabled?)"))
             {
                 state = true;
             }
-            else if (ChatMessage.Split[2].IsMatch(@"(0|false|disabled?)"))
+            else if (Regex.IsMatch(ChatMessage.Split[2], @"(0|false|disabled?)"))
             {
                 state = false;
             }

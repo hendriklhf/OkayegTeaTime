@@ -1,8 +1,8 @@
 ﻿#if DEBUG
 using System.Text.RegularExpressions;
 using System.Web;
-using HLE.HttpRequests;
-using HLE.Strings;
+using HLE;
+using HLE.Http;
 using OkayegTeaTime.Resources;
 #endif
 using OkayegTeaTime.Twitch.Models;
@@ -53,7 +53,7 @@ public class CppCommand : Command
             return "compiler service error";
         }
 
-        string result = request.Result.NewLinesToSpaces().Match(@"\$main(</b>|</span>|<br>){3}.*")[20..].TrimAll();
+        string result = Regex.Match(request.Result.NewLinesToSpaces(), @"\$main(</b>|</span>|<br>){3}.*").Value[20..].TrimAll();
         if (result.IsNullOrEmptyOrWhitespace())
         {
             return "compiled successfully";

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HLE.Collections;
 using HLE.Time;
@@ -46,7 +47,7 @@ public class Restarter
 
     private static void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
     {
-        (sender as Timer::Timer)!.Interval = new Day().Milliseconds;
+        (sender as Timer::Timer)!.Interval = TimeSpan.FromDays(1).TotalMilliseconds;
         ProcessUtils.Restart();
     }
 }
