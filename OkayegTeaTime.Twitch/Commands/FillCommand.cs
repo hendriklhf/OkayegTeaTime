@@ -25,7 +25,7 @@ public class FillCommand : Command
             string[] split = ChatMessage.Split[1..];
             string emote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
-            for (; ; )
+            while (true)
             {
                 string? messagePart = split.Random();
                 if (messagePart is null)
@@ -45,7 +45,6 @@ public class FillCommand : Command
             }
 
             Response = string.Join(' ', messageParts);
-            return;
         }
     }
 }
