@@ -74,18 +74,7 @@ public class TwitchBot
             AutoReListenOnException = true
         };
 
-        if (channels is null)
-        {
-#if DEBUG
-            channels = new List<string>
-            {
-                AppSettings.DebugChannel
-            };
-#else
-            channels = DbControl.Channels.Select(c => c.Name);
-#endif
-        }
-
+        channels ??= DbControl.Channels.Select(c => c.Name);
         _twitchClient.Initialize(connectionCredentials, channels.ToList());
 
         _twitchClient.OnLog += Client_OnLog!;

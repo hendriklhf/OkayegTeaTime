@@ -16,10 +16,6 @@ public class Settings
 
     public string RepositoryUrl { get; set; }
 
-#if DEBUG
-    public string DebugChannel { get; set; }
-#endif
-
     public string OfflineChatChannel { get; set; }
 
     public DbConnection DatabaseConnection { get; set; }

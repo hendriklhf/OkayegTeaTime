@@ -14,10 +14,6 @@ public static class AppSettings
 
     public static DbConnection DbConnection => JsonController.GetSettings().DatabaseConnection;
 
-#if DEBUG
-    public static string DebugChannel => JsonController.GetSettings().DebugChannel;
-#endif
-
     public static Discord Discord => JsonController.GetSettings().Discord;
 
     public static string RepositoryUrl => JsonController.GetSettings().RepositoryUrl;
