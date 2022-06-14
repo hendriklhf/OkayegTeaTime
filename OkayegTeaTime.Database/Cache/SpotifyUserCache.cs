@@ -1,10 +1,16 @@
 ﻿using System;
+#if RELEASE
 using System.Collections.Generic;
+#endif
 using System.Linq;
+#if RELEASE
 using System.Threading.Tasks;
+#endif
 using OkayegTeaTime.Database.Models;
+#if RELEASE
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Spotify;
+#endif
 
 namespace OkayegTeaTime.Database.Cache;
 
@@ -12,6 +18,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
 {
     public SpotifyUser? this[string username] => GetSpotifyUser(username);
 
+#if RELEASE
     public List<string> ChatPlaylistUris
     {
         get
@@ -40,6 +47,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
     }
 
     private List<string>? _chatPlaylistUris;
+#endif
 
     public void Add(string username, string accessToken, string refreshToken)
     {

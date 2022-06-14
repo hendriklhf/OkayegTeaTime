@@ -46,4 +46,9 @@ public class SpotifyEpisode : SpotifyItem
         ResumePoint = episode.ResumePoint;
         Show = episode.Show;
     }
+
+    public override string ToString()
+    {
+        return $"{Name} by {Show.Name}";
+    }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using HLE.Time;
+#if RELEASE
 using OkayegTeaTime.Files;
+#endif
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Spotify.Exceptions;
 using OkayegTeaTime.Utils;
@@ -13,6 +16,7 @@ using Timer = System.Timers.Timer;
 
 namespace OkayegTeaTime.Database.Models;
 
+[SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
 public class SpotifyUser : CacheModel
 {
     public long Id { get; }
@@ -181,6 +185,7 @@ public class SpotifyUser : CacheModel
         return Time + TimeSpan.FromHours(1).TotalMilliseconds <= TimeHelper.Now() + TimeSpan.FromSeconds(30).TotalMilliseconds;
     }
 
+#if RELEASE
     public async Task AddToChatPlaylist(params string[] songs)
     {
         string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
@@ -256,6 +261,7 @@ public class SpotifyUser : CacheModel
 
         return result;
     }
+#endif
 
     public async Task<SpotifyItem> AddToQueue(string song)
     {
@@ -267,7 +273,7 @@ public class SpotifyUser : CacheModel
         string? uri = SpotifyController.ParseSongToUri(song);
         if (uri is null)
         {
-            SpotifyTrack? searchResult = await Search(song);
+            SpotifyTrack? searchResult = await SearchTrack(song);
             uri = searchResult?.Uri;
         }
 
@@ -338,7 +344,6 @@ public class SpotifyUser : CacheModel
         }
 
         SpotifyItem item;
-        // ReSharper disable once ConstantConditionalAccessQualifier
         if (playback.Item is FullTrack track)
         {
             item = new SpotifyTrack(track);
@@ -466,7 +471,6 @@ public class SpotifyUser : CacheModel
         }
 
         SpotifyItem? item = null;
-        // ReSharper disable once ConstantConditionalAccessQualifier
         if (currentlyPlaying?.Item is FullTrack track)
         {
             item = new SpotifyTrack(track);
@@ -505,7 +509,7 @@ public class SpotifyUser : CacheModel
         return item;
     }
 
-    public async Task<SpotifyTrack?> Search(string query)
+    public async Task<SpotifyTrack?> SearchTrack(string query)
     {
         SpotifyClient? client = await GetClient();
         if (client is null)
@@ -513,14 +517,39 @@ public class SpotifyUser : CacheModel
             throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
         }
 
-        SearchResponse searchResult = await client.Search.Item(new(SearchRequest.Types.Track, query));
-        if (searchResult.Tracks.Items is null || searchResult.Tracks.Items.Count < 1)
+        string? uri = SpotifyController.ParseSongToUri(query);
+        if (uri is not null)
         {
-            return null;
+            try
+            {
+                FullTrack track = await client.Tracks.Get(uri.Split(':')[^1], new());
+                if (track is not null)
+                {
+                    return new(track);
+                }
+            }
+            catch (Exception ex)
+            {
+                DbController.LogException(ex);
+            }
         }
 
-        FullTrack result = searchResult.Tracks.Items[0];
-        return new(result);
+        try
+        {
+            SearchResponse searchResult = await client.Search.Item(new(SearchRequest.Types.Track, query));
+            if (searchResult.Tracks.Items is null || searchResult.Tracks.Items.Count < 1)
+            {
+                return null;
+            }
+
+            FullTrack result = searchResult.Tracks.Items[0];
+            return new(result);
+        }
+        catch (Exception ex)
+        {
+            DbController.LogException(ex);
+            return null;
+        }
     }
 
     private async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContext()
@@ -532,7 +561,6 @@ public class SpotifyUser : CacheModel
         }
 
         CurrentlyPlayingContext playback = await client.Player.GetCurrentPlayback(new());
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (playback is null || !playback.IsPlaying)
         {
             return null;

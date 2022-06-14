@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -13,8 +16,10 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class SongRequestCommand : Command
 {
-    private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleReminderTargets}", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-    
+    private static readonly Regex _targetPattern = new(Pattern.MultipleTargets, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+
+
     public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
@@ -22,11 +27,11 @@ public class SongRequestCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+\sme");
+        #region sr {users...} me
+
+        Regex pattern = PatternCreator.Create(Alias, Prefix, $@"\s{Pattern.MultipleTargets}\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string[] targets = GetTargets();
-            
             Task.Run(async () =>
             {
                 SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
@@ -36,10 +41,10 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyItem? playingItem;
+                SpotifyItem? item;
                 try
                 {
-                    playingItem = await user.GetCurrentlyPlayingItem();
+                    item = await user.GetCurrentlyPlayingItem();
                 }
                 catch (SpotifyException ex)
                 {
@@ -47,98 +52,46 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                if (playingItem is null)
+                if (item is null or not SpotifyTrack)
                 {
                     Response = $"{ChatMessage.Username}, you aren't listening to a song";
                     return;
                 }
 
-                string[] unregisteredTargets;
-                for (int i = 0; i < targets.Length; i++)
+                SpotifyUser[] targets = GetTargets();
+                if (targets.Length == 0)
                 {
-                    SpotifyUser? user = DbControl.SpotifyUsers[targets[i]];
-                    if (user is null)
-                    { 
-                        unregisteredTargets = targets[i];
+                    Response = $"{ChatMessage.Username}, none of the given users are registered";
+                    return;
+                }
+
+                SpotifyTrack track = (item as SpotifyTrack)!;
+                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue";
+
+                Response += targets.Length > 1 ? "s of " : " of ";
+                Dictionary<SpotifyUser, bool> success = new();
+                foreach (SpotifyUser target in targets)
+                {
+                    try
+                    {
+                        await target.AddToQueue(track.Uri);
+                        success.Add(target, true);
+                    }
+                    catch (SpotifyException ex)
+                    {
+                        success.Add(target, false);
+                        DbController.LogException(ex);
                     }
                 }
 
-                FilterTargets(targets, unregisteredTargets);
-                string target;
-                string unregisteredTarget;
-                try
-                {
-                    SpotifyItem item = await target.AddToQueue(playingItem.Uri);
-                    if (item is SpotifyTrack track)
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        if (unregisteredTargets.Any())
-                        {
-                            if (targets.Length == 1)
-                            {
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {targets[0]}";
-                            }
-                            else
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target}";
-                            }
-                        }
-                        else
-                        {
-                            if (unregisteredTarget.Length != 1)
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                unregisteredTargets.ForEach(d => unregisteredTarget += $"{d}, ")
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target}. The users {unregisteredTarget} aren't registered yet.";
-                            }
-                            else
-                            {
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {targets[0]}. The user {unregisteredTarget[0]} isn't registered yet.";
-                            }
-                        }
-                    }
-                    else if (item is SpotifyEpisode episode)
-                    {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                   $"{target.Username.Antiping()}";
-                        if (unregisteredTargets.Any())
-                        { 
-                            if (targets.Length == 1)
-                            {
-                                Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                           $"{targets[0]}";
-                            }
-                            else
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                           $"{target}";#
-                            }
-                        }
-                        else
-                        {
-                            if (unregisteredTarget.Length != 1)
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                unregisteredTargets.ForEach(d => unregisteredTarget += $"{d}, ")
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target}. The users {unregisteredTarget} aren't registered yet.";
-                            }
-                            else
-                            {
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target[0]}. The user {unregisteredTarget[0]} isn't registered yet.";
-                            }
-                            
-                        }
-                    }
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                }
+                Response += success.Where(t => t.Value).Select(t => t.Key.Username).JoinToString(", ");
             }).Wait();
             return;
         }
+
+        #endregion sr {user} me
+
+        #region sr me {user}
 
         pattern = PatternCreator.Create(Alias, Prefix, @"\sme\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
@@ -159,10 +112,10 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyItem? currentlyPlaying;
+                SpotifyItem? item;
                 try
                 {
-                    currentlyPlaying = await target.GetCurrentlyPlayingItem();
+                    item = await target.GetCurrentlyPlayingItem();
                 }
                 catch (SpotifyException ex)
                 {
@@ -170,125 +123,85 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                if (currentlyPlaying is null)
+                if (item is null or not SpotifyTrack)
                 {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't listening to anything";
+                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't listening to a track";
                     return;
                 }
 
                 try
                 {
-                    SpotifyItem item = await user.AddToQueue(currentlyPlaying.Uri);
-                    if (item is SpotifyTrack track)
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {user.Username.Antiping()}";
-                    }
-                    else if (item is SpotifyEpisode episode)
-                    {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                   $"{user.Username.Antiping()}";
-                    }
+                    await user.AddToQueue(item.Uri);
                 }
                 catch (SpotifyException ex)
                 {
                     Response = $"{ChatMessage.Username}, {ex.Message}";
                 }
+
+                SpotifyTrack track = (item as SpotifyTrack)!;
+                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {user.Username.Antiping()}";
             }).Wait();
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+\s\S+");
+        #endregion
+
+        #region sr {users...} {song}
+
+        pattern = PatternCreator.Create(Alias, Prefix, $@"\s{Pattern.MultipleTargets}\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
             {
-                string[] unregisteredTargets;
-                for (int i = 0; i < targets.Length; i++)
+                SpotifyUser[] targets = GetTargets();
+                if (targets.Length == 0)
                 {
-                    SpotifyUser? user = DbControl.SpotifyUsers[targets[i]];
-                    if (user is null)
-                    { 
-                        unregisteredTargets = targets[i];
-                    }
+                    Response = $"{ChatMessage.Username}, none of the given users are registered";
+                    return;
                 }
 
-                FilterTargets(targets, unregisteredTargets);
-                string target;
-                string unregisteredTarget;
+                string song = _exceptTargetPattern.Replace(ChatMessage.Message, string.Empty);
+                SpotifyTrack? track = null;
                 try
                 {
-                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[2..].JoinToString(' '));
-                    if (item is SpotifyTrack track)
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        if (unregisteredTargets.Any())
-                        {
-                            if (targets.Length == 1)
-                            {
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {targets[0]}";
-                            }
-                            else
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target}";
-                            }
-                        }
-                        else
-                        {
-                            if (unregisteredTarget.Length != 1)
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                unregisteredTargets.ForEach(d => unregisteredTarget += $"{d}, ")
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target}. The users {unregisteredTarget} aren't registered yet.";
-                            }
-                            else
-                            {
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {targets[0]}. The user {unregisteredTarget[0]} isn't registered yet.";
-                            }
-                        }
-                    }
-                    else if (item is SpotifyEpisode episode)
-                    {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                   $"{target.Username.Antiping()}";
-                        if (unregisteredTargets.Any())
-                        { 
-                            if (targets.Length == 1)
-                            {
-                                Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                           $"{targets[0]}";
-                            }
-                            else
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                           $"{target}";#
-                            }
-                        }
-                        else
-                        {
-                            if (unregisteredTarget.Length != 1)
-                            {
-                                targets.ForEach(d => target += $"{d}, ");
-                                unregisteredTargets.ForEach(d => unregisteredTarget += $"{d}, ")
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target}. The users {unregisteredTarget} aren't registered yet.";
-                            }
-                            else
-                            {
-                                Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target[0]}. The user {unregisteredTarget[0]} isn't registered yet.";
-                            }
-                            
-                        }
-                    }
+                    track = await targets[0].SearchTrack(song);
                 }
                 catch (SpotifyException ex)
                 {
                     Response = $"{ChatMessage.Username}, {ex.Message}";
                 }
+
+                if (track is null)
+                {
+                    Response = $"{ChatMessage.Username}, no matching track could be found";
+                    return;
+                }
+
+                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue";
+                Response += targets.Length > 1 ? "s of " : " of ";
+                Dictionary<SpotifyUser, bool> success = new();
+                foreach (SpotifyUser target in targets)
+                {
+                    try
+                    {
+                        await target.AddToQueue(track.Uri);
+                        success.Add(target, true);
+                    }
+                    catch (SpotifyException ex)
+                    {
+                        success.Add(target, false);
+                        DbController.LogException(ex);
+                    }
+                }
+
+                Response += success.Where(t => t.Value).Select(t => t.Key.Username).JoinToString(", ");
             }).Wait();
             return;
         }
+
+        #endregion sr {user} {song}
+
+        #region sr me
 
         pattern = PatternCreator.Create(Alias, Prefix, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
@@ -302,10 +215,10 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyItem? playingItem;
+                SpotifyItem? item;
                 try
                 {
-                    playingItem = await user.GetCurrentlyPlayingItem();
+                    item = await user.GetCurrentlyPlayingItem();
                 }
                 catch (SpotifyException ex)
                 {
@@ -313,9 +226,9 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                if (playingItem is null)
+                if (item is null or not SpotifyTrack)
                 {
-                    Response = $"{ChatMessage.Username}, you aren't listening to anything";
+                    Response = $"{ChatMessage.Username}, you aren't listening to a track";
                     return;
                 }
 
@@ -328,25 +241,22 @@ public class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyItem item = await target.AddToQueue(playingItem.Uri);
-                    if (item is SpotifyTrack track)
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
-                    }
-                    else if (item is SpotifyEpisode episode)
-                    {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                   $"{target.Username.Antiping()}";
-                    }
+                    await target.AddToQueue(item.Uri);
                 }
                 catch (SpotifyException ex)
                 {
                     Response = $"{ChatMessage.Username}, {ex.Message}";
                 }
+
+                SpotifyTrack track = (item as SpotifyTrack)!;
+                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
             }).Wait();
             return;
         }
+
+        #endregion sr me
+
+        #region sr {song}
 
         pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
@@ -380,28 +290,16 @@ public class SongRequestCommand : Command
                 }
             }).Wait();
         }
-    }
-    
-    private string[] GetTargets()
-    {
-        Match match = _targetPattern.Match(ChatMessage.Message);
-        int firstWordLength = match.Value.Split()[0].Length + 1;
-        string[] targets = match.Value[firstWordLength..].Remove(" ").Split(',');
-        return targets.Replace(t => t.ToLower() == "me", ChatMessage.Username)
-            .Select(t => t.ToLower())
-            .Distinct()
-            .Take(5)
-            .ToArray();
+
+        #endregion sr {song}
     }
 
-    private string[] FilterTargets(string[] targets, string[] unregisteredTargets)
+    private SpotifyUser[] GetTargets()
     {
-        for (int i = 0; i < targets.Length; i++)
-        {
-            if (unregisteredTargets.Any(targets[i]))
-            {
-                targets = targets.Where(e => e != targets[i]).ToArray();
-            }
-        }
+        Match match = _targetPattern.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
+        string[] targets = match.Value.Split(',');
+        return targets.Select(t => t.TrimAll()).Distinct()
+            .Select(t => DbControl.SpotifyUsers[t])
+            .Where(t => t is not null).Take(5).ToArray()!;
     }
 }
