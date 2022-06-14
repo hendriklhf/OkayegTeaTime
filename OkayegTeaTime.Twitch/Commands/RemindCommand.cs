@@ -13,7 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class RemindCommand : Command
 {
-    private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleReminderTargets}", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _timeSplitPattern = new($@"\b{Pattern.TimeSplit}\b", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     private static readonly Regex _beginningNumberPattern = new(@"^\d+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
@@ -24,7 +24,7 @@ public class RemindCommand : Command
     private static readonly Regex _secondPattern = new(@"^\d+s(ec(ond)?)?s?$", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
 
     private static readonly Regex _exceptMessagePattern =
-        new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?\s*", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+        new($@"{_targetPattern}(\sin(\s({Pattern.TimeSplit}))+)?\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)

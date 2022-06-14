@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HLE.Time;
-#if RELEASE
+#if DEBUG
 using OkayegTeaTime.Files;
 #endif
 using OkayegTeaTime.Twitch.Models;
@@ -22,7 +22,7 @@ public class CooldownController
 
     public void AddCooldown(long userId, CommandType type)
     {
-#if RELEASE
+#if DEBUG
         if (AppSettings.UserLists.Moderators.Contains(userId))
         {
             return;
@@ -41,7 +41,7 @@ public class CooldownController
 
     public void AddAfkCooldown(long userId)
     {
-#if RELEASE
+#if DEBUG
         if (AppSettings.UserLists.Moderators.Contains(userId))
         {
             return;
