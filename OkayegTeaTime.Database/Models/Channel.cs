@@ -16,7 +16,7 @@ public class Channel : CacheModel
         set
         {
             _emote = value;
-            EntityFrameworkModels.Channel? efChannel = GetDbContext().Channels.FirstOrDefault(c => c.Id == Id);
+            EntityFrameworkModels.Channel? efChannel = DbContext.Channels.FirstOrDefault(c => c.Id == Id);
             if (efChannel is null)
             {
                 return;
@@ -33,7 +33,7 @@ public class Channel : CacheModel
         set
         {
             _prefix = value;
-            EntityFrameworkModels.Channel? efChannel = GetDbContext().Channels.FirstOrDefault(c => c.Id == Id);
+            EntityFrameworkModels.Channel? efChannel = DbContext.Channels.FirstOrDefault(c => c.Id == Id);
             if (efChannel is null)
             {
                 return;
@@ -50,7 +50,7 @@ public class Channel : CacheModel
         set
         {
             _isEmoteNotificationSub = value;
-            EntityFrameworkModels.Channel? efChannel = GetDbContext().Channels.FirstOrDefault(c => c.Id == Id);
+            EntityFrameworkModels.Channel? efChannel = DbContext.Channels.FirstOrDefault(c => c.Id == Id);
             if (efChannel is null)
             {
                 return;

@@ -29,7 +29,7 @@ public class SpotifyUser : CacheModel
         set
         {
             _accessToken = value;
-            EntityFrameworkModels.Spotify? user = GetDbContext().Spotify.FirstOrDefault(s => s.Id == Id);
+            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
             if (user is null)
             {
                 return;
@@ -46,7 +46,7 @@ public class SpotifyUser : CacheModel
         set
         {
             _refreshToken = value;
-            EntityFrameworkModels.Spotify? user = GetDbContext().Spotify.FirstOrDefault(s => s.Id == Id);
+            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
             if (user is null)
             {
                 return;
@@ -63,7 +63,7 @@ public class SpotifyUser : CacheModel
         set
         {
             _time = value;
-            EntityFrameworkModels.Spotify? user = GetDbContext().Spotify.FirstOrDefault(s => s.Id == Id);
+            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
             if (user is null)
             {
                 return;
@@ -80,7 +80,7 @@ public class SpotifyUser : CacheModel
         set
         {
             _areSongRequestsEnabled = value;
-            EntityFrameworkModels.Spotify? user = GetDbContext().Spotify.FirstOrDefault(s => s.Id == Id);
+            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
             if (user is null)
             {
                 return;
@@ -263,7 +263,7 @@ public class SpotifyUser : CacheModel
     }
 #endif
 
-    public async Task<SpotifyItem> AddToQueue(string song)
+    public async Task<SpotifyTrack> AddToQueue(string song)
     {
         if (!AreSongRequestsEnabled)
         {

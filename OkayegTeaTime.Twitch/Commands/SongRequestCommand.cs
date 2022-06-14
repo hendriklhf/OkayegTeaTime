@@ -84,7 +84,7 @@ public class SongRequestCommand : Command
                     }
                 }
 
-                Response += success.Where(t => t.Value).Select(t => t.Key.Username).JoinToString(", ");
+                Response += success.Where(t => t.Value).Select(t => t.Key.Username.Antiping()).JoinToString(", ");
             }).Wait();
             return;
         }
@@ -194,7 +194,7 @@ public class SongRequestCommand : Command
                     }
                 }
 
-                Response += success.Where(t => t.Value).Select(t => t.Key.Username).JoinToString(", ");
+                Response += success.Where(t => t.Value).Select(t => t.Key.Username.Antiping()).JoinToString(", ");
             }).Wait();
             return;
         }
@@ -272,17 +272,8 @@ public class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyItem item = await target.AddToQueue(ChatMessage.Split[1..].JoinToString(' '));
-                    if (item is SpotifyTrack track)
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
-                    }
-                    else if (item is SpotifyEpisode episode)
-                    {
-                        Response = $"{ChatMessage.Username}, {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)} has been added to the queue of " +
-                                   $"{target.Username.Antiping()}";
-                    }
+                    SpotifyTrack track = await target.AddToQueue(ChatMessage.Split[1..].JoinToString(' '));
+                    Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                 }
                 catch (SpotifyException ex)
                 {

@@ -16,7 +16,7 @@ public class User : CacheModel
         set
         {
             _afkMessage = value;
-            EntityFrameworkModels.User? efUser = GetDbContext().Users.FirstOrDefault(u => u.Id == Id);
+            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
             if (efUser is null)
             {
                 return;
@@ -33,7 +33,7 @@ public class User : CacheModel
         set
         {
             _afkType = value;
-            EntityFrameworkModels.User? efUser = GetDbContext().Users.FirstOrDefault(u => u.Id == Id);
+            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
             if (efUser is null)
             {
                 return;
@@ -50,7 +50,7 @@ public class User : CacheModel
         set
         {
             _afkTime = value;
-            EntityFrameworkModels.User? efUser = GetDbContext().Users.FirstOrDefault(u => u.Id == Id);
+            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
             if (efUser is null)
             {
                 return;
@@ -67,7 +67,7 @@ public class User : CacheModel
         set
         {
             _isAfk = value;
-            EntityFrameworkModels.User? efUser = GetDbContext().Users.FirstOrDefault(u => u.Id == Id);
+            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
             if (efUser is null)
             {
                 return;
