@@ -95,13 +95,19 @@ public class MessageHandler : Handler
             return;
         }
 
-        string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
-        SpotifyUser? playlistUser = DbControl.SpotifyUsers["strbhlfe"];
+        string? username = DbControl.Users[AppSettings.UserLists.Owner]?.Username;
+        if (username is null)
+        {
+            return;
+        }
+
+        SpotifyUser? playlistUser = DbControl.SpotifyUsers[username];
         if (playlistUser is null)
         {
             return;
         }
 
+        string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
         try
         {
             playlistUser.AddToChatPlaylist(songs).Wait();

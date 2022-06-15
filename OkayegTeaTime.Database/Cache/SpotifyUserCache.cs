@@ -30,7 +30,13 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
 
             async Task GetPlaylistTracks()
             {
-                SpotifyUser? user = this["strbhlfe"];
+                string? username = DbControl.Users[AppSettings.UserLists.Owner]?.Username;
+                if (username is null)
+                {
+                    return;
+                }
+
+                SpotifyUser? user = DbControl.SpotifyUsers[username];
                 if (user is null)
                 {
                     return;

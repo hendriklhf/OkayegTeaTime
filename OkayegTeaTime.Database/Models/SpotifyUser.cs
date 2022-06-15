@@ -485,7 +485,13 @@ public class SpotifyUser : CacheModel
                 return item;
             }
 
-            SpotifyUser? playlistUser = DbControl.SpotifyUsers["strbhlfe"];
+            string? username = DbControl.Users[AppSettings.UserLists.Owner]?.Username;
+            if (username is null)
+            {
+                return item;
+            }
+
+            SpotifyUser? playlistUser = DbControl.SpotifyUsers[username];
             if (playlistUser is null)
             {
                 return item;
@@ -495,9 +501,9 @@ public class SpotifyUser : CacheModel
             {
                 await playlistUser.AddToChatPlaylist(item.Uri);
             }
-            catch (SpotifyException)
+            catch (SpotifyException ex)
             {
-                // ignored
+                DbController.LogException(ex);
             }
 #endif
         }
