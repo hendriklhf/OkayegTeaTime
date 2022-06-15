@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HLE.Collections;
 
 namespace OkayegTeaTime.Tools;
 
@@ -12,7 +11,7 @@ public class Publisher
 {
     private readonly string[] _args;
 
-    private readonly Dictionary<string, Regex> _regexDic = new(new KeyValuePair<string, Regex>[]
+    private readonly Dictionary<string, Regex> _runtimes = new(new KeyValuePair<string, Regex>[]
     {
         new("win-x64", NewRegex("^win(dows)?(-?x?64)?$")),
         new("linux-arm", NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
@@ -27,11 +26,10 @@ public class Publisher
 
     public void Publish()
     {
-        List<string> runtimes = GetRuntimes();
+        string[] runtimes = GetRuntimes();
         if (!runtimes.Any())
         {
             Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
-            Environment.Exit(1);
             return;
         }
 
@@ -39,7 +37,7 @@ public class Publisher
         {
             Process cmd = new();
             string outputDir = $"./Build/{r}/";
-            ClearOutputDir(outputDir);
+            ClearDirectory(outputDir);
             cmd.StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime/OkayegTeaTime.csproj");
             cmd.OutputDataReceived += (_, e) => Console.WriteLine(e.Data);
             cmd.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
@@ -48,20 +46,9 @@ public class Publisher
         }
     }
 
-    private List<string> GetRuntimes()
-    {
-        List<string> result = new();
-        _regexDic.ForEach(v =>
-        {
-            if (_args.Any(a => v.Value.IsMatch(a)))
-            {
-                result.Add(v.Key);
-            }
-        });
-        return result;
-    }
+    private string[] GetRuntimes() => _runtimes.Where(kv => _args[1..].Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
 
-    private void ClearOutputDir(string dir)
+    private static void ClearDirectory(string dir)
     {
         if (!Directory.Exists(dir))
         {

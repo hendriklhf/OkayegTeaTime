@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using HLE.Collections;
+using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Controller;
 
 namespace OkayegTeaTime.Tools;
@@ -10,35 +12,37 @@ public class ReadMeGenerator
 {
     private readonly string[] _header1Text =
     {
-        "If your channel has a custom prefix set, commands will have to start with the prefix.", "If your channel has no prefix set, commands will have to end with \"eg\", for example: \"pingeg\".",
+        "If your channel has a custom prefix set, commands will have to start with the prefix.",
+        "If your channel has no prefix set, commands will have to end with \"eg\", for example: \"pingeg\".",
         "Text in \"[ ]\" is a variable parameter"
     };
 
     private readonly string[] _cmdTableHeader =
     {
-        "Command", "Alias", "Description [Parameter | Output]"
+        "Command",
+        "Alias",
+        "Description [Parameter | Output]"
     };
 
     private readonly string[] _afkCmdTableHeader =
     {
-        "Command", "Alias", "Parameter", "Description"
+        "Command",
+        "Alias",
+        "Parameter",
+        "Description"
     };
 
     private const string _title = "OkayegTeaTime";
     private const string _header1 = "Commands";
     private const string _header2 = "Afk-Commands";
 
-    private const string _readMePath = "./README.md";
+    private readonly string _readMePath = FileLocator.Find("README.md");
 
     public void GenerateReadMe()
     {
         string readme = CreateReadMe();
-        WriteToFile(readme);
-    }
-
-    private void WriteToFile(string readme)
-    {
         File.WriteAllText(_readMePath, readme);
+        Console.WriteLine($"Created README to file: {_readMePath}");
     }
 
     private string CreateReadMe()
