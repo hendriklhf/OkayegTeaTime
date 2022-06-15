@@ -38,7 +38,7 @@ public class ReadMeGenerator
 
     private readonly string _readMePath = FileLocator.Find("README.md");
 
-    public void GenerateReadMe()
+    public void Generate()
     {
         string readme = CreateReadMe();
         File.WriteAllText(_readMePath, readme);

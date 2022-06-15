@@ -18,7 +18,7 @@ public static class Program
             case "readme":
             {
                 ReadMeGenerator generator = new();
-                generator.GenerateReadMe();
+                generator.Generate();
                 break;
             }
             case "sync":
