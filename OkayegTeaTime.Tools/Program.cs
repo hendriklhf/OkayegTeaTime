@@ -21,7 +21,7 @@ public static class Program
                 generator.Generate();
                 break;
             }
-            case "sync":
+            case "sync" when args.Length > 1:
             {
                 ResourceSyncer syncer = new();
                 switch (args[1])
