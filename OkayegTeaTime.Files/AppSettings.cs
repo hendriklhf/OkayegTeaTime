@@ -22,6 +22,8 @@ public static class AppSettings
 
     public static string[] OfflineChatEmotes => JsonController.GetSettings().OfflineChatEmotes;
 
+    public static string OpenWeatherMapApiKey => JsonController.GetSettings().OpenWeatherMapApiKey;
+
     public static Spotify Spotify => JsonController.GetSettings().Spotify;
 
     public static Twitch Twitch => JsonController.GetSettings().Twitch;

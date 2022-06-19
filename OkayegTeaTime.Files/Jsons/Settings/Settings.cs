@@ -19,4 +19,6 @@ public class Settings
     public string OfflineChatChannel { get; set; }
 
     public DbConnection DatabaseConnection { get; set; }
+
+    public string OpenWeatherMapApiKey { get; set; }
 }

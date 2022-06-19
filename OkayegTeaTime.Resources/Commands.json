@@ -551,6 +551,20 @@
       ],
       "Cooldown": 10000,
       "Document": true
+    },
+    {
+      "Name": "Weather",
+      "Alias": [
+        "weather"
+      ],
+      "Parameters": [
+        "[city]"
+      ],
+      "Description": [
+        "Sends weather data for the given city"
+      ],
+      "Cooldown": 15000,
+      "Document": true
     }
   ],
   "AfkCommands": [

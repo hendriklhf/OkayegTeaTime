@@ -36,5 +36,6 @@ public enum CommandType
     Suggest,
     Tuck,
     Unset,
-    Vanish
+    Vanish,
+    Weather
 }
