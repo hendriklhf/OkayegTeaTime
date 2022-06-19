@@ -31,8 +31,8 @@ public class CommandController
 
     public CommandController()
     {
-        Commands = JsonController.GetCommandList().Commands;
-        AfkCommands = JsonController.GetCommandList().AfkCommands;
+        Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name);
+        AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name);
     }
 
     public bool IsAfkCommand(TwitchChatMessage chatMessage)

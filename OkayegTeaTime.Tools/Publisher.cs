@@ -35,14 +35,33 @@ public class Publisher
 
         foreach (string r in runtimes)
         {
-            Process cmd = new();
+            Console.WriteLine($"Starting builds for {r} runtime.");
             string outputDir = $"./Build/{r}/";
             ClearDirectory(outputDir);
-            cmd.StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime/OkayegTeaTime.csproj");
-            cmd.OutputDataReceived += (_, e) => Console.WriteLine(e.Data);
-            cmd.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
-            cmd.Start();
-            cmd.WaitForExit();
+
+            Process apiBuild = new()
+            {
+                StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime.Api/OkayegTeaTime.Api.csproj")
+            };
+            apiBuild.StartInfo.RedirectStandardOutput = true;
+            apiBuild.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
+            Console.WriteLine("Starting API build...");
+            Console.WriteLine($"Output directory: {outputDir}");
+            apiBuild.Start();
+            apiBuild.WaitForExit();
+            Console.WriteLine("Finished API build!");
+
+            Process botBuild = new()
+            {
+                StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime/OkayegTeaTime.csproj")
+            };
+            botBuild.StartInfo.RedirectStandardOutput = true;
+            botBuild.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
+            Console.WriteLine("Starting OkayegTeaTime build...");
+            Console.WriteLine($"Output directory: {outputDir}");
+            botBuild.Start();
+            botBuild.WaitForExit();
+            Console.WriteLine("Finished OkayegTeaTime build!");
         }
     }
 

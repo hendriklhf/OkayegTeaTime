@@ -28,7 +28,7 @@ public static class ProcessUtils
     public static void Restart()
     {
         ConsoleOut("[SYSTEM] RESTARTED", ConsoleColor.Red, true);
-        Process.Start($"./{AppSettings.AssemblyName}");
+        Process.Start($"./{AppSettings.AssemblyName}", Environment.GetCommandLineArgs());
         Environment.Exit(0);
     }
 }
