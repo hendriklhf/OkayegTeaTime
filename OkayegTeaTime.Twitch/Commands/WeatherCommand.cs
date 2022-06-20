@@ -42,7 +42,7 @@ public class WeatherCommand : Command
         }
     }
 
-    private OpenWeatherMapResponse? GetWeatherData(string city)
+    private static OpenWeatherMapResponse? GetWeatherData(string city)
     {
         HttpGet request = new($"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
         if (request.Result is null || !request.IsValidJsonData)
@@ -53,7 +53,7 @@ public class WeatherCommand : Command
         return JsonSerializer.Deserialize<OpenWeatherMapResponse>(request.Result);
     }
 
-    private string GetDirection(double deg) =>
+    private static string GetDirection(double deg) =>
         deg switch
         {
             < 11.25 => "N",

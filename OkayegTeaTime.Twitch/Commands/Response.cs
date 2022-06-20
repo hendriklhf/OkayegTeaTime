@@ -25,19 +25,18 @@ public class Response
 
     private string GetMessage()
     {
-        if (_builder is null)
-        {
-            return _value;
-        }
-        else
-        {
-            return _builder.ToString();
-        }
+        return _builder is null ? _value : _builder.ToString();
     }
 
     public static Response operator +(Response left, string right)
     {
-        left._builder ??= new(left._value);
+        left._builder ??= new(left.Message);
+        return new(left._builder.Append(right));
+    }
+
+    public static Response operator +(Response left, char right)
+    {
+        left._builder ??= new(left.Message);
         return new(left._builder.Append(right));
     }
 

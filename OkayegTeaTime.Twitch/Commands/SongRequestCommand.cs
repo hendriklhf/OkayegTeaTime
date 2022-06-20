@@ -66,25 +66,22 @@ public class SongRequestCommand : Command
                 }
 
                 SpotifyTrack track = (item as SpotifyTrack)!;
-                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue";
-
-                Response += targets.Length > 1 ? "s of " : " of ";
-                Dictionary<SpotifyUser, bool> success = new();
+                Dictionary<SpotifyUser, string?> success = new();
                 foreach (SpotifyUser target in targets)
                 {
                     try
                     {
                         await target.AddToQueue(track.Uri);
-                        success.Add(target, true);
+                        success.Add(target, null);
                     }
                     catch (SpotifyException ex)
                     {
-                        success.Add(target, false);
+                        success.Add(target, ex.Message);
                         DbController.LogException(ex);
                     }
                 }
 
-                Response += success.Where(t => t.Value).Select(t => t.Key.Username.Antiping()).JoinToString(", ");
+                CreateMultipleTargetResponse(success, track);
             }).Wait();
             return;
         }
@@ -177,24 +174,22 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue";
-                Response += targets.Length > 1 ? "s of " : " of ";
-                Dictionary<SpotifyUser, bool> success = new();
+                Dictionary<SpotifyUser, string?> success = new();
                 foreach (SpotifyUser target in targets)
                 {
                     try
                     {
                         await target.AddToQueue(track.Uri);
-                        success.Add(target, true);
+                        success.Add(target, null);
                     }
                     catch (SpotifyException ex)
                     {
-                        success.Add(target, false);
+                        success.Add(target, ex.Message);
                         DbController.LogException(ex);
                     }
                 }
 
-                Response += success.Where(t => t.Value).Select(t => t.Key.Username.Antiping()).JoinToString(", ");
+                CreateMultipleTargetResponse(success, track);
             }).Wait();
             return;
         }
@@ -292,5 +287,43 @@ public class SongRequestCommand : Command
         return targets.Select(t => t.TrimAll()).Distinct()
             .Select(t => DbControl.SpotifyUsers[t])
             .Where(t => t is not null).Take(5).ToArray()!;
+    }
+
+    private void CreateMultipleTargetResponse(Dictionary<SpotifyUser, string?> success, SpotifyTrack track)
+    {
+        string[] successUsers = success.Where(t => t.Value is null).Select(t => t.Key.Username.Antiping()).ToArray();
+        string[] failedUsers = success.Where(t => t.Value is not null).Select(t => t.Value!).ToArray();
+
+        if (successUsers.Length > 0)
+        {
+            Response += $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue";
+            Response += successUsers.Length > 1 ? "s of " : " of ";
+            Response += successUsers.JoinToString(", ");
+            if (failedUsers.Length == 0)
+            {
+                return;
+            }
+
+            Response += ". ";
+            Response += failedUsers.JoinToString(", ");
+        }
+        else
+        {
+            if (failedUsers.Length == 1)
+            {
+                Response = $"{ChatMessage.Username}, {failedUsers[0]}";
+            }
+            else
+            {
+                Response += $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} hasn't been added to any queue";
+                if (failedUsers.Length == 0)
+                {
+                    return;
+                }
+
+                Response += ". ";
+                Response += failedUsers.JoinToString(", ");
+            }
+        }
     }
 }
