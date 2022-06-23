@@ -48,7 +48,7 @@ public class RemindCommand : Command
     private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly short _minimumTimedReminderTime = (short)TimeSpan.FromSeconds(30).TotalMilliseconds;
 
-    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\s(in\s({_timePattern})(\s{_timePattern})*\s)?",
+    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?",
         RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
 
     public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
