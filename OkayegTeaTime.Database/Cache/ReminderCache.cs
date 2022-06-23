@@ -11,33 +11,33 @@ public class ReminderCache : DbCache<Reminder>
 {
     public Reminder? this[int id] => GetReminder(id);
 
-    public int? Add(string creator, string target, string message, string channel, long toTime = 0)
+    public int Add(Reminder reminder)
     {
-        int? id = DbController.AddReminder(creator, target, message, channel, toTime);
-        if (!id.HasValue)
+        int id = DbController.AddReminder(new EntityFrameworkModels.Reminder(reminder));
+        if (id == -1)
         {
-            return null;
+            return -1;
         }
 
-        Reminder reminder = new(id.Value, creator, target, message, channel, toTime);
+        reminder.Id = id;
         _items.Add(reminder);
         return id;
     }
 
-    public int?[] AddRange(IEnumerable<(string Creator, string Target, string Message, string Channel, long ToTime)> values)
+    public int[] AddRange(IEnumerable<Reminder> reminders)
     {
-        (string Creator, string Target, string Message, string Channel, long ToTime)[] reminders = values.ToArray();
-        int?[] ids = DbController.AddReminders(reminders);
+        Reminder[] rmdrs = reminders.ToArray();
+        int[] ids = DbController.AddReminders(rmdrs.Select(r => new EntityFrameworkModels.Reminder(r)));
 
-        for (int i = 0; i < reminders.Length; i++)
+        for (int i = 0; i < ids.Length; i++)
         {
-            if (!ids[i].HasValue)
+            if (ids[i] == -1)
             {
                 continue;
             }
 
-            Reminder r = new(ids[i]!.Value, reminders[i].Creator, reminders[i].Target, reminders[i].Message, reminders[i].Channel, reminders[i].ToTime);
-            _items.Add(r);
+            rmdrs[i].Id = ids[i];
+            _items.Add(rmdrs[i]);
         }
 
         return ids;

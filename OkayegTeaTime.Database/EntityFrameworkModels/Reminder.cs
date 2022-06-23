@@ -1,4 +1,5 @@
-﻿using HLE;
+﻿using System;
+using HLE;
 using HLE.Time;
 
 #nullable disable
@@ -35,21 +36,14 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels
             ToTime = toTime;
         }
 
-        public Reminder((string FromUser, string ToUser, string Message, string Channel) values)
+        public Reminder(Models.Reminder reminder)
         {
-            Creator = values.FromUser;
-            Target = values.ToUser;
-            Message = values.Message.Encode();
-            Channel = values.Channel;
-        }
-
-        public Reminder((string Creator, string Target, string Message, string Channel, long ToTime) values)
-        {
-            Creator = values.Creator;
-            Target = values.Target;
-            Message = values.Message.Encode();
-            Channel = values.Channel;
-            ToTime = values.ToTime;
+            Creator = reminder.Creator;
+            Target = reminder.Target;
+            Message = reminder.Message?.Encode() ?? Array.Empty<byte>();
+            Channel = reminder.Channel;
+            Time = reminder.Time;
+            ToTime = reminder.ToTime;
         }
     }
 }

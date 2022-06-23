@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HLE.Collections;
 using HLE;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -68,40 +67,38 @@ public static class DbController
         return entry?.Entity.Id;
     }
 
-    public static int? AddReminder(string creator, string target, string? message, string channel, long toTime = 0)
+    public static int AddReminder(Reminder reminder)
     {
         using OkayegTeaTimeContext database = new();
-        Reminder reminder = new(creator, target, message?.Encode(), channel, toTime);
-
         if (HasTooManyRemindersSet(reminder.Target, reminder.ToTime > 0))
         {
-            return null;
+            return -1;
         }
 
-        EntityEntry<Reminder> entity = database.Reminders.Add(reminder);
+        EntityEntry<Reminder> entry = database.Reminders.Add(reminder);
         database.SaveChanges();
-        return entity.Entity.Id;
+        return entry.Entity.Id;
     }
 
-    public static int?[] AddReminders(IEnumerable<(string Creator, string Target, string Message, string Channel, long ToTime)> rmdrs)
+    public static int[] AddReminders(IEnumerable<Reminder> reminders)
     {
-        (string Creator, string Target, string Message, string Channel, long ToTime)[] reminders = rmdrs.ToArray();
-        EntityEntry<Reminder>?[] entities = new EntityEntry<Reminder>[reminders.Length];
+        Reminder[] rmdrs = reminders.ToArray();
+        EntityEntry<Reminder>?[] entries = new EntityEntry<Reminder>[rmdrs.Length];
         using OkayegTeaTimeContext database = new();
-        reminders.ForEach((v, i) =>
+        for (int i = 0; i < rmdrs.Length; i++)
         {
-            Reminder r = new(v);
-            if (HasTooManyRemindersSet(r.Target, r.ToTime > 0))
+            if (HasTooManyRemindersSet(rmdrs[i].Target, rmdrs[i].ToTime > 0))
             {
-                entities[i] = null;
+                entries[i] = null;
             }
             else
             {
-                entities[i] = database.Reminders.Add(r);
+                entries[i] = database.Reminders.Add(rmdrs[i]);
             }
-        });
+        }
+
         database.SaveChanges();
-        return entities.Select(e => e?.Entity?.Id).ToArray();
+        return entries.Select(e => e?.Entity?.Id ?? -1).ToArray();
     }
 
     public static void AddSugestion(string username, string channel, string suggestion)
@@ -183,11 +180,11 @@ public static class DbController
         using OkayegTeaTimeContext database = new();
         if (!isTimedReminder)
         {
-            return database.Reminders.AsQueryable().Count(r => r.Target == target && r.ToTime == 0) >= AppSettings.MaxReminders;
+            return database.Reminders.Count(r => r.Target == target && r.ToTime == 0) >= AppSettings.MaxReminders;
         }
         else
         {
-            return database.Reminders.AsQueryable().Count(r => r.Target == target && r.ToTime > 0) >= AppSettings.MaxReminders;
+            return database.Reminders.Count(r => r.Target == target && r.ToTime > 0) >= AppSettings.MaxReminders;
         }
     }
 

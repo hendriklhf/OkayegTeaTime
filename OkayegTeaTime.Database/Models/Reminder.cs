@@ -5,7 +5,7 @@ namespace OkayegTeaTime.Database.Models;
 
 public class Reminder : CacheModel
 {
-    public int Id { get; }
+    public int Id { get; internal set; }
 
     public string Creator { get; }
 
@@ -32,9 +32,8 @@ public class Reminder : CacheModel
         ToTime = reminder.ToTime;
     }
 
-    public Reminder(int id, string creator, string target, string? message, string channel, long toTime = 0)
+    public Reminder(string creator, string target, string? message, string channel, long toTime = 0)
     {
-        Id = id;
         Creator = creator;
         Target = target;
         Message = message;

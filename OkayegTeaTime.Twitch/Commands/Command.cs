@@ -6,17 +6,17 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public abstract class Command
 {
-    public TwitchChatMessage ChatMessage { get; }
+    protected TwitchChatMessage ChatMessage { get; }
 
-    public string? Prefix { get; }
+    protected string? Prefix { get; }
 
-    public string Alias { get; }
+    protected string Alias { get; }
 
-    public Response Response { get; protected set; } = new();
+    protected Response Response { get; set; } = new();
 
     private protected readonly TwitchBot _twitchBot;
 
-    public Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
+    protected Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
         _twitchBot = twitchBot;
         ChatMessage = chatMessage;
