@@ -7,11 +7,19 @@ public class Channel
     public string? EmoteInFront { get; set; }
     public string? Prefix { get; set; }
 
-    public Channel(long id, string name, string? emote = null, string? prefix = null)
+    public Channel(long id, string name, string? emoteInFront, string? prefix)
     {
         Id = id;
         Name = name;
-        EmoteInFront = emote;
+        EmoteInFront = emoteInFront;
         Prefix = prefix;
+    }
+
+    public Channel(long id, string name)
+    {
+        Id = id;
+        Name = name;
+        EmoteInFront = null;
+        Prefix = null;
     }
 }
