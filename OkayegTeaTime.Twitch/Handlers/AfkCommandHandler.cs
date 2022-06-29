@@ -2,10 +2,10 @@
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Jsons.CommandData;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
-using User = OkayegTeaTime.Database.Models.User;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 

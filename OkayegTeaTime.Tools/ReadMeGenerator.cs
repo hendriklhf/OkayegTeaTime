@@ -58,11 +58,11 @@ public class ReadMeGenerator
         commandController.Commands.Where(c => c.Document).OrderBy(c => c.Name).ForEach(c =>
         {
             builder.Append($"<tr><td>{c.Name}</td><td><table>");
-            c.Alias.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
+            c.Aliases.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
             builder.Append("</table></td><td><table>");
-            for (int i = 0; i < c.Parameter.Length; i++)
+            for (int i = 0; i < c.Parameters.Length; i++)
             {
-                builder.Append($"<tr><td>{c.Parameter[i]}</td><td>{c.Description[i]}</td></tr>");
+                builder.Append($"<tr><td>{c.Parameters[i]}</td><td>{c.ParameterDescriptions[i]}</td></tr>");
             }
 
             builder.Append("</table></td></tr>");
@@ -73,11 +73,11 @@ public class ReadMeGenerator
         commandController.AfkCommands.Where(c => c.Document).OrderBy(c => c.Name).ForEach(c =>
         {
             builder.Append($"<tr><td>{c.Name}</td><td><table>");
-            c.Alias.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
+            c.Aliases.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
             builder.Append($"</table></td>");
-            for (int i = 0; i < c.Parameter.Length; i++)
+            for (int i = 0; i < c.Parameters.Length; i++)
             {
-                builder.Append($"<td>{c.Parameter[i]}</td><td>{c.Description[i]}</td>");
+                builder.Append($"<td>{c.Parameters[i]}</td><td>{c.ParameterDescriptions[i]}</td>");
             }
 
             builder.Append("</td></tr>");

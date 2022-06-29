@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OkayegTeaTime.Twitch.Commands.Attributes;
+namespace OkayegTeaTime.Twitch.Attributes;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class TimePattern : Attribute

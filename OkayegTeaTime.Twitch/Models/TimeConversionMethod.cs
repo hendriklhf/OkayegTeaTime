@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace OkayegTeaTime.Twitch.Commands.Models;
+namespace OkayegTeaTime.Twitch.Models;
 
 public class TimeConversionMethod
 {

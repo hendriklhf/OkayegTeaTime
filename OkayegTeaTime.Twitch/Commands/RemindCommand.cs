@@ -9,8 +9,7 @@ using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Twitch.Commands.Attributes;
-using OkayegTeaTime.Twitch.Commands.Models;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 

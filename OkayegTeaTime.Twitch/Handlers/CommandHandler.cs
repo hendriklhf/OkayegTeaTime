@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using OkayegTeaTime.Database;
@@ -38,7 +39,7 @@ public class CommandHandler : Handler
     {
         foreach (CommandType type in _commandTypes)
         {
-            foreach (string alias in _twitchBot.CommandController[type].Alias)
+            foreach (string alias in _twitchBot.CommandController[type].Aliases)
             {
                 string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
@@ -65,7 +66,7 @@ public class CommandHandler : Handler
     {
         foreach (AfkType type in _afkTypes)
         {
-            foreach (string alias in _twitchBot.CommandController[type].Alias)
+            foreach (string alias in _twitchBot.CommandController[type].Aliases)
             {
                 string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
@@ -86,6 +87,8 @@ public class CommandHandler : Handler
         }
     }
 
+    private static readonly Dictionary<CommandType, CommandHandle> _commandHandles = new();
+
     /// <summary>
     /// Attempts to handle a command through a handler via reflection
     /// </summary>
@@ -96,46 +99,49 @@ public class CommandHandler : Handler
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
     private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
-        string commandClassName = $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
-
-        Type? commandClass = Type.GetType(commandClassName);
-        if (commandClass is null)
+        if (!_commandHandles.TryGetValue(type, out CommandHandle? handle))
         {
-            throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
+            string commandClassName = $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
+            Type? commandClass = Type.GetType(commandClassName);
+            if (commandClass is null)
+            {
+                throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
+            }
+
+            ConstructorInfo? constructor = commandClass.GetConstructor(new[]
+            {
+                typeof(TwitchBot),
+                typeof(TwitchChatMessage),
+                typeof(string)
+            });
+            if (constructor is null)
+            {
+                throw new InvalidOperationException($"Could not get constructor for class {commandClass.FullName}");
+            }
+
+            MethodInfo? handleMethod = commandClass.GetMethod(nameof(Command.Handle));
+            if (handleMethod is null)
+            {
+                throw new InvalidOperationException($"Could not get {nameof(Command.Handle)} method for command class {commandClass.FullName}");
+            }
+
+            MethodInfo? sendMethod = commandClass.GetMethod(nameof(Command.SendResponse));
+            if (sendMethod is null)
+            {
+                throw new InvalidOperationException($"Could not get {nameof(Command.SendResponse)} method for command class {commandClass.FullName}");
+            }
+
+            handle = new(constructor, handleMethod, sendMethod);
+            _commandHandles.Add(type, handle);
         }
 
-        ConstructorInfo? constructor = commandClass.GetConstructor(new[]
-        {
-            typeof(TwitchBot),
-            typeof(TwitchChatMessage),
-            typeof(string)
-        });
-        if (constructor is null)
-        {
-            throw new InvalidOperationException($"Could not instantiate command class {commandClassName}");
-        }
-
-        object handlerInstance = constructor.Invoke(new object[]
+        object handlerInstance = handle.Constructor.Invoke(new object[]
         {
             twitchBot,
             chatMessage,
             alias
         });
-
-        MethodInfo? handleMethod = commandClass.GetMethod(nameof(Command.Handle));
-        if (handleMethod is null)
-        {
-            throw new InvalidOperationException($"Could not get handler method for command class {commandClassName}");
-        }
-
-        handleMethod.Invoke(handlerInstance, null);
-
-        MethodInfo? sendMethod = commandClass.GetMethod(nameof(Command.SendResponse));
-        if (sendMethod is null)
-        {
-            throw new InvalidOperationException($"Could not get send method for command class {commandClassName}");
-        }
-
-        sendMethod.Invoke(handlerInstance, null);
+        handle.HandleMethod.Invoke(handlerInstance, null);
+        handle.SendMethod.Invoke(handlerInstance, null);
     }
 }

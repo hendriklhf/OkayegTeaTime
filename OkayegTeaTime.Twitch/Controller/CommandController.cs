@@ -32,7 +32,9 @@ public class CommandController
     public CommandController()
     {
         Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name);
+        Commands.ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
         AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name);
+        AfkCommands.ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
     }
 
     public bool IsAfkCommand(TwitchChatMessage chatMessage)
@@ -48,7 +50,7 @@ public class CommandController
     public Command? FindCommand(string searchValue)
     {
         Regex pattern = new($"^{searchValue}$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-        return Commands.FirstOrDefault(c => pattern.IsMatch(c.Name) || c.Alias.Any(a => pattern.IsMatch(a)));
+        return Commands.FirstOrDefault(c => pattern.IsMatch(c.Name) || c.Aliases.Any(a => pattern.IsMatch(a)));
     }
 
     private Command GetCommand(CommandType type)
@@ -70,7 +72,7 @@ public class CommandController
             return _commandAliases;
         }
 
-        _commandAliases = Commands.Select(c => c.Alias).SelectEach();
+        _commandAliases = Commands.Select(c => c.Aliases).SelectEach();
         return _commandAliases;
     }
 
@@ -81,7 +83,7 @@ public class CommandController
             return _afkCommandAliases;
         }
 
-        _afkCommandAliases = AfkCommands.Select(c => c.Alias).SelectEach();
+        _afkCommandAliases = AfkCommands.Select(c => c.Aliases).SelectEach();
         return _afkCommandAliases;
     }
 }

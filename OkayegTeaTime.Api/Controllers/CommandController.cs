@@ -20,12 +20,14 @@ public class CommandController : ControllerBase
     [HttpGet("commands")]
     public string GetCommands()
     {
+        Response.Headers.Add("Access-Control-Allow-Origin", "*");
         return _commands ??= JsonSerializer.Serialize(_commandController.Commands, _options);
     }
 
     [HttpGet("afkcommands")]
     public string GetAfkCommands()
     {
+        Response.Headers.Add("Access-Control-Allow-Origin", "*");
         return _afkCommmands ??= JsonSerializer.Serialize(_commandController.AfkCommands, _options);
     }
 }

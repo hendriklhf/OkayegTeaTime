@@ -12,11 +12,11 @@ public class AfkCommand
 
     public string Resuming { get; set; }
 
-    public string[] Alias { get; set; }
+    public string[] Aliases { get; set; }
 
-    public string[] Parameter { get; set; }
+    public string[] Parameters { get; set; }
 
-    public string[] Description { get; set; }
+    public string[] ParameterDescriptions { get; set; }
 
     public bool Document { get; set; }
 }
