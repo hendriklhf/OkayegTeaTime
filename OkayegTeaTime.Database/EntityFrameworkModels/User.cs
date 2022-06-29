@@ -25,11 +25,21 @@ public class User
         IsAfk = isAfk;
     }
 
-    public User(long id, string username, int type)
+    public User(long id, string username)
     {
         Id = id;
         Username = username;
-        AfkType = type;
-        IsAfk = true;
+    }
+
+    public User(Models.User user)
+    {
+        Id = user.Id;
+        Username = user.Username;
+        AfkMessage = user.AfkMessage;
+        AfkType = (int)user.AfkType;
+        AfkTime = user.AfkTime;
+        IsAfk = user.IsAfk;
+        Location = user.Location;
+        IsPrivateLocation = user.IsPrivateLocation;
     }
 }

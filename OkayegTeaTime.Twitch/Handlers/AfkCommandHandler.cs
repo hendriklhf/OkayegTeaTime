@@ -23,13 +23,8 @@ public class AfkCommandHandler
         User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
-            DbControl.Users.Add(chatMessage.UserId, chatMessage.Username, type);
-        }
-
-        user = DbControl.Users[chatMessage.UserId];
-        if (user is null)
-        {
-            return;
+            user = new(chatMessage.UserId, chatMessage.Username);
+            DbControl.Users.Add(user);
         }
 
         string message = chatMessage.Split[1..].JoinToString(' ');

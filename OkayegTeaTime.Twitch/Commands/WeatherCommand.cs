@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using HLE.Emojis;
 using HLE.Http;
+using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Jsons.HttpRequests.OpenWeatherMap;
 using OkayegTeaTime.Twitch.Models;
@@ -18,28 +20,44 @@ public class WeatherCommand : Command
 
     public override void Handle()
     {
+        string? city;
+        bool isPrivateLocation;
+
         Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string city = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
-            OpenWeatherMapResponse? weatherData = GetWeatherData(city);
-            if (weatherData is null)
-            {
-                Response = $"{ChatMessage.Username}, api error";
-                return;
-            }
-
-            if (weatherData.Message is not null)
-            {
-                Response = $"{ChatMessage.Username}, {weatherData.Message}";
-                return;
-            }
-
-            Response = $"{ChatMessage.Username}, {weatherData.CityName}, {weatherData.Location.Country}: Temperature: {weatherData.Weather.Temperature}°C, " +
-                       $"min. temperature: {weatherData.Weather.MinTemperature}°C, max. temperature: {weatherData.Weather.MaxTemperature}°C, " +
-                       $"{GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, cloud cover: {weatherData.Clouds.Percentage}%, " +
-                       $"humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
+            city = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
+            isPrivateLocation = false;
         }
+        else
+        {
+            User? user = DbControl.Users[ChatMessage.UserId];
+            city = user?.Location;
+            isPrivateLocation = user?.IsPrivateLocation == true;
+            if (city is null)
+            {
+                Response = $"{ChatMessage.Username}, you haven't set your location yet";
+                return;
+            }
+        }
+
+        OpenWeatherMapResponse? weatherData = GetWeatherData(city);
+        if (weatherData is null)
+        {
+            Response = $"{ChatMessage.Username}, api error";
+            return;
+        }
+
+        if (weatherData.Message is not null)
+        {
+            Response = $"{ChatMessage.Username}, {weatherData.Message}";
+            return;
+        }
+
+        Response = $"{ChatMessage.Username}, {(isPrivateLocation ? "(private location)" : $"{weatherData.CityName}, {weatherData.Location.Country}")}: " +
+                   $"Temperature: {weatherData.Weather.Temperature}°C, min. temperature: {weatherData.Weather.MinTemperature}°C, max. temperature: {weatherData.Weather.MaxTemperature}°C, " +
+                   $"{GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, cloud cover: {weatherData.Clouds.Percentage}%, " +
+                   $"humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
     }
 
     private static OpenWeatherMapResponse? GetWeatherData(string city)

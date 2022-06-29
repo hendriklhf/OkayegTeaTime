@@ -4,7 +4,6 @@ using System.Linq;
 using HLE;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.EntityFrameworkModels;
 using OkayegTeaTime.Files;
 
@@ -22,28 +21,25 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void AddUser(long userId, string username, AfkType type, bool checkIfUserExists = false)
+    public static void AddUser(User user, bool checkIfUserExists = false)
     {
-        AddUserAndReturn(userId, username, type, checkIfUserExists);
-    }
-
-    public static User? AddUserAndReturn(long userId, string username, AfkType type, bool checkIfUserExists = false)
-    {
-        User? user;
+        User? efUser;
         if (checkIfUserExists)
         {
-            user = GetUser(userId, username);
-            if (user is not null)
+            efUser = GetUser(user.Id, user.Username);
+            if (efUser is not null)
             {
-                return null;
+                return;
             }
         }
 
         OkayegTeaTimeContext database = new();
-        user = new(userId, username, (int)type);
-        user = database.Users.Add(user).Entity;
+        efUser = new(user.Id, user.Username)
+        {
+            AfkType = user.AfkType
+        };
+        database.Users.Add(efUser);
         database.SaveChanges();
-        return user;
     }
 
     public static long? AddSpotifyUser(string username, string accessToken, string refreshToken)

@@ -77,10 +77,46 @@ public class User : CacheModel
         }
     }
 
+    public string? Location
+    {
+        get => _location;
+        set
+        {
+            _location = value;
+            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
+            if (efUser is null)
+            {
+                return;
+            }
+
+            efUser.Location = value;
+            EditedProperty();
+        }
+    }
+
+    public bool IsPrivateLocation
+    {
+        get => _isPrivateLocation;
+        set
+        {
+            _isPrivateLocation = value;
+            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
+            if (efUser is null)
+            {
+                return;
+            }
+
+            efUser.IsPrivateLocation = value;
+            EditedProperty();
+        }
+    }
+
     private string? _afkMessage;
     private AfkType _afkType;
     private long _afkTime;
     private bool _isAfk;
+    private string? _location;
+    private bool _isPrivateLocation;
 
     public User(EntityFrameworkModels.User user)
     {
@@ -90,12 +126,13 @@ public class User : CacheModel
         _afkType = (AfkType)user.AfkType;
         _afkTime = user.AfkTime;
         _isAfk = user.IsAfk;
+        _location = user.Location;
+        _isPrivateLocation = user.IsPrivateLocation;
     }
 
-    public User(long id, string username, AfkType type)
+    public User(long id, string username)
     {
         Id = id;
         Username = username;
-        _afkType = type;
     }
 }

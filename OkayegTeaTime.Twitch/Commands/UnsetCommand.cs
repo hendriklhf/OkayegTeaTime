@@ -16,8 +16,8 @@ public class UnsetCommand : Command
 
     public override void Handle()
     {
-        Regex prefixPattern = PatternCreator.Create(Alias, Prefix, @"\sprefix");
-        if (prefixPattern.IsMatch(ChatMessage.Message))
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\sprefix");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
@@ -39,8 +39,8 @@ public class UnsetCommand : Command
             return;
         }
 
-        Regex reminderPattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+");
-        if (reminderPattern.IsMatch(ChatMessage.Message))
+        pattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             int reminderId = ChatMessage.Split[2].ToInt();
@@ -57,8 +57,8 @@ public class UnsetCommand : Command
             return;
         }
 
-        Regex emotePattern = PatternCreator.Create(Alias, Prefix, @"\semote");
-        if (emotePattern.IsMatch(ChatMessage.Message))
+        pattern = PatternCreator.Create(Alias, Prefix, @"\semote");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
@@ -79,6 +79,20 @@ public class UnsetCommand : Command
             }
 
             return;
+        }
+
+        pattern = PatternCreator.Create(Alias, Prefix, @"\slocation");
+        if (pattern.IsMatch(ChatMessage.Message))
+        {
+            User? user = DbControl.Users[ChatMessage.UserId];
+            if (user is null)
+            {
+                Response = $"{ChatMessage.Username}, you haven't set your location yet";
+                return;
+            }
+
+            user.Location = null;
+            Response = $"{ChatMessage.Username}, your location has been unset";
         }
     }
 }

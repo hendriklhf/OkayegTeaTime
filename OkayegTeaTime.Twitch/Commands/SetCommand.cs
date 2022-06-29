@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -16,8 +17,8 @@ public class SetCommand : Command
 
     public override void Handle()
     {
-        Regex prefixPattern = PatternCreator.Create(Alias, Prefix, @"\sprefix\s\S+");
-        if (prefixPattern.IsMatch(ChatMessage.Message))
+        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\sprefix\s\S+");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
@@ -42,8 +43,8 @@ public class SetCommand : Command
             return;
         }
 
-        Regex emotePattern = PatternCreator.Create(Alias, Prefix, @"\semote\s\S+");
-        if (emotePattern.IsMatch(ChatMessage.Message))
+        pattern = PatternCreator.Create(Alias, Prefix, @"\semote\s\S+");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
@@ -68,8 +69,8 @@ public class SetCommand : Command
             return;
         }
 
-        Regex songRequestPattern = PatternCreator.Create(Alias, Prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
-        if (songRequestPattern.IsMatch(ChatMessage.Message))
+        pattern = PatternCreator.Create(Alias, Prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
             if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
@@ -103,6 +104,32 @@ public class SetCommand : Command
             {
                 Response += $"channel {ChatMessage.Channel} is not registered, they have to register first";
             }
+
+            return;
+        }
+
+        pattern = PatternCreator.Create(Alias, Prefix, @"\slocation\s((private)|(public))\s\S+");
+        if (pattern.IsMatch(ChatMessage.Message))
+        {
+            string city = ChatMessage.Split[3..].JoinToString(' ');
+            bool isPrivate = ChatMessage.LowerSplit[2][1] == 'r';
+            User? user = DbControl.Users[ChatMessage.UserId];
+            if (user is null)
+            {
+                user = new(ChatMessage.UserId, ChatMessage.Username)
+                {
+                    Location = city,
+                    IsPrivateLocation = isPrivate
+                };
+                DbControl.Users.Add(user);
+            }
+            else
+            {
+                user.Location = city;
+                user.IsPrivateLocation = isPrivate;
+            }
+
+            Response = $"{ChatMessage.Username}, your {(isPrivate ? "private" : "public")} location has been set";
         }
     }
 }

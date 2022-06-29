@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
@@ -8,10 +7,9 @@ public class UserCache : DbCache<User>
 {
     public User? this[long id] => GetUser(id);
 
-    public void Add(long id, string username, AfkType type)
+    public void Add(User user)
     {
-        User user = new(id, username, type);
-        DbController.AddUser(id, username, type);
+        DbController.AddUser(new EntityFrameworkModels.User(user));
         _items.Add(user);
     }
 
