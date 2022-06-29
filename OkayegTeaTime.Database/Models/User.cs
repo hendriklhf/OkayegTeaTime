@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using HLE;
 using OkayegTeaTime.Database.Cache.Enums;
 
 namespace OkayegTeaTime.Database.Models;
@@ -22,7 +21,7 @@ public class User : CacheModel
                 return;
             }
 
-            efUser.AfkMessage = value?.Encode();
+            efUser.AfkMessage = value;
             EditedProperty();
         }
     }
@@ -87,10 +86,10 @@ public class User : CacheModel
     {
         Id = user.Id;
         Username = user.Username;
-        _afkMessage = user.AfkMessage.Decode();
+        _afkMessage = user.AfkMessage;
         _afkType = (AfkType)user.AfkType;
         _afkTime = user.AfkTime;
-        _isAfk = user.IsAfk == true;
+        _isAfk = user.IsAfk;
     }
 
     public User(long id, string username, AfkType type)

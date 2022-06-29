@@ -1,5 +1,4 @@
-﻿using HLE;
-using HLE.Time;
+﻿using HLE.Time;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -26,7 +25,7 @@ public class Reminder : CacheModel
         Id = reminder.Id;
         Creator = reminder.Creator;
         Target = reminder.Target;
-        Message = reminder.Message?.Decode();
+        Message = reminder.Message;
         Channel = reminder.Channel;
         Time = reminder.Time;
         ToTime = reminder.ToTime;

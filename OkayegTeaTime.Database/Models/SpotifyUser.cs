@@ -109,7 +109,7 @@ public class SpotifyUser : CacheModel
         _accessToken = spotifyUser.AccessToken;
         _refreshToken = spotifyUser.RefreshToken;
         _time = spotifyUser.Time;
-        _areSongRequestsEnabled = spotifyUser.SongRequestEnabled == true;
+        _areSongRequestsEnabled = spotifyUser.SongRequestEnabled;
 
         _timer.Elapsed += Timer_OnElapsed;
     }
@@ -238,6 +238,7 @@ public class SpotifyUser : CacheModel
                 {
                     Offset = offset
                 });
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 SpotifyTrack[]? items = playlistItems?.Items?.Select(i => new SpotifyTrack(i.Track)).ToArray();
                 if (items is null)
                 {
@@ -459,6 +460,7 @@ public class SpotifyUser : CacheModel
 
             currentlyPlaying = await client.Player.GetCurrentlyPlaying(new());
 
+            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
             if (currentlyPlaying?.IsPlaying == false)
             {
                 return null;

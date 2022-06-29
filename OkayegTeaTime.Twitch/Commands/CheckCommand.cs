@@ -1,5 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using HLE;
+using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -69,10 +71,23 @@ public class CheckCommand : Command
                 return;
             }
 
-            Response += $"From: {reminder.Creator} || To: {reminder.Target} || ";
-            Response += $"Set: {TimeHelper.GetUnixDifference(reminder.Time)} ago || ";
-            Response += reminder.ToTime > 0 ? $"Fires in: {TimeHelper.GetUnixDifference(reminder.ToTime)} || " : string.Empty;
-            Response += $"Message: {reminder.Message}";
+            List<string> responses = new()
+            {
+                $"From: {reminder.Creator} || To: {reminder.Target}",
+                $"Set: {TimeHelper.GetUnixDifference(reminder.Time)} ago"
+            };
+
+            if (reminder.ToTime > 0)
+            {
+                responses.Add($"Fires in: {TimeHelper.GetUnixDifference(reminder.ToTime)}");
+            }
+
+            if (!string.IsNullOrEmpty(reminder.Message))
+            {
+                responses.Add($"Message: {reminder.Message}");
+            }
+
+            Response = responses.JoinToString(" || ");
         }
     }
 }
