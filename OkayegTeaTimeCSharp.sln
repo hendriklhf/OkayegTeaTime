@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Database", "O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Files", "OkayegTeaTime.Files\OkayegTeaTime.Files.csproj", "{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Logging", "OkayegTeaTime.Logging\OkayegTeaTime.Logging.csproj", "{948F503F-DA4E-4942-8856-70CC6FD14B22}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Spotify", "OkayegTeaTime.Spotify\OkayegTeaTime.Spotify.csproj", "{044A1AD0-F11E-4064-BBBD-40375933FA8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Utils", "OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj", "{0209CD79-B111-4DE7-BFEE-3E2550737FAF}"
@@ -55,10 +53,6 @@ Global
 		{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{948F503F-DA4E-4942-8856-70CC6FD14B22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{948F503F-DA4E-4942-8856-70CC6FD14B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{948F503F-DA4E-4942-8856-70CC6FD14B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{948F503F-DA4E-4942-8856-70CC6FD14B22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{044A1AD0-F11E-4064-BBBD-40375933FA8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{044A1AD0-F11E-4064-BBBD-40375933FA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{044A1AD0-F11E-4064-BBBD-40375933FA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU

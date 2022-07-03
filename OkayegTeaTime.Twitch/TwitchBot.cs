@@ -24,6 +24,7 @@ using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 using static HLE.Time.TimeHelper;
+using static OkayegTeaTime.Utils.ProcessUtils;
 using User = TwitchLib.Api.Helix.Models.Users.GetUsers.User;
 
 namespace OkayegTeaTime.Twitch;
@@ -200,52 +201,52 @@ public class TwitchBot
 
     private void Client_OnConnected(object sender, OnConnectedArgs e)
     {
-        ProcessUtils.ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
+        ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
     }
 
     private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
     {
-        ProcessUtils.ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", ConsoleColor.Red);
+        ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", ConsoleColor.Red);
     }
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
-        ProcessUtils.ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
+        ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
         _messageHandler?.Handle(new TwitchChatMessage(e.ChatMessage));
     }
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
-        ProcessUtils.ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.Twitch.Username}: {e.SentMessage.Message}", ConsoleColor.Green);
+        ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.Twitch.Username}: {e.SentMessage.Message}", ConsoleColor.Green);
     }
 
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
-        ProcessUtils.ConsoleOut($"[TWITCH] <WHISPER> {e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
+        ConsoleOut($"[TWITCH] <WHISPER> {e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
         _whisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
     }
 
     private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
     {
-        ProcessUtils.ConsoleOut($"[TWITCH] <CONNECTION-ERROR> {e.Error.Message}", ConsoleColor.Red, true);
-        ProcessUtils.Restart();
+        ConsoleOut($"[TWITCH] <CONNECTION-ERROR> {e.Error.Message}", ConsoleColor.Red, true);
+        Restart();
     }
 
     private void Client_OnError(object sender, OnErrorEventArgs e)
     {
-        ProcessUtils.ConsoleOut($"[TWITCH] <ERROR> {e.Exception.Message}", ConsoleColor.Red, true);
-        ProcessUtils.Restart();
+        ConsoleOut($"[TWITCH] <ERROR> {e.Exception.Message}", ConsoleColor.Red, true);
+        Restart();
     }
 
     private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
     {
-        ProcessUtils.ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
-        ProcessUtils.Restart();
+        ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
+        Restart();
     }
 
     private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
     {
-        ProcessUtils.ConsoleOut("[TWITCH] RECONNECTED", ConsoleColor.Red, true);
+        ConsoleOut("[TWITCH] RECONNECTED", ConsoleColor.Red, true);
     }
 
     private void Client_OnUserJoinedChannel(object sender, OnUserJoinedArgs e)
