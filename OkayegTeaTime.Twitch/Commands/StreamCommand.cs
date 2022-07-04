@@ -26,7 +26,7 @@ public class StreamCommand : Command
         Regex channelPattern = PatternCreator.Create(Alias, Prefix, @"\s\w+");
         Response = $"{ChatMessage.Username}, ";
 
-        Stream? stream = channelPattern.IsMatch(ChatMessage.Message) ? TwitchApi.GetStream(ChatMessage.Split[1]) : TwitchApi.GetStream(ChatMessage.ChannelId);
+        Stream? stream = channelPattern.IsMatch(ChatMessage.Message) ? _twitchBot.TwitchApi.GetStream(ChatMessage.Split[1]) : _twitchBot.TwitchApi.GetStream(ChatMessage.ChannelId);
         if (stream is null)
         {
             Response += "this channel is currently not streaming";

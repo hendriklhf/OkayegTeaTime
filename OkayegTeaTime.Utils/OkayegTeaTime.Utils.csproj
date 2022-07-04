@@ -17,7 +17,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj" />
-      <ProjectReference Include="..\OkayegTeaTime.Logging\OkayegTeaTime.Logging.csproj" />
     </ItemGroup>
 
 </Project>

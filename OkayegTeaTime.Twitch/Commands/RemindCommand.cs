@@ -88,7 +88,7 @@ public class RemindCommand : Command
         Response = $"{ChatMessage.Username}, ";
         if (targets.Length == 1)
         {
-            bool targetExists = TwitchApi.DoesUserExist(targets[0]);
+            bool targetExists = _twitchBot.TwitchApi.DoesUserExist(targets[0]);
             if (!targetExists)
             {
                 Response += "the target user does not exist";
@@ -107,7 +107,7 @@ public class RemindCommand : Command
         }
         else
         {
-            Dictionary<string, bool> exist = TwitchApi.DoUsersExist(targets);
+            Dictionary<string, bool> exist = _twitchBot.TwitchApi.DoUsersExist(targets);
             Reminder[] reminders = targets.Where(t => exist[t]).Select(t => new Reminder(ChatMessage.Username, t, message, ChatMessage.Channel, toTime)).ToArray();
             if (reminders.Length == 0)
             {

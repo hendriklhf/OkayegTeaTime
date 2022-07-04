@@ -35,6 +35,8 @@ public class TwitchBot
 
     public CommandController CommandController { get; } = new();
 
+    public TwitchApi TwitchApi { get; } = new();
+
     public DottedNumber CommandCount { get; set; } = 1;
 
     public string SystemInfo => GetSystemInfo();
@@ -60,8 +62,6 @@ public class TwitchBot
 
     public TwitchBot(IEnumerable<string>? channels = null)
     {
-        TwitchApi.Initialize();
-
         ConnectionCredentials connectionCredentials = new(AppSettings.Twitch.Username, AppSettings.Twitch.OAuthToken);
         ClientOptions clientOptions = new()
         {
@@ -290,7 +290,7 @@ public class TwitchBot
         Console.Title = $"OkayegTeaTime - {SystemInfo}";
     }
 
-    private static void OnTimer10Days(object? sender, ElapsedEventArgs e)
+    private void OnTimer10Days(object? sender, ElapsedEventArgs e)
     {
         TwitchApi.RefreshAccessToken();
     }

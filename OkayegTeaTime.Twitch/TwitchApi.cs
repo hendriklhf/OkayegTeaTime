@@ -15,11 +15,11 @@ using TwitchLibApi = TwitchLib.Api.TwitchAPI;
 
 namespace OkayegTeaTime.Twitch;
 
-public static class TwitchApi
+public class TwitchApi
 {
-    private static readonly TwitchLibApi _api = new();
+    private readonly TwitchLibApi _api = new();
 
-    public static void Initialize()
+    public TwitchApi()
     {
         _api.Settings.ClientId = AppSettings.Twitch.ApiClientId;
         _api.Settings.Secret = AppSettings.Twitch.ApiClientSecret;
@@ -30,18 +30,10 @@ public static class TwitchApi
             AuthScopes.Helix_Channel_Read_Subscriptions,
             AuthScopes.User_Subscriptions
         };
-        string? accessToken = GetAccessToken();
-        if (accessToken is null)
-        {
-            ArgumentNullException ex = new(nameof(accessToken));
-            DbController.LogException(ex);
-            throw ex;
-        }
-
-        _api.Settings.AccessToken = accessToken;
+        RefreshAccessToken();
     }
 
-    private static string? GetAccessToken()
+    private string GetAccessToken()
     {
         HttpPost request = new("https://id.twitch.tv/oauth2/token", new[]
         {
@@ -50,20 +42,23 @@ public static class TwitchApi
             ("grant_type", "client_credentials")
         });
 
-        if (!request.IsValidJsonData)
+        string? accessToken = request.IsValidJsonData ? request.Data.GetProperty("access_token").GetString() : null;
+        if (accessToken is not null)
         {
-            return null;
+            return accessToken;
         }
 
-        return request.Data.GetProperty("access_token").GetString();
+        ArgumentNullException ex = new(nameof(accessToken));
+        DbController.LogException(ex);
+        throw ex;
     }
 
-    public static void RefreshAccessToken()
+    public void RefreshAccessToken()
     {
         _api.Settings.AccessToken = GetAccessToken();
     }
 
-    public static User? GetUser(string username)
+    public User? GetUser(string username)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new()
         {
@@ -72,14 +67,14 @@ public static class TwitchApi
         return response.Users.FirstOrDefault();
     }
 
-    public static Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
+    public Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
     {
         List<string> users = usernames.ToList();
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: users).Result;
         return users.ToDictionary(username => username, username => response.Users.FirstOrDefault(u => string.Equals(u.DisplayName, username, StringComparison.CurrentCultureIgnoreCase)));
     }
 
-    public static User? GetUser(long id)
+    public User? GetUser(long id)
     {
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new()
         {
@@ -88,43 +83,43 @@ public static class TwitchApi
         return response.Users.FirstOrDefault();
     }
 
-    public static Dictionary<long, User?> GetUsers(IEnumerable<long> ids)
+    public Dictionary<long, User?> GetUsers(IEnumerable<long> ids)
     {
         List<long> idss = ids.ToList();
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: idss.Select(i => i.ToString()).ToList()).Result;
         return idss.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => u.Id.ToLong() == id));
     }
 
-    public static long? GetUserId(string username)
+    public long? GetUserId(string username)
     {
         return GetUser(username)?.Id?.ToLong();
     }
 
-    public static bool DoesUserExist(string username)
+    public bool DoesUserExist(string username)
     {
         return GetUser(username) is not null;
     }
 
-    public static Dictionary<string, bool> DoUsersExist(IEnumerable<string> usernames)
+    public Dictionary<string, bool> DoUsersExist(IEnumerable<string> usernames)
     {
         Dictionary<string, User?> users = GetUsers(usernames);
         IEnumerable<KeyValuePair<string, bool>> result = users.Select(u => new KeyValuePair<string, bool>(u.Key, u.Value is not null));
         return new(result);
     }
 
-    public static bool DoesUserExist(long id)
+    public bool DoesUserExist(long id)
     {
         return GetUser(id) is not null;
     }
 
-    public static Dictionary<long, bool> DoUsersExist(IEnumerable<long> ids)
+    public Dictionary<long, bool> DoUsersExist(IEnumerable<long> ids)
     {
         Dictionary<long, User?> users = GetUsers(ids);
         IEnumerable<KeyValuePair<long, bool>> result = users.Select(u => new KeyValuePair<long, bool>(u.Key, u.Value is not null));
         return new(result);
     }
 
-    public static Stream? GetStream(string channel)
+    public Stream? GetStream(string channel)
     {
         GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new List<string>
         {
@@ -133,7 +128,7 @@ public static class TwitchApi
         return response.Streams.FirstOrDefault();
     }
 
-    public static Stream? GetStream(long id)
+    public Stream? GetStream(long id)
     {
         GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string>
         {
@@ -142,23 +137,23 @@ public static class TwitchApi
         return response.Streams.FirstOrDefault();
     }
 
-    public static bool IsLive(string channel)
+    public bool IsLive(string channel)
     {
         return GetStream(channel) is not null;
     }
 
-    public static bool IsLive(long id)
+    public bool IsLive(long id)
     {
         return GetStream(id) is not null;
     }
 
-    public static ChannelEmote[] GetSubEmotes(string channel)
+    public ChannelEmote[] GetSubEmotes(string channel)
     {
         long? channelId = GetUserId(channel);
         return channelId is null ? Array.Empty<ChannelEmote>() : GetSubEmotes(channelId.Value);
     }
 
-    public static ChannelEmote[] GetSubEmotes(long channelId)
+    public ChannelEmote[] GetSubEmotes(long channelId)
     {
         GetChannelEmotesResponse response = _api.Helix.Chat.GetChannelEmotesAsync(channelId.ToString()).Result;
         return response.ChannelEmotes;
