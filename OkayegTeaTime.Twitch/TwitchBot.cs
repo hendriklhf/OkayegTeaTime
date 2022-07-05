@@ -42,7 +42,7 @@ public class TwitchBot
     public string SystemInfo => GetSystemInfo();
 
     private readonly TwitchClient _twitchClient;
-    private MessageHandler? _messageHandler;
+    private readonly MessageHandler _messageHandler;
     private readonly WhisperHandler _whisperHandler = new();
     private readonly TimerController _timerController = new();
     private readonly long _runtime = Now();
@@ -89,12 +89,15 @@ public class TwitchBot
         _twitchClient.OnDisconnected += Client_OnDisconnect!;
         _twitchClient.OnReconnected += Client_OnReconnected!;
         _twitchClient.OnUserJoined += Client_OnUserJoinedChannel!;
+
+        _messageHandler = new(this);
+        _restarter.Initialize();
     }
 
     public void Connect()
     {
         _twitchClient.Connect();
-        Initlialize();
+        InitializeTimers();
     }
 
     public void Send(string channel, string message)
@@ -171,11 +174,9 @@ public class TwitchBot
         }
     }
 
-    private void Initlialize()
+    public void ReceiveMessage(TwitchChatMessage chatMessage)
     {
-        _messageHandler = new(this);
-        _restarter.Initialize();
-        InitializeTimers();
+        _messageHandler.Handle(chatMessage);
     }
 
     #region SystemInfo
@@ -212,7 +213,7 @@ public class TwitchBot
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
-        _messageHandler?.Handle(new TwitchChatMessage(e.ChatMessage));
+        _messageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
     }
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
