@@ -45,7 +45,7 @@ public class TwitchBot
     private readonly MessageHandler _messageHandler;
     private readonly WhisperHandler _whisperHandler = new();
     private readonly TimerController _timerController = new();
-    private readonly long _runtime = Now();
+    private readonly long _startTime = Now();
     private readonly LastMessageController _lastMessageController = new();
 
     private readonly Restarter _restarter = new(new[]
@@ -183,7 +183,7 @@ public class TwitchBot
 
     private string GetSystemInfo()
     {
-        return $"Uptime: {GetUnixDifference(_runtime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
+        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
     }
 
     private static string GetMemoryUsage()
