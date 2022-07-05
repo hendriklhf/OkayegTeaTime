@@ -34,7 +34,7 @@ public class CSharpCommand : Command
             ("Compiler", "NetCore22"),
             ("Language", "CSharp"),
             ("ProjectType", "Console"),
-            ("NuGetPackageVersionIds", "102202")
+            ("NuGetPackageVersionIds", "103505")
         });
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         if (!result?.IsNullOrEmptyOrWhitespace() == true)
