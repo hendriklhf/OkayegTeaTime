@@ -13,6 +13,7 @@ OkayegTeaTime.Resources/ConnectionString.json
 OkayegTeaTime/Properties/
 OkayegTeaTime.Resources/DatabaseModels.*
 OkayegTeaTime.Resources/[Tt]odo.*
+OkayegTeaTime.Resources/LastCommit
 
 OkayegTeaTime.Api/Properties/
 OkayegTeaTime.Api/appsettings.*

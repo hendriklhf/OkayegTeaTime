@@ -10,6 +10,7 @@ using HLE.Numbers;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
@@ -183,7 +184,7 @@ public class TwitchBot
 
     private string GetSystemInfo()
     {
-        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount}";
+        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount} || Commit: {ResourceController.LastCommit}";
     }
 
     private static string GetMemoryUsage()

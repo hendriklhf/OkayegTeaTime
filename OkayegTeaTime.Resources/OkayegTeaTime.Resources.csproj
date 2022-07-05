@@ -33,6 +33,7 @@
       <EmbeddedResource Include="CompilerTemplateCSharp.cs" />
       <Compile Remove="CompilerTemplateCSharp.cs" />
       <EmbeddedResource Include="CompilerTemplateGo.go" />
+      <EmbeddedResource Include="LastCommit" />
     </ItemGroup>
 
     <ItemGroup>

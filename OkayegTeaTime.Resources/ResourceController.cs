@@ -8,108 +8,51 @@ namespace OkayegTeaTime.Resources;
 public static class ResourceController
 {
     [FileName("Commands.json")]
+    [FieldName(nameof(_commands))]
     public static string Commands
     {
-        get
-        {
-            if (_commands is not null)
-            {
-                return _commands;
-            }
-
-            ReadFile(nameof(Commands));
-            if (_commands is null)
-            {
-                throw new ArgumentNullException(nameof(_commands));
-            }
-
-            return _commands;
-        }
+        get => GetFileContent(nameof(Commands));
         private set => _commands = value;
     }
 
     [FileName("CompilerTemplateCSharp.cs")]
+    [FieldName(nameof(_compilerTemplateCSharp))]
     public static string CompilerTemplateCSharp
     {
-        get
-        {
-            if (_compilerTemplateCSharp is not null)
-            {
-                return _compilerTemplateCSharp;
-            }
-
-            ReadFile(nameof(CompilerTemplateCSharp));
-            if (_compilerTemplateCSharp is null)
-            {
-                throw new ArgumentNullException(nameof(_compilerTemplateCSharp));
-            }
-
-            return _compilerTemplateCSharp;
-        }
+        get => GetFileContent(nameof(CompilerTemplateCSharp));
         private set => _compilerTemplateCSharp = value;
     }
 
     [FileName("CompilerTemplateGo.go")]
+    [FieldName(nameof(_compilerTemplateGo))]
     public static string CompilerTemplateGo
     {
-        get
-        {
-            if (_compilerTemplateGo is not null)
-            {
-                return _compilerTemplateGo;
-            }
-
-            ReadFile(nameof(CompilerTemplateGo));
-            if (_compilerTemplateGo is null)
-            {
-                throw new ArgumentNullException(nameof(_compilerTemplateGo));
-            }
-
-            return _compilerTemplateGo;
-        }
+        get => GetFileContent(nameof(CompilerTemplateGo));
         private set => _compilerTemplateGo = value;
     }
 
     [FileName("GachiSongs.json")]
+    [FieldName(nameof(_gachiSongs))]
     public static string GachiSongs
     {
-        get
-        {
-            if (_gachiSongs is not null)
-            {
-                return _gachiSongs;
-            }
-
-            ReadFile(nameof(GachiSongs));
-            if (_gachiSongs is null)
-            {
-                throw new ArgumentNullException(nameof(_gachiSongs));
-            }
-
-            return _gachiSongs;
-        }
+        get => GetFileContent(nameof(GachiSongs));
         private set => _gachiSongs = value;
     }
 
     [FileName("CompilerTemplateCpp.cpp")]
+    [FieldName(nameof(_compilerTemplateCpp))]
     public static string CompilerTemplateCpp
     {
-        get
-        {
-            if (_compilerTemplateCpp is not null)
-            {
-                return _compilerTemplateCpp;
-            }
-
-            ReadFile(nameof(CompilerTemplateCpp));
-            if (_compilerTemplateCpp is null)
-            {
-                throw new ArgumentNullException(nameof(_compilerTemplateCpp));
-            }
-
-            return _compilerTemplateCpp;
-        }
+        get => GetFileContent(nameof(CompilerTemplateCpp));
         private set => _compilerTemplateCpp = value;
+    }
+
+    [FileName("LastCommit")]
+    [FieldName(nameof(_lastCommit))]
+    public static string LastCommit
+    {
+        get => GetFileContent(nameof(LastCommit));
+        private set => _lastCommit = value;
     }
 
     private static string? _commands;
@@ -117,45 +60,41 @@ public static class ResourceController
     private static string? _compilerTemplateGo;
     private static string? _compilerTemplateCpp;
     private static string? _gachiSongs;
+    private static string? _lastCommit;
 
     private static readonly Assembly _assembly = Assembly.GetCallingAssembly();
     private static readonly Regex _fileEndingPattern = new(@"\.[^\.]+$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    private static void ReadFile(string propertyName)
+    private static string GetFileContent(string propertyName)
     {
+        string? content = GetFieldValue(propertyName);
+        if (content is not null)
+        {
+            return content;
+        }
+
         string fileName = GetFileName(propertyName);
         string resourcePath = string.Join('.', _assembly.GetName().Name, fileName);
-        using Stream? stream = _assembly.GetManifestResourceStream(resourcePath);
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
-
+        using Stream stream = _assembly.GetManifestResourceStream(resourcePath)!;
         using StreamReader reader = new(stream);
-        string content = reader.ReadToEnd();
-        PropertyInfo? property = typeof(ResourceController).GetProperty(_fileEndingPattern.Replace(fileName, string.Empty));
-        if (property is null)
-        {
-            throw new ArgumentNullException(nameof(property));
-        }
-
+        content = reader.ReadToEnd();
+        PropertyInfo property = typeof(ResourceController).GetProperty(_fileEndingPattern.Replace(fileName, string.Empty))!;
         property.SetValue(null, content);
+        return content;
     }
 
     private static string GetFileName(string propertyName)
     {
-        PropertyInfo? property = typeof(ResourceController).GetProperty(propertyName);
-        if (property is null)
-        {
-            throw new ArgumentNullException(nameof(property));
-        }
-
-        FileName? fileName = property.GetCustomAttribute<FileName>();
-        if (fileName is null)
-        {
-            throw new ArgumentNullException(nameof(fileName));
-        }
-
+        PropertyInfo property = typeof(ResourceController).GetProperty(propertyName)!;
+        FileName fileName = property.GetCustomAttribute<FileName>()!;
         return fileName.Value;
+    }
+
+    private static string? GetFieldValue(string propertyName)
+    {
+        PropertyInfo property = typeof(ResourceController).GetProperty(propertyName)!;
+        FieldName attr = property.GetCustomAttribute<FieldName>()!;
+        FieldInfo field = typeof(ResourceController).GetField(attr.Name)!;
+        return (string?)field.GetValue(null);
     }
 }

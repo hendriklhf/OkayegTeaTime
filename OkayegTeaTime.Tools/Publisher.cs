@@ -19,6 +19,11 @@ public class Publisher
         new("osx-x64", NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
     });
 
+    private const string _apiProjectPath = "./OkayegTeaTime.Api/OkayegTeaTime.Api.csproj";
+    private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
+    private const string _commitIdSourcePath = "./.git/logs/HEAD";
+    private const string _commitIdFile = "./OkayegTeaTime.Resources/LastCommit";
+
     public Publisher(string[] args)
     {
         _args = args;
@@ -33,39 +38,43 @@ public class Publisher
             return;
         }
 
-        foreach (string r in runtimes)
+        foreach (string runtime in runtimes)
         {
-            Console.WriteLine($"Starting builds for {r} runtime.");
-            string outputDir = $"./Build/{r}/";
+            Console.WriteLine($"Starting builds for {runtime} runtime.");
+            string outputDir = $"./Build/{runtime}/";
             ClearDirectory(outputDir);
-
-            Process apiBuild = new()
-            {
-                StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime.Api/OkayegTeaTime.Api.csproj")
-            };
-            apiBuild.StartInfo.RedirectStandardOutput = true;
-            apiBuild.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
-            Console.WriteLine("Starting API build...");
-            Console.WriteLine($"Output directory: {outputDir}");
-            apiBuild.Start();
-            apiBuild.WaitForExit();
-            Console.WriteLine("Finished API build!");
-
-            Process botBuild = new()
-            {
-                StartInfo = new("dotnet", $"publish -r {r} -c Release -o {outputDir} --no-self-contained ./OkayegTeaTime/OkayegTeaTime.csproj")
-            };
-            botBuild.StartInfo.RedirectStandardOutput = true;
-            botBuild.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
-            Console.WriteLine("Starting OkayegTeaTime build...");
-            Console.WriteLine($"Output directory: {outputDir}");
-            botBuild.Start();
-            botBuild.WaitForExit();
-            Console.WriteLine("Finished OkayegTeaTime build!");
+            GetLastCommitId();
+            BuildApi(outputDir, runtime);
+            BuildBot(outputDir, runtime);
         }
     }
 
     private string[] GetRuntimes() => _runtimes.Where(kv => _args[1..].Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
+
+    private static void BuildApi(string outputDir, string runtime)
+    {
+        StartBuildProcess(outputDir, runtime, _apiProjectPath, _apiProjectPath[16..19]);
+    }
+
+    private static void BuildBot(string outputDir, string runtime)
+    {
+        StartBuildProcess(outputDir, runtime, _botProjectPath, _botProjectPath[2..15]);
+    }
+
+    private static void StartBuildProcess(string outputDir, string runtime, string projectPath, string projectName)
+    {
+        Process buildProcess = new()
+        {
+            StartInfo = new("dotnet", $"publish -r {runtime} -c Release -o {outputDir} --no-self-contained {projectPath}")
+        };
+        buildProcess.StartInfo.RedirectStandardOutput = true;
+        buildProcess.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
+        Console.WriteLine($"Starting {projectName} build...");
+        Console.WriteLine($"Output directory: {outputDir}");
+        buildProcess.Start();
+        buildProcess.WaitForExit();
+        Console.WriteLine($"Finished {projectName} build!");
+    }
 
     private static void ClearDirectory(string dir)
     {
@@ -75,5 +84,11 @@ public class Publisher
         }
 
         Directory.Delete(dir, true);
+    }
+
+    private static void GetLastCommitId()
+    {
+        string[] lines = File.ReadAllLines(_commitIdSourcePath);
+        File.WriteAllText(_commitIdFile, lines[^1].Split(' ')[1][..7]);
     }
 }
