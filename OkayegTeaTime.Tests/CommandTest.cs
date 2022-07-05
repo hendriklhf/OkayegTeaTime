@@ -11,7 +11,7 @@ using JCommand = OkayegTeaTime.Files.Jsons.CommandData.Command;
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
-public class CommandTests
+public class CommandTest
 {
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();

@@ -6,7 +6,7 @@ using OkayegTeaTime.Files;
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
-public class JsonTests
+public class JsonTest
 {
     [TestMethod]
     public void JsonSettingsContentTest()
