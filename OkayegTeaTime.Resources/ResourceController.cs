@@ -94,7 +94,7 @@ public static class ResourceController
     {
         PropertyInfo property = typeof(ResourceController).GetProperty(propertyName)!;
         FieldName attr = property.GetCustomAttribute<FieldName>()!;
-        FieldInfo field = typeof(ResourceController).GetField(attr.Name)!;
+        FieldInfo field = typeof(ResourceController).GetField(attr.Name, BindingFlags.Static | BindingFlags.NonPublic)!;
         return (string?)field.GetValue(null);
     }
 }
