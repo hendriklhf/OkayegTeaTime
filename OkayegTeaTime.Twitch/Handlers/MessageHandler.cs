@@ -23,7 +23,6 @@ public class MessageHandler : Handler
 {
     private readonly CommandHandler _commandHandler;
     private readonly PajaAlertHandler _pajaAlertHandler;
-    private readonly PajaAnnounceHandler _pajaAnnounceHandler;
 
     private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 #if RELEASE
@@ -36,13 +35,11 @@ public class MessageHandler : Handler
     {
         _commandHandler = new(twitchBot);
         _pajaAlertHandler = new(twitchBot);
-        _pajaAnnounceHandler = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
     {
         _pajaAlertHandler.Handle(chatMessage);
-        _pajaAnnounceHandler.Handle(chatMessage);
 
         if (chatMessage.IsIgnoredUser)
         {
