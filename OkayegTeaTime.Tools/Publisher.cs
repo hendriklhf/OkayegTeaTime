@@ -40,10 +40,10 @@ public class Publisher
 
         foreach (string runtime in runtimes)
         {
-            Console.WriteLine($"Starting builds for {runtime} runtime.");
             string outputDir = $"./Build/{runtime}/";
             ClearDirectory(outputDir);
             GetLastCommitId();
+            Console.WriteLine($"Starting builds for {runtime} runtime.");
             BuildApi(outputDir, runtime);
             BuildBot(outputDir, runtime);
         }
@@ -78,6 +78,7 @@ public class Publisher
 
     private static void ClearDirectory(string dir)
     {
+        Console.WriteLine($"Clearing directory: {dir}");
         if (!Directory.Exists(dir))
         {
             return;
@@ -88,7 +89,10 @@ public class Publisher
 
     private static void GetLastCommitId()
     {
+        Console.WriteLine("Fetching last commit id.");
         string[] lines = File.ReadAllLines(_commitIdSourcePath);
-        File.WriteAllText(_commitIdFile, lines[^1].Split(' ')[1][..7]);
+        string commitId = lines[^1].Split(' ')[1][..7];
+        Console.WriteLine($"Last commit: {commitId}");
+        File.WriteAllText(_commitIdFile, commitId);
     }
 }
