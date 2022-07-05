@@ -12,7 +12,7 @@ public abstract class Command
 
     protected string Alias { get; }
 
-    protected Response Response { get; set; } = new();
+    public Response Response { get; protected set; } = new();
 
     private protected readonly TwitchBot _twitchBot;
 
