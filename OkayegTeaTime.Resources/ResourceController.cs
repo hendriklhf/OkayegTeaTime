@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Resources;
 
@@ -63,7 +61,6 @@ public static class ResourceController
     private static string? _lastCommit;
 
     private static readonly Assembly _assembly = Assembly.GetCallingAssembly();
-    private static readonly Regex _fileEndingPattern = new(@"\.[^\.]+$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     private static string GetFileContent(string propertyName)
     {
@@ -78,7 +75,7 @@ public static class ResourceController
         using Stream stream = _assembly.GetManifestResourceStream(resourcePath)!;
         using StreamReader reader = new(stream);
         content = reader.ReadToEnd();
-        PropertyInfo property = typeof(ResourceController).GetProperty(_fileEndingPattern.Replace(fileName, string.Empty))!;
+        PropertyInfo property = typeof(ResourceController).GetProperty(propertyName)!;
         property.SetValue(null, content);
         return content;
     }
