@@ -1,11 +1,10 @@
 create table Channels
 (
-    Id                 int default 0    not null
+    Name         varchar(25)      not null,
+    Id           bigint default 0 not null
         primary key,
-    Name               varchar(50)      not null,
-    EmoteInFront       varbinary(100)   null,
-    Prefix             varbinary(50)    null,
-    EmoteManagementSub bit default b'0' not null
+    EmoteInFront varchar(50)      null,
+    Prefix       varchar(50)      null
 );
 
 create table ExceptionLogs
@@ -20,32 +19,32 @@ create table ExceptionLogs
 
 create table Reminders
 (
-    Id       int auto_increment
+    Id      int auto_increment
         primary key,
-    FromUser varchar(50)      not null,
-    ToUser   varchar(50)      not null,
-    Message  varbinary(2000)  not null,
-    Channel  varchar(50)      not null,
-    Time     bigint default 0 not null,
-    ToTime   bigint default 0 not null
+    Creator varchar(25)      not null,
+    Target  varchar(25)      not null,
+    Message varchar(500)     not null,
+    Channel varchar(25)      not null,
+    Time    bigint default 0 not null,
+    ToTime  bigint default 0 not null
 );
 
 create table Spotify
 (
-    Id                 int auto_increment
+    Id                 bigint auto_increment
         primary key,
-    Username           varchar(50)         not null,
-    AccessToken        varchar(300)        not null,
-    RefreshToken       varchar(300)        not null,
-    Time               bigint default 0    not null,
-    SongRequestEnabled bit    default b'0' null
+    Username           varchar(25)      not null,
+    AccessToken        varchar(300)     not null,
+    RefreshToken       varchar(300)     not null,
+    Time               bigint default 0 not null,
+    SongRequestEnabled bit              not null
 );
 
 create table Suggestions
 (
     Id       int auto_increment
         primary key,
-    Username varchar(50)                                      not null,
+    Username varchar(25)                                      not null,
     Content  varbinary(2000)                                  not null,
     Channel  varchar(50)                                      not null,
     Time     bigint                                           not null,
@@ -54,11 +53,14 @@ create table Suggestions
 
 create table Users
 (
-    Id         int         default 0    not null
+    Id                bigint      default 0  not null
         primary key,
-    Username   varchar(50) default ''   not null,
-    AfkMessage varbinary(2000)          null,
-    AfkType    int         default 0    not null,
-    AfkTime    bigint      default 0    not null,
-    IsAfk      bit         default b'0' not null
+    Username          varchar(25) default '' not null,
+    AfkMessage        varchar(500)           null,
+    AfkType           int         default 0  not null,
+    AfkTime           bigint      default 0  not null,
+    IsAfk             bit                    not null,
+    Location          varchar(100)           null,
+    IsPrivateLocation bit                    not null
 );
+
