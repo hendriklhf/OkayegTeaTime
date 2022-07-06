@@ -8,6 +8,7 @@ public class SolutionCleaner
 {
     private readonly string[] _dirsToClean =
     {
+        "Build",
         "OkayegTeaTime/bin/",
         "OkayegTeaTime.Api/bin/",
         "OkayegTeaTime.Database/bin/",

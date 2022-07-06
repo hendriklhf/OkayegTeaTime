@@ -89,7 +89,7 @@ public class Publisher
 
     private static void GetLastCommitId()
     {
-        Console.WriteLine("Fetching last commit id.");
+        Console.WriteLine("Retrieving last commit id...");
         string[] lines = File.ReadAllLines(_commitIdSourcePath);
         string commitId = lines[^1].Split(' ')[1][..7];
         Console.WriteLine($"Last commit: {commitId}");
