@@ -19,6 +19,7 @@ public class CommandHandler : Handler
 
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
+    private readonly Dictionary<CommandType, CommandHandle> _commandHandles = new();
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
@@ -87,8 +88,6 @@ public class CommandHandler : Handler
         }
     }
 
-    private static readonly Dictionary<CommandType, CommandHandle> _commandHandles = new();
-
     /// <summary>
     /// Attempts to handle a command through a handler via reflection
     /// </summary>
@@ -97,7 +96,7 @@ public class CommandHandler : Handler
     /// <param name="chatMessage">The chat message to handle</param>
     /// <param name="alias">A command alias</param>
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
-    private static void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
+    private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
         if (!_commandHandles.TryGetValue(type, out CommandHandle? handle))
         {
