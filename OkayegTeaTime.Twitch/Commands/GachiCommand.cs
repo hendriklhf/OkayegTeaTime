@@ -21,7 +21,7 @@ public class GachiCommand : Command
             Response = $"couldn't find a song";
             return;
         }
+
         Response = $"{Emoji.PointRight} {gachi.Title} || {gachi.Url} gachiBASS";
-        return;
     }
 }

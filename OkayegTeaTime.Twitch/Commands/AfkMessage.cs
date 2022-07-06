@@ -7,11 +7,11 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class AfkMessage
 {
-    public string? ComingBack { get; private set; }
+    public string ComingBack { get; }
 
-    public string? GoingAway { get; private set; }
+    public string GoingAway { get; }
 
-    public string? Resuming { get; private set; }
+    public string Resuming { get; }
 
     public AfkMessage(User user, AfkCommand cmd)
     {

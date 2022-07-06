@@ -22,12 +22,7 @@ public static class BotActions
         }
 
         AfkCommand cmd = twitchBot.CommandController[user.AfkType];
-        string? afkMessage = new AfkMessage(user, cmd).ComingBack;
-        if (afkMessage is null)
-        {
-            return;
-        }
-
+        string afkMessage = new AfkMessage(user, cmd).ComingBack;
         twitchBot.Send(chatMessage.Channel, afkMessage);
     }
 

@@ -1,5 +1,4 @@
-﻿using HLE.Collections;
-using HLE.Time;
+﻿using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
@@ -23,22 +22,20 @@ public class AfkCommandHandler
         User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
-            user = new(chatMessage.UserId, chatMessage.Username);
+            user = new(chatMessage.UserId, chatMessage.Username)
+            {
+                AfkType = type,
+                AfkTime = TimeHelper.Now(),
+                IsAfk = true
+            };
             DbControl.Users.Add(user);
         }
 
-        string message = chatMessage.Split[1..].JoinToString(' ');
+        string message = chatMessage.Message[(chatMessage.Split[0].Length + 1)..];
         user.AfkMessage = message;
-        user.AfkType = type;
-        user.AfkTime = TimeHelper.Now();
-        user.IsAfk = true;
 
         AfkCommand cmd = _twitchBot.CommandController[type];
         AfkMessage afkMessage = new(user, cmd);
-        if (afkMessage.GoingAway is null)
-        {
-            return;
-        }
 
         _twitchBot.Send(chatMessage.Channel, afkMessage.GoingAway);
     }

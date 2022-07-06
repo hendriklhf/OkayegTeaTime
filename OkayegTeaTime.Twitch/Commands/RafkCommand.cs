@@ -23,6 +23,6 @@ public class RafkCommand : Command
 
         user.IsAfk = true;
         AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
-        Response = new AfkMessage(user, cmd).Resuming!;
+        Response = new AfkMessage(user, cmd).Resuming;
     }
 }

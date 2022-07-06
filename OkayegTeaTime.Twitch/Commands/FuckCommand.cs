@@ -22,8 +22,6 @@ public class FuckCommand : Command
             {
                 Response += $" {ChatMessage.Split[2]}";
             }
-
-            return;
         }
     }
 }
