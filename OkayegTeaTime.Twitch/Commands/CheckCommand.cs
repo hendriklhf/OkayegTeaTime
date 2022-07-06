@@ -42,7 +42,7 @@ public class CheckCommand : Command
             if (user.IsAfk)
             {
                 AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
-                Response += new AfkMessage(userId.Value, cmd).GoingAway!;
+                Response += new AfkMessage(user, cmd).GoingAway!;
                 string? message = user.AfkMessage;
                 if (!string.IsNullOrEmpty(message))
                 {

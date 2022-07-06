@@ -34,7 +34,7 @@ public class AfkCommandHandler
         user.IsAfk = true;
 
         AfkCommand cmd = _twitchBot.CommandController[type];
-        AfkMessage afkMessage = new(chatMessage.UserId, cmd);
+        AfkMessage afkMessage = new(user, cmd);
         if (afkMessage.GoingAway is null)
         {
             return;
