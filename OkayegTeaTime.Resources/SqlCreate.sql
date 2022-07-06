@@ -12,10 +12,10 @@ create table ExceptionLogs
 (
     Id         int auto_increment
         primary key,
-    Type       varchar(100) null,
-    Origin     varchar(100) null,
-    Message    varchar(500) null,
-    StackTrace varchar(500) null
+    Type       varchar(100)  null,
+    Origin     varchar(100)  null,
+    Message    varchar(1000) null,
+    StackTrace varchar(3000) null
 );
 
 create table Reminders
@@ -41,19 +41,6 @@ create table Spotify
     SongRequestEnabled bit    default b'0' null
 );
 
-create table SubEmoteNotifications
-(
-    Id         int auto_increment
-        primary key,
-    ChannelId  int         not null,
-    SubChannel varchar(50) not null,
-    constraint SubEmoteNotifications_Id_uindex
-        unique (Id)
-);
-
-create index Channel
-    on SubEmoteNotifications (ChannelId);
-
 create table Suggestions
 (
     Id       int auto_increment
@@ -75,4 +62,3 @@ create table Users
     AfkTime    bigint      default 0    not null,
     IsAfk      bit         default b'0' not null
 );
-
