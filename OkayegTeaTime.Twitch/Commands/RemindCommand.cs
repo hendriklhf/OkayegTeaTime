@@ -61,8 +61,8 @@ public class RemindCommand : Command
         string message;
         long toTime = 0;
 
-        Regex timedReminderPattern = PatternCreator.Create(Alias, Prefix, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
-        Regex normalReminderPattern = PatternCreator.Create(Alias, Prefix, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
+        Regex timedReminderPattern = PatternCreator.Create(_alias, _prefix, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
+        Regex normalReminderPattern = PatternCreator.Create(_alias, _prefix, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
         if (timedReminderPattern.IsMatch(ChatMessage.Message))
         {
             toTime = GetToTime();

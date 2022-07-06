@@ -22,7 +22,7 @@ public class CppCommand : Command
     public override void Handle()
     {
 #if DEBUG
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s.+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];

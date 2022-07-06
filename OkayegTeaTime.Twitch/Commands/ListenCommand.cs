@@ -26,7 +26,7 @@ public class ListenCommand : Command
             return;
         }
 
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s((leave)|(stop))");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s((leave)|(stop))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
@@ -48,7 +48,7 @@ public class ListenCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\ssync");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\ssync");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -98,7 +98,7 @@ public class ListenCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>

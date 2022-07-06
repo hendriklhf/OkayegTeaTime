@@ -15,7 +15,7 @@ public class ChattersCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix);
+        Regex pattern = PatternCreator.Create(_alias, _prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;

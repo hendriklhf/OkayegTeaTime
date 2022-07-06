@@ -14,7 +14,7 @@ public class JoinCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s#?\w+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s#?\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (!ChatMessage.IsBotModerator)

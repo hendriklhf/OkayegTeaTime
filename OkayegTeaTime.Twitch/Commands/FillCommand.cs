@@ -18,7 +18,7 @@ public class FillCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             List<string> messageParts = new();

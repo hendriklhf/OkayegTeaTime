@@ -8,20 +8,18 @@ public abstract class Command
 {
     protected TwitchChatMessage ChatMessage { get; }
 
-    protected string? Prefix { get; }
-
-    protected string Alias { get; }
-
-    public Response Response { get; protected set; } = new();
+    protected Response Response { get; set; } = new();
 
     private protected readonly TwitchBot _twitchBot;
+    private protected readonly string? _prefix;
+    private protected readonly string _alias;
 
     protected Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
         _twitchBot = twitchBot;
         ChatMessage = chatMessage;
-        Prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
-        Alias = alias;
+        _prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+        _alias = alias;
     }
 
     public abstract void Handle();

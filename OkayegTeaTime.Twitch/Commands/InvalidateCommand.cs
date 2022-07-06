@@ -21,7 +21,7 @@ public class InvalidateCommand : Command
             return;
         }
 
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string[] invalidatedCaches = DbControl.Invalidate(ChatMessage.Split[1]).ToArray();

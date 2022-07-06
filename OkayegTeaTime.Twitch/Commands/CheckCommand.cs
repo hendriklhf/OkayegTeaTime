@@ -20,7 +20,7 @@ public class CheckCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\safk\s\w+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\safk\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
@@ -59,7 +59,7 @@ public class CheckCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";

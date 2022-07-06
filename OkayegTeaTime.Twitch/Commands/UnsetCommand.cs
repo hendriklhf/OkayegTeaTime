@@ -16,7 +16,7 @@ public class UnsetCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\sprefix");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
@@ -39,7 +39,7 @@ public class UnsetCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\sreminder\s\d+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
@@ -57,7 +57,7 @@ public class UnsetCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\semote");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\semote");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
@@ -81,7 +81,7 @@ public class UnsetCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\slocation");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\slocation");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             User? user = DbControl.Users[ChatMessage.UserId];

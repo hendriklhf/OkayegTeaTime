@@ -14,7 +14,7 @@ public class IdCommand : Command
     public override void Handle()
     {
         Response = $"{ChatMessage.Username}, ";
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\w+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string username = ChatMessage.LowerSplit[1];

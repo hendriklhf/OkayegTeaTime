@@ -29,7 +29,7 @@ public class SongRequestCommand : Command
     {
         #region sr {users...} me
 
-        Regex pattern = PatternCreator.Create(Alias, Prefix, $@"\s{Pattern.MultipleTargets}\sme");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -90,7 +90,7 @@ public class SongRequestCommand : Command
 
         #region sr me {user}
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\sme\s\w+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\sme\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -145,7 +145,7 @@ public class SongRequestCommand : Command
 
         #region sr {users...} {song}
 
-        pattern = PatternCreator.Create(Alias, Prefix, $@"\s{Pattern.MultipleTargets}\s\S+");
+        pattern = PatternCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -198,7 +198,7 @@ public class SongRequestCommand : Command
 
         #region sr me
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\sme$");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>
@@ -253,7 +253,7 @@ public class SongRequestCommand : Command
 
         #region sr {song}
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Task.Run(async () =>

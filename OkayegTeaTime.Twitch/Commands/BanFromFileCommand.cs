@@ -22,7 +22,7 @@ public class BanFromFileCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+\s\S+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";

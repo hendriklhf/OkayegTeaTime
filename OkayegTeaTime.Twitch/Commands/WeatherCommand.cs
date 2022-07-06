@@ -23,7 +23,7 @@ public class WeatherCommand : Command
         string? city;
         bool isPrivateLocation;
 
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             city = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];

@@ -17,7 +17,7 @@ public class SetCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\sprefix\s\S+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
@@ -43,7 +43,7 @@ public class SetCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\semote\s\S+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
@@ -69,7 +69,7 @@ public class SetCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
@@ -108,7 +108,7 @@ public class SetCommand : Command
             return;
         }
 
-        pattern = PatternCreator.Create(Alias, Prefix, @"\slocation\s((private)|(public))\s\S+");
+        pattern = PatternCreator.Create(_alias, _prefix, @"\slocation\s((private)|(public))\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string city = ChatMessage.Split[3..].JoinToString(' ');

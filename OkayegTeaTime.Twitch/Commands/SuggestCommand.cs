@@ -14,7 +14,7 @@ public class SuggestCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(Alias, Prefix, @"\s\S{3,}");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S{3,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string suggestion = ChatMessage.Message[(ChatMessage.LowerSplit[0].Length + 1)..];
