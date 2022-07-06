@@ -41,6 +41,12 @@ public static class Program
 
                 break;
             }
+            case "clean":
+            {
+                SolutionCleaner cleaner = new();
+                cleaner.Clean();
+                break;
+            }
         }
     }
 
