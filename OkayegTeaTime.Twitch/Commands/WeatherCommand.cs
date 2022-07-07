@@ -93,6 +93,7 @@ public class WeatherCommand : Command
     private static string GetDirection(double deg) =>
         deg switch
         {
+            < 0 => Emoji.Question,
             < 11.25 => "N",
             < 33.75 => "NNE",
             < 56.25 => "NE",
