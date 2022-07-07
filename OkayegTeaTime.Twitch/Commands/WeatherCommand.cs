@@ -55,9 +55,9 @@ public class WeatherCommand : Command
         }
 
         Response = $"{ChatMessage.Username}, {(isPrivateLocation ? "(private location)" : $"{weatherData.CityName}, {weatherData.Location.Country}")}: " +
-                   $"Temperature: {weatherData.Weather.Temperature}°C, min. temperature: {weatherData.Weather.MinTemperature}°C, max. temperature: {weatherData.Weather.MaxTemperature}°C, " +
-                   $"{GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, cloud cover: {weatherData.Clouds.Percentage}%, " +
-                   $"humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
+                   $"{weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, {weatherData.Weather.Temperature}°C, " +
+                   $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
+                   $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
     }
 
     private static OpenWeatherMapResponse? GetWeatherData(string city)
@@ -70,6 +70,25 @@ public class WeatherCommand : Command
 
         return JsonSerializer.Deserialize<OpenWeatherMapResponse>(request.Result);
     }
+
+    private static string GetWeatherEmoji(int weatherId) =>
+        weatherId switch
+        {
+            >= 200 and <= 231 => Emoji.CloudWithLightningAndRain,
+            >= 300 and <= 321 => Emoji.CloudWithRain,
+            >= 500 and <= 504 => Emoji.SunBehindRainCloud,
+            511 => Emoji.CloudWithSnow,
+            >= 520 and <= 531 => Emoji.CloudWithRain,
+            >= 600 and <= 622 => Emoji.CloudWithSnow,
+            762 => Emoji.Volcano,
+            >= 701 and <= 771 => Emoji.Fog,
+            781 => Emoji.Tornado,
+            800 => Emoji.Sunny,
+            801 => Emoji.SunBehindSmallCloud,
+            802 => Emoji.SunBehindLargeCloud,
+            803 or 804 => Emoji.Cloud,
+            _ => Emoji.Question
+        };
 
     private static string GetDirection(double deg) =>
         deg switch
