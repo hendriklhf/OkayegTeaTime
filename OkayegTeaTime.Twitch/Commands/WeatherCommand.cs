@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE.Emojis;
 using HLE.Http;
@@ -54,7 +55,8 @@ public class WeatherCommand : Command
             return;
         }
 
-        Response = $"{ChatMessage.Username}, {(isPrivateLocation ? "(private location)" : $"{weatherData.CityName}, {weatherData.Location.Country}")}: " +
+        string country = new RegionInfo(weatherData.Location.Country).EnglishName;
+        Response = $"{ChatMessage.Username}, {(isPrivateLocation ? "(private location)" : $"{weatherData.CityName}, {country}")}: " +
                    $"{weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, {weatherData.Weather.Temperature}°C, " +
                    $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
                    $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
