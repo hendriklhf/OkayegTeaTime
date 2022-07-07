@@ -26,7 +26,7 @@ public class AfkCommandHandler
             DbControl.Users.Add(user);
         }
 
-        string message = chatMessage.Message[(chatMessage.Split[0].Length + 1)..];
+        string? message = chatMessage.Split.Length > 1 ? chatMessage.Message[(chatMessage.Split[0].Length + 1)..] : null;
         user.AfkMessage = message;
         user.AfkType = type;
         user.AfkTime = TimeHelper.Now();
