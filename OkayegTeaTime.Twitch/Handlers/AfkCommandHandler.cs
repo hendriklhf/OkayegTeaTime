@@ -22,17 +22,15 @@ public class AfkCommandHandler
         User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
-            user = new(chatMessage.UserId, chatMessage.Username)
-            {
-                AfkType = type,
-                AfkTime = TimeHelper.Now(),
-                IsAfk = true
-            };
+            user = new(chatMessage.UserId, chatMessage.Username);
             DbControl.Users.Add(user);
         }
 
         string message = chatMessage.Message[(chatMessage.Split[0].Length + 1)..];
         user.AfkMessage = message;
+        user.AfkType = type;
+        user.AfkTime = TimeHelper.Now();
+        user.IsAfk = true;
 
         AfkCommand cmd = _twitchBot.CommandController[type];
         AfkMessage afkMessage = new(user, cmd);
