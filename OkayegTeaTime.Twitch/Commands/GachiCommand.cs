@@ -1,7 +1,7 @@
 ﻿using HLE.Collections;
 using HLE.Emojis;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Jsons;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -18,7 +18,7 @@ public class GachiCommand : Command
         GachiSong? gachi = JsonController.GetGachiSongs().Random();
         if (gachi is null)
         {
-            Response = $"couldn't find a song";
+            Response = "couldn't find a song";
             return;
         }
 

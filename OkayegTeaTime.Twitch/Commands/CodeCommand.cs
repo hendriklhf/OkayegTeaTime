@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using JCommand = OkayegTeaTime.Files.Jsons.CommandData.Command;
+using JCommand = OkayegTeaTime.Files.Models.Command;
 
 namespace OkayegTeaTime.Twitch.Commands;
 

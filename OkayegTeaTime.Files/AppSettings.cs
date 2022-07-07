@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using OkayegTeaTime.Files.Jsons.Settings;
+using OkayegTeaTime.Files.Models;
 
 #nullable disable
 
@@ -14,7 +14,7 @@ public static class AppSettings
 
     public static DbConnection DbConnection => JsonController.GetSettings().DatabaseConnection;
 
-    public static Discord Discord => JsonController.GetSettings().Discord;
+    public static DiscordSettings Discord => JsonController.GetSettings().Discord;
 
     public static string RepositoryUrl => JsonController.GetSettings().RepositoryUrl;
 
@@ -24,9 +24,9 @@ public static class AppSettings
 
     public static string OpenWeatherMapApiKey => JsonController.GetSettings().OpenWeatherMapApiKey;
 
-    public static Spotify Spotify => JsonController.GetSettings().Spotify;
+    public static SpotifySettings Spotify => JsonController.GetSettings().Spotify;
 
-    public static Twitch Twitch => JsonController.GetSettings().Twitch;
+    public static TwitchSettings TwitchSettings => JsonController.GetSettings().Twitch;
 
     public static UserLists UserLists => JsonController.GetSettings().UserLists;
 

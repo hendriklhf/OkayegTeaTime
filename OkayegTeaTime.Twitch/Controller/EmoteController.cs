@@ -5,9 +5,7 @@ using System.Text.Json;
 using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
-using OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
-using OkayegTeaTime.Files.Jsons.HttpRequests.SevenTv;
+using OkayegTeaTime.Files.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 

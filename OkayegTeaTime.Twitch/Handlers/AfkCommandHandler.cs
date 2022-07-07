@@ -2,7 +2,7 @@
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
 

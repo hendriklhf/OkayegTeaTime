@@ -3,10 +3,10 @@ using System.Linq;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
-using JCommand = OkayegTeaTime.Files.Jsons.CommandData.Command;
+using JCommand = OkayegTeaTime.Files.Models.Command;
 
 namespace OkayegTeaTime.Tests;
 

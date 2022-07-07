@@ -6,7 +6,7 @@ using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 

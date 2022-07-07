@@ -1,8 +1,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime.Files.Jsons.HttpRequests.Bttv;
-using OkayegTeaTime.Files.Jsons.HttpRequests.Ffz;
-using OkayegTeaTime.Files.Jsons.HttpRequests.SevenTv;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Controller;
 
 namespace OkayegTeaTime.Tests;

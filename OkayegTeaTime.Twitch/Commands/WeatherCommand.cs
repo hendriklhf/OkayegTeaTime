@@ -5,7 +5,7 @@ using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Jsons.HttpRequests.OpenWeatherMap;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 

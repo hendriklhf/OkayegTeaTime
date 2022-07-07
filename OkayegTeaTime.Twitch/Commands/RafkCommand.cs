@@ -1,6 +1,6 @@
 ﻿using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;

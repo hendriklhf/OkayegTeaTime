@@ -1,7 +1,7 @@
 ﻿using HLE;
 using HLE.Time;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Jsons.CommandData;
+using OkayegTeaTime.Files.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 

@@ -21,8 +21,8 @@ public class TwitchApi
 
     public TwitchApi()
     {
-        _api.Settings.ClientId = AppSettings.Twitch.ApiClientId;
-        _api.Settings.Secret = AppSettings.Twitch.ApiClientSecret;
+        _api.Settings.ClientId = AppSettings.TwitchSettings.ApiClientId;
+        _api.Settings.Secret = AppSettings.TwitchSettings.ApiClientSecret;
         _api.Settings.Scopes = new()
         {
             AuthScopes.Channel_Check_Subscription,

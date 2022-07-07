@@ -24,7 +24,7 @@ public class MessageHandler : Handler
     private readonly CommandHandler _commandHandler;
     private readonly PajaAlertHandler _pajaAlertHandler;
 
-    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.TwitchSettings.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 #if RELEASE
     private readonly Regex _spotifyUriPattern = new(Pattern.SpotifyUri, RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private readonly Regex _spotifyUrlPattern = new(Pattern.SpotifyLink, RegexOptions.IgnoreCase | RegexOptions.Compiled);

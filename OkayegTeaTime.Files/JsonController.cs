@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using OkayegTeaTime.Files.Jsons;
-using OkayegTeaTime.Files.Jsons.CommandData;
-using OkayegTeaTime.Files.Jsons.Settings;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Resources;
 
 namespace OkayegTeaTime.Files;
@@ -13,8 +10,11 @@ public static class JsonController
 {
     private static Settings? _settings;
     private static CommandList? _commandList;
-    private static IEnumerable<GachiSong>? _gachiSongs;
+    private static GachiSong[]? _gachiSongs;
 
+    /// <summary>
+    /// Can be set to use any Settings.json file. If not set the <see cref="FileLocator"/> will search automatically for a file named "Settings.json".
+    /// </summary>
     public static string? SettingsPath { get; set; }
 
     public static Settings GetSettings()
@@ -45,7 +45,7 @@ public static class JsonController
         return _commandList ?? throw new ArgumentNullException(nameof(_commandList));
     }
 
-    public static IEnumerable<GachiSong> GetGachiSongs()
+    public static GachiSong[] GetGachiSongs()
     {
         if (_gachiSongs is not null)
         {
