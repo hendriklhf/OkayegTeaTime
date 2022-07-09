@@ -1,6 +1,7 @@
-﻿#nullable disable
+﻿using System.Text.Json.Serialization;
+using HLE.Time;
 
-using System.Text.Json.Serialization;
+#nullable disable
 
 namespace OkayegTeaTime.Files.Models;
 
@@ -44,4 +45,7 @@ public class OpenWeatherMapResponse
 
     [JsonPropertyName("message")]
     public string Message { get; set; }
+
+    [JsonIgnore]
+    public long TimeOfRequest { get; } = TimeHelper.Now();
 }

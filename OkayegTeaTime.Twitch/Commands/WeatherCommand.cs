@@ -1,8 +1,11 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE.Emojis;
 using HLE.Http;
+using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -14,6 +17,9 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class WeatherCommand : Command
 {
+    private static readonly Dictionary<string, OpenWeatherMapResponse> _dataCache = new();
+    private static readonly long _cacheTime = (long)TimeSpan.FromMinutes(30).TotalMilliseconds;
+
     public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
     {
@@ -55,8 +61,18 @@ public class WeatherCommand : Command
             return;
         }
 
-        string country = new RegionInfo(weatherData.Location.Country).EnglishName;
-        Response = $"{ChatMessage.Username}, {(isPrivateLocation ? "(private location)" : $"{weatherData.CityName}, {country}")}: " +
+        string location;
+        if (isPrivateLocation)
+        {
+            location = "(private location)";
+        }
+        else
+        {
+            string country = new RegionInfo(weatherData.Location.Country).EnglishName;
+            location = $"{weatherData.CityName}, {country}";
+        }
+
+        Response = $"{ChatMessage.Username}, {location}: " +
                    $"{weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, {weatherData.Weather.Temperature}°C, " +
                    $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
                    $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
@@ -64,13 +80,30 @@ public class WeatherCommand : Command
 
     private static OpenWeatherMapResponse? GetWeatherData(string city)
     {
+        city = city.ToLower();
+        if (_dataCache.TryGetValue(city, out OpenWeatherMapResponse? response) && response.TimeOfRequest + _cacheTime > TimeHelper.Now())
+        {
+            return response;
+        }
+
         HttpGet request = new($"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
         if (request.Result is null || !request.IsValidJsonData)
         {
             return null;
         }
 
-        return JsonSerializer.Deserialize<OpenWeatherMapResponse>(request.Result);
+        response = JsonSerializer.Deserialize<OpenWeatherMapResponse>(request.Result);
+        if (response is null)
+        {
+            return null;
+        }
+
+        if (!_dataCache.TryAdd(city, response))
+        {
+            _dataCache[city] = response;
+        }
+
+        return response;
     }
 
     private static string GetWeatherEmoji(int weatherId) =>
