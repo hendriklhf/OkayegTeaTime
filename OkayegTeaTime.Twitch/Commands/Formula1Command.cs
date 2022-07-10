@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text.Json;
+using HLE.Emojis;
 using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
@@ -33,15 +34,17 @@ public class Formula1Command : Command
             return;
         }
 
-        Response += $"Next race: {race.Racename}. ";
+        Response = $"{Emoji.RacingCar} Next race: {race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. ";
         Formula1Session nextSession = GetNextSession(race);
-        TimeSpan timeUntil = nextSession.Start - DateTime.UtcNow;
-        Response += $"Next session: {nextSession.Name}, starting on {nextSession.Start:R} (in {timeUntil.ToString("g").Split('.')[0]}). ";
+        TimeSpan ts;
         if (nextSession != race.Race)
         {
-            timeUntil = race.Race.Start - DateTime.UtcNow;
-            Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {timeUntil.ToString("g").Split('.')[0]}). ";
+            ts = nextSession.Start - DateTime.UtcNow;
+            Response += $"Next session: {nextSession.Name}, starting on {nextSession.Start:R} (in {ts.ToString("g").Split('.')[0]}). ";
         }
+
+        ts = race.Race.Start - DateTime.UtcNow;
+        Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {ts.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
     }
 
     private static Formula1Race? GetNextRace(Formula1Race[] races)
@@ -119,7 +122,16 @@ public class Formula1Command : Command
             {
                 foreach (var prop in props)
                 {
-                    JsonElement jProp = prop.JsonProperty is null ? jRaces[i] : jRaces[i].GetProperty(prop.JsonProperty);
+                    JsonElement jProp;
+                    if (prop.JsonProperty is null)
+                    {
+                        jProp = jRaces[i];
+                    }
+                    else if (!jRaces[i].TryGetProperty(prop.JsonProperty, out jProp))
+                    {
+                        continue;
+                    }
+
                     JsonElement jDate = jProp.GetProperty("date");
                     JsonElement jTime = jProp.GetProperty("time");
                     string? date = jDate.GetString();
@@ -129,7 +141,7 @@ public class Formula1Command : Command
                         throw new InvalidOperationException($"{nameof(date)} is {date ?? "null"} and {nameof(time)} is {time ?? "null"}");
                     }
 
-                    DateTime startTime = DateTime.Parse($"{date}T{time}");
+                    DateTime startTime = DateTime.Parse($"{date}T{time}").ToUniversalTime();
                     Formula1Session session = new(prop.SessionName, startTime);
                     typeof(Formula1Race).GetProperty(prop.SessionProperty)!.SetValue(races[i], session);
                 }
