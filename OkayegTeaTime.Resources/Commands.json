@@ -599,6 +599,22 @@
       ],
       "Cooldown": 15000,
       "Document": true
+    },
+    {
+      "Name": "Formula1",
+      "Description": "Sends information about the next Formula 1 event",
+      "Aliases": [
+        "formula1",
+        "f1"
+      ],
+      "Parameters": [
+        "(none)"
+      ],
+      "ParameterDescriptions": [
+        "Sends information about the next Formula 1 event"
+      ],
+      "Cooldown": 10000,
+      "Document": true
     }
   ],
   "AfkCommands": [

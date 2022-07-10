@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using HLE;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -186,10 +188,17 @@ public static class DbController
 
     public static void LogException(Exception ex)
     {
-        using OkayegTeaTimeContext database = new();
+#if DEBUG
         ExceptionLog log = new(ex);
+        File.WriteAllText($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        }));
+#elif RELEASE
+        using OkayegTeaTimeContext database = new();
         database.ExceptionLogs.Add(log);
         database.SaveChanges();
+#endif
     }
 
     public static void RemoveChannel(long id)

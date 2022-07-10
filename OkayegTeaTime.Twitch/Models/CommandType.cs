@@ -12,6 +12,7 @@ public enum CommandType
     Cpp,
     CSharp,
     Fill,
+    Formula1,
     Fuck,
     Gachi,
     Go,
