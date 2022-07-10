@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using HLE.Emojis;
 using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -34,17 +36,36 @@ public class Formula1Command : Command
             return;
         }
 
-        Response = $"{Emoji.RacingCar} Next race: {race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. ";
-        Formula1Session nextSession = GetNextSession(race);
-        TimeSpan ts;
-        if (nextSession != race.Race)
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s--weather");
+        if (pattern.IsMatch(ChatMessage.Message))
         {
-            ts = nextSession.Start - DateTime.UtcNow;
-            Response += $"Next session: {nextSession.Name}, starting on {nextSession.Start:R} (in {ts.ToString("g").Split('.')[0]}). ";
-        }
+            int latitude = (int)Math.Round(double.Parse(race.Circuit.Location.Latitude));
+            int longitude = (int)Math.Round(double.Parse(race.Circuit.Location.Longitude));
+            OpenWeatherMapResponse? weatherData = _twitchBot.WeatherController.GetWeatherData(latitude, longitude, false);
+            if (weatherData is null)
+            {
+                Response = $"{ChatMessage.Username}, api error";
+                return;
+            }
 
-        ts = race.Race.Start - DateTime.UtcNow;
-        Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {ts.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
+            weatherData.CityName = race.Circuit.Location.Name;
+            weatherData.Location.Country = race.Circuit.Location.Country;
+            Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.ToResponse(weatherData, false)}";
+        }
+        else
+        {
+            Response = $"{Emoji.RacingCar} Next race: {race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. ";
+            Formula1Session nextSession = GetNextSession(race);
+            TimeSpan ts;
+            if (nextSession != race.Race)
+            {
+                ts = nextSession.Start - DateTime.UtcNow;
+                Response += $"Next session: {nextSession.Name}, starting on {nextSession.Start:R} (in {ts.ToString("g").Split('.')[0]}). ";
+            }
+
+            ts = race.Race.Start - DateTime.UtcNow;
+            Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {ts.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
+        }
     }
 
     private static Formula1Race? GetNextRace(Formula1Race[] races)

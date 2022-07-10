@@ -36,6 +36,8 @@ public class TwitchBot
 
     public CommandController CommandController { get; } = new();
 
+    public WeatherController WeatherController { get; } = new();
+
     public TwitchApi TwitchApi { get; } = new();
 
     public DottedNumber CommandCount { get; set; } = 1;
