@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HLE;
-using HLE.Time;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
@@ -34,21 +32,13 @@ public class StreamCommand : Command
         }
 
         Response += $"{stream.UserName} is currently streaming {stream.GameName} ";
-        long userId = stream.UserId.ToLong();
+        long userId = long.Parse(stream.UserId);
         if (ChatMessage.ChannelId != userId || !_noViewerCount.Contains(userId))
         {
             Response += $"with {stream.ViewerCount} viewer{(stream.ViewerCount > 1 ? 's' : string.Empty)} ";
         }
 
-        Response += "for ";
-        TimeSpan streamSpan = stream.StartedAt.Subtract(DateTime.Now);
-        long milliseconds = (long)streamSpan.TotalMilliseconds + TimeHelper.Now();
-        if (!DateTime.Now.IsDaylightSavingTime())
-        {
-            milliseconds += (long)TimeSpan.FromHours(1).TotalMilliseconds;
-        }
-
-        string streamTime = TimeHelper.GetUnixDifference(milliseconds).ToString();
-        Response += streamTime;
+        TimeSpan streamTime = DateTime.UtcNow - stream.StartedAt;
+        Response += $"for {streamTime.ToString("g").Split('.')[0]}";
     }
 }
