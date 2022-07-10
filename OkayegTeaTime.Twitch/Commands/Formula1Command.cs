@@ -147,7 +147,7 @@ public class Formula1Command : Command
     {
         try
         {
-            (string SessionProperty, string? JsonProperty, string SessionName)[] props =
+            (string RaceProperty, string? JsonProperty, string SessionName)[] props =
             {
                 (nameof(Formula1Race.PracticeOne), "FirstPractice", "Free practice 1"),
                 (nameof(Formula1Race.PracticeTwo), "SecondPractice", "Free practice 2"),
@@ -182,7 +182,7 @@ public class Formula1Command : Command
 
                     DateTime startTime = DateTime.Parse($"{date}T{time}").ToUniversalTime();
                     Formula1Session session = new(prop.SessionName, startTime);
-                    typeof(Formula1Race).GetProperty(prop.SessionProperty)!.SetValue(races[i], session);
+                    typeof(Formula1Race).GetProperty(prop.RaceProperty)!.SetValue(races[i], session);
                 }
             }
         }
