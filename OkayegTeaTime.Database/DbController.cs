@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+#if DEBUG
 using System.IO;
+#endif
 using System.Linq;
+#if DEBUG
 using System.Text.Json;
+#endif
 using HLE;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -188,8 +192,8 @@ public static class DbController
 
     public static void LogException(Exception ex)
     {
-#if DEBUG
         ExceptionLog log = new(ex);
+#if DEBUG
         File.WriteAllText($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, new JsonSerializerOptions
         {
             WriteIndented = true

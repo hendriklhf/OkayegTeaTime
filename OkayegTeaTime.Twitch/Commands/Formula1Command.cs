@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using HLE.Http;
 using OkayegTeaTime.Database;
@@ -106,17 +105,7 @@ public class Formula1Command : Command
     {
         try
         {
-            MethodInfo tryGetProperty = typeof(JsonElement).GetMethod(nameof(JsonElement.TryGetProperty), new[]
-            {
-                typeof(string),
-                typeof(JsonElement).MakeByRefType()
-            })!;
-            MethodInfo getString = typeof(JsonElement).GetMethod(nameof(JsonElement.GetString))!;
-            MethodInfo dateTimeParse = typeof(DateTime).GetMethod(nameof(DateTime.Parse), new[]
-            {
-                typeof(string)
-            })!;
-            (string SessionProperty, string? JsonProperty, string SessionName)[] jsonProps =
+            (string SessionProperty, string? JsonProperty, string SessionName)[] props =
             {
                 (nameof(Formula1Race.PracticeOne), "FirstPractice", "Free practice 1"),
                 (nameof(Formula1Race.PracticeTwo), "SecondPractice", "Free practice 2"),
@@ -125,72 +114,23 @@ public class Formula1Command : Command
                 (nameof(Formula1Race.Sprint), "Sprint", "Sprint race"),
                 (nameof(Formula1Race.Race), null, "Grand Prix")
             };
-            ConstructorInfo sessionContructor = typeof(Formula1Session).GetConstructor(new[]
-            {
-                typeof(string),
-                typeof(DateTime)
-            })!;
 
             for (int i = 0; i < races.Length; i++)
             {
-                foreach (var prop in jsonProps)
+                foreach (var prop in props)
                 {
-                    JsonElement jProp;
-                    if (prop.JsonProperty is null)
-                    {
-                        jProp = jRaces[i];
-                    }
-                    else
-                    {
-                        object[] parameters =
-                        {
-                            prop.JsonProperty,
-                            default(JsonElement)
-                        };
-                        bool propSuccess = (bool)tryGetProperty.Invoke(jRaces[i], parameters)!;
-                        if (!propSuccess)
-                        {
-                            continue;
-                        }
-
-                        jProp = (JsonElement)parameters[1];
-                    }
-
-                    object[] params1 =
-                    {
-                        "date",
-                        default(JsonElement)
-                    };
-                    bool dateSuccess = (bool)tryGetProperty.Invoke(jProp, params1)!;
-                    object[] params2 =
-                    {
-                        "time",
-                        default(JsonElement)
-                    };
-                    bool timeSuccess = (bool)tryGetProperty.Invoke(jProp, params2)!;
-                    if (!dateSuccess || !timeSuccess)
-                    {
-                        throw new InvalidOperationException($"{nameof(dateSuccess)} is {dateSuccess} and {nameof(timeSuccess)} is {timeSuccess}");
-                    }
-
-                    JsonElement jDate = (JsonElement)params1[1];
-                    JsonElement jTime = (JsonElement)params2[1];
-                    string? date = (string?)getString.Invoke(jDate, null);
-                    string? time = (string?)getString.Invoke(jTime, null);
+                    JsonElement jProp = prop.JsonProperty is null ? jRaces[i] : jRaces[i].GetProperty(prop.JsonProperty);
+                    JsonElement jDate = jProp.GetProperty("date");
+                    JsonElement jTime = jProp.GetProperty("time");
+                    string? date = jDate.GetString();
+                    string? time = jTime.GetString();
                     if (date is null || time is null)
                     {
                         throw new InvalidOperationException($"{nameof(date)} is {date ?? "null"} and {nameof(time)} is {time ?? "null"}");
                     }
 
-                    DateTime startTime = ((DateTime)dateTimeParse.Invoke(null, new object[]
-                    {
-                        $"{date}T{time}"
-                    })!).ToUniversalTime();
-                    Formula1Session session = (Formula1Session)sessionContructor.Invoke(new object[]
-                    {
-                        prop.SessionName,
-                        startTime
-                    });
+                    DateTime startTime = DateTime.Parse($"{date}T{time}");
+                    Formula1Session session = new(prop.SessionName, startTime);
                     typeof(Formula1Race).GetProperty(prop.SessionProperty)!.SetValue(races[i], session);
                 }
             }
