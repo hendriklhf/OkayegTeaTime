@@ -87,14 +87,14 @@ public class Formula1Command : Command
                 return null;
             }
 
-            JsonElement racesJArray = request.Data.GetProperty("MRData").GetProperty("RaceTable").GetProperty("Races");
-            Formula1Race[]? races = JsonSerializer.Deserialize<Formula1Race[]?>(racesJArray.GetRawText());
+            JsonElement jRaces = request.Data.GetProperty("MRData").GetProperty("RaceTable").GetProperty("Races");
+            Formula1Race[]? races = JsonSerializer.Deserialize<Formula1Race[]?>(jRaces.GetRawText());
             if (races is null)
             {
                 return null;
             }
 
-            GetDateTimes(races, racesJArray);
+            GetDateTimes(races, jRaces);
             return races;
         }
         catch (Exception ex)
