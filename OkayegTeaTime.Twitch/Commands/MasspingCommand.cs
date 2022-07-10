@@ -11,6 +11,11 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 public class MasspingCommand : Command
 {
+    private readonly long[] _disabledChannels =
+    {
+        35933008
+    };
+
     private readonly string[] _chatRoles =
     {
         "broadcaster",
@@ -29,7 +34,7 @@ public class MasspingCommand : Command
 
     public override void Handle()
     {
-        if ((ChatMessage.IsModerator || ChatMessage.IsBroadcaster) && ChatMessage.Channel != "moondye7")
+        if ((ChatMessage.IsModerator || ChatMessage.IsBroadcaster) && _disabledChannels.Contains(ChatMessage.ChannelId))
         {
             string channelEmote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
@@ -76,6 +81,7 @@ public class MasspingCommand : Command
                 result.Add(new(chatterList[i].GetString()!, (ChatRole)pIdx++));
             }
         }
+
         return result;
     }
 }
