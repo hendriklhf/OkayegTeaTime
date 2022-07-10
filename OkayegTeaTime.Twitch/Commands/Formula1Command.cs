@@ -14,6 +14,8 @@ namespace OkayegTeaTime.Twitch.Commands;
 public class Formula1Command : Command
 {
     private static Formula1Race[]? _races;
+    private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
+    private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
     public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
         : base(twitchBot, chatMessage, alias)
@@ -29,7 +31,7 @@ public class Formula1Command : Command
             return;
         }
 
-        Formula1Race? race = GetNextRace(_races);
+        Formula1Race? race = GetNextOrCurrentRace(_races);
         if (race is null)
         {
             Response = $"{ChatMessage.Username}, there is no next race";
@@ -54,26 +56,42 @@ public class Formula1Command : Command
         }
         else
         {
-            Response = $"{Emoji.RacingCar} Next race: {race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. ";
-            Formula1Session nextSession = GetNextSession(race);
-            TimeSpan ts;
-            if (nextSession != race.Race)
+            Response = $"{(race.Race.Start > DateTime.UtcNow ? "Next" : "Current")} race: " +
+                       $"{race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ";
+            if (race.Race.Start > DateTime.UtcNow)
             {
-                ts = nextSession.Start - DateTime.UtcNow;
-                Response += $"Next session: {nextSession.Name}, starting on {nextSession.Start:R} (in {ts.ToString("g").Split('.')[0]}). ";
+                TimeSpan ts = race.Race.Start - DateTime.UtcNow;
+                Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {ts.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
+            }
+            else
+            {
+                Response += $"The {race.Race.Name} started {race.Race.Start:t} GMT. {Emoji.CheckeredFlag}";
             }
 
-            ts = race.Race.Start - DateTime.UtcNow;
-            Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {ts.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
+            Formula1Session session = GetNextOrCurrentSession(race);
+            if (session == race.Race)
+            {
+                return;
+            }
+
+            if (session.Start > DateTime.UtcNow)
+            {
+                TimeSpan ts = session.Start - DateTime.UtcNow;
+                Response += $"Next session: {session.Name}, starting on {session.Start:R} (in {ts.ToString("g").Split('.')[0]}).";
+            }
+            else if (session.Start + _nonRaceLength > DateTime.UtcNow)
+            {
+                Response += $"Current session: {session.Name}, started {session.Start:t}.";
+            }
         }
     }
 
-    private static Formula1Race? GetNextRace(Formula1Race[] races)
+    private static Formula1Race? GetNextOrCurrentRace(Formula1Race[] races)
     {
-        return races.FirstOrDefault(r => r.Race.Start > DateTime.UtcNow);
+        return races.FirstOrDefault(r => r.Race.Start + _raceLength > DateTime.UtcNow);
     }
 
-    private static Formula1Session GetNextSession(Formula1Race race)
+    private static Formula1Session GetNextOrCurrentSession(Formula1Race race)
     {
         Formula1Session[] sessions = race.HasSprintRace switch
         {
@@ -95,7 +113,7 @@ public class Formula1Command : Command
             }
         };
 
-        return sessions.First(s => s.Start > DateTime.UtcNow);
+        return sessions.First(s => (s == race.Race ? s.Start + _raceLength : s.Start + _nonRaceLength) > DateTime.UtcNow);
     }
 
     private static Formula1Race[]? GetRaces()
