@@ -608,12 +608,14 @@
         "f1"
       ],
       "Parameters": [
-        "(none)"
+        "(none)",
+        "--weather"
       ],
       "ParameterDescriptions": [
-        "Sends information about the next Formula 1 event"
+        "Sends information about the next Formula 1 event",
+        "Sends weather data for the Formula 1 location"
       ],
-      "Cooldown": 10000,
+      "Cooldown": 15000,
       "Document": true
     }
   ],
