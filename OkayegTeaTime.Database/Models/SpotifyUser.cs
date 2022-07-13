@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+#if RELEASE
+using System.Threading;
+#endif
 using System.Threading.Tasks;
 using System.Timers;
 using HLE.Time;
@@ -503,14 +506,20 @@ public class SpotifyUser : CacheModel
                 return item;
             }
 
-            try
+            void AddingToChatPlaylist()
             {
-                await playlistUser.AddToChatPlaylist(item.Uri);
+                try
+                {
+                    playlistUser.AddToChatPlaylist(item.Uri).Wait();
+                }
+                catch (SpotifyException ex)
+                {
+                    DbController.LogException(ex);
+                }
             }
-            catch (SpotifyException ex)
-            {
-                DbController.LogException(ex);
-            }
+
+            Thread thread = new(AddingToChatPlaylist);
+            thread.Start();
 #endif
         }
         else if (currentlyPlaying?.Item is FullEpisode episode)
