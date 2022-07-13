@@ -133,6 +133,7 @@ public class SongRequestCommand : Command
                 catch (SpotifyException ex)
                 {
                     Response = $"{ChatMessage.Username}, {ex.Message}";
+                    return;
                 }
 
                 SpotifyTrack track = (item as SpotifyTrack)!;
@@ -241,6 +242,7 @@ public class SongRequestCommand : Command
                 catch (SpotifyException ex)
                 {
                     Response = $"{ChatMessage.Username}, {ex.Message}";
+                    return;
                 }
 
                 SpotifyTrack track = (item as SpotifyTrack)!;
