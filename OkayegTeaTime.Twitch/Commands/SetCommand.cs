@@ -20,26 +20,24 @@ public class SetCommand : Command
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
-            {
-                string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength
-                    ? AppSettings.MaxPrefixLength
-                    : ChatMessage.LowerSplit[2].Length)];
-                Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
-                if (channel is null)
-                {
-                    Response = $"{ChatMessage.Username}, an error occurred while trying to set the prefix";
-                    return;
-                }
-
-                channel.Prefix = prefix;
-                Response = $"{ChatMessage.Username}, prefix set to: {prefix}";
-            }
-            else
+            if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
             {
                 Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+                return;
             }
 
+            string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength
+                ? AppSettings.MaxPrefixLength
+                : ChatMessage.LowerSplit[2].Length)];
+            Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+            if (channel is null)
+            {
+                Response = $"{ChatMessage.Username}, an error occurred while trying to set the prefix";
+                return;
+            }
+
+            channel.Prefix = prefix;
+            Response = $"{ChatMessage.Username}, prefix set to: {prefix}";
             return;
         }
 
@@ -95,16 +93,15 @@ public class SetCommand : Command
                 return;
             }
 
-            bool set = DbController.SetSongRequestState(ChatMessage.Channel, state.Value);
-            if (set)
-            {
-                Response += $"song requests {(state.Value ? "enabled" : "disabled")} for channel {ChatMessage.Channel}";
-            }
-            else
+            SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Channel];
+            if (user is null)
             {
                 Response += $"channel {ChatMessage.Channel} is not registered, they have to register first";
+                return;
             }
 
+            user.AreSongRequestsEnabled = state.Value;
+            Response += $"song requests {(state.Value ? "enabled" : "disabled")} for channel {ChatMessage.Channel}";
             return;
         }
 

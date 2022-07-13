@@ -100,6 +100,9 @@ public class SpotifyUser : CacheModel
 
     private readonly Timer _timer = new();
 
+    /// <summary>
+    /// The length of "spotify:track:".
+    /// </summary>
     private const byte _trackIdPrefixLength = 14;
 
     public SpotifyUser(EntityFrameworkModels.Spotify spotifyUser)
