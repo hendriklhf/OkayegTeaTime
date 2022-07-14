@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using OkayegTeaTime.Database;
-using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
@@ -34,13 +32,6 @@ public class SlotsCommand : Command
                 Response = $"{ChatMessage.Username}, you provided pattern is invalid";
                 return;
             }
-        }
-
-        Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
-        if (channel is null)
-        {
-            Response = $"{ChatMessage.Username}, unable to retrieve channel information";
-            return;
         }
 
         IEnumerable<string> ffzEmotes = _twitchBot.EmoteController.GetFfzEmotes(ChatMessage.ChannelId)

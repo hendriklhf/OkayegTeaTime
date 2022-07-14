@@ -20,8 +20,8 @@ public class EmoteController
                 return _ffzGlobalEmotes;
             }
 
-            _ffzGlobalEmotes = GetFfzGlobalEmotes().ToArray();
-            return _ffzGlobalEmotes;
+            _ffzGlobalEmotes = GetFfzGlobalEmotes();
+            return _ffzGlobalEmotes ?? Array.Empty<FfzEmote>();
         }
     }
 
@@ -34,8 +34,8 @@ public class EmoteController
                 return _bttvGlobalEmotes;
             }
 
-            _bttvGlobalEmotes = GetBttvGlobalEmotes().ToArray();
-            return _bttvGlobalEmotes;
+            _bttvGlobalEmotes = GetBttvGlobalEmotes();
+            return _bttvGlobalEmotes ?? Array.Empty<BttvEmote>();
         }
     }
 
@@ -49,7 +49,7 @@ public class EmoteController
             }
 
             _sevenTvGlobalEmotes = GetSevenTvGlobalEmotes();
-            return _sevenTvGlobalEmotes;
+            return _sevenTvGlobalEmotes ?? Array.Empty<SevenTvGlobalEmote>();
         }
     }
 
@@ -69,13 +69,13 @@ public class EmoteController
         }
 
         FfzRequest? request = GetFfzRequest(channelId);
-        IEnumerable<FfzEmote> emotes = request?.Set?.EmoteSet?.Emotes ?? Array.Empty<FfzEmote>();
-        if (!_ffzChannelsEmotes.TryAdd(channelId, emotes))
+        IEnumerable<FfzEmote>? emotes = request?.Set?.EmoteSet?.Emotes;
+        if (emotes is not null && !_ffzChannelsEmotes.TryAdd(channelId, emotes))
         {
             _ffzChannelsEmotes[channelId] = emotes;
         }
 
-        return emotes;
+        return emotes ?? Array.Empty<FfzEmote>();
     }
 
     public IEnumerable<BttvEmote> GetBttvEmotes(long channelId, bool loadFromCache = true)
@@ -86,13 +86,13 @@ public class EmoteController
         }
 
         BttvRequest? request = GetBttvRequest(channelId);
-        BttvEmote[] emotes = request?.ChannelEmotes?.Concat(request.SharedEmotes).ToArray() ?? Array.Empty<BttvEmote>();
-        if (!_bttvEmotes.TryAdd(channelId, emotes))
+        BttvEmote[]? emotes = request?.ChannelEmotes?.Concat(request.SharedEmotes).ToArray();
+        if (emotes is not null && !_bttvEmotes.TryAdd(channelId, emotes))
         {
             _bttvEmotes[channelId] = emotes;
         }
 
-        return emotes;
+        return emotes ?? Array.Empty<BttvEmote>();
     }
 
     public IEnumerable<SevenTvEmote> GetSevenTvEmotes(long channelId, bool loadFromCache = true)
@@ -103,13 +103,13 @@ public class EmoteController
         }
 
         SevenTvRequest? request = GetSevenTvRequest(channelId);
-        SevenTvEmote[] emotes = request?.Data?.User?.Emotes?.ToArray() ?? Array.Empty<SevenTvEmote>();
-        if (!_sevenTvChannelEmotes.TryAdd(channelId, emotes))
+        SevenTvEmote[]? emotes = request?.Data?.User?.Emotes;
+        if (emotes is not null && !_sevenTvChannelEmotes.TryAdd(channelId, emotes))
         {
             _sevenTvChannelEmotes[channelId] = emotes;
         }
 
-        return emotes;
+        return emotes ?? Array.Empty<SevenTvEmote>();
     }
 
     private SevenTvRequest? GetSevenTvRequest(long channelId)
@@ -127,16 +127,10 @@ public class EmoteController
                 ("query", "{user(id: \"" + channelName + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
                           "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
                           "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
-                          "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}"),
-                ("variables", "{}")
+                          "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}")
             });
 
-            if (request.Result is null)
-            {
-                return null;
-            }
-
-            return JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
+            return request.Result is null ? null : JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
         }
         catch (Exception ex)
         {
@@ -145,32 +139,43 @@ public class EmoteController
         }
     }
 
-    private IEnumerable<SevenTvGlobalEmote> GetSevenTvGlobalEmotes()
+    private IEnumerable<SevenTvGlobalEmote>? GetSevenTvGlobalEmotes()
     {
-        HttpPost request = new("https://api.7tv.app/v2/gql", new[]
+        try
         {
-            ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) " +
-                      "{id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
-        });
+            HttpPost request = new("https://api.7tv.app/v2/gql", new[]
+            {
+                ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) " +
+                          "{id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
+            });
 
-        if (!request.IsValidJsonData)
-        {
-            return Array.Empty<SevenTvGlobalEmote>();
+            if (!request.IsValidJsonData)
+            {
+                return null;
+            }
+
+            string result = request.Data.GetProperty("data").GetProperty("search_emotes").GetRawText();
+            return JsonSerializer.Deserialize<SevenTvGlobalEmote[]>(result);
         }
-
-        string result = request.Data.GetProperty("data").GetProperty("search_emotes").GetRawText();
-        return JsonSerializer.Deserialize<SevenTvGlobalEmote[]>(result) ?? Array.Empty<SevenTvGlobalEmote>();
+        catch (Exception ex)
+        {
+            DbController.LogException(ex);
+            return null;
+        }
     }
 
-    private IEnumerable<BttvEmote> GetBttvGlobalEmotes()
+    private IEnumerable<BttvEmote>? GetBttvGlobalEmotes()
     {
-        HttpGet request = new("https://api.betterttv.net/3/cached/emotes/global");
-        if (request.Result is null)
+        try
         {
-            return Array.Empty<BttvEmote>();
+            HttpGet request = new("https://api.betterttv.net/3/cached/emotes/global");
+            return request.Result is null ? null : JsonSerializer.Deserialize<BttvEmote[]>(request.Result);
         }
-
-        return JsonSerializer.Deserialize<BttvEmote[]>(request.Result) ?? Array.Empty<BttvEmote>();
+        catch (Exception ex)
+        {
+            DbController.LogException(ex);
+            return null;
+        }
     }
 
     private BttvRequest? GetBttvRequest(long channelId)
@@ -214,22 +219,30 @@ public class EmoteController
         }
     }
 
-    private IEnumerable<FfzEmote> GetFfzGlobalEmotes()
+    private IEnumerable<FfzEmote>? GetFfzGlobalEmotes()
     {
-        HttpGet request = new("https://api.frankerfacez.com/v1/set/global");
-        if (!request.IsValidJsonData || request.Result is null)
+        try
         {
-            return Array.Empty<FfzEmote>();
-        }
+            HttpGet request = new("https://api.frankerfacez.com/v1/set/global");
+            if (!request.IsValidJsonData || request.Result is null)
+            {
+                return null;
+            }
 
-        int setId = request.Data.GetProperty("default_sets")[0].GetInt32();
-        string result = request.Result.Replace($"\"{setId}\":", $"\"{AppSettings.FfzSetIdReplacement}\":");
-        JsonElement json = JsonSerializer.Deserialize<JsonElement>(result);
-        string firstSet = json.GetProperty("sets").GetProperty(AppSettings.FfzSetIdReplacement).GetProperty("emoticons").GetRawText();
-        string secondSet = json.GetProperty("sets").GetProperty("4330").GetProperty("emoticons").GetRawText();
-        FfzEmote[] firstEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(firstSet) ?? Array.Empty<FfzEmote>();
-        FfzEmote[] secondEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(secondSet) ?? Array.Empty<FfzEmote>();
-        FfzEmote[] emotes = firstEmoteSet.Concat(secondEmoteSet).ToArray();
-        return emotes.Any() ? emotes : Array.Empty<FfzEmote>();
+            int setId = request.Data.GetProperty("default_sets")[0].GetInt32();
+            string result = request.Result.Replace($"\"{setId}\":", $"\"{AppSettings.FfzSetIdReplacement}\":");
+            JsonElement json = JsonSerializer.Deserialize<JsonElement>(result);
+            string firstSet = json.GetProperty("sets").GetProperty(AppSettings.FfzSetIdReplacement).GetProperty("emoticons").GetRawText();
+            string secondSet = json.GetProperty("sets").GetProperty("4330").GetProperty("emoticons").GetRawText();
+            FfzEmote[] firstEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(firstSet) ?? Array.Empty<FfzEmote>();
+            FfzEmote[] secondEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(secondSet) ?? Array.Empty<FfzEmote>();
+            FfzEmote[] emotes = firstEmoteSet.Concat(secondEmoteSet).ToArray();
+            return emotes;
+        }
+        catch (Exception ex)
+        {
+            DbController.LogException(ex);
+            return null;
+        }
     }
 }
