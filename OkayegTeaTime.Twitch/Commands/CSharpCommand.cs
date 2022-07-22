@@ -42,7 +42,7 @@ public class CSharpCommand : Command
             return (result!.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
         }
 
-        return "compiled successfully";
+        return "executed successfully";
     }
 
     private static string GetCSharpOnlineCompilerTemplate(string code)
