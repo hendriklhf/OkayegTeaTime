@@ -34,32 +34,37 @@ public class MasspingCommand : Command
 
     public override void Handle()
     {
-        if ((ChatMessage.IsModerator || ChatMessage.IsBroadcaster) && _disabledChannels.Contains(ChatMessage.ChannelId))
+        if (_disabledChannels.Contains(ChatMessage.ChannelId))
         {
-            string channelEmote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
-            string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
-            string[] chatters;
-            if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
-            {
-                chatters = GetChatters(ChatMessage.Channel).Select(c => c.Username).ToArray();
-                if (chatters.Length == 0)
-                {
-                    Response = string.Empty;
-                    return;
-                }
-            }
-            else
-            {
-                Response = $"OkayegTeaTime {emote} ";
-                chatters = AppSettings.OfflineChatEmotes;
-            }
+            Response = $"{ChatMessage.Username}, this command is disabled in this channel";
+            return;
+        }
 
-            Response += string.Join($" {emote} ", chatters);
+        if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+        {
+            Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+            return;
+        }
+
+        string channelEmote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
+        string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
+        string[] chatters;
+        if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
+        {
+            chatters = GetChatters(ChatMessage.Channel).Select(c => c.Username).ToArray();
+            if (chatters.Length == 0)
+            {
+                Response = string.Empty;
+                return;
+            }
         }
         else
         {
-            Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+            Response = $"OkayegTeaTime {emote} ";
+            chatters = AppSettings.OfflineChatEmotes;
         }
+
+        Response += string.Join($" {emote} ", chatters);
     }
 
     private IEnumerable<Chatter> GetChatters(string channel)
