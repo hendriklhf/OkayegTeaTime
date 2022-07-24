@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using HLE.Http;
@@ -70,20 +71,20 @@ public class MasspingCommand : Command
     private IEnumerable<Chatter> GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
-        List<Chatter> result = new();
         if (!request.IsValidJsonData)
         {
-            return result;
+            return Array.Empty<Chatter>();
         }
 
+        List<Chatter> result = new();
         JsonElement chatters = request.Data.GetProperty("chatters");
-        byte pIdx = 0;
-        foreach (string p in _chatRoles)
+        byte roleIdx = 0;
+        foreach (string role in _chatRoles)
         {
-            JsonElement chatterList = chatters.GetProperty(p);
+            JsonElement chatterList = chatters.GetProperty(role);
             for (int i = 0; i < chatterList.GetArrayLength(); i++)
             {
-                result.Add(new(chatterList[i].GetString()!, (ChatRole)pIdx++));
+                result.Add(new(chatterList[i].GetString()!, (ChatRole)roleIdx++));
             }
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -38,7 +39,7 @@ public class Formula1Command : Command
             return;
         }
 
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s--weather");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sweather");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             int latitude = (int)Math.Round(double.Parse(race.Circuit.Location.Latitude));
@@ -56,7 +57,7 @@ public class Formula1Command : Command
         }
         else
         {
-            Response = $"{(race.Race.Start > DateTime.UtcNow ? "Next" : "Current")} race: " +
+            Response = $"{ChatMessage.Username}, {(race.Race.Start > DateTime.UtcNow ? "Next" : "Current")} race: " +
                        $"{race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ";
             if (race.Race.Start > DateTime.UtcNow)
             {
@@ -86,7 +87,7 @@ public class Formula1Command : Command
         }
     }
 
-    private static Formula1Race? GetNextOrCurrentRace(Formula1Race[] races)
+    private static Formula1Race? GetNextOrCurrentRace(IEnumerable<Formula1Race> races)
     {
         return races.FirstOrDefault(r => r.Race.Start + _raceLength > DateTime.UtcNow);
     }
