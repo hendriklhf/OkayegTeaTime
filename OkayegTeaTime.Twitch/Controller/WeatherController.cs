@@ -12,14 +12,20 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public class WeatherController
 {
-    private readonly Dictionary<WeatherDataKey, OpenWeatherMapResponse> _dataCache = new();
+    private readonly Dictionary<WeatherDataKey, OwmWeatherData> _weatherCache = new();
+    private readonly Dictionary<WeatherDataKey, OwmForecastData> _forecastCache = new();
     private readonly long _cacheTime = (long)TimeSpan.FromMinutes(30).TotalMilliseconds;
+    private readonly long _forecastCacheTime = (long)TimeSpan.FromDays(1).TotalMilliseconds;
 
-    public OpenWeatherMapResponse? GetWeatherData(string city, bool loadFromCache = true)
+    public OwmWeatherData? GetWeather(string city, bool loadFromCache = true)
     {
         city = city.ToLower();
-        WeatherDataKey key = new(city);
-        if (loadFromCache && _dataCache.TryGetValue(key, out OpenWeatherMapResponse? data) && data.TimeOfRequest + _cacheTime > TimeHelper.Now())
+        WeatherDataKey key = new()
+        {
+            City = city
+        };
+
+        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > TimeHelper.Now())
         {
             return data;
         }
@@ -30,24 +36,29 @@ public class WeatherController
             return null;
         }
 
-        data = JsonSerializer.Deserialize<OpenWeatherMapResponse>(request.Result);
+        data = JsonSerializer.Deserialize<OwmWeatherData>(request.Result);
         if (data is null)
         {
             return null;
         }
 
-        if (!_dataCache.TryAdd(key, data))
+        if (!_weatherCache.TryAdd(key, data))
         {
-            _dataCache[key] = data;
+            _weatherCache[key] = data;
         }
 
         return data;
     }
 
-    public OpenWeatherMapResponse? GetWeatherData(int latitude, int longitude, bool loadFromCache = true)
+    public OwmWeatherData? GetWeather(int latitude, int longitude, bool loadFromCache = true)
     {
-        WeatherDataKey key = new(latitude, longitude);
-        if (loadFromCache && _dataCache.TryGetValue(key, out OpenWeatherMapResponse? data) && data.TimeOfRequest + _cacheTime > TimeHelper.Now())
+        WeatherDataKey key = new()
+        {
+            Latitude = latitude,
+            Longitude = longitude
+        };
+
+        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > TimeHelper.Now())
         {
             return data;
         }
@@ -58,19 +69,32 @@ public class WeatherController
             return null;
         }
 
-        data = JsonSerializer.Deserialize<OpenWeatherMapResponse>(request.Result);
+        data = JsonSerializer.Deserialize<OwmWeatherData>(request.Result);
         if (data is null)
         {
             return null;
         }
 
-        if (!_dataCache.TryAdd(key, data))
+        if (!_weatherCache.TryAdd(key, data))
         {
-            _dataCache[key] = data;
+            _weatherCache[key] = data;
         }
 
         return data;
     }
+
+    public OwmForecastData? GetForecast(string city, bool loadFromCache = true)
+    {
+        city = city.ToLower();
+        WeatherDataKey key = new()
+        {
+            City = city
+        };
+
+        if (loadFromCache && _forecastCache.TryGetValue(key, out OwmForecastData? data) && data.TimeOfRequest + _forecastCacheTime > TimeHelper.Now())
+        {
+            return data;
+        }
 
         HttpGet request = new($"https://api.openweathermap.org/data/2.5/forecast/daily?q={city}&cnt=16&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
         if (request.Result is null || !request.IsValidJsonData)
@@ -159,26 +183,17 @@ public class WeatherController
 
     private class WeatherDataKey
     {
-        public string? City { get; }
+        public string? City { get; init; }
 
-        public int Longitude { get; }
+        public int Longitude { get; init; }
 
-        public int Latitude { get; }
+        public int Latitude { get; init; }
 
-        public WeatherDataKey(string city)
-        {
-            City = city;
-        }
-
-        public WeatherDataKey(int latitude, int longitude)
-        {
-            Longitude = longitude;
-            Latitude = latitude;
-        }
+        public byte ForecastDay { get; init; }
 
         public override bool Equals(object? obj)
         {
-            return obj is WeatherDataKey k && ((k.City is not null && City is not null && k.City == City) || (k.Longitude == Longitude && k.Latitude == Latitude));
+            return obj is WeatherDataKey k && ((k.City is not null && City is not null && k.City == City) || (k.Longitude == Longitude && k.Latitude == Latitude)) && k.ForecastDay == ForecastDay;
         }
     }
 }

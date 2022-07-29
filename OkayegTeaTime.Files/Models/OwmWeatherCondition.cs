@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class WeatherConditions
+public class OwmWeatherCondition
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }

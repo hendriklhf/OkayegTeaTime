@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class WindData
+public class OwmWind
 {
     [JsonPropertyName("speed")]
     public double Speed { get; set; }

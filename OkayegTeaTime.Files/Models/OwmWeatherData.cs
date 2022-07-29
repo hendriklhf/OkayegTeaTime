@@ -5,34 +5,34 @@ using HLE.Time;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OpenWeatherMapResponse
+public class OwmWeatherData
 {
     [JsonPropertyName("coord")]
-    public Coordinates Coordinates { get; set; }
+    public OwmCoordinates Coordinates { get; set; }
 
     [JsonPropertyName("weather")]
-    public WeatherConditions[] WeatherConditions { get; set; }
+    public OwmWeatherCondition[] WeatherConditions { get; set; }
 
     [JsonPropertyName("base")]
     public string Base { get; set; }
 
     [JsonPropertyName("main")]
-    public WeatherData Weather { get; set; }
+    public OwmWeather Weather { get; set; }
 
     [JsonPropertyName("visibility")]
     public int Visibility { get; set; }
 
     [JsonPropertyName("wind")]
-    public WindData Wind { get; set; }
+    public OwmWind Wind { get; set; }
 
     [JsonPropertyName("clouds")]
-    public CloudData Clouds { get; set; }
+    public OwmCloud Clouds { get; set; }
 
     [JsonPropertyName("dt")]
     public long DayTime { get; set; }
 
     [JsonPropertyName("sys")]
-    public LocationData Location { get; set; }
+    public OwmLocation Location { get; set; }
 
     [JsonPropertyName("timezone")]
     public int Timezone { get; set; }

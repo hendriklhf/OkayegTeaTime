@@ -37,7 +37,7 @@ public class WeatherCommand : Command
             }
         }
 
-        OpenWeatherMapResponse? weatherData = _twitchBot.WeatherController.GetWeatherData(city);
+        OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(city);
         if (weatherData is null)
         {
             Response = $"{ChatMessage.Username}, api error";
@@ -50,6 +50,6 @@ public class WeatherCommand : Command
             return;
         }
 
-        Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.ToResponse(weatherData, isPrivateLocation)}";
+        Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.CreateResponse(weatherData, isPrivateLocation)}";
     }
 }
