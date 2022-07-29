@@ -609,7 +609,7 @@
       ],
       "Parameters": [
         "(none)",
-        "--weather"
+        "weather"
       ],
       "ParameterDescriptions": [
         "Sends information about the next Formula 1 event",
