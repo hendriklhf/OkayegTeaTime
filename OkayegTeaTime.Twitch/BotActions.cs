@@ -7,15 +7,14 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Commands;
-using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch;
 
 public static class BotActions
 {
-    public static void SendComingBack(this TwitchBot twitchBot, TwitchChatMessage chatMessage)
+    public static void SendComingBack(this TwitchBot twitchBot, long userId, string channel)
     {
-        User? user = DbControl.Users[chatMessage.UserId];
+        User? user = DbControl.Users[userId];
         if (user is null)
         {
             return;
@@ -23,7 +22,7 @@ public static class BotActions
 
         AfkCommand cmd = twitchBot.CommandController[user.AfkType];
         string afkMessage = new AfkMessage(user, cmd).ComingBack;
-        twitchBot.Send(chatMessage.Channel, afkMessage);
+        twitchBot.Send(channel, afkMessage);
     }
 
     public static void SendReminder(this TwitchBot twitchBot, string channel, IEnumerable<Reminder> reminders)

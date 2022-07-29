@@ -71,7 +71,7 @@ public class MessageHandler : Handler
             return;
         }
 
-        _twitchBot.SendComingBack(chatMessage);
+        _twitchBot.SendComingBack(chatMessage.UserId, chatMessage.Channel);
         if (!_twitchBot.CommandController.IsAfkCommand(chatMessage))
         {
             user.IsAfk = false;
