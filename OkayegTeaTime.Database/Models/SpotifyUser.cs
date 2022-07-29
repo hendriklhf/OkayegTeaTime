@@ -32,7 +32,9 @@ public class SpotifyUser : CacheModel
         set
         {
             _accessToken = value;
+            _mutex.WaitOne();
             EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
+            _mutex.ReleaseMutex();
             if (user is null)
             {
                 return;
@@ -49,7 +51,9 @@ public class SpotifyUser : CacheModel
         set
         {
             _refreshToken = value;
+            _mutex.WaitOne();
             EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
+            _mutex.ReleaseMutex();
             if (user is null)
             {
                 return;
@@ -66,7 +70,9 @@ public class SpotifyUser : CacheModel
         set
         {
             _time = value;
+            _mutex.WaitOne();
             EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
+            _mutex.ReleaseMutex();
             if (user is null)
             {
                 return;
@@ -83,7 +89,9 @@ public class SpotifyUser : CacheModel
         set
         {
             _areSongRequestsEnabled = value;
+            _mutex.WaitOne();
             EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
+            _mutex.ReleaseMutex();
             if (user is null)
             {
                 return;
@@ -192,38 +200,49 @@ public class SpotifyUser : CacheModel
     }
 
 #if RELEASE
-    public async Task AddToChatPlaylist(params string[] songs)
+    /// <summary>
+    /// Adds the passed songs to the chat playlist (<see cref="AppSettings.Spotify.ChatPlaylistId"/>) in an own thread.
+    /// </summary>
+    /// <param name="songs">The songs that will be added to the playlist.</param>
+    /// <exception cref="SpotifyException">Will be thrown if it was unable to add a song to the playlist.</exception>
+    public void AddToChatPlaylist(params string[] songs)
     {
-        string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
-            .Where(u => !string.IsNullOrEmpty(u)).ToArray();
-
-        if (uris.Length == 0)
+        async Task AddToChatPlaylistLocal()
         {
-            return;
-        }
+            string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
+                .Where(u => !string.IsNullOrEmpty(u)).ToArray();
 
-        SpotifyClient? client = await GetClient();
-        if (client is null)
-        {
-            throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
-        }
-
-        try
-        {
-            uris = uris.Where(u => !DbControl.SpotifyUsers.ChatPlaylistUris.Contains(u)).ToArray();
             if (uris.Length == 0)
             {
                 return;
             }
 
-            await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
-            DbControl.SpotifyUsers.ChatPlaylistUris.AddRange(uris);
+            SpotifyClient? client = await GetClient();
+            if (client is null)
+            {
+                throw new SpotifyException($"{Username.Antiping()} isn't registered, they have to register first");
+            }
+
+            try
+            {
+                uris = uris.Where(u => !DbControl.SpotifyUsers.ChatPlaylistUris.Contains(u)).ToArray();
+                if (uris.Length == 0)
+                {
+                    return;
+                }
+
+                await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
+                DbControl.SpotifyUsers.ChatPlaylistUris.AddRange(uris);
+            }
+            catch (Exception ex)
+            {
+                DbController.LogException(ex);
+                throw new SpotifyException("Something went wrong trying to add the song to the playlist");
+            }
         }
-        catch (Exception ex)
-        {
-            DbController.LogException(ex);
-            throw new SpotifyException("Something went wrong trying to add the song to the playlist");
-        }
+
+        Thread thread = new(() => AddToChatPlaylistLocal().Wait());
+        thread.Start();
     }
 
     public async Task<IEnumerable<SpotifyTrack>> GetPlaylistItems(string playlistUri)
@@ -506,20 +525,14 @@ public class SpotifyUser : CacheModel
                 return item;
             }
 
-            void AddingToChatPlaylist()
+            try
             {
-                try
-                {
-                    playlistUser.AddToChatPlaylist(item.Uri).Wait();
-                }
-                catch (SpotifyException ex)
-                {
-                    DbController.LogException(ex);
-                }
+                playlistUser.AddToChatPlaylist(item.Uri);
             }
-
-            Thread thread = new(AddingToChatPlaylist);
-            thread.Start();
+            catch (SpotifyException ex)
+            {
+                DbController.LogException(ex);
+            }
 #endif
         }
         else if (currentlyPlaying?.Item is FullEpisode episode)

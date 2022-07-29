@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using OkayegTeaTime.Database.EntityFrameworkModels;
 using Timer = System.Timers.Timer;
 
@@ -6,17 +7,11 @@ namespace OkayegTeaTime.Database.Models;
 
 public abstract class CacheModel
 {
-    private protected OkayegTeaTimeContext DbContext
-    {
-        get
-        {
-            _db ??= new();
-            return _db;
-        }
-    }
+    private protected OkayegTeaTimeContext DbContext => _db ??= new();
 
     private OkayegTeaTimeContext? _db;
     private readonly Timer _timer = new(1000);
+    private protected readonly Mutex _mutex = new();
 
     protected CacheModel()
     {
@@ -24,7 +19,9 @@ public abstract class CacheModel
         {
             try
             {
+                _mutex.WaitOne();
                 _db?.SaveChanges();
+                _mutex.ReleaseMutex();
             }
             catch (Exception ex)
             {
@@ -37,7 +34,11 @@ public abstract class CacheModel
     {
         try
         {
+            _mutex.WaitOne();
             _db?.SaveChanges();
+            _mutex.ReleaseMutex();
+            _db?.Dispose();
+            _mutex.Dispose();
         }
         catch (Exception ex)
         {

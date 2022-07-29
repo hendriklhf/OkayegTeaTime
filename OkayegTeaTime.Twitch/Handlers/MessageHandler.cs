@@ -107,7 +107,7 @@ public class MessageHandler : Handler
         string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
         try
         {
-            playlistUser.AddToChatPlaylist(songs).Wait();
+            playlistUser.AddToChatPlaylist(songs);
         }
         catch (SpotifyException)
         {
