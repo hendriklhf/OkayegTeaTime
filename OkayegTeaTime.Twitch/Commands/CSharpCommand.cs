@@ -27,7 +27,6 @@ public class CSharpCommand : Command
     private static string GetCSharpOnlineCompilerResult(string input)
     {
         string encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
-
         HttpPost request = new("https://dotnetfiddle.net/Home/Run", new[]
         {
             ("CodeBlock", encodedInput),
@@ -37,12 +36,7 @@ public class CSharpCommand : Command
             ("NuGetPackageVersionIds", "103505")
         });
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
-        if (!result?.IsNullOrEmptyOrWhitespace() == true)
-        {
-            return (result!.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
-        }
-
-        return "executed successfully";
+        return !result?.IsNullOrEmptyOrWhitespace() == true ? (result!.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces() : "executed successfully";
     }
 
     private static string GetCSharpOnlineCompilerTemplate(string code)
