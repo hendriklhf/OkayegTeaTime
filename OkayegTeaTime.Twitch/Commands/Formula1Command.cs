@@ -44,7 +44,7 @@ public class Formula1Command : Command
         {
             int latitude = (int)Math.Round(double.Parse(race.Circuit.Location.Latitude));
             int longitude = (int)Math.Round(double.Parse(race.Circuit.Location.Longitude));
-            OpenWeatherMapResponse? weatherData = _twitchBot.WeatherController.GetWeatherData(latitude, longitude, false);
+            OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(latitude, longitude, false);
             if (weatherData is null)
             {
                 Response = $"{ChatMessage.Username}, api error";
@@ -53,7 +53,7 @@ public class Formula1Command : Command
 
             weatherData.CityName = race.Circuit.Location.Name;
             weatherData.Location.Country = race.Circuit.Location.Country;
-            Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.ToResponse(weatherData, false)}";
+            Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.CreateResponse(weatherData, false)}";
         }
         else
         {

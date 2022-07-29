@@ -72,9 +72,29 @@ public class WeatherController
         return data;
     }
 
-    public string ToResponse(OpenWeatherMapResponse weatherData, bool isPrivateLocation)
+        HttpGet request = new($"https://api.openweathermap.org/data/2.5/forecast/daily?q={city}&cnt=16&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        if (request.Result is null || !request.IsValidJsonData)
+        {
+            return null;
+        }
+
+        data = JsonSerializer.Deserialize<OwmForecastData>(request.Result);
+        if (data is null)
+        {
+            return null;
+        }
+
+        if (!_forecastCache.TryAdd(key, data))
+        {
+            _forecastCache[key] = data;
+        }
+
+        return data;
+    }
+
+    public string CreateResponse(OwmWeatherData weatherData, bool isPrivateLocation)
     {
-        string location = $"{weatherData.CityName}, {weatherData.Location.Country}";
+        string location;
         if (isPrivateLocation)
         {
             location = "(private location)";
@@ -84,13 +104,17 @@ public class WeatherController
             string country = new RegionInfo(weatherData.Location.Country).EnglishName;
             location = $"{weatherData.CityName}, {country}";
         }
+        else
+        {
+            location = $"{weatherData.CityName}, {weatherData.Location.Country}";
+        }
 
         return $"{location}: {weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, {weatherData.Weather.Temperature}°C, " +
                $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
                $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
     }
 
-    private string GetWeatherEmoji(int weatherId) =>
+    private static string GetWeatherEmoji(int weatherId) =>
         weatherId switch
         {
             >= 200 and <= 231 => Emoji.CloudWithLightningAndRain,
@@ -109,7 +133,7 @@ public class WeatherController
             _ => Emoji.Question
         };
 
-    private string GetDirection(double deg) =>
+    private static string GetDirection(double deg) =>
         deg switch
         {
             < 0 => Emoji.Question,
