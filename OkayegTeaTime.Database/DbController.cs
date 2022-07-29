@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 #if DEBUG
 using System.IO;
 #endif
@@ -72,35 +71,9 @@ public static class DbController
     public static int AddReminder(Reminder reminder)
     {
         using OkayegTeaTimeContext database = new();
-        if (HasTooManyRemindersSet(reminder.Target, reminder.ToTime > 0))
-        {
-            return -1;
-        }
-
         EntityEntry<Reminder> entry = database.Reminders.Add(reminder);
         database.SaveChanges();
-        return entry.Entity.Id;
-    }
-
-    public static int[] AddReminders(IEnumerable<Reminder> reminders)
-    {
-        Reminder[] rmdrs = reminders.ToArray();
-        EntityEntry<Reminder>?[] entries = new EntityEntry<Reminder>[rmdrs.Length];
-        using OkayegTeaTimeContext database = new();
-        for (int i = 0; i < rmdrs.Length; i++)
-        {
-            if (HasTooManyRemindersSet(rmdrs[i].Target, rmdrs[i].ToTime > 0))
-            {
-                entries[i] = null;
-            }
-            else
-            {
-                entries[i] = database.Reminders.Add(rmdrs[i]);
-            }
-        }
-
-        database.SaveChanges();
-        return entries.Select(e => e?.Entity?.Id ?? -1).ToArray();
+        return entry.Entity.Id > 0 ? entry.Entity.Id : -1;
     }
 
     public static void AddSugestion(string username, string channel, string suggestion)
@@ -175,19 +148,6 @@ public static class DbController
     {
         using OkayegTeaTimeContext database = new();
         return database.Users.ToArray();
-    }
-
-    public static bool HasTooManyRemindersSet(string target, bool isTimedReminder)
-    {
-        using OkayegTeaTimeContext database = new();
-        if (!isTimedReminder)
-        {
-            return database.Reminders.Count(r => r.Target == target && r.ToTime == 0) >= AppSettings.MaxReminders;
-        }
-        else
-        {
-            return database.Reminders.Count(r => r.Target == target && r.ToTime > 0) >= AppSettings.MaxReminders;
-        }
     }
 
     public static void LogException(Exception ex)

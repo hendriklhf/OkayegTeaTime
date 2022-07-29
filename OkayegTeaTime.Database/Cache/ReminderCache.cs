@@ -4,6 +4,7 @@ using System.Linq;
 using HLE.Time;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Database.Cache;
 
@@ -13,6 +14,11 @@ public class ReminderCache : DbCache<Reminder>
 
     public int Add(Reminder reminder)
     {
+        if (HasTooManyRemindersSet(reminder.Target, reminder.ToTime > 0))
+        {
+            return -1;
+        }
+
         int id = DbController.AddReminder(new EntityFrameworkModels.Reminder(reminder));
         if (id == -1)
         {
@@ -27,10 +33,16 @@ public class ReminderCache : DbCache<Reminder>
     public int[] AddRange(IEnumerable<Reminder> reminders)
     {
         Reminder[] rmdrs = reminders.ToArray();
-        int[] ids = DbController.AddReminders(rmdrs.Select(r => new EntityFrameworkModels.Reminder(r)));
-
-        for (int i = 0; i < ids.Length; i++)
+        int[] ids = new int[rmdrs.Length];
+        for (int i = 0; i < rmdrs.Length; i++)
         {
+            if (HasTooManyRemindersSet(rmdrs[i].Target, rmdrs[i].ToTime > 0))
+            {
+                ids[i] = -1;
+                continue;
+            }
+
+            ids[i] = DbController.AddReminder(new(rmdrs[i]));
             if (ids[i] == -1)
             {
                 continue;
@@ -57,7 +69,7 @@ public class ReminderCache : DbCache<Reminder>
             return removed;
         }
 
-        //wasn't sent, but basically equals deletion
+        //wasn't sent, but basically equals deletion from the memory cache
         reminder.HasBeenSent = true;
         return true;
     }
@@ -100,6 +112,17 @@ public class ReminderCache : DbCache<Reminder>
         reminder = new(efReminder);
         _items.Add(reminder);
         return reminder;
+    }
+
+    private bool HasTooManyRemindersSet(string target, bool isTimedReminder)
+    {
+        Func<Reminder, bool> condition = isTimedReminder switch
+        {
+            true => r => r.Target == target && r.ToTime == 0,
+            _ => r => r.Target == target && r.ToTime > 0
+        };
+
+        return this.Count(condition) >= AppSettings.MaxReminders;
     }
 
     private protected override void GetAllFromDb()
