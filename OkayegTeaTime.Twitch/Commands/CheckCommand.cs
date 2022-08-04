@@ -6,11 +6,13 @@ using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Check)]
 public class CheckCommand : Command
 {
     public CheckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

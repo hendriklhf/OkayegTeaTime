@@ -7,11 +7,13 @@ using HLE.Emojis;
 using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Formula1)]
 public class Formula1Command : Command
 {
     private static Formula1Race[]? _races;

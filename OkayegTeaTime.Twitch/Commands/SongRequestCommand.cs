@@ -9,11 +9,13 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Spotify.Exceptions;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.SongRequest)]
 public class SongRequestCommand : Command
 {
     private static readonly Regex _targetPattern = new(Pattern.MultipleTargets, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));

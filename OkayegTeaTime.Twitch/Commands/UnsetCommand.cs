@@ -2,11 +2,13 @@
 using HLE;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Unset)]
 public class UnsetCommand : Command
 {
     public UnsetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

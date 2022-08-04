@@ -5,6 +5,7 @@ using HLE;
 using HLE.Http;
 using OkayegTeaTime.Resources;
 #endif
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 #if DEBUG
 using OkayegTeaTime.Utils;
@@ -12,6 +13,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Cpp)]
 public class CppCommand : Command
 {
     public CppCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

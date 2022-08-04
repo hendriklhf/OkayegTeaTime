@@ -1,9 +1,11 @@
 ﻿using HLE;
 using HLE.Emojis;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Coinflip)]
 public class CoinflipCommand : Command
 {
     public CoinflipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

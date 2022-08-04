@@ -1,10 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using HLE;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Leave)]
 public class LeaveCommand : Command
 {
     public LeaveCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

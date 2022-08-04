@@ -1,5 +1,3 @@
-using OkayegTeaTime.Twitch.Models.Enums;
-
 namespace OkayegTeaTime.Twitch.Models;
 
 public class Chatter

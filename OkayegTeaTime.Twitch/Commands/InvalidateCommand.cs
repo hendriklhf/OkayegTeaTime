@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Invalidate)]
 public class InvalidateCommand : Command
 {
     public InvalidateCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

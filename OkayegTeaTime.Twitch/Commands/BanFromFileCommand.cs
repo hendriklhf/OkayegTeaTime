@@ -6,11 +6,13 @@ using HLE;
 using HLE.Collections;
 using HLE.Http;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.BanFromFile)]
 public class BanFromFileCommand : Command
 {
     private static readonly Regex _banPattern = new(@"^[\./]ban\s\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));

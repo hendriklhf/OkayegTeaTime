@@ -2,11 +2,13 @@
 using System.Web;
 using HLE.Http;
 using OkayegTeaTime.Resources;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.CSharp)]
 public class CSharpCommand : Command
 {
     public CSharpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

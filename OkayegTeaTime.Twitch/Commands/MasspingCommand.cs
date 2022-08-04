@@ -5,11 +5,12 @@ using System.Text.Json;
 using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Twitch.Models.Enums;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Massping)]
 public class MasspingCommand : Command
 {
     private readonly long[] _disabledChannels =

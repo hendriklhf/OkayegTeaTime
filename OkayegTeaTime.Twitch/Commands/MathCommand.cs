@@ -1,11 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
 using HLE.Http;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Math)]
 public class MathCommand : Command
 {
     public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

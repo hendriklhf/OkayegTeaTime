@@ -1,10 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Emojis;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Fuck)]
 public class FuckCommand : Command
 {
     public FuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
@@ -19,7 +20,7 @@ public class CommandHandler : Handler
 
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
-    private readonly Dictionary<CommandType, CommandHandle> _commandHandles = new();
+    private Dictionary<CommandType, CommandHandle>? _commandHandles;
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
@@ -98,42 +99,8 @@ public class CommandHandler : Handler
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
     private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
-        if (!_commandHandles.TryGetValue(type, out CommandHandle? handle))
-        {
-            string commandClassName = $"{AppSettings.AssemblyName}.Twitch.Commands.{type}Command";
-            Type? commandClass = Type.GetType(commandClassName);
-            if (commandClass is null)
-            {
-                throw new InvalidOperationException($"Could not get type of command class {commandClassName}");
-            }
-
-            ConstructorInfo? constructor = commandClass.GetConstructor(new[]
-            {
-                typeof(TwitchBot),
-                typeof(TwitchChatMessage),
-                typeof(string)
-            });
-            if (constructor is null)
-            {
-                throw new InvalidOperationException($"Could not get constructor for class {commandClass.FullName}");
-            }
-
-            MethodInfo? handleMethod = commandClass.GetMethod(nameof(Command.Handle));
-            if (handleMethod is null)
-            {
-                throw new InvalidOperationException($"Could not get {nameof(Command.Handle)} method for command class {commandClass.FullName}");
-            }
-
-            MethodInfo? sendMethod = commandClass.GetMethod(nameof(Command.SendResponse));
-            if (sendMethod is null)
-            {
-                throw new InvalidOperationException($"Could not get {nameof(Command.SendResponse)} method for command class {commandClass.FullName}");
-            }
-
-            handle = new(constructor, handleMethod, sendMethod);
-            _commandHandles.Add(type, handle);
-        }
-
+        _commandHandles ??= BuildCommandCache();
+        CommandHandle handle = _commandHandles[type];
         object handlerInstance = handle.Constructor.Invoke(new object[]
         {
             twitchBot,
@@ -142,5 +109,41 @@ public class CommandHandler : Handler
         });
         handle.HandleMethod.Invoke(handlerInstance, null);
         handle.SendMethod.Invoke(handlerInstance, null);
+    }
+
+    private static Dictionary<CommandType, CommandHandle> BuildCommandCache()
+    {
+        Dictionary<CommandType, CommandHandle> commandHandles = new();
+        IEnumerable<Type> commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null);
+        foreach (Type command in commands)
+        {
+            ConstructorInfo? constructor = command.GetConstructor(new[]
+            {
+                typeof(TwitchBot),
+                typeof(TwitchChatMessage),
+                typeof(string)
+            });
+            if (constructor is null)
+            {
+                throw new InvalidOperationException($"Could not get constructor for class {command.FullName}");
+            }
+
+            MethodInfo? handleMethod = command.GetMethod(nameof(Command.Handle));
+            if (handleMethod is null)
+            {
+                throw new InvalidOperationException($"Could not get {nameof(Command.Handle)} method for command class {command.FullName}");
+            }
+
+            MethodInfo? sendMethod = command.GetMethod(nameof(Command.SendResponse));
+            if (sendMethod is null)
+            {
+                throw new InvalidOperationException($"Could not get {nameof(Command.SendResponse)} method for command class {command.FullName}");
+            }
+
+            CommandHandle handle = new(constructor, handleMethod, sendMethod);
+            commandHandles.Add(command.GetCustomAttribute<HandledCommand>()!.CommandType, handle);
+        }
+
+        return commandHandles;
     }
 }

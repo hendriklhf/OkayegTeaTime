@@ -3,11 +3,13 @@ using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Set)]
 public class SetCommand : Command
 {
     public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

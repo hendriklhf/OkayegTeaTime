@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Stream)]
 public class StreamCommand : Command
 {
     private readonly long[] _noViewerCount =

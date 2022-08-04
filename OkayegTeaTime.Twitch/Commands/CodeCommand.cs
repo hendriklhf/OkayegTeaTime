@@ -1,10 +1,12 @@
 ﻿using System.Text.RegularExpressions;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using JCommand = OkayegTeaTime.Files.Models.Command;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Code)]
 public class CodeCommand : Command
 {
     public CodeCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

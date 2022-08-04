@@ -1,4 +1,4 @@
-namespace OkayegTeaTime.Twitch.Models.Enums;
+namespace OkayegTeaTime.Twitch.Models;
 
 public enum ChatRole
 {

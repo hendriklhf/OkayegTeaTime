@@ -1,11 +1,13 @@
 using System.Text.RegularExpressions;
 using HLE.Http;
 using OkayegTeaTime.Resources;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Go)]
 public class GoCommand : Command
 {
     public GoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

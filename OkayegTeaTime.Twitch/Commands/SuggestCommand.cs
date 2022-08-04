@@ -1,10 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Suggest)]
 public class SuggestCommand : Command
 {
     public SuggestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

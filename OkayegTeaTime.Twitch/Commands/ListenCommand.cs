@@ -6,11 +6,13 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Spotify.Exceptions;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Listen)]
 public class ListenCommand : Command
 {
     public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

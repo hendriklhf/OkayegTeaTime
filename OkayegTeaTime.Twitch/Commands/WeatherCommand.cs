@@ -2,11 +2,13 @@
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Weather)]
 public class WeatherCommand : Command
 {
     public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)

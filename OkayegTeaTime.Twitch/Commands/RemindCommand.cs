@@ -15,6 +15,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Remind)]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public class RemindCommand : Command
 {

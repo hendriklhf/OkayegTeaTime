@@ -4,11 +4,13 @@ using System.Text.RegularExpressions;
 using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+[HandledCommand(CommandType.Fill)]
 public class FillCommand : Command
 {
     public FillCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
