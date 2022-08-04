@@ -3,7 +3,7 @@ using HLE.Time;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 
-namespace OkayegTeaTime.Twitch.Commands;
+namespace OkayegTeaTime.Twitch.Models;
 
 public class AfkMessage
 {

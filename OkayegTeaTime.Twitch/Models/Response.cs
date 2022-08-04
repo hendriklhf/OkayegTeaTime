@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace OkayegTeaTime.Twitch.Commands;
+namespace OkayegTeaTime.Twitch.Models;
 
 public class Response
 {
