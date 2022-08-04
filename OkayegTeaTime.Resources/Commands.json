@@ -897,6 +897,23 @@
         "Sets your status to \"fapping\""
       ],
       "Document": false
+    },
+    {
+      "Name": "gym",
+      "ComingBack": "{username} stopped working out: {message} ({time})",
+      "GoingAway": "{username} is now working out",
+      "Resuming": "{username} is working out again",
+      "Aliases": [
+        "gym",
+        "workout"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets you status to \"working out\""
+      ],
+      "Document": true
     }
   ]
 }

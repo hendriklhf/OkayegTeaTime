@@ -8,6 +8,7 @@ public enum AfkType
     Fat = 2,
     Game = 3,
     Gn = 4,
+    Gym = 17,
     Lurk = 5,
     Movie = 6,
     Music = 15,
