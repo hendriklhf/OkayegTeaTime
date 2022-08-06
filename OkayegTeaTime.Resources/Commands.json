@@ -173,11 +173,13 @@
       ],
       "Parameters": [
         "prefix [prefix]",
-        "emote [emote]"
+        "emote [emote]",
+        "location [private|public] [location]"
       ],
       "ParameterDescriptions": [
         "Sets the channel\u0027s command prefix to the given prefix. A prefix can be as long as 10 chars",
-        "Sets the emote in front message to the given one. An emote can be as long as 20 chars"
+        "Sets the emote in front message to the given one. An emote can be as long as 20 chars",
+        "Sets your location for the weather command"
       ],
       "Cooldown": 5000,
       "Document": true

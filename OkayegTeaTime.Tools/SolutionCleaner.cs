@@ -8,7 +8,7 @@ public class SolutionCleaner
 {
     private readonly string[] _dirsToClean =
     {
-        "Build",
+        "Build/",
         "OkayegTeaTime/bin/",
         "OkayegTeaTime.Api/bin/",
         "OkayegTeaTime.Database/bin/",
@@ -19,7 +19,7 @@ public class SolutionCleaner
         "OkayegTeaTime.Tools/bin/",
         "OkayegTeaTime.Twitch/bin/",
         "OkayegTeaTime.Utils/bin/",
-        "TestResults"
+        "TestResults/"
     };
 
     public void Clean()
@@ -29,7 +29,7 @@ public class SolutionCleaner
             try
             {
                 Directory.Delete(dir, true);
-                Console.WriteLine($"Deleted {dir}");
+                Console.WriteLine($"Deleted \"{dir}\"");
             }
             catch (Exception ex)
             {

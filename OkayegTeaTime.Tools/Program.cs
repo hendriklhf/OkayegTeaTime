@@ -7,9 +7,10 @@ public static class Program
 {
     private static void Main(string[] args)
     {
-        if (args.Length < 1)
+        if (args.Length == 0)
         {
-            return;
+            Console.Write("Args: ");
+            args = Console.ReadLine()?.Split() ?? throw new ArgumentNullException(nameof(args));
         }
 
         switch (args[0])

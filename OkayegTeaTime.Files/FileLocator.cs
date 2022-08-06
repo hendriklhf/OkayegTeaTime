@@ -20,7 +20,7 @@ public static class FileLocator
     {
         _files ??= BuildFileCache();
         Regex filePattern = new($@"[\/\\]{fileName}$", RegexOptions.Compiled);
-        return _files.FirstOrDefault(f => filePattern.IsMatch(f)) ?? throw new FileNotFoundException($"The file {fileName} could not be found in the current or any sub directory.");
+        return _files.FirstOrDefault(f => filePattern.IsMatch(f)) ?? throw new FileNotFoundException($"The file \"{fileName}\" could not be found in the current or any sub directory.");
     }
 
     private static string[] BuildFileCache()
