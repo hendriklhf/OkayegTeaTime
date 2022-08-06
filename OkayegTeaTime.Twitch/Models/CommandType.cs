@@ -27,6 +27,7 @@ public enum CommandType
     Pick,
     Ping,
     Rafk,
+    Reddit,
     Remind,
     Set,
     Skip,
