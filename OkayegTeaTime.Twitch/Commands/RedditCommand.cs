@@ -34,14 +34,14 @@ public class RedditCommand : Command
             RedditPost[]? posts = GetRedditPosts(ChatMessage.LowerSplit[1]);
             if (posts is null)
             {
-                Response = "api error";
+                Response = $"{ChatMessage.Username}, api error";
                 return;
             }
 
             RedditPost? post = posts.Random();
             if (post is null)
             {
-                Response = "there are no posts available";
+                Response = $"{ChatMessage.Username}, there are no posts available";
                 return;
             }
 
@@ -73,7 +73,7 @@ public class RedditCommand : Command
                 rawPosts.Add(posts[i].GetProperty("data").GetRawText());
             }
 
-            redditPosts = JsonSerializer.Deserialize<RedditPost[]>('[' + rawPosts.JoinToString(',') + ']')?.Where(p => !p.Pinned).ToArray();
+            redditPosts = JsonSerializer.Deserialize<RedditPost[]>('[' + rawPosts.JoinToString(',') + ']')?.Where(p => !p.Pinned && !p.IsNsfw).ToArray();
             if (redditPosts is null)
             {
                 return null;
