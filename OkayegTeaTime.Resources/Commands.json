@@ -552,7 +552,7 @@
       "ParameterDescriptions": [
         "Leaves the provided channel"
       ],
-      "Cooldown": 10000,
+      "Cooldown": 5000,
       "Document": false
     },
     {
@@ -567,7 +567,7 @@
       "ParameterDescriptions": [
         "Invalidates all database caches"
       ],
-      "Cooldown": 10000,
+      "Cooldown": 5000,
       "Document": false
     },
     {
@@ -584,7 +584,7 @@
         "Rolls slots and picks 3 of all third party emotes",
         "Rolls slots and picks 3 of all third party emotes matching the provided regex"
       ],
-      "Cooldown": 10000,
+      "Cooldown": 5000,
       "Document": true
     },
     {
@@ -617,7 +617,23 @@
         "Sends information about the next Formula 1 event",
         "Sends weather data for the Formula 1 location"
       ],
-      "Cooldown": 15000,
+      "Cooldown": 5000,
+      "Document": true
+    },
+    {
+      "Name": "Reddit",
+      "Description": "Sends a random reddit post of the top hot 100",
+      "Aliases": [
+        "reddit",
+        "rr"
+      ],
+      "Parameters": [
+        "[subreddit]"
+      ],
+      "ParameterDescriptions": [
+        "Sends a random reddit post of the top hot 50"
+      ],
+      "Cooldown": 10000,
       "Document": true
     }
   ],
