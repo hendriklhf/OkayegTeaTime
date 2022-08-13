@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
+using HLE;
 using HLE.Http;
-using HLE.Numbers;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -21,15 +21,15 @@ public class ChattersCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;
-            DottedNumber chatterCount = GetChatterCount(channel);
+            int chatterCount = GetChatterCount(channel);
 
             switch (chatterCount)
             {
                 case > 1:
-                    Response = $"{ChatMessage.Username}, there are {chatterCount} chatters in the channel of {channel.Antiping()}";
+                    Response = $"{ChatMessage.Username}, there are {chatterCount.InsertKDots()} chatters in the channel of {channel.Antiping()}";
                     return;
                 case > 0:
-                    Response = $"{ChatMessage.Username}, there is {chatterCount} chatter in the channel of {channel.Antiping()}";
+                    Response = $"{ChatMessage.Username}, there is {chatterCount.InsertKDots()} chatter in the channel of {channel.Antiping()}";
                     return;
                 default:
                     Response = $"{ChatMessage.Username}, there are no chatters in the channel of {channel.Antiping()}";

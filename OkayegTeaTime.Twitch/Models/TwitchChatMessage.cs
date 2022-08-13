@@ -77,8 +77,8 @@ public class TwitchChatMessage : TwitchMessage
         IsVip = chatMessage.IsVip;
         Message = chatMessage.Message.Remove(AppSettings.ChatterinoChar).TrimAll();
         Noisy = chatMessage.Noisy;
-        ChannelId = chatMessage.RoomId.ToInt();
+        ChannelId = long.Parse(chatMessage.RoomId);
         SubcsribedMonthCount = chatMessage.SubscribedMonthCount;
-        TmiSentTs = chatMessage.TmiSentTs.ToLong();
+        TmiSentTs = long.Parse(chatMessage.TmiSentTs);
     }
 }

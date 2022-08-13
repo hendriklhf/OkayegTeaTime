@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using HLE;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -45,7 +44,7 @@ public class UnsetCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
-            int reminderId = ChatMessage.Split[2].ToInt();
+            int reminderId = int.Parse(ChatMessage.Split[2]);
             bool removed = DbControl.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
             if (removed)
             {

@@ -19,22 +19,22 @@ public class ArgsResolver
 
     public void Resolve()
     {
-        GetChannels();
-        GetSettingsPath();
+        Channels = GetChannels();
+        SettingsPath = GetSettingsPath();
     }
 
-    private void GetChannels()
+    private string[]? GetChannels()
     {
         int idx = GetArgIdx("--channels");
         if (idx == -1)
         {
-            return;
+            return null;
         }
 
         Regex pattern = new(@"^\w{3,25}(,\w{3,25})*");
         if (pattern.IsMatch(_args[idx + 1]))
         {
-            Channels = pattern.Match(_args[idx + 1]).Value.Split(',');
+            return pattern.Match(_args[idx + 1]).Value.Split(',');
         }
         else
         {
@@ -42,19 +42,19 @@ public class ArgsResolver
         }
     }
 
-    private void GetSettingsPath()
+    private string? GetSettingsPath()
     {
         int idx = GetArgIdx("--settings");
         if (idx == -1)
         {
-            return;
+            return null;
         }
 
         string args = string.Join(' ', _args[idx + 1]);
         Regex pattern = new("^\".+\"");
         if (!pattern.IsMatch(args))
         {
-            return;
+            return null;
         }
 
         args = args[1..];
@@ -65,7 +65,7 @@ public class ArgsResolver
             throw new FileNotFoundException($"The file ({path}) does not exist");
         }
 
-        SettingsPath = path;
+        return path;
     }
 
     private int GetArgIdx(string argumentName)

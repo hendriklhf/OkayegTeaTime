@@ -10,7 +10,6 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 #if RELEASE
 using OkayegTeaTime.Spotify;
-using OkayegTeaTime.Spotify.Exceptions;
 #endif
 using OkayegTeaTime.Twitch.Models;
 #if RELEASE

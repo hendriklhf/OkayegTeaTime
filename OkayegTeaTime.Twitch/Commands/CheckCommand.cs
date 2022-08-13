@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database;
@@ -65,7 +64,7 @@ public class CheckCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response = $"{ChatMessage.Username}, ";
-            int id = ChatMessage.Split[2].ToInt();
+            int id = int.Parse(ChatMessage.Split[2]);
             Reminder? reminder = DbControl.Reminders[id];
             if (reminder is null)
             {

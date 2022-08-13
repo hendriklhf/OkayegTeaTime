@@ -6,7 +6,6 @@ using System.Timers;
 using HLE;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.Numbers;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -40,7 +39,7 @@ public class TwitchBot
 
     public TwitchApi TwitchApi { get; } = new();
 
-    public DottedNumber CommandCount { get; set; } = 1;
+    public uint CommandCount { get; set; } = 1;
 
     public string SystemInfo => GetSystemInfo();
 
@@ -147,7 +146,7 @@ public class TwitchBot
             return $"the bot is already connected to #{channel}";
         }
 
-        DbControl.Channels.Add(user.Id.ToInt(), channel);
+        DbControl.Channels.Add(long.Parse(user.Id), channel);
         try
         {
             _twitchClient.JoinChannel(channel);
@@ -186,7 +185,7 @@ public class TwitchBot
 
     private string GetSystemInfo()
     {
-        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount} || Commit: {ResourceController.LastCommit}";
+        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount.InsertKDots()} || Commit: {ResourceController.LastCommit}";
     }
 
     private static string GetMemoryUsage()
@@ -266,7 +265,7 @@ public class TwitchBot
             return;
         }
 
-        if (!AppSettings.UserLists.SecretUsers.Contains(user.Id.ToInt()))
+        if (!AppSettings.UserLists.SecretUsers.Contains(long.Parse(user.Id)))
         {
             Send(AppSettings.OfflineChatChannel, $"{e.Username} joined the chat Stare");
         }

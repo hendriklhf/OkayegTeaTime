@@ -1,5 +1,4 @@
-﻿using HLE;
-using TwitchLib.Client.Models;
+﻿using TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Models;
 
@@ -12,7 +11,7 @@ public class TwitchWhisperMessage : TwitchMessage
     public TwitchWhisperMessage(WhisperMessage whisperMessage)
         : base(whisperMessage)
     {
-        MessageId = whisperMessage.MessageId.ToInt();
+        MessageId = int.Parse(whisperMessage.MessageId);
         ThreadId = whisperMessage.ThreadId;
     }
 }

@@ -3,10 +3,10 @@
 using System.IO;
 #endif
 using System.Linq;
+using System.Text;
 #if DEBUG
 using System.Text.Json;
 #endif
-using HLE;
 using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.EntityFrameworkModels;
@@ -79,7 +79,7 @@ public static class DbController
     public static void AddSugestion(string username, string channel, string suggestion)
     {
         using OkayegTeaTimeContext database = new();
-        database.Suggestions.Add(new(username, suggestion.Encode(), channel));
+        database.Suggestions.Add(new(username, Encoding.UTF8.GetBytes(suggestion), channel));
         database.SaveChanges();
     }
 

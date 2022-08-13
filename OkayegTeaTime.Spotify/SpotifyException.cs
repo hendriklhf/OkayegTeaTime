@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OkayegTeaTime.Spotify.Exceptions;
+namespace OkayegTeaTime.Spotify;
 
 public class SpotifyException : Exception
 {

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Linq;
-using HLE;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
 
@@ -30,7 +29,7 @@ public class TwitchMessage : ChatMessage
         ColorHex = twitchLibMessage.ColorHex;
         IsTurbo = twitchLibMessage.IsTurbo;
         RawIrcMessage = twitchLibMessage.RawIrcMessage;
-        UserId = twitchLibMessage.UserId.ToInt();
+        UserId = long.Parse(twitchLibMessage.UserId);
         UserType = twitchLibMessage.UserType;
     }
 }

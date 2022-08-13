@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
 using HLE.Time;
 using OkayegTeaTime.Database;
@@ -156,7 +155,7 @@ public class RemindCommand : Command
                 }
 
                 string number = _beginningNumberPattern.Match(match).Value;
-                double d = number.Replace(',', '.').ToDouble() * timeConversion.Factor;
+                double d = double.Parse(number.Replace(',', '.')) * timeConversion.Factor;
                 TimeSpan span = (TimeSpan)timeConversion.Method.Invoke(null, new object?[]
                 {
                     d

@@ -12,7 +12,6 @@ using HLE.Time;
 using OkayegTeaTime.Files;
 #endif
 using OkayegTeaTime.Spotify;
-using OkayegTeaTime.Spotify.Exceptions;
 using OkayegTeaTime.Utils;
 using SpotifyAPI.Web;
 using Timer = System.Timers.Timer;
