@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using HLE;
+using HLE.Collections;
 using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
+using TwitchLib.Api;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Chat.Emotes;
 using TwitchLib.Api.Helix.Models.Chat.Emotes.GetChannelEmotes;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
-using TwitchLibApi = TwitchLib.Api.TwitchAPI;
 
 namespace OkayegTeaTime.Twitch;
 
 public class TwitchApi
 {
-    private readonly TwitchLibApi _api = new();
+    private readonly TwitchAPI _api = new();
+
+    // kinda scuffed with a list of value tuples, but comparision of keys in a dictionary didnt work (for Dictionary<UserKey, User>)
+    private readonly List<(UserKey Key, User User)> _users = new();
 
     public TwitchApi()
     {
@@ -31,6 +35,12 @@ public class TwitchApi
             AuthScopes.User_Subscriptions
         };
         RefreshAccessToken();
+    }
+
+    private User? GetUserFromCache(UserKey key)
+    {
+        (UserKey Key, User User) tuple = _users.FirstOrDefault(u => u.Key.Equals(key));
+        return tuple == default ? null : tuple.User;
     }
 
     private string GetAccessToken()
@@ -60,39 +70,98 @@ public class TwitchApi
 
     public User? GetUser(string username)
     {
+        UserKey key = new(username);
+        User? user = GetUserFromCache(key);
+        if (user is not null)
+        {
+            return user;
+        }
+
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: new()
         {
             username
         }).Result;
-        return response.Users.FirstOrDefault();
+        user = response.Users.FirstOrDefault();
+        if (user is null)
+        {
+            return null;
+        }
+
+        key.Id = long.Parse(user.Id);
+        _users.Add((key, user));
+        return user;
     }
 
     public Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
     {
-        List<string> users = usernames.ToList();
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: users).Result;
-        return users.ToDictionary(username => username, username => response.Users.FirstOrDefault(u => string.Equals(u.DisplayName, username, StringComparison.CurrentCultureIgnoreCase)));
+        string[] arr = usernames.Select(u => u.ToLower()).ToArray();
+        string[] cachedUsernames = arr.Where(u => GetUserFromCache(new(u)) is not null).ToArray();
+        Dictionary<string, User?> result = cachedUsernames.Select(u => GetUserFromCache(new(u))!).ToDictionary<User, string, User?>(u => u.Login, u => u);
+        List<string> notCachedUsernames = arr.Where(u => GetUserFromCache(new(u)) is null).ToList();
+        if (notCachedUsernames.Count == 0)
+        {
+            return result;
+        }
+
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: notCachedUsernames).Result;
+        Dictionary<string, User?> users = notCachedUsernames.ToDictionary(u => u, u => response.Users.FirstOrDefault(uu => uu.Login == u));
+        users.Where(p => p.Value is not null).ForEach(p =>
+        {
+            UserKey key = new(long.Parse(p.Value!.Id), p.Key);
+            _users.Add((key, p.Value!));
+        });
+        return result.Concat(users).ToDictionary(u => u.Key, u => u.Value);
     }
 
     public User? GetUser(long id)
     {
+        UserKey key = new(id);
+        User? user = GetUserFromCache(key);
+        if (user is not null)
+        {
+            return user;
+        }
+
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new()
         {
             id.ToString()
         }).Result;
-        return response.Users.FirstOrDefault();
+        user = response.Users.FirstOrDefault();
+        if (user is null)
+        {
+            return null;
+        }
+
+        key.Name = user.Login;
+        _users.Add((key, user));
+        return user;
     }
 
     public Dictionary<long, User?> GetUsers(IEnumerable<long> ids)
     {
-        List<long> idss = ids.ToList();
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: idss.Select(i => i.ToString()).ToList()).Result;
-        return idss.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => u.Id.ToLong() == id));
+        long[] arr = ids.ToArray();
+        long[] cachedIds = arr.Where(i => GetUserFromCache(new(i)) is not null).ToArray();
+        Dictionary<long, User?> result = cachedIds.Select(i => GetUserFromCache(new(i))!).ToDictionary<User, long, User?>(u => long.Parse(u.Id), u => u);
+        long[] notCachedIds = arr.Where(i => GetUserFromCache(new(i)) is null).ToArray();
+        if (notCachedIds.Length == 0)
+        {
+            return result;
+        }
+
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: notCachedIds.Select(i => i.ToString()).ToList()).Result;
+        Dictionary<long, User?> users = notCachedIds.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => long.Parse(u.Id) == id));
+        users.Where(p => p.Value is not null).ForEach(p =>
+        {
+            UserKey key = new(p.Key, p.Value!.Login);
+            _users.Add((key, p.Value!));
+        });
+        return result.Concat(users).ToDictionary(u => u.Key, u => u.Value);
     }
 
-    public long? GetUserId(string username)
+    public long GetUserId(string username)
     {
-        return GetUser(username)?.Id?.ToLong();
+        User? user = GetUser(username);
+        return user?.Id is not null ? long.Parse(user.Id) : -1;
     }
 
     public bool DoesUserExist(string username)
@@ -149,13 +218,42 @@ public class TwitchApi
 
     public ChannelEmote[] GetSubEmotes(string channel)
     {
-        long? channelId = GetUserId(channel);
-        return channelId is null ? Array.Empty<ChannelEmote>() : GetSubEmotes(channelId.Value);
+        long channelId = GetUserId(channel);
+        return channelId == -1 ? Array.Empty<ChannelEmote>() : GetSubEmotes(channelId);
     }
 
     public ChannelEmote[] GetSubEmotes(long channelId)
     {
         GetChannelEmotesResponse response = _api.Helix.Chat.GetChannelEmotesAsync(channelId.ToString()).Result;
         return response.ChannelEmotes;
+    }
+
+    [DebuggerDisplay("Id = {Id} Name = \"{Name}\"")]
+    private class UserKey
+    {
+        public long Id { get; set; }
+
+        public string? Name { get; set; }
+
+        public UserKey(long id)
+        {
+            Id = id;
+        }
+
+        public UserKey(string name)
+        {
+            Name = name;
+        }
+
+        public UserKey(long id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is UserKey key && ((key.Id != default && Id != default && key.Id == Id) || (key.Name != default && Name != default && key.Name == Name));
+        }
     }
 }
