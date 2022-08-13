@@ -27,14 +27,14 @@ public class CheckCommand : Command
         {
             Response = $"{ChatMessage.Username}, ";
             string username = ChatMessage.LowerSplit[2];
-            long? userId = _twitchBot.TwitchApi.GetUserId(username);
-            if (!userId.HasValue)
+            long userId = _twitchBot.TwitchApi.GetUserId(username);
+            if (userId == -1)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;
                 return;
             }
 
-            User? user = DbControl.Users.GetUser(userId.Value, username);
+            User? user = DbControl.Users.GetUser(userId, username);
             if (user is null)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;

@@ -20,8 +20,8 @@ public class IdCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string username = ChatMessage.LowerSplit[1];
-            string? userId = _twitchBot.TwitchApi.GetUserId(username)?.ToString();
-            Response += userId ?? PredefinedMessages.TwitchUserDoesntExistMessage;
+            long userId = _twitchBot.TwitchApi.GetUserId(username);
+            Response += userId > -1 ? userId.ToString() : PredefinedMessages.TwitchUserDoesntExistMessage;
         }
         else
         {
