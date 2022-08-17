@@ -74,6 +74,22 @@ public class ReminderCache : DbCache<Reminder>
         return true;
     }
 
+    /// <summary>
+    /// Removes a reminder without checking for permission
+    /// </summary>
+    public void Remove(int reminderId)
+    {
+        DbController.RemoveReminder(reminderId);
+        Reminder? reminder = this.FirstOrDefault(r => r.Id == reminderId);
+        if (reminder is null)
+        {
+            return;
+        }
+
+        //wasn't sent, but basically equals deletion from the memory cache
+        reminder.HasBeenSent = true;
+    }
+
     public IEnumerable<Reminder> GetRemindersFor(string username, ReminderType type = ReminderType.All)
     {
         bool EvaluateReminderType(Reminder r)

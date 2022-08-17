@@ -45,8 +45,8 @@ public static class BotActions
         {
             rmndrs.Skip(1).ForEach(r =>
             {
-                string c = r.Creator == r.Target ? "yourself" : r.Creator;
-                builder.Append($" || {c} ({TimeHelper.GetUnixDifference(r.Time)} ago)");
+                creator = r.Creator == r.Target ? "yourself" : r.Creator;
+                builder.Append($" || {creator} ({TimeHelper.GetUnixDifference(r.Time)} ago)");
                 if (r.Message?.Length > 0)
                 {
                     builder.Append($": {r.Message}");
@@ -54,11 +54,7 @@ public static class BotActions
             });
         }
 
-        rmndrs.ForEach(r =>
-        {
-            r.HasBeenSent = true;
-            DbController.RemoveReminder(r.Id);
-        });
+        rmndrs.ForEach(r => DbControl.Reminders.Remove(r.Id));
         twitchBot.Send(channel, builder.ToString());
     }
 
@@ -71,8 +67,7 @@ public static class BotActions
             message += $": {reminder.Message}";
         }
 
-        reminder.HasBeenSent = true;
-        DbController.RemoveReminder(reminder.Id);
+        DbControl.Reminders.Remove(reminder.Id);
         twitchBot.Send(reminder.Channel, message);
     }
 }
