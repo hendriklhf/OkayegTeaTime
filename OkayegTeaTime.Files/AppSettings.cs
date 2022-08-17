@@ -26,7 +26,7 @@ public static class AppSettings
 
     public static SpotifySettings Spotify => JsonController.GetSettings().Spotify;
 
-    public static TwitchSettings TwitchSettings => JsonController.GetSettings().Twitch;
+    public static TwitchSettings Twitch => JsonController.GetSettings().Twitch;
 
     public static UserLists UserLists => JsonController.GetSettings().UserLists;
 
