@@ -10,7 +10,10 @@ public class ArgsResolver
 
     public string? SettingsPath { get; private set; }
 
+    public string[]? ChannelsToExclude { get; private set; }
+
     private readonly string[] _args;
+    private readonly Regex _channelListPattern = new(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled);
 
     public ArgsResolver(string[] args)
     {
@@ -21,6 +24,7 @@ public class ArgsResolver
     {
         Channels = GetChannels();
         SettingsPath = GetSettingsPath();
+        ChannelsToExclude = GetChannelsToExclude();
     }
 
     private string[]? GetChannels()
@@ -31,15 +35,12 @@ public class ArgsResolver
             return null;
         }
 
-        Regex pattern = new(@"^\w{3,25}(,\w{3,25})*");
-        if (pattern.IsMatch(_args[idx + 1]))
+        if (_channelListPattern.IsMatch(_args[idx + 1]))
         {
-            return pattern.Match(_args[idx + 1]).Value.Split(',');
+            return _args[idx + 1].Split(',');
         }
-        else
-        {
-            throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");
-        }
+
+        throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");
     }
 
     private string? GetSettingsPath()
@@ -66,6 +67,22 @@ public class ArgsResolver
         }
 
         return path;
+    }
+
+    private string[]? GetChannelsToExclude()
+    {
+        int idx = GetArgIdx("--excluded-channels");
+        if (idx == -1)
+        {
+            return null;
+        }
+
+        if (_channelListPattern.IsMatch(_args[idx + 1]))
+        {
+            return _args[idx + 1].Split(',');
+        }
+
+        throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");
     }
 
     private int GetArgIdx(string argumentName)
