@@ -10,8 +10,6 @@ public static class AppSettings
 {
     public static string AssemblyName { get; } = Assembly.GetEntryAssembly()?.GetName().Name ?? throw new ArgumentNullException($"{nameof(AssemblyName)} can not be null.");
 
-    public static string ChatterinoChar => "\uDB40\uDC00";
-
     public static DbConnection DbConnection => JsonController.GetSettings().DatabaseConnection;
 
     public static DiscordSettings Discord => JsonController.GetSettings().Discord;
@@ -40,4 +38,5 @@ public static class AppSettings
     public const string Suffix = "eg";
     public const string SettingsFileName = "Settings.json";
     public const string FfzSetIdReplacement = "mainSet";
+    public const string ChatterinoChar = "\uDB40\uDC00";
 }
