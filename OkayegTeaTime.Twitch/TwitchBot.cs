@@ -62,9 +62,9 @@ public class TwitchBot
     });
 
 
-    public TwitchBot(IEnumerable<string>? channels = null)
+    public TwitchBot(IEnumerable<string>? channels = null, IEnumerable<string>? excludedChannels = null)
     {
-        ConnectionCredentials connectionCredentials = new(AppSettings.TwitchSettings.Username, AppSettings.TwitchSettings.OAuthToken);
+        ConnectionCredentials connectionCredentials = new(AppSettings.Twitch.Username, AppSettings.Twitch.OAuthToken);
         ClientOptions clientOptions = new()
         {
             ClientType = ClientType.Chat,
@@ -78,6 +78,11 @@ public class TwitchBot
         };
 
         channels ??= DbControl.Channels.Select(c => c.Name);
+        if (excludedChannels is not null)
+        {
+            channels = channels.Except(excludedChannels);
+        }
+
         _twitchClient.Initialize(connectionCredentials, channels.ToList());
 
         _twitchClient.OnLog += Client_OnLog!;
@@ -220,7 +225,7 @@ public class TwitchBot
 
     private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
-        ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.TwitchSettings.Username}: {e.SentMessage.Message}", ConsoleColor.Green);
+        ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.Twitch.Username}: {e.SentMessage.Message}", ConsoleColor.Green);
     }
 
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)

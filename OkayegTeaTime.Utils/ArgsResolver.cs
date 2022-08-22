@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Utils;
@@ -10,7 +11,7 @@ public class ArgsResolver
 
     public string? SettingsPath { get; private set; }
 
-    public string[]? ChannelsToExclude { get; private set; }
+    public string[]? ExcludedChannels { get; private set; }
 
     private readonly string[] _args;
     private readonly Regex _channelListPattern = new(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled);
@@ -24,7 +25,7 @@ public class ArgsResolver
     {
         Channels = GetChannels();
         SettingsPath = GetSettingsPath();
-        ChannelsToExclude = GetChannelsToExclude();
+        ExcludedChannels = GetExcludedChannels();
     }
 
     private string[]? GetChannels()
@@ -37,7 +38,7 @@ public class ArgsResolver
 
         if (_channelListPattern.IsMatch(_args[idx + 1]))
         {
-            return _args[idx + 1].Split(',');
+            return _args[idx + 1].Split(',').Select(c => c.ToLower()).ToArray();
         }
 
         throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");
@@ -69,7 +70,7 @@ public class ArgsResolver
         return path;
     }
 
-    private string[]? GetChannelsToExclude()
+    private string[]? GetExcludedChannels()
     {
         int idx = GetArgIdx("--excluded-channels");
         if (idx == -1)
@@ -79,7 +80,7 @@ public class ArgsResolver
 
         if (_channelListPattern.IsMatch(_args[idx + 1]))
         {
-            return _args[idx + 1].Split(',');
+            return _args[idx + 1].Split(',').Select(c => c.ToLower()).ToArray();
         }
 
         throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");

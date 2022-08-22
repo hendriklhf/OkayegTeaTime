@@ -19,7 +19,7 @@ public static class Program
 
         JsonController.SettingsPath = argsResolver.SettingsPath;
 
-        TwitchBot twitchBot = new(argsResolver.Channels);
+        TwitchBot twitchBot = new(argsResolver.Channels, argsResolver.ExcludedChannels);
         twitchBot.Connect();
 
         while (true)
