@@ -32,9 +32,7 @@ public static class FileLocator
 
     private static void GetFiles(string directory, List<string> fileList)
     {
-        string[] dirs = Directory.GetDirectories(directory);
-        dirs.ForEach(d => GetFiles(d, fileList));
-
+        Directory.GetDirectories(directory).ForEach(d => GetFiles(d, fileList));
         string[] files = Directory.GetFiles(directory);
         fileList.AddRange(files);
     }

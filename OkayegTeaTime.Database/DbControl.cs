@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using HLE.Collections;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
 
@@ -28,12 +29,11 @@ public static class DbControl
     public static IEnumerable<string> Invalidate(string cacheName)
     {
         Regex cachePattern = new($@"^{cacheName}$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-        PropertyInfo[] properties = typeof(DbControl).GetProperties().Where(p => cachePattern.IsMatch(p.Name)).ToArray();
-        foreach (PropertyInfo property in properties)
+        PropertyInfo[] properties = typeof(DbControl).GetProperties().Where(p => cachePattern.IsMatch(p.Name)).ForEach(p =>
         {
-            MethodInfo? method = property.PropertyType.GetMethod(nameof(DbCache<CacheModel>.Invalidate));
-            method?.Invoke(property.GetValue(null), null);
-        }
+            MethodInfo? method = p.PropertyType.GetMethod(nameof(DbCache<CacheModel>.Invalidate));
+            method?.Invoke(p.GetValue(null), null);
+        }).ToArray();
 
         return properties.Select(p => p.Name).ToArray();
     }

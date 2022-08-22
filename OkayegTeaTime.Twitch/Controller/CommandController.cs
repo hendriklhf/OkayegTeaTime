@@ -31,10 +31,8 @@ public class CommandController
 
     public CommandController()
     {
-        Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name);
-        Commands.ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
-        AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name);
-        AfkCommands.ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
+        Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
+        AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
     }
 
     public bool IsAfkCommand(TwitchChatMessage chatMessage)

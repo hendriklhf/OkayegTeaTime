@@ -13,7 +13,7 @@ public static class JsonController
     private static GachiSong[]? _gachiSongs;
 
     /// <summary>
-    /// Can be set to use any Settings.json file. If not set the <see cref="FileLocator"/> will search automatically for a file named "Settings.json".
+    /// Can be set to use any Settings.json file. If not set, the <see cref="FileLocator"/> will search automatically for a file named "Settings.json".
     /// </summary>
     public static string? SettingsPath { get; set; }
 
