@@ -85,7 +85,7 @@ public class TwitchBot
 
         _twitchClient.Initialize(connectionCredentials, channels.ToList());
 
-        _twitchClient.OnLog += Client_OnLog!;
+        //_twitchClient.OnLog += Client_OnLog!;
         _twitchClient.OnConnected += Client_OnConnected!;
         _twitchClient.OnJoinedChannel += Client_OnJoinedChannel!;
         _twitchClient.OnMessageReceived += Client_OnMessageReceived!;
@@ -204,7 +204,7 @@ public class TwitchBot
 
     private void Client_OnLog(object sender, OnLogArgs e)
     {
-        //ConsoleOut($"[TWITCH] {e.Data}", ConsoleColor.Blue);
+        ConsoleOut($"[TWITCH] {e.Data}", ConsoleColor.Blue);
     }
 
     private void Client_OnConnected(object sender, OnConnectedArgs e)
