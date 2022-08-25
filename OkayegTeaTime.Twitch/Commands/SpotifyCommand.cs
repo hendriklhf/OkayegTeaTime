@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
@@ -32,7 +31,7 @@ public class SpotifyCommand : Command
         bool targetIsSender = username == ChatMessage.Username;
         Task.Run(async () =>
         {
-            SpotifyUser? user = DbControl.SpotifyUsers[username];
+            SpotifyUser? user = _twitchBot.SpotifyUsers[username];
             if (user is null)
             {
                 Response = targetIsSender

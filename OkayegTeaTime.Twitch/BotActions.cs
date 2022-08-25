@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using HLE.Collections;
 using HLE.Time;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
@@ -14,7 +13,7 @@ public static class BotActions
 {
     public static void SendComingBack(this TwitchBot twitchBot, long userId, string channel)
     {
-        User? user = DbControl.Users[userId];
+        User? user = twitchBot.Users[userId];
         if (user is null)
         {
             return;
@@ -54,7 +53,7 @@ public static class BotActions
             });
         }
 
-        rmndrs.ForEach(r => DbControl.Reminders.Remove(r.Id));
+        rmndrs.ForEach(r => twitchBot.Reminders.Remove(r.Id));
         twitchBot.Send(channel, builder.ToString());
     }
 
@@ -67,7 +66,7 @@ public static class BotActions
             message += $": {reminder.Message}";
         }
 
-        DbControl.Reminders.Remove(reminder.Id);
+        twitchBot.Reminders.Remove(reminder.Id);
         twitchBot.Send(reminder.Channel, message);
     }
 }

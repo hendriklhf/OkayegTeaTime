@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 #endif
 using System.Text.RegularExpressions;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -64,7 +63,7 @@ public class MessageHandler : Handler
 
     private void CheckForAfk(TwitchChatMessage chatMessage)
     {
-        User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
+        User? user = _twitchBot.Users.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user?.IsAfk != true)
         {
             return;
@@ -79,7 +78,7 @@ public class MessageHandler : Handler
 
     private void CheckForReminder(string username, string channel)
     {
-        IEnumerable<Reminder> reminders = DbControl.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
+        IEnumerable<Reminder> reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
         _twitchBot.SendReminder(channel, reminders);
     }
 
@@ -91,13 +90,13 @@ public class MessageHandler : Handler
             return;
         }
 
-        string? username = DbControl.Users[AppSettings.UserLists.Owner]?.Username;
+        string? username = _twitchBot.Users[AppSettings.UserLists.Owner]?.Username;
         if (username is null)
         {
             return;
         }
 
-        SpotifyUser? playlistUser = DbControl.SpotifyUsers[username];
+        SpotifyUser? playlistUser = _twitchBot.SpotifyUsers[username];
         if (playlistUser is null)
         {
             return;
@@ -122,7 +121,7 @@ public class MessageHandler : Handler
             return;
         }
 
-        string? prefix = DbControl.Channels[chatMessage.Channel]?.Prefix;
+        string? prefix = _twitchBot.Channels[chatMessage.Channel]?.Prefix;
         string message = string.IsNullOrEmpty(prefix)
             ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}"
             : $"{chatMessage.Username}, Prefix: {prefix}";

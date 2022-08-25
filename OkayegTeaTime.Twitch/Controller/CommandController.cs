@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
@@ -26,18 +27,20 @@ public class CommandController
 
     public IEnumerable<AfkCommand> AfkCommands { get; }
 
+    private readonly ChannelCache? _channelCache;
     private IEnumerable<string>? _commandAliases;
     private IEnumerable<string>? _afkCommandAliases;
 
-    public CommandController()
+    public CommandController(ChannelCache? channelCache = null)
     {
+        _channelCache = channelCache;
         Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
         AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
     }
 
     public bool IsAfkCommand(TwitchChatMessage chatMessage)
     {
-        string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+        string? prefix = _channelCache is null ? DbController.GetChannel(chatMessage.ChannelId)?.Prefix : _channelCache[chatMessage.ChannelId]?.Prefix;
         return AfkCommandAliases.Any(alias =>
         {
             Regex pattern = PatternCreator.Create(alias, prefix);

@@ -14,6 +14,7 @@ public abstract class DbCache<T> : IEnumerable<T> where T : CacheModel
     public void Invalidate()
     {
         _items.Clear();
+        _containsAll = false;
     }
 
     public IEnumerator<T> GetEnumerator()

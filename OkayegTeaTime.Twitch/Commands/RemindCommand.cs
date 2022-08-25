@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using HLE.Time;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -96,7 +95,7 @@ public class RemindCommand : Command
             }
 
             Reminder reminder = new(ChatMessage.Username, targets[0], message, ChatMessage.Channel, toTime);
-            int id = DbControl.Reminders.Add(reminder);
+            int id = _twitchBot.Reminders.Add(reminder);
             if (id == -1)
             {
                 Response += PredefinedMessages.TooManyRemindersMessage;
@@ -115,7 +114,7 @@ public class RemindCommand : Command
                 return;
             }
 
-            int[] ids = DbControl.Reminders.AddRange(reminders);
+            int[] ids = _twitchBot.Reminders.AddRange(reminders);
             int count = ids.Count(i => i != -1);
             if (count == 0)
             {

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -25,7 +24,7 @@ public class FillCommand : Command
         {
             List<string> messageParts = new();
             string[] split = ChatMessage.Split[1..];
-            string emote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
+            string emote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
             while (true)
             {

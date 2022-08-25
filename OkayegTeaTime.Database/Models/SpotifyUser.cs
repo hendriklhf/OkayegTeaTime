@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 #if RELEASE
 using System.Threading;
+using OkayegTeaTime.Database.Cache;
 #endif
 using System.Threading.Tasks;
 using System.Timers;
@@ -224,14 +225,14 @@ public class SpotifyUser : CacheModel
 
             try
             {
-                uris = uris.Where(u => !DbControl.SpotifyUsers.ChatPlaylistUris.Contains(u)).ToArray();
+                uris = uris.Where(u => !SpotifyUserCache.ChatPlaylistUris.Contains(u)).ToArray();
                 if (uris.Length == 0)
                 {
                     return;
                 }
 
                 await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
-                DbControl.SpotifyUsers.ChatPlaylistUris.AddRange(uris);
+                SpotifyUserCache.ChatPlaylistUris.AddRange(uris);
             }
             catch (Exception ex)
             {
@@ -403,11 +404,6 @@ public class SpotifyUser : CacheModel
         _timer.Start();
     }
 
-    public SpotifyUser? GetListeningTo()
-    {
-        return DbControl.SpotifyUsers.FirstOrDefault(u => u.ListeningUsers.Contains(this) && u != this);
-    }
-
     public async Task<SpotifyItem> ListenTo(SpotifyUser target, int seekToMs = default)
     {
         if (string.Equals(target.Username, Username, StringComparison.OrdinalIgnoreCase))
@@ -512,18 +508,20 @@ public class SpotifyUser : CacheModel
                 return item;
             }
 
-            string? username = DbControl.Users[AppSettings.UserLists.Owner]?.Username;
+            string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
             if (username is null)
             {
                 return item;
             }
 
-            SpotifyUser? playlistUser = DbControl.SpotifyUsers[username];
-            if (playlistUser is null)
+            EntityFrameworkModels.Spotify? efUser = DbController.GetSpotifyUser(username);
+            if (efUser is null)
             {
                 return item;
             }
 
+
+            SpotifyUser playlistUser = new(efUser);
             try
             {
                 playlistUser.AddToChatPlaylist(item.Uri);

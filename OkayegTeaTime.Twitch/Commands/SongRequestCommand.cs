@@ -35,7 +35,7 @@ public class SongRequestCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
+                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
                 if (user is null)
                 {
                     Response = $"{ChatMessage.Username}, you aren't registered yet";
@@ -96,14 +96,14 @@ public class SongRequestCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
+                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
                 if (user is null)
                 {
                     Response = $"{ChatMessage.Username}, you aren't registered yet, you have to register first";
                     return;
                 }
 
-                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.LowerSplit[2]];
+                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[2]];
                 if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't registered yet, they have to register first";
@@ -205,7 +205,7 @@ public class SongRequestCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
+                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
                 if (user is null)
                 {
                     Response = $"{ChatMessage.Username}, you aren't registered yet, you have to register first";
@@ -229,7 +229,7 @@ public class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.Channel];
+                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
                 if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
@@ -261,7 +261,7 @@ public class SongRequestCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.Channel];
+                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
                 if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
@@ -288,7 +288,7 @@ public class SongRequestCommand : Command
         Match match = _targetPattern.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
         string[] targets = match.Value.Split(',');
         return targets.Select(t => t.TrimAll()).Distinct()
-            .Select(t => DbControl.SpotifyUsers[t])
+            .Select(t => _twitchBot.SpotifyUsers[t])
             .Where(t => t is not null).Take(5).ToArray()!;
     }
 

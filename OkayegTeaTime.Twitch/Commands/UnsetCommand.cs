@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -22,7 +21,7 @@ public class UnsetCommand : Command
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+                Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
                     Response = $"{ChatMessage.Username}, an error occurred while trying to set the prefix";
@@ -45,7 +44,7 @@ public class UnsetCommand : Command
         {
             Response = $"{ChatMessage.Username}, ";
             int reminderId = int.Parse(ChatMessage.Split[2]);
-            bool removed = DbControl.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
+            bool removed = _twitchBot.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
             if (removed)
             {
                 Response += "the reminder has been unset";
@@ -64,7 +63,7 @@ public class UnsetCommand : Command
             Response = $"{ChatMessage.Username}, ";
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+                Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
                     Response += "an error occurred while trying to set the emote";
@@ -85,7 +84,7 @@ public class UnsetCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\slocation");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            User? user = DbControl.Users[ChatMessage.UserId];
+            User? user = _twitchBot.Users[ChatMessage.UserId];
             if (user is null)
             {
                 Response = $"{ChatMessage.Username}, you haven't set your location yet";

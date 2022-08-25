@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using HLE.Http;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
 
@@ -53,6 +54,8 @@ public class EmoteController
         }
     }
 
+    private readonly ChannelCache? _channelCache;
+
     private IEnumerable<FfzEmote>? _ffzGlobalEmotes;
     private IEnumerable<BttvEmote>? _bttvGlobalEmotes;
     private IEnumerable<SevenTvGlobalEmote>? _sevenTvGlobalEmotes;
@@ -60,6 +63,11 @@ public class EmoteController
     private readonly Dictionary<long, IEnumerable<FfzEmote>> _ffzChannelsEmotes = new();
     private readonly Dictionary<long, IEnumerable<BttvEmote>> _bttvEmotes = new();
     private readonly Dictionary<long, IEnumerable<SevenTvEmote>> _sevenTvChannelEmotes = new();
+
+    public EmoteController(ChannelCache? channelCache = null)
+    {
+        _channelCache = channelCache;
+    }
 
     public IEnumerable<FfzEmote> GetFfzEmotes(long channelId, bool loadFromCache = true)
     {
@@ -116,7 +124,7 @@ public class EmoteController
     {
         try
         {
-            string? channelName = DbControl.Channels[channelId]?.Name;
+            string? channelName = _channelCache is null ? DbController.GetChannel(channelId)?.Name : _channelCache[channelId]?.Name;
             if (channelName is null)
             {
                 return null;
@@ -196,7 +204,7 @@ public class EmoteController
     {
         try
         {
-            string? channelName = DbControl.Channels[channelId]?.Name;
+            string? channelName = _channelCache is null ? DbController.GetChannel(channelId)?.Name : _channelCache[channelId]?.Name;
             if (channelName is null)
             {
                 return null;

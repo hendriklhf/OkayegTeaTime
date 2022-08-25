@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Spotify;
@@ -30,14 +29,14 @@ public class ListenCommand : Command
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s((leave)|(stop))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
+            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
             if (user is null)
             {
                 Response = $"{ChatMessage.Username}, you aren't registered, you have to register first";
                 return;
             }
 
-            SpotifyUser? target = user.GetListeningTo();
+            SpotifyUser? target = _twitchBot.SpotifyUsers.GetListeningTo(user);
             if (target is null)
             {
                 Response = $"{ChatMessage.Username}, you aren't listening along with anybody";
@@ -54,14 +53,14 @@ public class ListenCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
+                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
                 if (user is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't sync, you have to register first";
                     return;
                 }
 
-                SpotifyUser? target = user.GetListeningTo();
+                SpotifyUser? target = _twitchBot.SpotifyUsers.GetListeningTo(user);
                 if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't sync, because you aren't listening along with anybody";
@@ -104,14 +103,14 @@ public class ListenCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Username];
+                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
                 if (user is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't listen to other users, you have to register first";
                     return;
                 }
 
-                SpotifyUser? target = DbControl.SpotifyUsers[ChatMessage.LowerSplit[1]];
+                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[1]];
                 if (target is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't listen to {ChatMessage.LowerSplit[1]}'s music, they have to register first";
@@ -139,12 +138,16 @@ public class ListenCommand : Command
                         break;
                     }
                     case SpotifyEpisode episode:
+                    {
                         Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
                                    $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
                         break;
+                    }
                     default:
+                    {
                         Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} and playing an unknown item type monkaS";
                         break;
+                    }
                 }
             }).Wait();
         }

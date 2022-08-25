@@ -74,7 +74,7 @@ public class ReadMeGenerator
         {
             builder.Append($"<tr><td>{c.Name}</td><td><table>");
             c.Aliases.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
-            builder.Append($"</table></td>");
+            builder.Append("</table></td>");
             for (int i = 0; i < c.Parameters.Length; i++)
             {
                 builder.Append($"<td>{c.Parameters[i]}</td><td>{c.ParameterDescriptions[i]}</td>");

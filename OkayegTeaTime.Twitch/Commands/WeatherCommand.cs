@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -29,7 +28,7 @@ public class WeatherCommand : Command
         }
         else
         {
-            User? user = DbControl.Users[ChatMessage.UserId];
+            User? user = _twitchBot.Users[ChatMessage.UserId];
             city = user?.Location;
             isPrivateLocation = user?.IsPrivateLocation == true;
             if (city is null)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using HLE.Http;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -48,7 +47,7 @@ public class MasspingCommand : Command
             return;
         }
 
-        string channelEmote = DbControl.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
+        string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
         string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
         string[] chatters;
         if (ChatMessage.Channel != AppSettings.OfflineChatChannel)

@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Collections;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
@@ -31,7 +30,7 @@ public class SetCommand : Command
             string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength
                 ? AppSettings.MaxPrefixLength
                 : ChatMessage.LowerSplit[2].Length)];
-            Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+            Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
                 Response = $"{ChatMessage.Username}, an error occurred while trying to set the prefix";
@@ -51,7 +50,7 @@ public class SetCommand : Command
                 string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength
                     ? AppSettings.MaxEmoteInFrontLength
                     : ChatMessage.Split[2].Length)];
-                Channel? channel = DbControl.Channels[ChatMessage.ChannelId];
+                Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
                     Response = $"{ChatMessage.Username}, an error occurred while trying to set the emote";
@@ -95,7 +94,7 @@ public class SetCommand : Command
                 return;
             }
 
-            SpotifyUser? user = DbControl.SpotifyUsers[ChatMessage.Channel];
+            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
             if (user is null)
             {
                 Response += $"channel {ChatMessage.Channel} is not registered, they have to register first";
@@ -112,7 +111,7 @@ public class SetCommand : Command
         {
             string city = ChatMessage.Split[3..].JoinToString(' ');
             bool isPrivate = ChatMessage.LowerSplit[2][1] == 'r';
-            User? user = DbControl.Users[ChatMessage.UserId];
+            User? user = _twitchBot.Users[ChatMessage.UserId];
             if (user is null)
             {
                 user = new(ChatMessage.UserId, ChatMessage.Username)
@@ -120,7 +119,7 @@ public class SetCommand : Command
                     Location = city,
                     IsPrivateLocation = isPrivate
                 };
-                DbControl.Users.Add(user);
+                _twitchBot.Users.Add(user);
             }
             else
             {

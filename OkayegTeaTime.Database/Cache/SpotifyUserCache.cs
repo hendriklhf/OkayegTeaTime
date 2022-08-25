@@ -19,7 +19,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
     public SpotifyUser? this[string username] => GetSpotifyUser(username);
 
 #if RELEASE
-    public List<string> ChatPlaylistUris
+    public static List<string> ChatPlaylistUris
     {
         get
         {
@@ -28,20 +28,21 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
                 return _chatPlaylistUris;
             }
 
-            async Task GetPlaylistTracks()
+            static async Task GetPlaylistTracks()
             {
-                string? username = DbControl.Users[AppSettings.UserLists.Owner]?.Username;
+                string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
                 if (username is null)
                 {
                     return;
                 }
 
-                SpotifyUser? user = DbControl.SpotifyUsers[username];
-                if (user is null)
+                EntityFrameworkModels.Spotify? efUser = DbController.GetSpotifyUser(username);
+                if (efUser is null)
                 {
                     return;
                 }
 
+                SpotifyUser user = new(efUser);
                 IEnumerable<SpotifyTrack> tracks = await user.GetPlaylistItems(AppSettings.Spotify.ChatPlaylistId);
                 _chatPlaylistUris = tracks.Select(t => t.Uri).ToList();
             }
@@ -52,7 +53,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
         }
     }
 
-    private List<string>? _chatPlaylistUris;
+    private static List<string>? _chatPlaylistUris;
 #endif
 
     public void Add(string username, string accessToken, string refreshToken)
@@ -84,6 +85,14 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
         user = new(efUser);
         _items.Add(user);
         return user;
+    }
+
+    /// <summary>
+    /// Returns who the <paramref name="user"/> is listening to. Null, if they are not listening to anyone.
+    /// </summary>
+    public SpotifyUser? GetListeningTo(SpotifyUser user)
+    {
+        return this.FirstOrDefault(u => u.ListeningUsers.Contains(user) && u != user);
     }
 
     private protected override void GetAllFromDb()

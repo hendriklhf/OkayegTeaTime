@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using HLE.Time;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -33,7 +32,7 @@ public class CheckCommand : Command
                 return;
             }
 
-            User? user = DbControl.Users.GetUser(userId, username);
+            User? user = _twitchBot.Users.GetUser(userId, username);
             if (user is null)
             {
                 Response += PredefinedMessages.UserNotFoundMessage;
@@ -65,7 +64,7 @@ public class CheckCommand : Command
         {
             Response = $"{ChatMessage.Username}, ";
             int id = int.Parse(ChatMessage.Split[2]);
-            Reminder? reminder = DbControl.Reminders[id];
+            Reminder? reminder = _twitchBot.Reminders[id];
             if (reminder is null)
             {
                 Response += PredefinedMessages.ReminderNotFoundMessage;

@@ -1,5 +1,4 @@
 ﻿using HLE.Time;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
@@ -18,11 +17,11 @@ public class AfkCommandHandler
 
     public void Handle(TwitchChatMessage chatMessage, AfkType type)
     {
-        User? user = DbControl.Users.GetUser(chatMessage.UserId, chatMessage.Username);
+        User? user = _twitchBot.Users.GetUser(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
             user = new(chatMessage.UserId, chatMessage.Username);
-            DbControl.Users.Add(user);
+            _twitchBot.Users.Add(user);
         }
 
         string? message = chatMessage.Split.Length > 1 ? chatMessage.Message[(chatMessage.Split[0].Length + 1)..] : null;

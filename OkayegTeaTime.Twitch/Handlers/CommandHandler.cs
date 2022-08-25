@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Commands;
@@ -43,7 +42,7 @@ public class CommandHandler : Handler
         {
             foreach (string alias in _twitchBot.CommandController[type].Aliases)
             {
-                string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+                string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
 
                 if (pattern.IsMatch(chatMessage.Message))
@@ -70,7 +69,7 @@ public class CommandHandler : Handler
         {
             foreach (string alias in _twitchBot.CommandController[type].Aliases)
             {
-                string? prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+                string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
 
                 if (pattern.IsMatch(chatMessage.Message))

@@ -7,6 +7,7 @@ using HLE;
 using HLE.Collections;
 using HLE.Emojis;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Resources;
@@ -31,9 +32,17 @@ namespace OkayegTeaTime.Twitch;
 
 public class TwitchBot
 {
-    public EmoteController EmoteController { get; } = new();
+    public UserCache Users { get; } = new();
 
-    public CommandController CommandController { get; } = new();
+    public ReminderCache Reminders { get; } = new();
+
+    public ChannelCache Channels { get; } = new();
+
+    public SpotifyUserCache SpotifyUsers { get; } = new();
+
+    public EmoteController EmoteController { get; }
+
+    public CommandController CommandController { get; }
 
     public WeatherController WeatherController { get; } = new();
 
@@ -45,10 +54,9 @@ public class TwitchBot
 
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
-    private readonly WhisperHandler _whisperHandler = new();
     private readonly TimerController _timerController = new();
     private readonly long _startTime = Now();
-    private readonly LastMessageController _lastMessageController = new();
+    private readonly LastMessageController _lastMessageController;
 
     private readonly Restarter _restarter = new(new[]
     {
@@ -77,7 +85,7 @@ public class TwitchBot
             AutoReListenOnException = true
         };
 
-        channels ??= DbControl.Channels.Select(c => c.Name);
+        channels ??= Channels.Select(c => c.Name);
         if (excludedChannels is not null)
         {
             channels = channels.Except(excludedChannels);
@@ -97,7 +105,10 @@ public class TwitchBot
         _twitchClient.OnReconnected += Client_OnReconnected!;
         _twitchClient.OnUserJoined += Client_OnUserJoinedChannel!;
 
+        EmoteController = new(Channels);
+        CommandController = new(Channels);
         _messageHandler = new(this);
+        _lastMessageController = new(Channels);
         _restarter.Initialize();
     }
 
@@ -109,7 +120,7 @@ public class TwitchBot
 
     public void Send(string channel, string message)
     {
-        string emote = DbControl.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
+        string emote = Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
         message = message == _lastMessageController[channel]
             ? string.Join(' ', emote, message, AppSettings.ChatterinoChar)
             : string.Join(' ', emote, message);
@@ -145,13 +156,13 @@ public class TwitchBot
             return $"channel #{channel} does not exist";
         }
 
-        Channel? chnl = DbControl.Channels[channel];
+        Channel? chnl = Channels[channel];
         if (chnl is not null)
         {
             return $"the bot is already connected to #{channel}";
         }
 
-        DbControl.Channels.Add(long.Parse(user.Id), channel);
+        Channels.Add(long.Parse(user.Id), channel);
         try
         {
             _twitchClient.JoinChannel(channel);
@@ -170,7 +181,7 @@ public class TwitchBot
         try
         {
             Send(channel, $"{Emoji.Wave} bye");
-            DbControl.Channels.Remove(channel);
+            Channels.Remove(channel);
             _twitchClient.LeaveChannel(channel);
             return $"successfully left #{channel}";
         }
@@ -179,6 +190,14 @@ public class TwitchBot
             DbController.LogException(ex);
             return $"unable to leave #{channel}";
         }
+    }
+
+    public void InvalidateCaches()
+    {
+        Reminders.Invalidate();
+        SpotifyUsers.Invalidate();
+        Users.Invalidate();
+        Channels.Invalidate();
     }
 
     public void ReceiveMessage(TwitchChatMessage chatMessage)
@@ -231,7 +250,6 @@ public class TwitchBot
     private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <WHISPER> {e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
-        _whisperHandler.Handle(new TwitchWhisperMessage(e.WhisperMessage));
     }
 
     private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
@@ -289,7 +307,7 @@ public class TwitchBot
 
     private void OnTimer1000(object? sender, ElapsedEventArgs e)
     {
-        IEnumerable<Reminder> reminders = DbControl.Reminders.GetExpiredReminders();
+        IEnumerable<Reminder> reminders = Reminders.GetExpiredReminders();
         reminders.ForEach(this.SendTimedReminder);
     }
 

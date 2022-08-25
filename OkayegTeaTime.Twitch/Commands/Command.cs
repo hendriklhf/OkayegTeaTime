@@ -1,5 +1,4 @@
-﻿using OkayegTeaTime.Database;
-using OkayegTeaTime.Twitch.Models;
+﻿using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -18,7 +17,7 @@ public abstract class Command
     {
         _twitchBot = twitchBot;
         ChatMessage = chatMessage;
-        _prefix = DbControl.Channels[chatMessage.ChannelId]?.Prefix;
+        _prefix = twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         _alias = alias;
     }
 

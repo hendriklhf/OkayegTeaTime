@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Database.Cache;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
 public class LastMessageController
 {
-    private readonly Dictionary<string, string> _lastMessages = DbControl.Channels.Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
+    private readonly Dictionary<string, string> _lastMessages;
+
+    public LastMessageController(ChannelCache? channelCache = null)
+    {
+        _lastMessages = channelCache is null
+            ? DbController.GetChannels().Select(c => c.Name).ToDictionary(c => c, _ => string.Empty)
+            : channelCache.Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
+    }
 
     public string this[string channel]
     {
