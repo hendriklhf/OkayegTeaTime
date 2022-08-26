@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <SignAssembly>false</SignAssembly>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -19,24 +19,24 @@
       <None Remove="DbControl.cs~RF1b5befd.TMP" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.7"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.7"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <TreatAsUsed>true</TreatAsUsed>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.7"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.7">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <TreatAsUsed>true</TreatAsUsed>
-        </PackageReference>
-        <PackageReference Include="MySql.Data.EntityFramework" Version="8.0.30"/>
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.4"/>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.7"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.7"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.7"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="MySql.Data.EntityFramework" Version="8.0.30"/>
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.4"/>
+  </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj" />

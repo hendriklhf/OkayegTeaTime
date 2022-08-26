@@ -209,7 +209,8 @@ public class TwitchBot
 
     private string GetSystemInfo()
     {
-        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount.InsertKDots()} || Commit: {ResourceController.LastCommit}";
+        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount.InsertKDots()} " +
+               $"|| Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit}";
     }
 
     private static string GetMemoryUsage()
