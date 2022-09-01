@@ -7,7 +7,7 @@ public class User : CacheModel
 {
     public long Id { get; }
 
-    public string Username { get; }
+    public string Username { internal set; get; }
 
     public string? AfkMessage
     {

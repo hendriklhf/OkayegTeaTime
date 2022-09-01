@@ -16,7 +16,7 @@ public class UserCache : DbCache<User>
     public User? GetUser(long id, string? username = null)
     {
         User? user = this.FirstOrDefault(u => u.Id == id);
-        if (user is not null)
+        if (user is not null && (username is null || user.Username == username))
         {
             return user;
         }
@@ -27,8 +27,19 @@ public class UserCache : DbCache<User>
             return null;
         }
 
-        user = new(efUser);
-        _items.Add(user);
+        if (user is null)
+        {
+            user = new(efUser);
+            _items.Add(user);
+            return user;
+        }
+
+        if (username is null)
+        {
+            return user;
+        }
+
+        user.Username = username;
         return user;
     }
 
@@ -40,11 +51,11 @@ public class UserCache : DbCache<User>
         }
 
         EntityFrameworkModels.User[] users = DbController.GetUsers();
-        foreach (EntityFrameworkModels.User uu in users)
+        foreach (EntityFrameworkModels.User efUser in users)
         {
-            if (_items.All(u => u.Id != uu.Id))
+            if (_items.All(u => u.Id != efUser.Id))
             {
-                _items.Add(new(uu));
+                _items.Add(new(efUser));
             }
         }
 
