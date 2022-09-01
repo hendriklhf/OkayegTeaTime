@@ -21,15 +21,15 @@ public class TwitchMessage : ChatMessage
 
     public UserType UserType { get; }
 
-    public TwitchMessage(TwitchLibMessage twitchLibMessage)
-        : base(twitchLibMessage)
+    public TwitchMessage(TwitchLibMessage message)
+        : base(message)
     {
-        Badges = twitchLibMessage.Badges.Select(b => b.Key).ToArray();
-        Color = twitchLibMessage.Color;
-        ColorHex = twitchLibMessage.ColorHex;
-        IsTurbo = twitchLibMessage.IsTurbo;
-        RawIrcMessage = twitchLibMessage.RawIrcMessage;
-        UserId = long.Parse(twitchLibMessage.UserId);
-        UserType = twitchLibMessage.UserType;
+        Badges = message.Badges.Select(b => b.Key).ToArray();
+        Color = message.Color;
+        ColorHex = message.ColorHex;
+        IsTurbo = message.IsTurbo;
+        RawIrcMessage = message.RawIrcMessage;
+        UserId = long.Parse(message.UserId);
+        UserType = message.UserType;
     }
 }
