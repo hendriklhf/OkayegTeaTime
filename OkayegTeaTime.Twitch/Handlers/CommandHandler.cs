@@ -24,7 +24,7 @@ public class CommandHandler : Handler
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
-        _cooldownController = new(twitchBot);
+        _cooldownController = new(_twitchBot.CommandController);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)

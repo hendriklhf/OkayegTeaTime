@@ -48,11 +48,11 @@ public class ChatMessage
     private static readonly Regex _messagePattern = new(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _messageReplacePattern = new(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public ChatMessage(TwitchLibMessage twitchLibMessage)
+    public ChatMessage(TwitchLibMessage message)
     {
-        DisplayName = twitchLibMessage.DisplayName;
-        Message = GetMessage(twitchLibMessage).Remove(AppSettings.ChatterinoChar).TrimAll();
-        Username = twitchLibMessage.Username;
+        DisplayName = message.DisplayName;
+        Message = GetMessage(message).Remove(AppSettings.ChatterinoChar).TrimAll();
+        Username = message.Username;
     }
 
     private string GetMessage(TwitchLibMessage twitchLibMessage)

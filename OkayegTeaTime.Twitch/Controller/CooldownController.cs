@@ -13,11 +13,11 @@ public class CooldownController
     private readonly List<Cooldown> _cooldowns = new();
     private readonly List<AfkCooldown> _afkCooldowns = new();
 
-    private readonly TwitchBot _twitchBot;
+    private readonly CommandController _commandController;
 
-    public CooldownController(TwitchBot twitchBot)
+    public CooldownController(CommandController commandController)
     {
-        _twitchBot = twitchBot;
+        _commandController = commandController;
     }
 
     public void AddCooldown(long userId, CommandType type)
@@ -35,7 +35,7 @@ public class CooldownController
             _cooldowns.Remove(cooldown);
         }
 
-        int cmdCooldown = _twitchBot.CommandController[type].Cooldown;
+        int cmdCooldown = _commandController[type].Cooldown;
         _cooldowns.Add(new(userId, cmdCooldown, type));
     }
 
