@@ -15,10 +15,10 @@ public static class Program
 
         switch (args[0])
         {
-            case "publish":
+            case "build":
             {
-                Publisher publisher = new(args);
-                publisher.Publish();
+                Builder builder = new(args);
+                builder.Build();
                 break;
             }
             case "readme":

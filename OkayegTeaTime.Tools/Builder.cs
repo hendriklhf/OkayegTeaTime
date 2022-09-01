@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HLE.Collections;
 
 namespace OkayegTeaTime.Tools;
 
-public class Publisher
+public class Builder
 {
     private readonly string[] _args;
+    private readonly bool _selfContained;
 
     private readonly Dictionary<string, Regex> _runtimes = new(new KeyValuePair<string, Regex>[]
     {
@@ -24,17 +26,19 @@ public class Publisher
     private const string _commitIdSourcePath = "./.git/logs/HEAD";
     private const string _commitIdFile = "./OkayegTeaTime.Resources/LastCommit";
 
-    public Publisher(string[] args)
+    public Builder(string[] args)
     {
         _args = args;
+        _selfContained = GetSelfContained();
     }
 
-    public void Publish()
+    public void Build()
     {
         string[] runtimes = GetRuntimes();
         if (!runtimes.Any())
         {
             Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
+            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.JoinToString(", ")}");
             return;
         }
 
@@ -51,24 +55,23 @@ public class Publisher
 
     private string[] GetRuntimes() => _runtimes.Where(kv => _args[1..].Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
 
-    private static void BuildApi(string outputDir, string runtime)
+    private void BuildApi(string outputDir, string runtime)
     {
         StartBuildProcess(outputDir, runtime, _apiProjectPath, _apiProjectPath[16..19]);
     }
 
-    private static void BuildBot(string outputDir, string runtime)
+    private void BuildBot(string outputDir, string runtime)
     {
         StartBuildProcess(outputDir, runtime, _botProjectPath, _botProjectPath[2..15]);
     }
 
-    private static void StartBuildProcess(string outputDir, string runtime, string projectPath, string projectName)
+    private void StartBuildProcess(string outputDir, string runtime, string projectPath, string projectName)
     {
         Process buildProcess = new()
         {
-            StartInfo = new("dotnet", $"publish -r {runtime} -c Release -o {outputDir} --no-self-contained {projectPath}")
+            StartInfo = new("dotnet", $"publish -r {runtime} -c Release -o {outputDir} --{(_selfContained ? string.Empty : "no-")}self-contained {projectPath}")
         };
         buildProcess.StartInfo.RedirectStandardOutput = true;
-        buildProcess.ErrorDataReceived += (_, e) => Console.WriteLine(e.Data);
         Console.WriteLine($"Starting {projectName} build...");
         Console.WriteLine($"Output directory: {outputDir}");
         buildProcess.Start();
@@ -95,4 +98,6 @@ public class Publisher
         Console.WriteLine($"Last commit: {commitId}");
         File.WriteAllText(_commitIdFile, commitId);
     }
+
+    private bool GetSelfContained() => _args.Contains("--self-contained");
 }
