@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <SignAssembly>false</SignAssembly>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <NeutralLanguage>en</NeutralLanguage>
-        <NoWin32Manifest>true</NoWin32Manifest>
-        <DebugType>embedded</DebugType>
-        <Nullable>enable</Nullable>
-        <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <ImplicitUsings>disable</ImplicitUsings>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <DebugType>embedded</DebugType>
+    <Nullable>enable</Nullable>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj"/>
+  </ItemGroup>
 
 </Project>

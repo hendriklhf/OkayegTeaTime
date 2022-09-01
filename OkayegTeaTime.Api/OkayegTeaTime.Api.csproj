@@ -1,28 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <SignAssembly>false</SignAssembly>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <NeutralLanguage>en</NeutralLanguage>
-        <NoWin32Manifest>true</NoWin32Manifest>
-        <DebugType>embedded</DebugType>
-        <Nullable>enable</Nullable>
-        <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <ImplicitUsings>disable</ImplicitUsings>
-        <ApplicationIcon>..\OkayegTeaTime.Resources\Okayeg.ico</ApplicationIcon>
-        <PackageIcon>..\OkayegTeaTime.Resources\Okayeg.ico</PackageIcon>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <DebugType>embedded</DebugType>
+    <Nullable>enable</Nullable>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ApplicationIcon>..\OkayegTeaTime.Resources\Okayeg.ico</ApplicationIcon>
+    <PackageIcon>..\OkayegTeaTime.Resources\Okayeg.ico</PackageIcon>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj"/>
+  </ItemGroup>
 
 </Project>

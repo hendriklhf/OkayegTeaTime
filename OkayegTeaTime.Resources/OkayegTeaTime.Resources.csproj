@@ -1,45 +1,45 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <SignAssembly>false</SignAssembly>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <NeutralLanguage>en</NeutralLanguage>
-        <NoWin32Manifest>true</NoWin32Manifest>
-        <DebugType>embedded</DebugType>
-        <Nullable>enable</Nullable>
-        <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-        <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <ImplicitUsings>disable</ImplicitUsings>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <DebugType>embedded</DebugType>
+    <Nullable>enable</Nullable>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-      <DebugSymbols>false</DebugSymbols>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Include="Commands.json" />
-      <EmbeddedResource Include="GachiSongs.json" />
-      <EmbeddedResource Include="CompilerTemplateCpp.cpp" />
-      <EmbeddedResource Include="CompilerTemplateCSharp.cs" />
-      <Compile Remove="CompilerTemplateCSharp.cs" />
-      <EmbeddedResource Include="CompilerTemplateGo.go" />
-      <EmbeddedResource Include="LastCommit" />
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Commands.json"/>
+    <EmbeddedResource Include="GachiSongs.json"/>
+    <EmbeddedResource Include="CompilerTemplateCpp.cpp"/>
+    <EmbeddedResource Include="CompilerTemplateCSharp.cs"/>
+    <Compile Remove="CompilerTemplateCSharp.cs"/>
+    <EmbeddedResource Include="CompilerTemplateGo.go"/>
+    <EmbeddedResource Include="LastCommit"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Update="Settings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="Settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>
