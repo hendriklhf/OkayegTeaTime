@@ -56,22 +56,17 @@ public static class SpotifyController
 
     public static string? ParseSongToUri(string input)
     {
-        if (Regex.IsMatch(input, Pattern.SpotifyUri))
+        if (Pattern.SpotifyUri.IsMatch(input))
         {
             return input;
         }
 
-        if (Regex.IsMatch(input, Pattern.SpotifyLink))
+        if (Pattern.SpotifyLink.IsMatch(input))
         {
             string uriCode = Regex.Match(input, @"track/\w+").Value[6..];
             return $"spotify:track:{uriCode}";
         }
 
-        if (Regex.IsMatch(input, @"^\w{22}$"))
-        {
-            return $"spotify:track:{input}";
-        }
-
-        return null;
+        return Regex.IsMatch(input, @"^\w{22}$") ? $"spotify:track:{input}" : null;
     }
 }

@@ -23,10 +23,6 @@ public class MessageHandler : Handler
     private readonly PajaAlertHandler _pajaAlertHandler;
 
     private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-#if RELEASE
-    private readonly Regex _spotifyUriPattern = new(Pattern.SpotifyUri, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    private readonly Regex _spotifyUrlPattern = new(Pattern.SpotifyLink, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-#endif
 
     public MessageHandler(TwitchBot twitchBot)
         : base(twitchBot)
@@ -102,7 +98,7 @@ public class MessageHandler : Handler
             return;
         }
 
-        string[] songs = chatMessage.Split.Where(s => _spotifyUriPattern.IsMatch(s) || _spotifyUrlPattern.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
+        string[] songs = chatMessage.Split.Where(s => Pattern.SpotifyLink.IsMatch(s) || Pattern.SpotifyUri.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
         try
         {
             playlistUser.AddToChatPlaylist(songs);
