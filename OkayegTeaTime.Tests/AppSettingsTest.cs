@@ -12,6 +12,7 @@ public class AppSettingsTest
     public void AllPropertiesNotDefaultTest()
     {
         PropertyInfo[] properties = typeof(AppSettings).GetProperties();
+        Assert.IsTrue(properties.Length > 0);
         properties.ForEach(p => Assert.IsTrue(p.GetValue(null, null) != default));
     }
 }
