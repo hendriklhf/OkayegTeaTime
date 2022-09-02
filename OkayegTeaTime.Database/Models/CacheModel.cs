@@ -39,6 +39,7 @@ public abstract class CacheModel
             _mutex.ReleaseMutex();
             _db?.Dispose();
             _mutex.Dispose();
+            _timer.Dispose();
         }
         catch (Exception ex)
         {
