@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using HLE;
@@ -10,7 +9,6 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
-using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
@@ -24,7 +22,6 @@ using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
-using static HLE.Time.TimeHelper;
 using static OkayegTeaTime.Utils.ProcessUtils;
 using User = TwitchLib.Api.Helix.Models.Users.GetUsers.User;
 
@@ -50,12 +47,11 @@ public class TwitchBot
 
     public uint CommandCount { get; set; } = 1;
 
-    public string SystemInfo => GetSystemInfo();
+    public DateTime StartTime { get; } = DateTime.Now;
 
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
     private readonly TimerController _timerController = new();
-    private readonly long _startTime = Now();
     private readonly LastMessageController _lastMessageController;
 
     private readonly Restarter _restarter = new(new[]
@@ -205,21 +201,6 @@ public class TwitchBot
         _messageHandler.Handle(chatMessage);
     }
 
-    #region SystemInfo
-
-    private string GetSystemInfo()
-    {
-        return $"Uptime: {GetUnixDifference(_startTime)} || Memory usage: {GetMemoryUsage()} || Executed commands: {CommandCount.InsertKDots()} " +
-               $"|| Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit}";
-    }
-
-    private static string GetMemoryUsage()
-    {
-        return $"{Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100}MB / 8000MB";
-    }
-
-    #endregion SystemInfo
-
     #region Bot_On
 
     private void Client_OnLog(object sender, OnLogArgs e)
@@ -302,7 +283,6 @@ public class TwitchBot
     private void InitializeTimers()
     {
         _timerController.Add(OnTimer1000, 1000);
-        _timerController.Add(OnTimer30000, 30000);
         _timerController.Add(OnTimer10Days, TimeSpan.FromDays(10).TotalMilliseconds);
     }
 
@@ -310,11 +290,6 @@ public class TwitchBot
     {
         IEnumerable<Reminder> reminders = Reminders.GetExpiredReminders();
         reminders.ForEach(this.SendTimedReminder);
-    }
-
-    private void OnTimer30000(object? sender, ElapsedEventArgs e)
-    {
-        Console.Title = $"OkayegTeaTime - {SystemInfo}";
     }
 
     private void OnTimer10Days(object? sender, ElapsedEventArgs e)

@@ -1,4 +1,8 @@
-﻿using HLE.Time;
+﻿using System;
+using System.Diagnostics;
+using HLE;
+using HLE.Time;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -14,11 +18,12 @@ public class PingCommand : Command
 
     public override void Handle()
     {
-        Response = $"Pongeg, I'm here! {_twitchBot.SystemInfo} || Ping: {GetPing()}ms";
+        Response = $"Pingeg, I'm here! Uptime: {DateTime.Now - _twitchBot.StartTime:c} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
+                   $"|| Ping: {TimeHelper.Now() - ChatMessage.TmiSentTs}ms || Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit}";
     }
 
-    private long GetPing()
+    private static double GetMemoryUsage()
     {
-        return TimeHelper.Now() - ChatMessage.TmiSentTs;
+        return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / Math.Pow(10, 6) * 100) / 100;
     }
 }
