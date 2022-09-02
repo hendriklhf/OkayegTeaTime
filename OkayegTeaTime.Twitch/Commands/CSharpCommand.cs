@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
 using HLE.Http;
+using OkayegTeaTime.Files;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -35,7 +36,7 @@ public class CSharpCommand : Command
             ("Compiler", "NetCore22"),
             ("Language", "CSharp"),
             ("ProjectType", "Console"),
-            ("NuGetPackageVersionIds", "103505")
+            ("NuGetPackageVersionIds", AppSettings.HleNugetVersionId)
         });
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         return !result?.IsNullOrEmptyOrWhitespace() == true ? (result!.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces() : "executed successfully";
