@@ -6,6 +6,7 @@ using System.Linq;
 #if RELEASE
 using System.Threading.Tasks;
 #endif
+using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 #if RELEASE
 using OkayegTeaTime.Files;
@@ -102,15 +103,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
             return;
         }
 
-        EntityFrameworkModels.Spotify[] users = DbController.GetSpotifyUsers();
-        foreach (EntityFrameworkModels.Spotify uu in users)
-        {
-            if (_items.All(u => u.Id != uu.Id))
-            {
-                _items.Add(new(uu));
-            }
-        }
-
+        DbController.GetSpotifyUsers().Where(u => _items.All(i => i.Id != u.Id)).ForEach(u => _items.Add(new(u)));
         _containsAll = true;
     }
 }

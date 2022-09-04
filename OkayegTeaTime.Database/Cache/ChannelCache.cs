@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
@@ -86,15 +87,7 @@ public class ChannelCache : DbCache<Channel>
             return;
         }
 
-        EntityFrameworkModels.Channel[] channels = DbController.GetChannels();
-        foreach (EntityFrameworkModels.Channel ch in channels)
-        {
-            if (_items.All(c => c.Id != ch.Id))
-            {
-                _items.Add(new(ch));
-            }
-        }
-
+        DbController.GetChannels().Where(c => !_items.All(i => c.Id != i.Id)).ForEach(c => _items.Add(new(c)));
         _containsAll = true;
     }
 }
