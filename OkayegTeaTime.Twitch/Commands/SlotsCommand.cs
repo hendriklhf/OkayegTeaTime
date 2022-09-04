@@ -31,7 +31,7 @@ public class SlotsCommand : Command
             }
             catch (ArgumentException)
             {
-                Response = $"{ChatMessage.Username}, you provided pattern is invalid";
+                Response = $"{ChatMessage.Username}, your provided pattern is invalid";
                 return;
             }
         }
