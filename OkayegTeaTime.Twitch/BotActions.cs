@@ -35,6 +35,7 @@ public static class BotActions
         string creator = rmndrs[0].Creator == rmndrs[0].Target ? "yourself" : rmndrs[0].Creator;
         string message = $"{rmndrs[0].Target}, reminder from {creator} ({TimeHelper.GetUnixDifference(rmndrs[0].Time)} ago)";
         StringBuilder builder = new(message);
+        twitchBot.Reminders.Remove(rmndrs[0].Id);
         if (rmndrs[0].Message?.Length > 0)
         {
             builder.Append($": {rmndrs[0].Message}");
@@ -42,18 +43,18 @@ public static class BotActions
 
         if (rmndrs.Length > 1)
         {
-            rmndrs.Skip(1).ForEach(r =>
+            foreach (Reminder r in rmndrs[1..])
             {
+                twitchBot.Reminders.Remove(r.Id);
                 creator = r.Creator == r.Target ? "yourself" : r.Creator;
                 builder.Append($" || {creator} ({TimeHelper.GetUnixDifference(r.Time)} ago)");
                 if (r.Message?.Length > 0)
                 {
                     builder.Append($": {r.Message}");
                 }
-            });
+            }
         }
 
-        rmndrs.ForEach(r => twitchBot.Reminders.Remove(r.Id));
         twitchBot.Send(channel, builder.ToString());
     }
 
