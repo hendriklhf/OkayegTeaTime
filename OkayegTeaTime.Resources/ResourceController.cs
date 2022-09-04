@@ -6,50 +6,44 @@ namespace OkayegTeaTime.Resources;
 public static class ResourceController
 {
     [FileName("Commands.json")]
-    [FieldName(nameof(_commands))]
     public static string Commands
     {
-        get => GetFileContent(nameof(Commands));
+        get => GetFileContent(nameof(Commands), nameof(_commands));
         private set => _commands = value;
     }
 
     [FileName("CompilerTemplateCSharp.cs")]
-    [FieldName(nameof(_compilerTemplateCSharp))]
     public static string CompilerTemplateCSharp
     {
-        get => GetFileContent(nameof(CompilerTemplateCSharp));
+        get => GetFileContent(nameof(CompilerTemplateCSharp), nameof(_compilerTemplateCSharp));
         private set => _compilerTemplateCSharp = value;
     }
 
     [FileName("CompilerTemplateGo.go")]
-    [FieldName(nameof(_compilerTemplateGo))]
     public static string CompilerTemplateGo
     {
-        get => GetFileContent(nameof(CompilerTemplateGo));
+        get => GetFileContent(nameof(CompilerTemplateGo), nameof(_compilerTemplateGo));
         private set => _compilerTemplateGo = value;
     }
 
     [FileName("GachiSongs.json")]
-    [FieldName(nameof(_gachiSongs))]
     public static string GachiSongs
     {
-        get => GetFileContent(nameof(GachiSongs));
+        get => GetFileContent(nameof(GachiSongs), nameof(_gachiSongs));
         private set => _gachiSongs = value;
     }
 
     [FileName("CompilerTemplateCpp.cpp")]
-    [FieldName(nameof(_compilerTemplateCpp))]
     public static string CompilerTemplateCpp
     {
-        get => GetFileContent(nameof(CompilerTemplateCpp));
+        get => GetFileContent(nameof(CompilerTemplateCpp), nameof(_compilerTemplateCpp));
         private set => _compilerTemplateCpp = value;
     }
 
     [FileName("LastCommit")]
-    [FieldName(nameof(_lastCommit))]
     public static string LastCommit
     {
-        get => GetFileContent(nameof(LastCommit));
+        get => GetFileContent(nameof(LastCommit), nameof(_lastCommit));
         private set => _lastCommit = value;
     }
 
@@ -62,9 +56,9 @@ public static class ResourceController
 
     private static readonly Assembly _assembly = Assembly.GetCallingAssembly();
 
-    private static string GetFileContent(string propertyName)
+    private static string GetFileContent(string propertyName, string fieldName)
     {
-        string? content = GetFieldValue(propertyName);
+        string? content = GetFieldValue(fieldName);
         if (content is not null)
         {
             return content;
@@ -87,11 +81,9 @@ public static class ResourceController
         return fileName.Value;
     }
 
-    private static string? GetFieldValue(string propertyName)
+    private static string? GetFieldValue(string fieldName)
     {
-        PropertyInfo property = typeof(ResourceController).GetProperty(propertyName)!;
-        FieldName attr = property.GetCustomAttribute<FieldName>()!;
-        FieldInfo field = typeof(ResourceController).GetField(attr.Name, BindingFlags.Static | BindingFlags.NonPublic)!;
+        FieldInfo field = typeof(ResourceController).GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic)!;
         return (string?)field.GetValue(null);
     }
 }
