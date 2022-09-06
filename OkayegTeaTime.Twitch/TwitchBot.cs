@@ -101,8 +101,8 @@ public class TwitchBot
         _twitchClient.OnReconnected += Client_OnReconnected!;
         _twitchClient.OnUserJoined += Client_OnUserJoinedChannel!;
 
+        CommandController = new();
         EmoteController = new(Channels);
-        CommandController = new(Channels);
         _messageHandler = new(this);
         _lastMessageController = new(Channels);
         _restarter.Initialize();

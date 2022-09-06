@@ -23,28 +23,25 @@ public class CommandController
 
     public AfkCommand this[AfkType type] => GetAfkCommand(type);
 
-    public IEnumerable<Command> Commands { get; }
+    public Command[] Commands { get; }
 
-    public IEnumerable<AfkCommand> AfkCommands { get; }
+    public AfkCommand[] AfkCommands { get; }
 
-    private readonly ChannelCache? _channelCache;
     private IEnumerable<string>? _commandAliases;
     private IEnumerable<string>? _afkCommandAliases;
 
-    public CommandController(ChannelCache? channelCache = null)
+    public CommandController()
     {
-        _channelCache = channelCache;
-        Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
-        AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.OrderBy(a => a).ToArray());
+        Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
+        AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
     }
 
-    public bool IsAfkCommand(TwitchChatMessage chatMessage)
+    public bool IsAfkCommand(string? prefix, string message)
     {
-        string? prefix = _channelCache is null ? DbController.GetChannel(chatMessage.ChannelId)?.Prefix : _channelCache[chatMessage.ChannelId]?.Prefix;
         return AfkCommandAliases.Any(alias =>
         {
             Regex pattern = PatternCreator.Create(alias, prefix);
-            return pattern.IsMatch(chatMessage.Message);
+            return pattern.IsMatch(message);
         });
     }
 
