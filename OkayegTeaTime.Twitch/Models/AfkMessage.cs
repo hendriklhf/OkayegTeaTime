@@ -7,21 +7,60 @@ namespace OkayegTeaTime.Twitch.Models;
 
 public class AfkMessage
 {
-    public string ComingBack { get; }
+    public string ComingBack
+    {
+        get
+        {
+            if (_comingBack is not null)
+            {
+                return _comingBack;
+            }
 
-    public string GoingAway { get; }
+            _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username)
+                .Replace("{time}", $"{TimeHelper.GetUnixDifference(_user.AfkTime)} ago")
+                .Replace("{message}", _user.AfkMessage);
+            _comingBack = string.IsNullOrEmpty(_user.AfkMessage) ? ComingBack.Remove(":").TrimAll() : ComingBack;
+            return _comingBack;
+        }
+    }
 
-    public string Resuming { get; }
+    public string GoingAway
+    {
+        get
+        {
+            if (_goingAway is not null)
+            {
+                return _goingAway;
+            }
+
+            _goingAway = _afkCommand.GoingAway.Replace("{username}", _user.Username);
+            return _goingAway;
+        }
+    }
+
+    public string Resuming
+    {
+        get
+        {
+            if (_resuming is not null)
+            {
+                return _resuming;
+            }
+
+            _resuming = _afkCommand.Resuming.Replace("{username}", _user.Username);
+            return _resuming;
+        }
+    }
+
+    private readonly User _user;
+    private readonly AfkCommand _afkCommand;
+    private string? _comingBack;
+    private string? _goingAway;
+    private string? _resuming;
 
     public AfkMessage(User user, AfkCommand cmd)
     {
-        ComingBack = cmd.ComingBack.Replace("{username}", user.Username)
-            .Replace("{time}", $"{TimeHelper.GetUnixDifference(user.AfkTime)} ago")
-            .Replace("{message}", user.AfkMessage);
-        ComingBack = string.IsNullOrEmpty(user.AfkMessage) ? ComingBack.Remove(":").TrimAll() : ComingBack;
-
-        GoingAway = cmd.GoingAway.Replace("{username}", user.Username);
-
-        Resuming = cmd.Resuming.Replace("{username}", user.Username);
+        _user = user;
+        _afkCommand = cmd;
     }
 }
