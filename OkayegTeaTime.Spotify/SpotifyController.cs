@@ -21,7 +21,7 @@ public static class SpotifyController
             }
         };
 
-        return HttpUtility.UrlDecode(login.ToUri().AbsoluteUri).Replace(" ", "%20");
+        return HttpUtility.UrlEncode(login.ToUri().AbsoluteUri);
     }
 
     public static async Task<string?> GetNewAccessToken(string refreshToken)
