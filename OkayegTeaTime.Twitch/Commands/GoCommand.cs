@@ -21,7 +21,14 @@ public class GoCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
-            Response = $"{ChatMessage.Username}, {GetGoLangOnlineCompilerResult(code)}";
+            string? response = GetGoLangOnlineCompilerResult(code);
+            if (response is null)
+            {
+                Response = "compiler service error";
+                return;
+            }
+
+            Response = $"{ChatMessage.Username}, {response}";
         }
     }
 
@@ -30,7 +37,7 @@ public class GoCommand : Command
         HttpPost request = new("https://play.golang.org/compile", new[]
         {
             ("version", "2"),
-            ("body", GetGoLangOnlineCompilerTemplate(code)),
+            ("body", ResourceController.CompilerTemplateGo.Replace("{code}", code)),
             ("withVet", "true")
         });
         if (!request.IsValidJsonData)
@@ -42,10 +49,5 @@ public class GoCommand : Command
         bool hasError = !string.IsNullOrEmpty(error);
         string result = hasError ? error : request.Data.GetProperty("Events")[0].GetProperty("Message").GetString()!;
         return (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
-    }
-
-    private static string GetGoLangOnlineCompilerTemplate(string code)
-    {
-        return ResourceController.CompilerTemplateGo.Replace("{code}", code);
     }
 }
