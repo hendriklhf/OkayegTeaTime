@@ -14,7 +14,7 @@ public class ResourceTest
         Assert.IsTrue(properties.Length > 0);
         foreach (PropertyInfo prop in properties)
         {
-            string value = (string)prop.GetValue(null);
+            string? value = (string?)prop.GetValue(null);
             Assert.IsTrue(!string.IsNullOrEmpty(value));
         }
     }
