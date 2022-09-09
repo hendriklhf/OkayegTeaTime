@@ -139,6 +139,7 @@ using System.Xml.XPath;
 using System.Xml.Xsl;
 
 #if HLE
+using HLE;
 using HLE.Collections;
 using HLE.Emojis;
 using HLE.Http;
