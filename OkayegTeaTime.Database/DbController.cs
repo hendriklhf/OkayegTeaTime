@@ -76,7 +76,7 @@ public static class DbController
         return entry.Entity.Id > 0 ? entry.Entity.Id : -1;
     }
 
-    public static void AddSugestion(string username, string channel, string suggestion)
+    public static void AddSuggestion(string username, string channel, string suggestion)
     {
         using OkayegTeaTimeContext database = new();
         database.Suggestions.Add(new(username, Encoding.UTF8.GetBytes(suggestion), channel));
@@ -216,26 +216,12 @@ public static class DbController
             return false;
         }
 
-        if (reminder.Creator == username || (reminder.Target == username && reminder.ToTime != 0) || AppSettings.UserLists.Moderators.Contains(userId))
-        {
-            database.Reminders.Remove(reminder);
-            database.SaveChanges();
-            return true;
-        }
-
-        return false;
-    }
-
-    public static bool SetSongRequestState(string username, bool enabled)
-    {
-        using OkayegTeaTimeContext database = new();
-        EntityFrameworkModels.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
-        if (user is null)
+        if (reminder.Creator != username && (reminder.Target != username || reminder.ToTime == 0) && !AppSettings.UserLists.Moderators.Contains(userId))
         {
             return false;
         }
 
-        user.SongRequestEnabled = enabled;
+        database.Reminders.Remove(reminder);
         database.SaveChanges();
         return true;
     }

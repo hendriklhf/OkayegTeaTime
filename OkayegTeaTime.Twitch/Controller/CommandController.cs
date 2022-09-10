@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using OkayegTeaTime.Database;
-using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
@@ -15,10 +12,6 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public class CommandController
 {
-    public IEnumerable<string> CommandAliases => GetCommandAliases();
-
-    public IEnumerable<string> AfkCommandAliases => GetAfkCommandAliases();
-
     public Command this[CommandType type] => GetCommand(type);
 
     public AfkCommand this[AfkType type] => GetAfkCommand(type);
@@ -27,18 +20,18 @@ public class CommandController
 
     public AfkCommand[] AfkCommands { get; }
 
-    private IEnumerable<string>? _commandAliases;
-    private IEnumerable<string>? _afkCommandAliases;
+    private readonly string[] _afkCommandAliases;
 
     public CommandController()
     {
         Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
         AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
+        _afkCommandAliases = AfkCommands.SelectMany(c => c.Aliases).ToArray();
     }
 
     public bool IsAfkCommand(string? prefix, string message)
     {
-        return AfkCommandAliases.Any(alias =>
+        return _afkCommandAliases.Any(alias =>
         {
             Regex pattern = PatternCreator.Create(alias, prefix);
             return pattern.IsMatch(message);
@@ -61,27 +54,5 @@ public class CommandController
     {
         AfkCommand? command = AfkCommands.FirstOrDefault(c => string.Equals(c.Name, type.ToString(), StringComparison.OrdinalIgnoreCase));
         return command ?? throw new ArgumentNullException(nameof(command));
-    }
-
-    private IEnumerable<string> GetCommandAliases()
-    {
-        if (_commandAliases is not null)
-        {
-            return _commandAliases;
-        }
-
-        _commandAliases = Commands.Select(c => c.Aliases).SelectEach();
-        return _commandAliases;
-    }
-
-    private IEnumerable<string> GetAfkCommandAliases()
-    {
-        if (_afkCommandAliases is not null)
-        {
-            return _afkCommandAliases;
-        }
-
-        _afkCommandAliases = AfkCommands.Select(c => c.Aliases).SelectEach();
-        return _afkCommandAliases;
     }
 }

@@ -13,7 +13,7 @@ public class Response
     {
     }
 
-    public Response(string init)
+    private Response(string init)
     {
         _value = init;
     }
@@ -48,6 +48,11 @@ public class Response
     public override bool Equals(object? obj)
     {
         return obj is Response res && res.Message == Message;
+    }
+
+    public override int GetHashCode()
+    {
+        return _value.GetHashCode();
     }
 
     public override string ToString()

@@ -10,7 +10,7 @@ public class UserCache : DbCache<User>
 
     public void Add(User user)
     {
-        DbController.AddUser(new EntityFrameworkModels.User(user));
+        DbController.AddUser(new(user));
         _items.Add(user);
     }
 

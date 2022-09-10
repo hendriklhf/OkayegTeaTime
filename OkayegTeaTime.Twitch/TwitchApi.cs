@@ -251,9 +251,10 @@ public class TwitchApi
             Name = name;
         }
 
+        #pragma warning disable CS0659
         public override bool Equals(object? obj)
         {
-            return obj is UserKey key && ((key.Id != default && Id != default && key.Id == Id) || (key.Name != default && Name != default && key.Name == Name));
+            return obj is UserKey key && (key.Id != default && Id != default && key.Id == Id || key.Name != default && Name != default && key.Name == Name);
         }
     }
 }

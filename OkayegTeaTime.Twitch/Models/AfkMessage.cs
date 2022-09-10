@@ -16,10 +16,8 @@ public class AfkMessage
                 return _comingBack;
             }
 
-            _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username)
-                .Replace("{time}", $"{TimeHelper.GetUnixDifference(_user.AfkTime)} ago")
-                .Replace("{message}", _user.AfkMessage);
-            _comingBack = string.IsNullOrEmpty(_user.AfkMessage) ? ComingBack.Remove(":").TrimAll() : ComingBack;
+            _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username).Replace("{time}", $"{TimeHelper.GetUnixDifference(_user.AfkTime)} ago").Replace("{message}", _user.AfkMessage);
+            _comingBack = string.IsNullOrEmpty(_user.AfkMessage) ? _afkCommand.ComingBack.Remove(":").TrimAll() : _afkCommand.ComingBack;
             return _comingBack;
         }
     }

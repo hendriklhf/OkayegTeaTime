@@ -38,7 +38,6 @@ public class ApiTest
         Assert.IsTrue(emotes.Any());
     }
 
-
     [TestMethod]
     public void GetBttvGlobalEmotesTest()
     {

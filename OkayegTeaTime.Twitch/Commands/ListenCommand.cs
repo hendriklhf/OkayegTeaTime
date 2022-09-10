@@ -13,8 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Listen)]
 public class ListenCommand : Command
 {
-    public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -87,8 +86,7 @@ public class ListenCommand : Command
                         break;
                     }
                     case SpotifyEpisode episode:
-                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing " +
-                                   $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing " + $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
                         break;
                     default:
                         Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing an unknown item type monkaS";
@@ -133,14 +131,12 @@ public class ListenCommand : Command
                     case SpotifyTrack track:
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
-                                   $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
+                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " + $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
                         break;
                     }
                     case SpotifyEpisode episode:
                     {
-                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " +
-                                   $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " + $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
                         break;
                     }
                     default:

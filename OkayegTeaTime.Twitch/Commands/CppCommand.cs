@@ -16,8 +16,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Cpp)]
 public class CppCommand : Command
 {
-    public CppCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public CppCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -55,13 +54,8 @@ public class CppCommand : Command
             return "compiler service error";
         }
 
-        string result = Regex.Match(request.Result.NewLinesToSpaces(), @"\$main(</b>|</span>|<br>){3}.*").Value[20..].TrimAll();
-        if (result.IsNullOrEmptyOrWhitespace())
-        {
-            return "compiled successfully";
-        }
-
-        return (result.Length > 450 ? $"{result[450..]}..." : result).NewLinesToSpaces();
+        string result = Regex.Match(request.Result.NewLinesToSpaces(), @"\$main(</b>|</span>|<br>){3}.*").Value[20..].NewLinesToSpaces().TrimAll();
+        return result.IsNullOrEmptyOrWhitespace() ? "compiled successfully" : result.Length > 450 ? $"{result[450..]}..." : result;
     }
 
     private static string GetCppOnlineCompilerTemplate(string code)

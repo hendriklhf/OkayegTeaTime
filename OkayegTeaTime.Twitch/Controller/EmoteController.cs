@@ -132,10 +132,11 @@ public class EmoteController
 
             HttpPost request = new("https://api.7tv.app/v2/gql", new[]
             {
-                ("query", "{user(id: \"" + channelName + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
-                          "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
-                          "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
-                          "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}")
+                ("query",
+                    "{user(id: \"" + channelName + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
+                    "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
+                    "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
+                    "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}")
             });
 
             return request.Result is null ? null : JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
@@ -147,14 +148,13 @@ public class EmoteController
         }
     }
 
-    private IEnumerable<SevenTvGlobalEmote>? GetSevenTvGlobalEmotes()
+    private static IEnumerable<SevenTvGlobalEmote>? GetSevenTvGlobalEmotes()
     {
         try
         {
             HttpPost request = new("https://api.7tv.app/v2/gql", new[]
             {
-                ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) " +
-                          "{id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
+                ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) {id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
             });
 
             if (!request.IsValidJsonData)
@@ -172,7 +172,7 @@ public class EmoteController
         }
     }
 
-    private IEnumerable<BttvEmote>? GetBttvGlobalEmotes()
+    private static IEnumerable<BttvEmote>? GetBttvGlobalEmotes()
     {
         try
         {
@@ -186,7 +186,7 @@ public class EmoteController
         }
     }
 
-    private BttvRequest? GetBttvRequest(long channelId)
+    private static BttvRequest? GetBttvRequest(long channelId)
     {
         try
         {
@@ -227,7 +227,7 @@ public class EmoteController
         }
     }
 
-    private IEnumerable<FfzEmote>? GetFfzGlobalEmotes()
+    private static IEnumerable<FfzEmote>? GetFfzGlobalEmotes()
     {
         try
         {

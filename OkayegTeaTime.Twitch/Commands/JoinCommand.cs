@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -9,8 +8,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Join)]
 public class JoinCommand : Command
 {
-    public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

@@ -1,6 +1,11 @@
-﻿#nullable disable
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+#nullable disable
+#pragma warning disable CS0659
+
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedMember.Global
 
 namespace OkayegTeaTime.Files.Models;
 
@@ -24,7 +29,7 @@ public class SevenTvEmote
     [JsonPropertyName("height")]
     public int[] Height { get; set; }
 
-#nullable enable
+    #nullable enable
     public override bool Equals(object? obj)
     {
         return obj is SevenTvEmote emote && emote.Id == Id;

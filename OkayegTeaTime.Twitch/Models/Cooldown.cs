@@ -1,5 +1,7 @@
 ﻿using HLE.Time;
 
+#pragma warning disable CS0659
+
 namespace OkayegTeaTime.Twitch.Models;
 
 public class Cooldown

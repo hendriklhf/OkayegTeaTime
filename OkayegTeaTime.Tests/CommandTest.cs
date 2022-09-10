@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HLE.Collections;
@@ -43,9 +42,7 @@ public class CommandTest
     [TestMethod]
     public void CommandCompletenessFromHandledCommands()
     {
-        HandledCommand[]? handles = Assembly.GetAssembly(typeof(HandledCommand))?.GetTypes()
-            .Where(t => t.GetCustomAttribute<HandledCommand>() is not null)
-            .Select(t => t.GetCustomAttribute<HandledCommand>()!).ToArray();
+        HandledCommand[]? handles = Assembly.GetAssembly(typeof(HandledCommand))?.GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null).Select(t => t.GetCustomAttribute<HandledCommand>()!).ToArray();
         Assert.IsNotNull(handles);
         Assert.IsTrue(handles.Length == _commandTypes.Length);
 

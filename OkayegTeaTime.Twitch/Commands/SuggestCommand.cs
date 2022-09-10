@@ -9,8 +9,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Suggest)]
 public class SuggestCommand : Command
 {
-    public SuggestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public SuggestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -20,7 +19,7 @@ public class SuggestCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string suggestion = ChatMessage.Message[(ChatMessage.LowerSplit[0].Length + 1)..];
-            DbController.AddSugestion(ChatMessage.Username, ChatMessage.Channel, suggestion);
+            DbController.AddSuggestion(ChatMessage.Username, ChatMessage.Channel, suggestion);
             Response = $"{ChatMessage.Username}, your suggestion has been noted";
         }
     }

@@ -65,7 +65,6 @@ public class TwitchBot
         (5, 0)
     });
 
-
     public TwitchBot(IEnumerable<string>? channels = null, IEnumerable<string>? excludedChannels = null)
     {
         ConnectionCredentials connectionCredentials = new(AppSettings.Twitch.Username, AppSettings.Twitch.OAuthToken);
@@ -117,9 +116,7 @@ public class TwitchBot
     public void Send(string channel, string message)
     {
         string emote = Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
-        message = message == _lastMessageController[channel]
-            ? string.Join(' ', emote, message, AppSettings.ChatterinoChar)
-            : string.Join(' ', emote, message);
+        message = message == _lastMessageController[channel] ? string.Join(' ', emote, message, AppSettings.ChatterinoChar) : string.Join(' ', emote, message);
         if (message.Length <= AppSettings.MaxMessageLength)
         {
             _twitchClient.SendMessage(channel, message);
@@ -196,24 +193,19 @@ public class TwitchBot
         Channels.Invalidate();
     }
 
-    public void ReceiveMessage(TwitchChatMessage chatMessage)
-    {
-        _messageHandler.Handle(chatMessage);
-    }
-
     #region Bot_On
 
-    private void Client_OnLog(object sender, OnLogArgs e)
+    /*private void Client_OnLog(object sender, OnLogArgs e)
     {
         ConsoleOut($"[TWITCH] {e.Data}", ConsoleColor.Blue);
-    }
+    }*/
 
-    private void Client_OnConnected(object sender, OnConnectedArgs e)
+    private static void Client_OnConnected(object sender, OnConnectedArgs e)
     {
         ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
     }
 
-    private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
+    private static void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
     {
         ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", ConsoleColor.Red);
     }
@@ -221,38 +213,38 @@ public class TwitchBot
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
-        _messageHandler.Handle(new TwitchChatMessage(e.ChatMessage));
+        _messageHandler.Handle(new(e.ChatMessage));
     }
 
-    private void Client_OnMessageSent(object sender, OnMessageSentArgs e)
+    private static void Client_OnMessageSent(object sender, OnMessageSentArgs e)
     {
         ConsoleOut($"[TWITCH] <#{e.SentMessage.Channel}> {AppSettings.Twitch.Username}: {e.SentMessage.Message}", ConsoleColor.Green);
     }
 
-    private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
+    private static void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
     {
         ConsoleOut($"[TWITCH] <WHISPER> {e.WhisperMessage.Username}: {e.WhisperMessage.Message}");
     }
 
-    private void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
+    private static void Client_OnConnectionError(object sender, OnConnectionErrorArgs e)
     {
         ConsoleOut($"[TWITCH] <CONNECTION-ERROR> {e.Error.Message}", ConsoleColor.Red, true);
         Restart();
     }
 
-    private void Client_OnError(object sender, OnErrorEventArgs e)
+    private static void Client_OnError(object sender, OnErrorEventArgs e)
     {
         ConsoleOut($"[TWITCH] <ERROR> {e.Exception.Message}", ConsoleColor.Red, true);
         Restart();
     }
 
-    private void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
+    private static void Client_OnDisconnect(object sender, OnDisconnectedEventArgs e)
     {
         ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
         Restart();
     }
 
-    private void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
+    private static void Client_OnReconnected(object sender, OnReconnectedEventArgs e)
     {
         ConsoleOut("[TWITCH] RECONNECTED", ConsoleColor.Red, true);
     }

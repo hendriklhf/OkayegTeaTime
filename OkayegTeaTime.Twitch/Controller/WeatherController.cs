@@ -83,6 +83,7 @@ public class WeatherController
         return data;
     }
 
+    // ReSharper disable once UnusedMember.Global
     public OwmForecastData? GetForecast(string city, bool loadFromCache = true)
     {
         city = city.ToLower();
@@ -116,7 +117,7 @@ public class WeatherController
         return data;
     }
 
-    public string CreateResponse(OwmWeatherData weatherData, bool isPrivateLocation)
+    public static string CreateResponse(OwmWeatherData weatherData, bool isPrivateLocation)
     {
         string location;
         if (isPrivateLocation)
@@ -134,8 +135,8 @@ public class WeatherController
         }
 
         return $"{location}: {weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, {weatherData.Weather.Temperature}°C, " +
-               $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
-               $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
+            $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
+            $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
     }
 
     private static string GetWeatherEmoji(int weatherId) =>
@@ -189,11 +190,14 @@ public class WeatherController
 
         public int Latitude { get; init; }
 
+        // ReSharper disable once MemberCanBePrivate.Local
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public byte ForecastDay { get; init; }
 
+        #pragma warning disable CS0659
         public override bool Equals(object? obj)
         {
-            return obj is WeatherDataKey k && ((k.City is not null && City is not null && k.City == City) || (k.Longitude == Longitude && k.Latitude == Latitude)) && k.ForecastDay == ForecastDay;
+            return obj is WeatherDataKey k && (k.City is not null && City is not null && k.City == City || k.Longitude == Longitude && k.Latitude == Latitude) && k.ForecastDay == ForecastDay;
         }
     }
 }

@@ -26,5 +26,6 @@ public static class Program
         {
             Task.Delay(1000).Wait();
         }
+        // ReSharper disable once FunctionNeverReturns
     }
 }

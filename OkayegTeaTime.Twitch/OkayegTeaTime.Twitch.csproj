@@ -41,8 +41,4 @@
     <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\Models"/>
-  </ItemGroup>
-
 </Project>

@@ -20,7 +20,7 @@ public class ReminderCache : DbCache<Reminder>
             return -1;
         }
 
-        int id = DbController.AddReminder(new EntityFrameworkModels.Reminder(reminder));
+        int id = DbController.AddReminder(new(reminder));
         if (id == -1)
         {
             return -1;

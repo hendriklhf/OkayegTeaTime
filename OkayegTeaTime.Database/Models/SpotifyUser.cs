@@ -26,7 +26,7 @@ public class SpotifyUser : CacheModel
 
     public string Username { get; }
 
-    public string AccessToken
+    private string AccessToken
     {
         get => _accessToken;
         set
@@ -45,26 +45,7 @@ public class SpotifyUser : CacheModel
         }
     }
 
-    public string RefreshToken
-    {
-        get => _refreshToken;
-        set
-        {
-            _refreshToken = value;
-            _mutex.WaitOne();
-            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
-            _mutex.ReleaseMutex();
-            if (user is null)
-            {
-                return;
-            }
-
-            user.RefreshToken = value;
-            EditedProperty();
-        }
-    }
-
-    public long Time
+    private long Time
     {
         get => _time;
         set
@@ -105,7 +86,7 @@ public class SpotifyUser : CacheModel
     public List<SpotifyUser> ListeningUsers { get; } = new();
 
     private string _accessToken;
-    private string _refreshToken;
+    private readonly string _refreshToken;
     private long _time;
     private bool _areSongRequestsEnabled;
 
@@ -125,7 +106,7 @@ public class SpotifyUser : CacheModel
         _time = spotifyUser.Time;
         _areSongRequestsEnabled = spotifyUser.SongRequestEnabled;
 
-        _timer.Elapsed += Timer_OnElapsed;
+        _timer.Elapsed += async (sender, e) => await Timer_OnElapsed(sender, e);
     }
 
     public SpotifyUser(long id, string username, string accessToken, string refreshToken)
@@ -136,10 +117,11 @@ public class SpotifyUser : CacheModel
         _refreshToken = refreshToken;
         _time = TimeHelper.Now();
 
-        _timer.Elapsed += Timer_OnElapsed;
+        _timer.Elapsed += async (sender, e) => await Timer_OnElapsed(sender, e);
     }
 
-    private async void Timer_OnElapsed(object? sender, ElapsedEventArgs e)
+    [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+    private async Task Timer_OnElapsed(object? sender, ElapsedEventArgs e)
     {
         SpotifyItem? song;
         try
@@ -183,7 +165,7 @@ public class SpotifyUser : CacheModel
             return new(AccessToken);
         }
 
-        string? accessToken = await SpotifyController.GetNewAccessToken(RefreshToken);
+        string? accessToken = await SpotifyController.GetNewAccessToken(_refreshToken);
         if (accessToken is null)
         {
             return null;
@@ -318,7 +300,7 @@ public class SpotifyUser : CacheModel
 
             await client.Player.AddToQueue(new(uri));
             FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..], new());
-            return new SpotifyTrack(item);
+            return new(item);
         }
         catch (APIException ex)
         {
@@ -369,19 +351,12 @@ public class SpotifyUser : CacheModel
             throw new SpotifyException($"{target.Username.Antiping()} isn't listening to anything at the moment");
         }
 
-        SpotifyItem item;
-        if (playback.Item is FullTrack track)
+        SpotifyItem item = playback.Item switch
         {
-            item = new SpotifyTrack(track);
-        }
-        else if (playback.Item is FullEpisode episode)
-        {
-            item = new SpotifyEpisode(episode);
-        }
-        else
-        {
-            item = new(playback.Item);
-        }
+            FullTrack track => new SpotifyTrack(track),
+            FullEpisode episode => new SpotifyEpisode(episode),
+            _ => new(playback.Item)
+        };
 
         int seekTo = playback.ProgressMs > 500 ? playback.ProgressMs : 0;
         await ListenTo(item, seekTo);
@@ -404,24 +379,7 @@ public class SpotifyUser : CacheModel
         _timer.Start();
     }
 
-    public async Task<SpotifyItem> ListenTo(SpotifyUser target, int seekToMs = default)
-    {
-        if (string.Equals(target.Username, Username, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new SpotifyException("you can't listen to your own songs :)");
-        }
-
-        CurrentlyPlayingContext? playback = await target.GetCurrentlyPlayingContext();
-        if (playback is null)
-        {
-            throw new SpotifyException($"{target.Username.Antiping()} isn't listening to anything at the moment");
-        }
-
-        SpotifyItem song = new(playback.Item);
-        return await ListenTo(song, seekToMs);
-    }
-
-    public async Task<SpotifyItem> ListenTo(SpotifyItem item, int seekToMs = default)
+    private async Task ListenTo(SpotifyItem item, int seekToMs = default)
     {
         try
         {
@@ -463,8 +421,6 @@ public class SpotifyUser : CacheModel
             DbController.LogException(ex);
             throw new SpotifyException($"an error occured while trying to play the song {Username.Antiping()} wanted to listen to");
         }
-
-        return item;
     }
 
     public async Task<SpotifyItem?> GetCurrentlyPlayingItem()
@@ -493,9 +449,10 @@ public class SpotifyUser : CacheModel
         }
 
         SpotifyItem? item = null;
-        if (currentlyPlaying?.Item is FullTrack track)
+        switch (currentlyPlaying?.Item)
         {
-            item = new SpotifyTrack(track);
+            case FullTrack track:
+                item = new SpotifyTrack(track);
 
 #if RELEASE
             if (!AppSettings.Spotify.ChatPlaylistUsers.Contains(Id))
@@ -531,10 +488,12 @@ public class SpotifyUser : CacheModel
                 DbController.LogException(ex);
             }
 #endif
-        }
-        else if (currentlyPlaying?.Item is FullEpisode episode)
-        {
-            item = new SpotifyEpisode(episode);
+                break;
+            case FullEpisode episode:
+            {
+                item = new SpotifyEpisode(episode);
+                break;
+            }
         }
 
         return item;

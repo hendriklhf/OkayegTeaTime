@@ -8,6 +8,7 @@ using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
+using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
@@ -20,8 +21,7 @@ public class Formula1Command : Command
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -55,12 +55,12 @@ public class Formula1Command : Command
 
             weatherData.CityName = race.Circuit.Location.Name;
             weatherData.Location.Country = race.Circuit.Location.Country;
-            Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.CreateResponse(weatherData, false)}";
+            Response = $"{ChatMessage.Username}, {WeatherController.CreateResponse(weatherData, false)}";
         }
         else
         {
             Response = $"{ChatMessage.Username}, {(race.Race.Start > DateTime.UtcNow ? "Next" : "Current")} race: " +
-                       $"{race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ";
+                $"{race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ";
             if (race.Race.Start > DateTime.UtcNow)
             {
                 TimeSpan ts = race.Race.Start - DateTime.UtcNow;

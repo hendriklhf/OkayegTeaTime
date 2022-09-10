@@ -2,6 +2,7 @@
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
+using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
@@ -10,8 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Weather)]
 public class WeatherCommand : Command
 {
-    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -51,6 +51,6 @@ public class WeatherCommand : Command
             return;
         }
 
-        Response = $"{ChatMessage.Username}, {_twitchBot.WeatherController.CreateResponse(weatherData, isPrivateLocation)}";
+        Response = $"{ChatMessage.Username}, {WeatherController.CreateResponse(weatherData, isPrivateLocation)}";
     }
 }

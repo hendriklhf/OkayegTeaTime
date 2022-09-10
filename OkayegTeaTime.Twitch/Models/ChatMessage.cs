@@ -4,6 +4,9 @@ using HLE;
 using OkayegTeaTime.Files;
 using TwitchLib.Client.Models;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace OkayegTeaTime.Twitch.Models;
 
 public class ChatMessage
@@ -48,17 +51,17 @@ public class ChatMessage
     private static readonly Regex _messagePattern = new(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly Regex _messageReplacePattern = new(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public ChatMessage(TwitchLibMessage message)
+    protected ChatMessage(TwitchLibMessage message)
     {
         DisplayName = message.DisplayName;
         Message = GetMessage(message).Remove(AppSettings.ChatterinoChar).TrimAll();
         Username = message.Username;
     }
 
-    private string GetMessage(TwitchLibMessage twitchLibMessage)
+    private static string GetMessage(TwitchLibMessage twitchLibMessage)
     {
         string message = _messagePattern.Match(twitchLibMessage.RawIrcMessage).Value;
-        return _messageReplacePattern.Replace(message, "");
+        return _messageReplacePattern.Replace(message, string.Empty);
     }
 
     private string[] GetSplit()
