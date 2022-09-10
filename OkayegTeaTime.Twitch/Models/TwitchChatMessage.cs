@@ -56,8 +56,7 @@ public class TwitchChatMessage : TwitchMessage
 
     public bool IsBotModerator => AppSettings.UserLists.Moderators.Contains(UserId);
 
-    public TwitchChatMessage(TwitchLib::ChatMessage chatMessage)
-        : base(chatMessage)
+    public TwitchChatMessage(global::TwitchLib.Client.Models.ChatMessage chatMessage) : base(chatMessage)
     {
         Bits = chatMessage.Bits;
         BitsInDollars = chatMessage.BitsInDollars;

@@ -76,7 +76,7 @@ public class ReminderCache : DbCache<Reminder>
     }
 
     /// <summary>
-    /// Removes a reminder without checking for permission
+    ///     Removes a reminder without checking for permission
     /// </summary>
     public void Remove(int reminderId)
     {

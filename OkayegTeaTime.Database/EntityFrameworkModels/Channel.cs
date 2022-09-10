@@ -3,8 +3,11 @@
 public class Channel
 {
     public long Id { get; set; }
+
     public string Name { get; set; }
+
     public string? EmoteInFront { get; set; }
+
     public string? Prefix { get; set; }
 
     public Channel(long id, string name, string? emoteInFront, string? prefix)

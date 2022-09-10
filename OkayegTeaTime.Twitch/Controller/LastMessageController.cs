@@ -11,9 +11,7 @@ public class LastMessageController
 
     public LastMessageController(ChannelCache? channelCache = null)
     {
-        _lastMessages = channelCache is null
-            ? DbController.GetChannels().Select(c => c.Name).ToDictionary(c => c, _ => string.Empty)
-            : channelCache.Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
+        _lastMessages = channelCache is null ? DbController.GetChannels().Select(c => c.Name).ToDictionary(c => c, _ => string.Empty) : channelCache.Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
     }
 
     public string this[string channel]

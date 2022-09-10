@@ -7,9 +7,13 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels;
 public class ExceptionLog
 {
     public int Id { get; set; }
+
     public string Type { get; set; }
+
     public string Origin { get; set; }
+
     public string Message { get; set; }
+
     public string StackTrace { get; set; }
 
     public ExceptionLog(int id, string type, string origin, string message, string stackTrace)

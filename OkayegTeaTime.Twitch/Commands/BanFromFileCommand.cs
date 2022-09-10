@@ -17,8 +17,7 @@ public class BanFromFileCommand : Command
 {
     private static readonly Regex _banPattern = new(@"^[\./]ban\s\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public BanFromFileCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public BanFromFileCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

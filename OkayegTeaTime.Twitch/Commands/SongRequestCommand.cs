@@ -19,8 +19,7 @@ public class SongRequestCommand : Command
 {
     private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -285,9 +284,7 @@ public class SongRequestCommand : Command
     {
         Match match = Pattern.MultipleTargets.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
         string[] targets = match.Value.Split(',');
-        return targets.Select(t => t.TrimAll()).Distinct()
-            .Select(t => _twitchBot.SpotifyUsers[t])
-            .Where(t => t is not null).Take(5).ToArray()!;
+        return targets.Select(t => t.TrimAll()).Distinct().Select(t => _twitchBot.SpotifyUsers[t]).Where(t => t is not null).Take(5).ToArray()!;
     }
 
     private void CreateMultipleTargetResponse(Dictionary<SpotifyUser, string?> success, SpotifyTrack track)

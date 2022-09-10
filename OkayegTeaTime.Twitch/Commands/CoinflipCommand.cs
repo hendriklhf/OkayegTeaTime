@@ -8,8 +8,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Coinflip)]
 public class CoinflipCommand : Command
 {
-    public CoinflipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public CoinflipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

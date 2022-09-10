@@ -192,7 +192,7 @@ public static class DbController
     }
 
     /// <summary>
-    /// Removes a reminder without checking for permission.
+    ///     Removes a reminder without checking for permission.
     /// </summary>
     public static void RemoveReminder(int reminderId)
     {

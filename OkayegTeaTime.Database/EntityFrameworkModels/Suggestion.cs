@@ -8,10 +8,15 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels;
 public class Suggestion
 {
     public int Id { get; set; }
+
     public string Username { get; set; }
+
     public byte[] Content { get; set; }
+
     public string Channel { get; set; }
+
     public long Time { get; set; } = TimeHelper.Now();
+
     public string Status { get; set; } = "Open";
 
     public Suggestion(int id, string username, byte[] content, string channel, long time, string status)

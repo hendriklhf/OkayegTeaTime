@@ -15,18 +15,13 @@ public class SpotifyCommand : Command
 {
     private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public SpotifyCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public SpotifyCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
     public override void Handle()
     {
-        string username = ChatMessage.LowerSplit.Length > 1
-            ? ChatMessage.LowerSplit[1] == "me"
-                ? ChatMessage.Username
-                : ChatMessage.LowerSplit[1]
-            : ChatMessage.Channel;
+        string username = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] == "me" ? ChatMessage.Username : ChatMessage.LowerSplit[1] : ChatMessage.Channel;
         bool returnUrl = ChatMessage.LowerSplit.Any(s => _urlPattern.IsMatch(s));
         bool targetIsSender = username == ChatMessage.Username;
         Task.Run(async () =>
@@ -34,8 +29,7 @@ public class SpotifyCommand : Command
             SpotifyUser? user = _twitchBot.SpotifyUsers[username];
             if (user is null)
             {
-                Response = targetIsSender
-                    ? $"{ChatMessage.Username}, can't get your currently playing song, you have to register first"
+                Response = targetIsSender ? $"{ChatMessage.Username}, can't get your currently playing song, you have to register first"
                     : $"{ChatMessage.Username}, can't get the currently playing song of {username.Antiping()}, they have to register first";
                 return;
             }
@@ -55,9 +49,7 @@ public class SpotifyCommand : Command
             {
                 case null:
                 {
-                    Response = targetIsSender
-                        ? $"{ChatMessage.Username}, you aren't listening to anything"
-                        : $"{ChatMessage.Username}, {username.Antiping()} is not listening to anything";
+                    Response = targetIsSender ? $"{ChatMessage.Username}, you aren't listening to anything" : $"{ChatMessage.Username}, {username.Antiping()} is not listening to anything";
                     return;
                 }
                 case SpotifyTrack track:

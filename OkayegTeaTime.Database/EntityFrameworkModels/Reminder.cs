@@ -7,11 +7,17 @@ namespace OkayegTeaTime.Database.EntityFrameworkModels;
 public class Reminder
 {
     public int Id { get; set; }
+
     public string Creator { get; set; }
+
     public string Target { get; set; }
+
     public string Message { get; set; }
+
     public string Channel { get; set; }
+
     public long Time { get; set; } = TimeHelper.Now();
+
     public long ToTime { get; set; }
 
     public Reminder(int id, string creator, string target, string message, string channel, long time, long toTime)

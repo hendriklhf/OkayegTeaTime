@@ -10,8 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Go)]
 public class GoCommand : Command
 {
-    public GoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public GoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

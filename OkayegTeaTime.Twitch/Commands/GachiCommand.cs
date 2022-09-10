@@ -10,8 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Gachi)]
 public class GachiCommand : Command
 {
-    public GachiCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public GachiCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

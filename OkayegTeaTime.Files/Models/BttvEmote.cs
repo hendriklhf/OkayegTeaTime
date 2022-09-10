@@ -24,7 +24,7 @@ public class BttvEmote
     [JsonPropertyName("user")]
     public BttvUser User { get; set; }
 
-    #nullable enable
+#nullable enable
     public override bool Equals(object? obj)
     {
         return obj is BttvEmote emote && emote.Id == Id;

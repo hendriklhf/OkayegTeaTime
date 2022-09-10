@@ -21,8 +21,7 @@ public class RedditCommand : Command
     private static readonly Dictionary<string, RedditPost[]> _redditPosts = new();
     private static readonly long _cacheTime = (long)TimeSpan.FromHours(1).TotalMilliseconds;
 
-    public RedditCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public RedditCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

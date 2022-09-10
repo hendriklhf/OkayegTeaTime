@@ -6,8 +6,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Invalidate)]
 public class InvalidateCommand : Command
 {
-    public InvalidateCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public InvalidateCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

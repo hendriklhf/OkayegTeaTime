@@ -10,8 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Skip)]
 public class SkipCommand : Command
 {
-    public SkipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public SkipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

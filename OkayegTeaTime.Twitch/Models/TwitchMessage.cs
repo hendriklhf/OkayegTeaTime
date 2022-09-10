@@ -21,8 +21,7 @@ public class TwitchMessage : ChatMessage
 
     public UserType UserType { get; }
 
-    public TwitchMessage(TwitchLibMessage message)
-        : base(message)
+    public TwitchMessage(TwitchLibMessage message) : base(message)
     {
         Badges = message.Badges.Select(b => b.Key).ToArray();
         Color = message.Color;

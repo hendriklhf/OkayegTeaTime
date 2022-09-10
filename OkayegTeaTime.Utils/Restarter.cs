@@ -1,53 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HLE.Collections;
 using HLE.Time;
-using Timer = System.Timers;
+using System.Timers;
 
 namespace OkayegTeaTime.Utils;
 
 public class Restarter
 {
-    private readonly List<Timer::Timer> _restartTimers = new();
+    private readonly List<Timer> _restartTimers = new();
 
-    private (int Hour, int Minute)[] _restartTimes;
+    private readonly (int Hour, int Minute)[] _restartTimes;
 
     public Restarter(IEnumerable<(int, int)> restartTimes)
     {
         _restartTimes = restartTimes.ToArray();
     }
 
-    public void Initialize()
+    public void Start()
     {
-        Initialize(_restartTimes);
-    }
-
-    public void Initialize(IEnumerable<(int, int)> hoursOfDay)
-    {
-        _restartTimes = hoursOfDay.ToArray();
         Stop();
-        _restartTimes.ForEach(r => _restartTimers.Add(new(TimeHelper.MillisecondsUntil(r.Hour, r.Minute))));
-        _restartTimers.ForEach(t =>
+        foreach ((int hour, int minute) in _restartTimes)
         {
-            t.Elapsed += RestartTimer_OnElapsed!;
-            t.Start();
-        });
+            long interval = TimeHelper.MillisecondsUntil(hour, minute);
+            Timer timer = new(interval);
+            timer.Elapsed += RestartTimer_OnElapsed!;
+            timer.Start();
+            _restartTimers.Add(timer);
+        }
     }
 
     public void Stop()
     {
-        _restartTimers.ForEach(t =>
+        foreach (Timer timer in _restartTimers)
         {
-            t.Stop();
-            t.Dispose();
-        });
+            timer.Stop();
+            timer.Dispose();
+        }
+
         _restartTimers.Clear();
     }
 
-    private static void RestartTimer_OnElapsed(object sender, Timer::ElapsedEventArgs e)
+    private static void RestartTimer_OnElapsed(object sender, ElapsedEventArgs e)
     {
-        (sender as Timer::Timer)!.Interval = TimeSpan.FromDays(1).TotalMilliseconds;
+        if (sender is not Timer t)
+        {
+            return;
+        }
+
+        t.Interval = TimeSpan.FromDays(1).TotalMilliseconds;
         ProcessUtils.Restart();
     }
 }

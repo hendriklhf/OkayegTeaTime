@@ -9,8 +9,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Leave)]
 public class LeaveCommand : Command
 {
-    public LeaveCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public LeaveCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

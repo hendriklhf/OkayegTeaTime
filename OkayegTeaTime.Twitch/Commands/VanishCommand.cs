@@ -6,8 +6,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Vanish)]
 public class VanishCommand : Command
 {
-    public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

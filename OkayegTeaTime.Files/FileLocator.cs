@@ -11,10 +11,10 @@ public static class FileLocator
     private static string[]? _files;
 
     /// <summary>
-    /// Searches for a file in the current and all sub directories and returns the path of it.
+    ///     Searches for a file in the current and all sub directories and returns the path of it.
     /// </summary>
     /// <exception cref="FileNotFoundException">
-    /// Thrown if a file couldn't be found.
+    ///     Thrown if a file couldn't be found.
     /// </exception>
     public static string Find(string fileName)
     {

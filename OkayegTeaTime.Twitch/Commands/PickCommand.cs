@@ -7,8 +7,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Pick)]
 public class PickCommand : Command
 {
-    public PickCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public PickCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

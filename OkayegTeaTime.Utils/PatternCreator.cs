@@ -12,9 +12,7 @@ public static class PatternCreator
     public static Regex Create(string alias, string? prefix, string addition = "")
     {
         // TODO: kinda don't like how this is passed in
-        string patternPrefix = string.IsNullOrEmpty(prefix)
-            ? '^' + Regex.Escape(alias + AppSettings.Suffix)
-            : '^' + Regex.Escape(prefix + alias);
+        string patternPrefix = string.IsNullOrEmpty(prefix) ? '^' + Regex.Escape(alias + AppSettings.Suffix) : '^' + Regex.Escape(prefix + alias);
 
         string patternKey = patternPrefix + addition + @"(\s|$)";
 

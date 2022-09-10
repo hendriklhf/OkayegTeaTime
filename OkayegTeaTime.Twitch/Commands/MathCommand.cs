@@ -10,8 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Math)]
 public class MathCommand : Command
 {
-    public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

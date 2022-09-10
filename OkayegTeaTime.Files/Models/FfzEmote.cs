@@ -59,7 +59,7 @@ public class FfzEmote
     [JsonPropertyName("last_updated")]
     public string LastUpdated { get; set; }
 
-    #nullable enable
+#nullable enable
     public override bool Equals(object? obj)
     {
         return obj is FfzEmote emote && emote.Id == Id;

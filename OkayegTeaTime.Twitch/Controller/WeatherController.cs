@@ -139,8 +139,9 @@ public class WeatherController
             $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
     }
 
-    private static string GetWeatherEmoji(int weatherId) =>
-        weatherId switch
+    private static string GetWeatherEmoji(int weatherId)
+    {
+        return weatherId switch
         {
             >= 200 and <= 231 => Emoji.CloudWithLightningAndRain,
             >= 300 and <= 321 => Emoji.CloudWithRain,
@@ -157,9 +158,11 @@ public class WeatherController
             803 or 804 => Emoji.Cloud,
             _ => Emoji.Question
         };
+    }
 
-    private static string GetDirection(double deg) =>
-        deg switch
+    private static string GetDirection(double deg)
+    {
+        return deg switch
         {
             < 0 => Emoji.Question,
             < 11.25 => "N",
@@ -181,6 +184,7 @@ public class WeatherController
             <= 360 => "N",
             _ => Emoji.Question
         };
+    }
 
     private class WeatherDataKey
     {
@@ -194,7 +198,7 @@ public class WeatherController
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public byte ForecastDay { get; init; }
 
-        #pragma warning disable CS0659
+#pragma warning disable CS0659
         public override bool Equals(object? obj)
         {
             return obj is WeatherDataKey k && (k.City is not null && City is not null && k.City == City || k.Longitude == Longitude && k.Latitude == Latitude) && k.ForecastDay == ForecastDay;

@@ -46,11 +46,10 @@ public class RemindCommand : Command
     private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly short _minimumTimedReminderTime = (short)TimeSpan.FromSeconds(30).TotalMilliseconds;
 
-    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
+    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase,
+        TimeSpan.FromMilliseconds(500));
 
-    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -171,16 +170,13 @@ public class RemindCommand : Command
         Match match = _targetPattern.Match(ChatMessage.Message);
         int firstWordLength = match.Value.Split()[0].Length + 1;
         string[] targets = match.Value[firstWordLength..].Split(',').Select(t => t.Trim()).ToArray();
-        return targets.Replace(t => t.ToLower() == _yourself, ChatMessage.Username)
-            .Select(t => t.ToLower()).Distinct()
-            .Take(5).ToArray();
+        return targets.Replace(t => t.ToLower() == _yourself, ChatMessage.Username).Select(t => t.ToLower()).Distinct().Take(5).ToArray();
     }
 
     private static string GetTimePattern()
     {
-        IEnumerable<string> pattern = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic)
-            .Where(f => f.GetCustomAttribute<TimePattern>() is not null)
-            .Select(f => f.GetValue(null)!.ToString()![2..^2]);
+        IEnumerable<string> pattern =
+            typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePattern>() is not null).Select(f => f.GetValue(null)!.ToString()![2..^2]);
         return '(' + string.Join(")|(", pattern) + ')';
     }
 

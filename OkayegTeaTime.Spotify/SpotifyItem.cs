@@ -11,7 +11,7 @@ namespace OkayegTeaTime.Spotify;
 public class SpotifyItem
 {
     /// <summary>
-    /// Duration in milliseconds.
+    ///     Duration in milliseconds.
     /// </summary>
     public int Duration { get; }
 

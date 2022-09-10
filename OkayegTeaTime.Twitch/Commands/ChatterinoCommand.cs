@@ -6,8 +6,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Chatterino)]
 public class ChatterinoCommand : Command
 {
-    public ChatterinoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public ChatterinoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

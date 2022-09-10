@@ -28,8 +28,7 @@ public static class SpotifyController
     {
         try
         {
-            AuthorizationCodeRefreshResponse response =
-                await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
+            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
             return response.AccessToken;
         }
         catch (Exception)

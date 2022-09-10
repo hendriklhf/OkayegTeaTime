@@ -89,7 +89,7 @@ public class CommandHandler : Handler
     }
 
     /// <summary>
-    /// Attempts to handle a command through a handler via reflection
+    ///     Attempts to handle a command through a handler via reflection
     /// </summary>
     /// <param name="type">The command handler class type</param>
     /// <param name="twitchBot">The currently running bot that received this command</param>

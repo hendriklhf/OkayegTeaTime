@@ -12,7 +12,6 @@ using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
-using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -104,7 +103,7 @@ public class TwitchBot
         EmoteController = new(Channels);
         _messageHandler = new(this);
         _lastMessageController = new(Channels);
-        _restarter.Initialize();
+        _restarter.Start();
     }
 
     public void Connect()

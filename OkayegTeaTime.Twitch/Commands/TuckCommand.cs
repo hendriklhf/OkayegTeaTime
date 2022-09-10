@@ -9,8 +9,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Tuck)]
 public class TuckCommand : Command
 {
-    public TuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public TuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

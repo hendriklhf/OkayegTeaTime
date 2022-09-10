@@ -122,7 +122,7 @@ public class TwitchApi
             return user;
         }
 
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: new()
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(new()
         {
             id.ToString()
         }).Result;
@@ -148,7 +148,7 @@ public class TwitchApi
             return result;
         }
 
-        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(ids: notCachedIds.Select(i => i.ToString()).ToList()).Result;
+        GetUsersResponse response = _api.Helix.Users.GetUsersAsync(notCachedIds.Select(i => i.ToString()).ToList()).Result;
         Dictionary<long, User?> users = notCachedIds.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => long.Parse(u.Id) == id));
         users.Where(p => p.Value is not null).ForEach(p =>
         {
@@ -190,7 +190,7 @@ public class TwitchApi
 
     public Stream? GetStream(string channel)
     {
-        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new List<string>
+        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userLogins: new()
         {
             channel
         }).Result;
@@ -199,7 +199,7 @@ public class TwitchApi
 
     public Stream? GetStream(long id)
     {
-        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new List<string>
+        GetStreamsResponse response = _api.Helix.Streams.GetStreamsAsync(userIds: new()
         {
             id.ToString()
         }).Result;
@@ -251,7 +251,7 @@ public class TwitchApi
             Name = name;
         }
 
-        #pragma warning disable CS0659
+#pragma warning disable CS0659
         public override bool Equals(object? obj)
         {
             return obj is UserKey key && (key.Id != default && Id != default && key.Id == Id || key.Name != default && Name != default && key.Name == Name);

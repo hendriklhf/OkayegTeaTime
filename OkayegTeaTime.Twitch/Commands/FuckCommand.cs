@@ -9,8 +9,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Fuck)]
 public class FuckCommand : Command
 {
-    public FuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public FuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

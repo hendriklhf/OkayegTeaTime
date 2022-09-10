@@ -8,8 +8,7 @@ public class TwitchWhisperMessage : TwitchMessage
 
     public string ThreadId { get; }
 
-    public TwitchWhisperMessage(WhisperMessage whisperMessage)
-        : base(whisperMessage)
+    public TwitchWhisperMessage(WhisperMessage whisperMessage) : base(whisperMessage)
     {
         MessageId = int.Parse(whisperMessage.MessageId);
         ThreadId = whisperMessage.ThreadId;

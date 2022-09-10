@@ -53,7 +53,10 @@ public class Builder
         }
     }
 
-    private string[] GetRuntimes() => _runtimes.Where(kv => _args[1..].Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
+    private string[] GetRuntimes()
+    {
+        return _runtimes.Where(kv => _args[1..].Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
+    }
 
     private void BuildApi(string outputDir, string runtime)
     {
@@ -99,5 +102,8 @@ public class Builder
         File.WriteAllText(_commitIdFile, commitId);
     }
 
-    private bool GetSelfContained() => _args.Contains("--self-contained");
+    private bool GetSelfContained()
+    {
+        return _args.Contains("--self-contained");
+    }
 }

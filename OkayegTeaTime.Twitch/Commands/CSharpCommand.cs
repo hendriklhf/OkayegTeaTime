@@ -12,8 +12,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.CSharp)]
 public class CSharpCommand : Command
 {
-    public CSharpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public CSharpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

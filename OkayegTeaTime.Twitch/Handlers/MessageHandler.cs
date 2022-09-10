@@ -24,8 +24,7 @@ public class MessageHandler : Handler
 
     private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public MessageHandler(TwitchBot twitchBot)
-        : base(twitchBot)
+    public MessageHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _commandHandler = new(twitchBot);
         _pajaAlertHandler = new(twitchBot);
@@ -118,9 +117,7 @@ public class MessageHandler : Handler
         }
 
         string? prefix = _twitchBot.Channels[chatMessage.Channel]?.Prefix;
-        string message = string.IsNullOrEmpty(prefix)
-            ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}"
-            : $"{chatMessage.Username}, Prefix: {prefix}";
+        string message = string.IsNullOrEmpty(prefix) ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}" : $"{chatMessage.Username}, Prefix: {prefix}";
         _twitchBot.Send(chatMessage.Channel, message);
     }
 }

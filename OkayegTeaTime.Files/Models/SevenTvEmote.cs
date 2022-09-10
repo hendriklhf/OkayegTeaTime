@@ -29,7 +29,7 @@ public class SevenTvEmote
     [JsonPropertyName("height")]
     public int[] Height { get; set; }
 
-    #nullable enable
+#nullable enable
     public override bool Equals(object? obj)
     {
         return obj is SevenTvEmote emote && emote.Id == Id;

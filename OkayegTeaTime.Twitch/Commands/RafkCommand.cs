@@ -8,8 +8,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Rafk)]
 public class RafkCommand : Command
 {
-    public RafkCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public RafkCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 

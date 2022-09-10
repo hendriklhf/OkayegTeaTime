@@ -11,8 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Set)]
 public class SetCommand : Command
 {
-    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
-        : base(twitchBot, chatMessage, alias)
+    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
     }
 
@@ -27,9 +26,7 @@ public class SetCommand : Command
                 return;
             }
 
-            string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength
-                ? AppSettings.MaxPrefixLength
-                : ChatMessage.LowerSplit[2].Length)];
+            string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength ? AppSettings.MaxPrefixLength : ChatMessage.LowerSplit[2].Length)];
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
@@ -47,9 +44,7 @@ public class SetCommand : Command
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
-                string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength
-                    ? AppSettings.MaxEmoteInFrontLength
-                    : ChatMessage.Split[2].Length)];
+                string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength ? AppSettings.MaxEmoteInFrontLength : ChatMessage.Split[2].Length)];
                 Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {

@@ -89,7 +89,7 @@ public class SpotifyUserCache : DbCache<SpotifyUser>
     }
 
     /// <summary>
-    /// Returns who the <paramref name="user"/> is listening to. Null, if they are not listening to anyone.
+    ///     Returns who the <paramref name="user" /> is listening to. Null, if they are not listening to anyone.
     /// </summary>
     public SpotifyUser? GetListeningTo(SpotifyUser user)
     {
