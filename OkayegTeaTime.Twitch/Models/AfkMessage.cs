@@ -17,7 +17,7 @@ public sealed class AfkMessage
             }
 
             _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username).Replace("{time}", $"{TimeHelper.GetUnixDifference(_user.AfkTime)} ago").Replace("{message}", _user.AfkMessage);
-            _comingBack = string.IsNullOrEmpty(_user.AfkMessage) ? _afkCommand.ComingBack.Remove(":").TrimAll() : _afkCommand.ComingBack;
+            _comingBack = string.IsNullOrEmpty(_user.AfkMessage) ? _comingBack.Remove(":").TrimAll() : _comingBack;
             return _comingBack;
         }
     }
