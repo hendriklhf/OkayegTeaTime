@@ -87,7 +87,7 @@ public sealed class ChannelCache : DbCache<Channel>
             return;
         }
 
-        DbController.GetChannels().Where(c => !_items.All(i => c.Id != i.Id)).ForEach(c => _items.Add(new(c)));
+        DbController.GetChannels().Where(c => _items.All(i => c.Id != i.Id)).ForEach(c => _items.Add(new(c)));
         _containsAll = true;
     }
 }
