@@ -5,7 +5,7 @@ using HLE.Time;
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
-public class Suggestion
+public sealed class Suggestion
 {
     public int Id { get; set; }
 

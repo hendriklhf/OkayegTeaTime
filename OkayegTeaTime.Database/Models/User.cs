@@ -3,7 +3,7 @@ using OkayegTeaTime.Database.Cache.Enums;
 
 namespace OkayegTeaTime.Database.Models;
 
-public class User : CacheModel
+public sealed class User : CacheModel
 {
     public long Id { get; }
 

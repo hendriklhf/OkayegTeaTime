@@ -4,7 +4,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Chatterino7)]
-public class Chatterino7Command : Command
+public sealed class Chatterino7Command : Command
 {
     public Chatterino7Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

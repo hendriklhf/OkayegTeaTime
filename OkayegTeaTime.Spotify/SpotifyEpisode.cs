@@ -5,7 +5,7 @@ using SpotifyAPI.Web;
 
 namespace OkayegTeaTime.Spotify;
 
-public class SpotifyEpisode : SpotifyItem
+public sealed class SpotifyEpisode : SpotifyItem
 {
     public string AudioPreviewUrl { get; }
 

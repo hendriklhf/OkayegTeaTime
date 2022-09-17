@@ -13,7 +13,7 @@ using JCommand = OkayegTeaTime.Files.Models.Command;
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
-public class CommandTest
+public sealed class CommandTest
 {
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();

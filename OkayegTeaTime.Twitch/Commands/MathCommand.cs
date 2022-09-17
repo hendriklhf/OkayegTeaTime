@@ -8,7 +8,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Math)]
-public class MathCommand : Command
+public sealed class MathCommand : Command
 {
     public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

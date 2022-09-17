@@ -8,7 +8,7 @@ using TwitchLib = TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class TwitchChatMessage : TwitchMessage
+public sealed class TwitchChatMessage : TwitchMessage
 {
     public int Bits { get; }
 

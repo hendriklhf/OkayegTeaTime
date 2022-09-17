@@ -15,7 +15,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Remind)]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public class RemindCommand : Command
+public sealed class RemindCommand : Command
 {
     private readonly long _now = TimeHelper.Now();
 

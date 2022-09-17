@@ -8,7 +8,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Go)]
-public class GoCommand : Command
+public sealed class GoCommand : Command
 {
     public GoCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

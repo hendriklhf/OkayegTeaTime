@@ -8,7 +8,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Gachi)]
-public class GachiCommand : Command
+public sealed class GachiCommand : Command
 {
     public GachiCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

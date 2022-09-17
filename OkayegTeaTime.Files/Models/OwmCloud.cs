@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmCloud
+public sealed class OwmCloud
 {
     [JsonPropertyName("all")]
     public int Percentage { get; set; }

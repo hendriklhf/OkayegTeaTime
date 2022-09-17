@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class FfzSets
+public sealed class FfzSets
 {
     [JsonPropertyName(AppSettings.FfzSetIdReplacement)]
     public FfzMainSet EmoteSet { get; set; }

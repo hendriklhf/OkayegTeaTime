@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class FfzMainSet
+public sealed class FfzMainSet
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }

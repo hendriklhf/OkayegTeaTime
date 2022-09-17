@@ -11,7 +11,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Spotify)]
-public class SpotifyCommand : Command
+public sealed class SpotifyCommand : Command
 {
     private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 

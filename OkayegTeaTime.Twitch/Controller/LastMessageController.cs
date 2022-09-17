@@ -5,7 +5,7 @@ using OkayegTeaTime.Database.Cache;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public class LastMessageController
+public sealed class LastMessageController
 {
     private readonly Dictionary<string, string> _lastMessages;
 

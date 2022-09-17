@@ -3,7 +3,7 @@
 namespace OkayegTeaTime.Resources;
 
 [AttributeUsage(AttributeTargets.Property)]
-public class FileName : Attribute
+public sealed class FileName : Attribute
 {
     public string Value { get; }
 

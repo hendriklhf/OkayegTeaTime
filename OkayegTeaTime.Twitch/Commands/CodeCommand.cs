@@ -7,7 +7,7 @@ using JCommand = OkayegTeaTime.Files.Models.Command;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Code)]
-public class CodeCommand : Command
+public sealed class CodeCommand : Command
 {
     public CodeCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

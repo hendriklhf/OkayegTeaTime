@@ -11,7 +11,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Check)]
-public class CheckCommand : Command
+public sealed class CheckCommand : Command
 {
     public CheckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

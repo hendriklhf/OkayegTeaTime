@@ -13,7 +13,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.BanFromFile)]
-public class BanFromFileCommand : Command
+public sealed class BanFromFileCommand : Command
 {
     private static readonly Regex _banPattern = new(@"^[\./]ban\s\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 

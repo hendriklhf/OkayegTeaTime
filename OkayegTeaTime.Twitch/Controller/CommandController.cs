@@ -10,7 +10,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public class CommandController
+public sealed class CommandController
 {
     public Command this[CommandType type] => GetCommand(type);
 

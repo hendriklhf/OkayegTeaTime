@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class UserLists
+public sealed class UserLists
 {
     public long Owner { get; set; }
 

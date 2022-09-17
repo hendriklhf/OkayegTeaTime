@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Utils;
 
-public class ArgsResolver
+public sealed class ArgsResolver
 {
     public string[]? Channels { get; private set; }
 

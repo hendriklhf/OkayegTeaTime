@@ -6,7 +6,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Help)]
-public class HelpCommand : Command
+public sealed class HelpCommand : Command
 {
     public HelpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

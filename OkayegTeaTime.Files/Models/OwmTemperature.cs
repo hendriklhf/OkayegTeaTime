@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmTemperature
+public sealed class OwmTemperature
 {
     [JsonPropertyName("day")]
     public double Day { get; set; }

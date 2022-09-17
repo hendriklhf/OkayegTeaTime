@@ -5,7 +5,7 @@ namespace OkayegTeaTime.Api.Controllers;
 
 [ApiController]
 [Route("api/cmds")]
-public class CommandController : ControllerBase
+public sealed class CommandController : ControllerBase
 {
     private readonly Twitch.Controller.CommandController _commandController = new();
 

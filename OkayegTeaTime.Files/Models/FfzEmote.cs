@@ -9,7 +9,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class FfzEmote
+public sealed class FfzEmote
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }

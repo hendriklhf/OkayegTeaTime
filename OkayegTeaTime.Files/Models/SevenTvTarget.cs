@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class SevenTvTarget
+public sealed class SevenTvTarget
 {
     [JsonPropertyName("type")]
     public string Type { get; set; }

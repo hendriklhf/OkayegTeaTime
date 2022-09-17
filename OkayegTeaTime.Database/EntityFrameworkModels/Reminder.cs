@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
-public class Reminder
+public sealed class Reminder
 {
     public int Id { get; set; }
 

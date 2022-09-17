@@ -2,7 +2,7 @@
 
 #nullable disable
 
-public class CommandList
+public sealed class CommandList
 {
     public Command[] Commands { get; set; }
 

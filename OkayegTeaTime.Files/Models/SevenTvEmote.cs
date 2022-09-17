@@ -9,7 +9,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class SevenTvEmote
+public sealed class SevenTvEmote
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }

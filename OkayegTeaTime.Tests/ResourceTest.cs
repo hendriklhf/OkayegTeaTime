@@ -5,7 +5,7 @@ using OkayegTeaTime.Resources;
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
-public class ResourceTest
+public sealed class ResourceTest
 {
     [TestMethod]
     public void AllPropertiesNotNullOrEmptyTest()

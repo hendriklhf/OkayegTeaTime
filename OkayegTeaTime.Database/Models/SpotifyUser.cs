@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices;
 #if RELEASE
 using System.Threading;
 using OkayegTeaTime.Database.Cache;
@@ -20,7 +21,7 @@ using Timer = System.Timers.Timer;
 namespace OkayegTeaTime.Database.Models;
 
 [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
-public class SpotifyUser : CacheModel
+public sealed class SpotifyUser : CacheModel
 {
     public long Id { get; }
 
@@ -145,6 +146,7 @@ public class SpotifyUser : CacheModel
         _timer.Interval = song.Duration;
         _timer.Start();
 
+        List<SpotifyUser> usersToRemove = new();
         foreach (SpotifyUser user in ListeningUsers)
         {
             try
@@ -153,8 +155,13 @@ public class SpotifyUser : CacheModel
             }
             catch (SpotifyException)
             {
-                ListeningUsers.Remove(user);
+                usersToRemove.Add(user);
             }
+        }
+
+        foreach (SpotifyUser user in usersToRemove)
+        {
+            ListeningUsers.Remove(user);
         }
     }
 
@@ -191,8 +198,7 @@ public class SpotifyUser : CacheModel
     {
         async Task AddToChatPlaylistLocal()
         {
-            string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty)
-                .Where(u => !string.IsNullOrEmpty(u)).ToArray();
+            string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty).Where(u => !string.IsNullOrEmpty(u)).ToArray();
 
             if (uris.Length == 0)
             {
@@ -452,43 +458,44 @@ public class SpotifyUser : CacheModel
         switch (currentlyPlaying?.Item)
         {
             case FullTrack track:
+            {
                 item = new SpotifyTrack(track);
 
 #if RELEASE
-            if (!AppSettings.Spotify.ChatPlaylistUsers.Contains(Id))
-            {
-                return item;
-            }
+                if (!AppSettings.Spotify.ChatPlaylistUsers.Contains(Id))
+                {
+                    return item;
+                }
 
-            if (item.IsLocal)
-            {
-                return item;
-            }
+                if (item.IsLocal)
+                {
+                    return item;
+                }
 
-            string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
-            if (username is null)
-            {
-                return item;
-            }
+                string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
+                if (username is null)
+                {
+                    return item;
+                }
 
-            EntityFrameworkModels.Spotify? efUser = DbController.GetSpotifyUser(username);
-            if (efUser is null)
-            {
-                return item;
-            }
+                EntityFrameworkModels.Spotify? efUser = DbController.GetSpotifyUser(username);
+                if (efUser is null)
+                {
+                    return item;
+                }
 
-
-            SpotifyUser playlistUser = new(efUser);
-            try
-            {
-                playlistUser.AddToChatPlaylist(item.Uri);
-            }
-            catch (SpotifyException ex)
-            {
-                DbController.LogException(ex);
-            }
+                SpotifyUser playlistUser = new(efUser);
+                try
+                {
+                    playlistUser.AddToChatPlaylist(item.Uri);
+                }
+                catch (SpotifyException ex)
+                {
+                    DbController.LogException(ex);
+                }
 #endif
                 break;
+            }
             case FullEpisode episode:
             {
                 item = new SpotifyEpisode(episode);

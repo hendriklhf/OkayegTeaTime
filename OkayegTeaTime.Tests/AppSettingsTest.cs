@@ -6,7 +6,7 @@ using OkayegTeaTime.Files;
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
-public class AppSettingsTest
+public sealed class AppSettingsTest
 {
     [TestMethod]
     public void AllPropertiesNotDefaultTest()

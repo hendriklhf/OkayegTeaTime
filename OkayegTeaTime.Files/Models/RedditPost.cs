@@ -5,7 +5,7 @@ using HLE.Time;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class RedditPost
+public sealed class RedditPost
 {
     [JsonPropertyName("subreddit")]
     public string SubReddit { get; set; }

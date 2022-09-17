@@ -10,7 +10,7 @@ using OkayegTeaTime.Files.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public class EmoteController
+public sealed class EmoteController
 {
     public IEnumerable<FfzEmote> FfzGlobalEmotes
     {

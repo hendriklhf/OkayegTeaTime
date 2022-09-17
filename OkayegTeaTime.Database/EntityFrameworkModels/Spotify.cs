@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
-public class Spotify
+public sealed class Spotify
 {
     public long Id { get; set; }
 

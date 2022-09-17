@@ -16,7 +16,7 @@ using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
 
 namespace OkayegTeaTime.Twitch;
 
-public class TwitchApi
+public sealed class TwitchApi
 {
     private readonly TwitchAPI _api = new();
 
@@ -229,7 +229,7 @@ public class TwitchApi
     }
 
     [DebuggerDisplay("Id = {Id} Name = \"{Name}\"")]
-    private class UserKey
+    private sealed class UserKey
     {
         public long Id { get; set; }
 

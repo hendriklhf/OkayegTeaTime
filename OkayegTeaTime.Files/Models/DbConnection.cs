@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class DbConnection
+public sealed class DbConnection
 {
     public string Hostname { get; set; }
 

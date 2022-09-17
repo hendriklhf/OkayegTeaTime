@@ -7,7 +7,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Tuck)]
-public class TuckCommand : Command
+public sealed class TuckCommand : Command
 {
     public TuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

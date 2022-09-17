@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class Cooldown
+public sealed class Cooldown
 {
     public long UserId { get; }
 

@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
-public class User
+public sealed class User
 {
     public long Id { get; set; }
 

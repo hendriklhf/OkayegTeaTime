@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using HLE.Time;
 using System.Timers;
 
 namespace OkayegTeaTime.Utils;
 
-public class Restarter
+public sealed class Restarter
 {
     private readonly List<Timer> _restartTimers = new();
 
@@ -32,7 +33,7 @@ public class Restarter
 
     public void Stop()
     {
-        foreach (Timer timer in _restartTimers)
+        foreach (Timer timer in CollectionsMarshal.AsSpan(_restartTimers))
         {
             timer.Stop();
             timer.Dispose();

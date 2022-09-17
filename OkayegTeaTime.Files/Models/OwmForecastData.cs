@@ -5,7 +5,7 @@ using HLE.Time;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmForecastData
+public sealed class OwmForecastData
 {
     [JsonPropertyName("city")]
     public OwmCity City { get; set; }

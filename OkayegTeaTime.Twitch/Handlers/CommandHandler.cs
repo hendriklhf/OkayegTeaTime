@@ -12,7 +12,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public class CommandHandler : Handler
+public sealed class CommandHandler : Handler
 {
     private readonly AfkCommandHandler _afkCommandHandler;
     private readonly CooldownController _cooldownController;
@@ -113,7 +113,7 @@ public class CommandHandler : Handler
     private static Dictionary<CommandType, CommandHandle> BuildCommandCache()
     {
         Dictionary<CommandType, CommandHandle> commandHandles = new();
-        IEnumerable<Type> commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null);
+        Type[] commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null).ToArray();
         foreach (Type command in commands)
         {
             ConstructorInfo? constructor = command.GetConstructor(new[]

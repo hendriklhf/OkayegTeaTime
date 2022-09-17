@@ -26,7 +26,7 @@ using User = TwitchLib.Api.Helix.Models.Users.GetUsers.User;
 
 namespace OkayegTeaTime.Twitch;
 
-public class TwitchBot
+public sealed class TwitchBot
 {
     public UserCache Users { get; } = new();
 

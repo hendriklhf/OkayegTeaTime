@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class DiscordSettings
+public sealed class DiscordSettings
 {
     public string PermissionInt { get; set; }
 

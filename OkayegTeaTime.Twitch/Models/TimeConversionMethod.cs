@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class TimeConversionMethod
+public sealed class TimeConversionMethod
 {
     public Regex Regex { get; }
 

@@ -3,7 +3,7 @@ using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class AfkCooldown
+public sealed class AfkCooldown
 {
     public long UserId { get; }
 

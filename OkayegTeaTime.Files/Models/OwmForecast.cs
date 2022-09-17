@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmForecast
+public sealed class OwmForecast
 {
     [JsonPropertyName("dt")]
     public long DayTime { get; set; }

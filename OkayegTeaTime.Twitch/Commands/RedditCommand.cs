@@ -16,7 +16,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Reddit)]
-public class RedditCommand : Command
+public sealed class RedditCommand : Command
 {
     private static readonly Dictionary<string, RedditPost[]> _redditPosts = new();
     private static readonly long _cacheTime = (long)TimeSpan.FromHours(1).TotalMilliseconds;

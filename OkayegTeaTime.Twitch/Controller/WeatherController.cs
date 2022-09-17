@@ -10,7 +10,7 @@ using OkayegTeaTime.Files.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public class WeatherController
+public sealed class WeatherController
 {
     private readonly Dictionary<WeatherDataKey, OwmWeatherData> _weatherCache = new();
     private readonly Dictionary<WeatherDataKey, OwmForecastData> _forecastCache = new();
@@ -186,7 +186,7 @@ public class WeatherController
         };
     }
 
-    private class WeatherDataKey
+    private sealed class WeatherDataKey
     {
         public string? City { get; init; }
 

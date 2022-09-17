@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class Formula1Location
+public sealed class Formula1Location
 {
     [JsonPropertyName("lat")]
     public string Latitude { get; set; }

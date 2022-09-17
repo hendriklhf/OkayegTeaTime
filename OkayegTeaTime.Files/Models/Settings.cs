@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class Settings
+public sealed class Settings
 {
     public TwitchSettings Twitch { get; set; }
 

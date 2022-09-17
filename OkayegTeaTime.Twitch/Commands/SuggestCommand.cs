@@ -7,7 +7,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Suggest)]
-public class SuggestCommand : Command
+public sealed class SuggestCommand : Command
 {
     public SuggestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

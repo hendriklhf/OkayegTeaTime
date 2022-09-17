@@ -4,7 +4,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Vanish)]
-public class VanishCommand : Command
+public sealed class VanishCommand : Command
 {
     public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

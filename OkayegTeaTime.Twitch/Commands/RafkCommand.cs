@@ -6,7 +6,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Rafk)]
-public class RafkCommand : Command
+public sealed class RafkCommand : Command
 {
     public RafkCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

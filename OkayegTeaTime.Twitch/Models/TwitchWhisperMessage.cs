@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class TwitchWhisperMessage : TwitchMessage
+public sealed class TwitchWhisperMessage : TwitchMessage
 {
     public int MessageId { get; }
 

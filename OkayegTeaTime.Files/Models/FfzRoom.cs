@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class FfzRoom
+public sealed class FfzRoom
 {
     [JsonPropertyName("_id")]
     public int Id { get; set; }

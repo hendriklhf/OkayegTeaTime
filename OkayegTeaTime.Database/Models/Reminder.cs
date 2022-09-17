@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Database.Models;
 
-public class Reminder : CacheModel
+public sealed class Reminder : CacheModel
 {
     public int Id { get; internal set; }
 

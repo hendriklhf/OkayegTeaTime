@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class SevenTvMinimalUser
+public sealed class SevenTvMinimalUser
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }

@@ -9,7 +9,7 @@ using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Stream)]
-public class StreamCommand : Command
+public sealed class StreamCommand : Command
 {
     private readonly long[] _noViewerCount =
     {

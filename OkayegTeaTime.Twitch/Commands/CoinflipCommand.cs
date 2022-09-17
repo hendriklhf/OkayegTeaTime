@@ -6,7 +6,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Coinflip)]
-public class CoinflipCommand : Command
+public sealed class CoinflipCommand : Command
 {
     public CoinflipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

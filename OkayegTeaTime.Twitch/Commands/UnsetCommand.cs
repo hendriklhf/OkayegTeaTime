@@ -7,7 +7,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Unset)]
-public class UnsetCommand : Command
+public sealed class UnsetCommand : Command
 {
     public UnsetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

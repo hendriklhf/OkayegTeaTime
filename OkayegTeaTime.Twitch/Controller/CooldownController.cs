@@ -8,7 +8,7 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public class CooldownController
+public sealed class CooldownController
 {
     private readonly List<Cooldown> _cooldowns = new();
     private readonly List<AfkCooldown> _afkCooldowns = new();

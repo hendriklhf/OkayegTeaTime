@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class AfkCommand
+public sealed class AfkCommand
 {
     public string Name { get; set; }
 

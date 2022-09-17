@@ -10,7 +10,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class BttvEmote
+public sealed class BttvEmote
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }

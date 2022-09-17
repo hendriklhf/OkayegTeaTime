@@ -2,10 +2,8 @@ using System.Text;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class Response
+public sealed class Response
 {
-    public string Message => GetMessage();
-
     private readonly string _value = string.Empty;
     private StringBuilder? _builder;
 
@@ -30,13 +28,13 @@ public class Response
 
     public static Response operator +(Response left, string right)
     {
-        left._builder ??= new(left.Message);
+        left._builder ??= new(left.GetMessage());
         return new(left._builder.Append(right));
     }
 
     public static Response operator +(Response left, char right)
     {
-        left._builder ??= new(left.Message);
+        left._builder ??= new(left.GetMessage());
         return new(left._builder.Append(right));
     }
 
@@ -45,18 +43,23 @@ public class Response
         return new(str);
     }
 
+    public static implicit operator string(Response response)
+    {
+        return response.GetMessage();
+    }
+
     public override bool Equals(object? obj)
     {
-        return obj is Response res && res.Message == Message;
+        return obj is Response res && res.GetMessage() == GetMessage();
     }
 
     public override int GetHashCode()
     {
-        return _value.GetHashCode();
+        return GetMessage().GetHashCode();
     }
 
     public override string ToString()
     {
-        return Message;
+        return GetMessage();
     }
 }

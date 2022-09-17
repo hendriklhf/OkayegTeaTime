@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class Command
+public sealed class Command
 {
     public string Name { get; set; }
 

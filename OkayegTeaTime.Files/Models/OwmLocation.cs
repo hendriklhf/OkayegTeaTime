@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmLocation
+public sealed class OwmLocation
 {
     [JsonPropertyName("type")]
     public int Type { get; set; }

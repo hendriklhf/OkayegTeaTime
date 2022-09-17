@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmWeather
+public sealed class OwmWeather
 {
     [JsonPropertyName("temp")]
     public double Temperature { get; set; }

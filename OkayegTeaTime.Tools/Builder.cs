@@ -8,7 +8,7 @@ using HLE.Collections;
 
 namespace OkayegTeaTime.Tools;
 
-public class Builder
+public sealed class Builder
 {
     private readonly string[] _args;
     private readonly bool _selfContained;

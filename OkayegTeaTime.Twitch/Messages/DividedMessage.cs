@@ -6,7 +6,7 @@ using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Twitch.Messages;
 
-public class DividedMessage
+public sealed class DividedMessage
 {
     private readonly string _channel;
     private readonly string[] _messages;
@@ -27,7 +27,7 @@ public class DividedMessage
             return;
         }
 
-        _messages.Skip(1).ForEach(str =>
+        _messages[1..].ForEach(str =>
         {
             Thread.Sleep(AppSettings.DelayBetweenSentMessages);
             _twitchBot.SendText(_channel, str);

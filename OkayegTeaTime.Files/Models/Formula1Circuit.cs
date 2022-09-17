@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class Formula1Circuit
+public sealed class Formula1Circuit
 {
     [JsonPropertyName("circuitId")]
     public string Id { get; set; }

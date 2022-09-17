@@ -6,7 +6,7 @@ using OkayegTeaTime.Twitch.Controller;
 namespace OkayegTeaTime.Tests;
 
 [TestClass]
-public class ApiTest
+public sealed class ApiTest
 {
     private const long _testChannel = 87633910;
 

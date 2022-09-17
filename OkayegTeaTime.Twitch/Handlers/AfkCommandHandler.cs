@@ -6,7 +6,7 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public class AfkCommandHandler
+public sealed class AfkCommandHandler
 {
     private readonly TwitchBot _twitchBot;
 

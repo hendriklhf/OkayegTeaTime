@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class Formula1Race
+public sealed class Formula1Race
 {
     [JsonPropertyName("season")]
     public string Season { get; set; }

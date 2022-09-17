@@ -5,7 +5,7 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public class PajaAlertHandler : PajaHandler
+public sealed class PajaAlertHandler : PajaHandler
 {
     protected override Regex Pattern { get; } = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled);
 

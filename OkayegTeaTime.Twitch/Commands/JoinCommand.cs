@@ -6,7 +6,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Join)]
-public class JoinCommand : Command
+public sealed class JoinCommand : Command
 {
     public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

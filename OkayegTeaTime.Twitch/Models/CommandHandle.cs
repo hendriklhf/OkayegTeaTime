@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class CommandHandle
+public sealed class CommandHandle
 {
     public ConstructorInfo Constructor { get; set; }
 

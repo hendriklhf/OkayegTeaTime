@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class GachiSong
+public sealed class GachiSong
 {
     public string Title { get; set; }
 

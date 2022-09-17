@@ -9,7 +9,7 @@ using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Database.Cache;
 
-public class ReminderCache : DbCache<Reminder>
+public sealed class ReminderCache : DbCache<Reminder>
 {
     public Reminder? this[int id] => GetReminder(id);
 

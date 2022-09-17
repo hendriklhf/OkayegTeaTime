@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class TwitchSettings
+public sealed class TwitchSettings
 {
     public string Username { get; set; }
 

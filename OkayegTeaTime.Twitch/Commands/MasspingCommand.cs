@@ -10,7 +10,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Massping)]
-public class MasspingCommand : Command
+public sealed class MasspingCommand : Command
 {
     private readonly long[] _disabledChannels =
     {

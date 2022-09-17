@@ -4,7 +4,7 @@ using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
 
-public class UserCache : DbCache<User>
+public sealed class UserCache : DbCache<User>
 {
     public User? this[long id] => GetUser(id);
 

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class FfzUrls
+public sealed class FfzUrls
 {
     [JsonPropertyName("1")]
     public string One { get; set; }

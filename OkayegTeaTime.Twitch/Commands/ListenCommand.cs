@@ -11,7 +11,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Listen)]
-public class ListenCommand : Command
+public sealed class ListenCommand : Command
 {
     public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

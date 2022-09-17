@@ -15,7 +15,7 @@ using OkayegTeaTime.Spotify;
 
 namespace OkayegTeaTime.Database.Cache;
 
-public class SpotifyUserCache : DbCache<SpotifyUser>
+public sealed class SpotifyUserCache : DbCache<SpotifyUser>
 {
     public SpotifyUser? this[string username] => GetSpotifyUser(username);
 

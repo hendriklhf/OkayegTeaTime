@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Tools;
 
-public class ResourceSyncer
+public sealed class ResourceSyncer
 {
     private readonly string _cloudPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/iCloudDrive";
     private const string _relativeCloudResourcePath = "/Development/OkayegTeaTime/Resources";

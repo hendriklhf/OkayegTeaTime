@@ -9,7 +9,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Weather)]
-public class WeatherCommand : Command
+public sealed class WeatherCommand : Command
 {
     public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {

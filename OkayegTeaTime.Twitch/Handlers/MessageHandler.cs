@@ -17,7 +17,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public class MessageHandler : Handler
+public sealed class MessageHandler : Handler
 {
     private readonly CommandHandler _commandHandler;
     private readonly PajaAlertHandler _pajaAlertHandler;

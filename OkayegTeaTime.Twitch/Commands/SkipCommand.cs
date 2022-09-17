@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
@@ -8,7 +9,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Skip)]
-public class SkipCommand : Command
+public sealed class SkipCommand : Command
 {
     public SkipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
@@ -41,6 +42,7 @@ public class SkipCommand : Command
                 Response = $"{ChatMessage.Username}, {ex.Message}";
             }
 
+            List<SpotifyUser> usersToRemove = new();
             foreach (SpotifyUser u in user.ListeningUsers)
             {
                 try
@@ -49,8 +51,13 @@ public class SkipCommand : Command
                 }
                 catch (SpotifyException)
                 {
-                    user.ListeningUsers.Remove(u);
+                    usersToRemove.Add(u);
                 }
+            }
+
+            foreach (SpotifyUser u in usersToRemove)
+            {
+                user.ListeningUsers.Remove(u);
             }
         }).Wait();
     }

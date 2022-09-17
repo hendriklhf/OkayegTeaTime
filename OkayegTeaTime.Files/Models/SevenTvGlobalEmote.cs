@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class SevenTvGlobalEmote
+public sealed class SevenTvGlobalEmote
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }

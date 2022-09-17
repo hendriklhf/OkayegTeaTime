@@ -6,7 +6,7 @@ using SpotifyAPI.Web;
 
 namespace OkayegTeaTime.Spotify;
 
-public class SpotifyTrack : SpotifyItem
+public sealed class SpotifyTrack : SpotifyItem
 {
     public SimpleAlbum Album { get; }
 

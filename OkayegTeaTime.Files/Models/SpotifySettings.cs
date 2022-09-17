@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class SpotifySettings
+public sealed class SpotifySettings
 {
     public string ClientId { get; set; }
 

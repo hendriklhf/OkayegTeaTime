@@ -2,7 +2,7 @@
 
 namespace OkayegTeaTime.Files.Models;
 
-public class OwmCoordinates
+public sealed class OwmCoordinates
 {
     [JsonPropertyName("lon")]
     public double Longitude { get; set; }

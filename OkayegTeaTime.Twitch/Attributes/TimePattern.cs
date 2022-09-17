@@ -3,7 +3,7 @@
 namespace OkayegTeaTime.Twitch.Attributes;
 
 [AttributeUsage(AttributeTargets.Field)]
-public class TimePattern : Attribute
+public sealed class TimePattern : Attribute
 {
     public string ConversionMethod { get; }
 

@@ -3,7 +3,7 @@ using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Database.Models;
 
-public class Channel : CacheModel
+public sealed class Channel : CacheModel
 {
     public long Id { get; }
 

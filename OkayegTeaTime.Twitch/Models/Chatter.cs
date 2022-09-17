@@ -3,7 +3,7 @@ namespace OkayegTeaTime.Twitch.Models;
 // ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CS0659
 
-public class Chatter
+public sealed class Chatter
 {
     public string Username { get; }
 

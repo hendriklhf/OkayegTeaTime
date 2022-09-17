@@ -15,7 +15,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Formula1)]
-public class Formula1Command : Command
+public sealed class Formula1Command : Command
 {
     private static Formula1Race[]? _races;
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);

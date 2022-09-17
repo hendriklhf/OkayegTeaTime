@@ -2,7 +2,7 @@ using System;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class Formula1Session
+public sealed class Formula1Session
 {
     public string Name { get; }
 

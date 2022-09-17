@@ -25,7 +25,7 @@ public abstract class Command
 
     public void SendResponse()
     {
-        string message = Response.Message;
+        string message = Response;
         if (!message.IsNullOrEmptyOrWhitespace())
         {
             _twitchBot.Send(ChatMessage.Channel, message);

@@ -5,7 +5,7 @@ using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
 
-public class ChannelCache : DbCache<Channel>
+public sealed class ChannelCache : DbCache<Channel>
 {
     public Channel? this[long id] => GetChannel(id);
 

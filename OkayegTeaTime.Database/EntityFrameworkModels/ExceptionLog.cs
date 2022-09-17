@@ -4,7 +4,7 @@ using System;
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
-public class ExceptionLog
+public sealed class ExceptionLog
 {
     public int Id { get; set; }
 

@@ -7,7 +7,7 @@ using Timer = System.Timers.Timer;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public class TimerController : IEnumerable<Timer>
+public sealed class TimerController : IEnumerable<Timer>
 {
     private readonly List<Timer> _timers = new();
 

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Files.Models;
 
-public class BttvRequest
+public sealed class BttvRequest
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }

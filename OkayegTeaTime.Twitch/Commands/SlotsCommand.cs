@@ -10,7 +10,7 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Slots)]
-public class SlotsCommand : Command
+public sealed class SlotsCommand : Command
 {
     private const byte _emoteSlotCount = 3;
 

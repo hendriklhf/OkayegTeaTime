@@ -5,7 +5,7 @@ using OkayegTeaTime.Files.Models;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public class AfkMessage
+public sealed class AfkMessage
 {
     public string ComingBack
     {
