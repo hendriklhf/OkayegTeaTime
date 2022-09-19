@@ -44,7 +44,7 @@ public sealed class TwitchBot
 
     public TwitchApi TwitchApi { get; } = new();
 
-    public uint CommandCount { get; set; } = 1;
+    public uint CommandCount { get; set; }
 
     public DateTime StartTime { get; } = DateTime.Now;
 

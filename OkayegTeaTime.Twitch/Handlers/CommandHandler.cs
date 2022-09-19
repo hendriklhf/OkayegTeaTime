@@ -19,12 +19,13 @@ public sealed class CommandHandler : Handler
 
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
-    private Dictionary<CommandType, CommandHandle>? _commandHandles;
+    private readonly Dictionary<CommandType, CommandHandle> _commandHandles;
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
         _cooldownController = new(_twitchBot.CommandController);
+        _commandHandles = BuildCommandCache();
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
@@ -38,13 +39,12 @@ public sealed class CommandHandler : Handler
 
     private bool HandleCommand(TwitchChatMessage chatMessage)
     {
+        string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         foreach (CommandType type in _commandTypes)
         {
             foreach (string alias in _twitchBot.CommandController[type].Aliases)
             {
-                string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
-
                 if (pattern.IsMatch(chatMessage.Message))
                 {
                     if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
@@ -52,9 +52,9 @@ public sealed class CommandHandler : Handler
                         return false;
                     }
 
+                    _twitchBot.CommandCount++;
                     InvokeCommandHandle(type, _twitchBot, chatMessage, alias);
                     _cooldownController.AddCooldown(chatMessage.UserId, type);
-                    _twitchBot.CommandCount++;
                     return true;
                 }
             }
@@ -65,13 +65,12 @@ public sealed class CommandHandler : Handler
 
     private void HandleAfkCommand(TwitchChatMessage chatMessage)
     {
+        string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         foreach (AfkType type in _afkTypes)
         {
             foreach (string alias in _twitchBot.CommandController[type].Aliases)
             {
-                string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
                 Regex pattern = PatternCreator.Create(alias, prefix);
-
                 if (pattern.IsMatch(chatMessage.Message))
                 {
                     if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
@@ -79,9 +78,9 @@ public sealed class CommandHandler : Handler
                         return;
                     }
 
+                    _twitchBot.CommandCount++;
                     _afkCommandHandler.Handle(chatMessage, type);
                     _cooldownController.AddAfkCooldown(chatMessage.UserId);
-                    _twitchBot.CommandCount++;
                     return;
                 }
             }
@@ -98,16 +97,10 @@ public sealed class CommandHandler : Handler
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
     private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
     {
-        _commandHandles ??= BuildCommandCache();
         CommandHandle handle = _commandHandles[type];
-        object handlerInstance = handle.Constructor.Invoke(new object[]
-        {
-            twitchBot,
-            chatMessage,
-            alias
-        });
-        handle.HandleMethod.Invoke(handlerInstance, null);
-        handle.SendMethod.Invoke(handlerInstance, null);
+        Command command = handle.CreateCommandInstance(twitchBot, chatMessage, alias);
+        command.Handle();
+        command.SendResponse();
     }
 
     private static Dictionary<CommandType, CommandHandle> BuildCommandCache()
@@ -127,19 +120,7 @@ public sealed class CommandHandler : Handler
                 throw new InvalidOperationException($"Could not get constructor for class {command.FullName}");
             }
 
-            MethodInfo? handleMethod = command.GetMethod(nameof(Command.Handle));
-            if (handleMethod is null)
-            {
-                throw new InvalidOperationException($"Could not get {nameof(Command.Handle)} method for command class {command.FullName}");
-            }
-
-            MethodInfo? sendMethod = command.GetMethod(nameof(Command.SendResponse));
-            if (sendMethod is null)
-            {
-                throw new InvalidOperationException($"Could not get {nameof(Command.SendResponse)} method for command class {command.FullName}");
-            }
-
-            CommandHandle handle = new(constructor, handleMethod, sendMethod);
+            CommandHandle handle = new(constructor);
             commandHandles.Add(command.GetCustomAttribute<HandledCommand>()!.CommandType, handle);
         }
 

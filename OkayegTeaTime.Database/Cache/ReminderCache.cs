@@ -91,17 +91,26 @@ public sealed class ReminderCache : DbCache<Reminder>
         reminder.HasBeenSent = true;
     }
 
-    public IEnumerable<Reminder> GetRemindersFor(string username, ReminderType type = ReminderType.All)
+    public IEnumerable<Reminder> GetRemindersFor(string username, ReminderType type = (ReminderType)0b11)
     {
         bool EvaluateReminderType(Reminder r)
         {
-            return type switch
+            if (type.HasFlag(ReminderType.Timed) && type.HasFlag(ReminderType.NonTimed))
             {
-                ReminderType.All => true,
-                ReminderType.Timed => r.ToTime > 0,
-                ReminderType.NonTimed => r.ToTime == 0,
-                _ => false
-            };
+                return true;
+            }
+
+            if (type.HasFlag(ReminderType.Timed))
+            {
+                return r.Time > 0;
+            }
+
+            if (type.HasFlag(ReminderType.NonTimed))
+            {
+                return r.Time == 0;
+            }
+
+            return false;
         }
 
         return this.Where(r => string.Equals(r.Target, username, StringComparison.OrdinalIgnoreCase) && EvaluateReminderType(r) && !r.HasBeenSent);

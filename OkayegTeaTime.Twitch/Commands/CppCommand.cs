@@ -1,19 +1,17 @@
-﻿#if DEBUG
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Web;
 using HLE;
 using HLE.Http;
 using OkayegTeaTime.Resources;
-#endif
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-#if DEBUG
 using OkayegTeaTime.Utils;
-#endif
 
 namespace OkayegTeaTime.Twitch.Commands;
 
+#if DEBUG
 [HandledCommand(CommandType.Cpp)]
+#endif
 public sealed class CppCommand : Command
 {
     public CppCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
@@ -22,7 +20,6 @@ public sealed class CppCommand : Command
 
     public override void Handle()
     {
-#if DEBUG
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
@@ -30,10 +27,8 @@ public sealed class CppCommand : Command
             string requestResult = GetCppOnlineCompilerResult(code);
             Response = $"{ChatMessage.Username}, {requestResult}";
         }
-#endif
     }
 
-#if DEBUG
     private static string GetCppOnlineCompilerResult(string code)
     {
         HttpPost request = new("https://tpcg2.tutorialspoint.com/tpcg.php", new[]
@@ -62,5 +57,4 @@ public sealed class CppCommand : Command
     {
         return ResourceController.CompilerTemplateCpp.Replace("{code}", code);
     }
-#endif
 }

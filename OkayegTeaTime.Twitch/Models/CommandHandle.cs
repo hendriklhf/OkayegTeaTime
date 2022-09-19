@@ -1,19 +1,24 @@
 ﻿using System.Reflection;
+using OkayegTeaTime.Twitch.Commands;
 
 namespace OkayegTeaTime.Twitch.Models;
 
 public sealed class CommandHandle
 {
-    public ConstructorInfo Constructor { get; set; }
+    private readonly ConstructorInfo _constructor;
 
-    public MethodInfo HandleMethod { get; set; }
-
-    public MethodInfo SendMethod { get; set; }
-
-    public CommandHandle(ConstructorInfo constructor, MethodInfo handleMethod, MethodInfo sendMethod)
+    public CommandHandle(ConstructorInfo constructor)
     {
-        Constructor = constructor;
-        HandleMethod = handleMethod;
-        SendMethod = sendMethod;
+        _constructor = constructor;
+    }
+
+    public Command CreateCommandInstance(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
+    {
+        return (Command)_constructor.Invoke(new object[]
+        {
+            twitchBot,
+            chatMessage,
+            alias
+        });
     }
 }

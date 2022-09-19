@@ -22,33 +22,9 @@ public sealed class AfkMessage
         }
     }
 
-    public string GoingAway
-    {
-        get
-        {
-            if (_goingAway is not null)
-            {
-                return _goingAway;
-            }
+    public string GoingAway => _goingAway ??= _afkCommand.GoingAway.Replace("{username}", _user.Username);
 
-            _goingAway = _afkCommand.GoingAway.Replace("{username}", _user.Username);
-            return _goingAway;
-        }
-    }
-
-    public string Resuming
-    {
-        get
-        {
-            if (_resuming is not null)
-            {
-                return _resuming;
-            }
-
-            _resuming = _afkCommand.Resuming.Replace("{username}", _user.Username);
-            return _resuming;
-        }
-    }
+    public string Resuming => _resuming ??= _afkCommand.Resuming.Replace("{username}", _user.Username);
 
     private readonly User _user;
     private readonly AfkCommand _afkCommand;

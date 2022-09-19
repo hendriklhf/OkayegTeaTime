@@ -9,11 +9,11 @@ public static class PatternCreator
 {
     private static readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
 
-    public static Regex Create(string alias, string? prefix, string addition = "")
+    public static Regex Create(string alias, string? prefix, string? addition = null)
     {
         // TODO: kinda don't like how this is passed in
-        string patternPrefix = string.IsNullOrEmpty(prefix) ? '^' + Regex.Escape(alias + AppSettings.Suffix) : '^' + Regex.Escape(prefix + alias);
-
+        string patternPrefix = '^' + Regex.Escape(string.IsNullOrEmpty(prefix) ? alias + AppSettings.Suffix : prefix + alias);
+        addition ??= string.Empty;
         string patternKey = patternPrefix + addition + @"(\s|$)";
 
         if (_cachedPatterns.TryGetValue(patternKey, out Regex? cachedPattern))
@@ -23,7 +23,6 @@ public static class PatternCreator
 
         Regex compiledRegex = new(patternKey, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
         _cachedPatterns.Add(patternKey, compiledRegex);
-
         return compiledRegex;
     }
 }

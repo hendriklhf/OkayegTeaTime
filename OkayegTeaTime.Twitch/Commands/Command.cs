@@ -7,7 +7,7 @@ public abstract class Command
 {
     protected TwitchChatMessage ChatMessage { get; }
 
-    protected Response Response { get; set; } = new();
+    protected Response Response { get; private protected set; } = Response.Empty;
 
     private protected readonly TwitchBot _twitchBot;
     private protected readonly string? _prefix;

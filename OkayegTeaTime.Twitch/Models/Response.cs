@@ -4,12 +4,10 @@ namespace OkayegTeaTime.Twitch.Models;
 
 public sealed class Response
 {
-    private readonly string _value = string.Empty;
-    private StringBuilder? _builder;
+    public static Response Empty { get; } = new(string.Empty);
 
-    public Response()
-    {
-    }
+    private readonly string _value;
+    private StringBuilder? _builder;
 
     private Response(string init)
     {
@@ -18,6 +16,7 @@ public sealed class Response
 
     private Response(StringBuilder builder)
     {
+        _value = string.Empty;
         _builder = builder;
     }
 

@@ -8,6 +8,8 @@ using HLE.Time;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
 
+#pragma warning disable CS0659
+
 namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class WeatherController
@@ -198,7 +200,6 @@ public sealed class WeatherController
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public byte ForecastDay { get; init; }
 
-#pragma warning disable CS0659
         public override bool Equals(object? obj)
         {
             return obj is WeatherDataKey k && (k.City is not null && City is not null && k.City == City || k.Longitude == Longitude && k.Latitude == Latitude) && k.ForecastDay == ForecastDay;

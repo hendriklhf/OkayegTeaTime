@@ -14,6 +14,8 @@ using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
 
+#pragma warning disable CS0659
+
 namespace OkayegTeaTime.Twitch;
 
 public sealed class TwitchApi
@@ -251,7 +253,6 @@ public sealed class TwitchApi
             Name = name;
         }
 
-#pragma warning disable CS0659
         public override bool Equals(object? obj)
         {
             return obj is UserKey key && (key.Id != default && Id != default && key.Id == Id || key.Name != default && Name != default && key.Name == Name);
