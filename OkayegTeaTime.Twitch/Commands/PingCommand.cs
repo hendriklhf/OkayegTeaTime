@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using HLE;
-using HLE.Numbers;
 using HLE.Time;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -25,6 +24,6 @@ public sealed class PingCommand : Command
 
     private static double GetMemoryUsage()
     {
-        return Math.Truncate(Process.GetCurrentProcess().PrivateMemorySize64 / UnitPrefix.Mega * 100) / 100;
+        return Process.GetCurrentProcess().PrivateMemorySize64 * 1e-6;
     }
 }
