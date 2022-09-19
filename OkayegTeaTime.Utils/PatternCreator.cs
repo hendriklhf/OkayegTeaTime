@@ -7,6 +7,8 @@ namespace OkayegTeaTime.Utils;
 
 public static class PatternCreator
 {
+    public static int CacheSize => _cachedPatterns.Count;
+
     private static readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
 
     public static Regex Create(string alias, string? prefix, string? addition = null)
