@@ -27,12 +27,22 @@ public sealed class Response
 
     public static Response operator +(Response left, string right)
     {
+        if (left == Empty)
+        {
+            left = new(string.Empty);
+        }
+
         left._builder ??= new(left.GetMessage());
         return new(left._builder.Append(right));
     }
 
     public static Response operator +(Response left, char right)
     {
+        if (left == Empty)
+        {
+            left = new(string.Empty);
+        }
+
         left._builder ??= new(left.GetMessage());
         return new(left._builder.Append(right));
     }
