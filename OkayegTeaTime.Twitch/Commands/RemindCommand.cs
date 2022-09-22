@@ -187,7 +187,7 @@ public sealed class RemindCommand : Command
         return fields.Select(f =>
         {
             TimePattern attr = f.GetCustomAttribute<TimePattern>()!;
-            Regex regex = (f.GetValue(null) as Regex)!;
+            Regex regex = (Regex)f.GetValue(null)!;
             MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod);
             return new TimeConversionMethod(regex, method, attr.Factor);
         }).ToArray();
