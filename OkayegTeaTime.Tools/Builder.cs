@@ -13,13 +13,13 @@ public sealed class Builder
     private readonly string[] _args;
     private readonly bool _selfContained;
 
-    private readonly Dictionary<string, Regex> _runtimes = new(new KeyValuePair<string, Regex>[]
+    private readonly Dictionary<Runtime, Regex> _runtimes = new[]
     {
-        new("win-x64", NewRegex("^win(dows)?(-?x?64)?$")),
-        new("linux-arm", NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
-        new("linux-x64", NewRegex("^linux(-?x?64)?$")),
-        new("osx-x64", NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
-    });
+        (Runtime.Windows64Bit, NewRegex("^win(dows)?(-?x?64)?$")),
+        (Runtime.LinuxArm, NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
+        (Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
+        (Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
+    }.ToDictionary();
 
     private const string _apiProjectPath = "./OkayegTeaTime.Api/OkayegTeaTime.Api.csproj";
     private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
@@ -34,57 +34,68 @@ public sealed class Builder
 
     public void Build()
     {
-        string[] runtimes = GetRuntimes();
-        if (!runtimes.Any())
+        Runtime[] runtimes = GetRuntimes();
+        if (runtimes.Length == 0)
         {
             Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
-            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.JoinToString(", ")}");
+            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.Select(r => r.Identifier).JoinToString(", ")}");
             return;
         }
 
-        foreach (string runtime in runtimes)
+        foreach (Runtime runtime in runtimes)
         {
-            string outputDir = $"./Build/{runtime}/";
-            ClearDirectory(outputDir);
-            GetLastCommitId();
-            Console.WriteLine($"Starting builds for {runtime} runtime.");
+            string outputDir = $"./Build/{runtime.Identifier}/";
+            DeleteDirectory(outputDir);
+            CreateLastCommitFile();
+            Console.WriteLine($"Starting builds for {runtime.Name} runtime.");
             BuildApi(outputDir, runtime);
             BuildBot(outputDir, runtime);
         }
     }
 
-    private string[] GetRuntimes()
+    private Runtime[] GetRuntimes()
     {
-        return _runtimes.Where(kv => _args[1..].Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
+        string[] args = _args[1..];
+        return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
     }
 
-    private void BuildApi(string outputDir, string runtime)
+    private void BuildApi(string outputDir, Runtime runtime)
     {
         StartBuildProcess(outputDir, runtime, _apiProjectPath, _apiProjectPath[16..19]);
     }
 
-    private void BuildBot(string outputDir, string runtime)
+    private void BuildBot(string outputDir, Runtime runtime)
     {
         StartBuildProcess(outputDir, runtime, _botProjectPath, _botProjectPath[2..15]);
     }
 
-    private void StartBuildProcess(string outputDir, string runtime, string projectPath, string projectName)
+    private void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
     {
         Process buildProcess = new()
         {
-            StartInfo = new("dotnet", $"publish -r {runtime} -c Release -o {outputDir} --{(_selfContained ? string.Empty : "no-")}self-contained {projectPath}")
+            StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --{(_selfContained ? string.Empty : "no-")}self-contained {projectPath}")
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
         };
-        buildProcess.StartInfo.RedirectStandardOutput = true;
-        Console.WriteLine($"Starting {projectName} build...");
-        Console.WriteLine($"Output directory: {outputDir}");
+        Console.WriteLine($"Starting {projectName} build");
+        Console.WriteLine($"Output directory: \"{outputDir}\"");
         buildProcess.Start();
         buildProcess.WaitForExit();
-        Console.WriteLine($"Finished {projectName} build!");
+        if (buildProcess.ExitCode > 0)
+        {
+            PrintError($"Build for {projectName} failed!");
+        }
+        else
+        {
+            Console.WriteLine($"Finished {projectName} build!");
+        }
     }
 
-    private static void ClearDirectory(string dir)
+    private static void DeleteDirectory(string dir)
     {
-        Console.WriteLine($"Clearing directory: {dir}");
+        Console.WriteLine($"Deleting directory: \"{dir}\"");
         if (!Directory.Exists(dir))
         {
             return;
@@ -93,9 +104,9 @@ public sealed class Builder
         Directory.Delete(dir, true);
     }
 
-    private static void GetLastCommitId()
+    private static void CreateLastCommitFile()
     {
-        Console.WriteLine("Retrieving last commit id...");
+        Console.WriteLine("Retrieving last commit id");
         string[] lines = File.ReadAllLines(_commitIdSourcePath);
         string commitId = lines[^1].Split(' ')[1][..7];
         Console.WriteLine($"Last commit: {commitId}");
@@ -105,5 +116,18 @@ public sealed class Builder
     private bool GetSelfContained()
     {
         return _args.Contains("--self-contained");
+    }
+
+    private static void PrintError(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        try
+        {
+            Console.WriteLine(message);
+        }
+        finally
+        {
+            Console.ForegroundColor = default;
+        }
     }
 }
