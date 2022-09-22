@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HLE" Version="2.0.2"/>
+    <PackageReference Include="HLE" Version="2.0.3"/>
     <PackageReference Include="TwitchLib.Api" Version="3.5.2"/>
     <PackageReference Include="TwitchLib.Api.Core" Version="3.5.2"/>
     <PackageReference Include="TwitchLib.Api.Core.Enums" Version="3.5.2"/>

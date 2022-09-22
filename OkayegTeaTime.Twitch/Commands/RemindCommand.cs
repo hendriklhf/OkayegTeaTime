@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using HLE.Time;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -17,7 +16,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed class RemindCommand : Command
 {
-    private readonly long _now = TimeHelper.Now();
+    private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     private const string _timeIndentificator = "in";
     private const string _yourself = "me";
@@ -142,7 +141,7 @@ public sealed class RemindCommand : Command
     {
         long result = 0;
         string times = ChatMessage.Split[GetTimeStartIdx()..].JoinToString(' ');
-        string[] matches = _timeConversions.Select(t => t.Regex).Select(r => r.Matches(times).Select(m => m.Value)).SelectEach().ToArray();
+        string[] matches = _timeConversions.Select(t => t.Regex).Select(r => r.Matches(times).Select(m => m.Value)).SelectMany().ToArray();
         foreach (string match in matches)
         {
             foreach (TimeConversionMethod timeConversion in _timeConversions)

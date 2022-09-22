@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 
 #nullable disable
 
@@ -14,7 +14,7 @@ public sealed class Spotify
 
     public string RefreshToken { get; set; }
 
-    public long Time { get; set; } = TimeHelper.Now();
+    public long Time { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public bool SongRequestEnabled { get; set; }
 

@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices;
 #if RELEASE
 using System.Threading;
 using OkayegTeaTime.Database.Cache;
 #endif
 using System.Threading.Tasks;
 using System.Timers;
-using HLE.Time;
 #if RELEASE
 using OkayegTeaTime.Files;
 #endif
@@ -116,7 +114,7 @@ public sealed class SpotifyUser : CacheModel
         Username = username;
         _accessToken = accessToken;
         _refreshToken = refreshToken;
-        _time = TimeHelper.Now();
+        _time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         _timer.Elapsed += async (sender, e) => await Timer_OnElapsed(sender, e);
     }
@@ -179,13 +177,13 @@ public sealed class SpotifyUser : CacheModel
         }
 
         AccessToken = accessToken;
-        Time = TimeHelper.Now();
+        Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         return new(AccessToken);
     }
 
     private bool IsAccessTokenExpired()
     {
-        return Time + TimeSpan.FromHours(1).TotalMilliseconds <= TimeHelper.Now() + TimeSpan.FromSeconds(30).TotalMilliseconds;
+        return Time + TimeSpan.FromHours(1).TotalMilliseconds <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + TimeSpan.FromSeconds(30).TotalMilliseconds;
     }
 
 #if RELEASE

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using HLE.Time;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -48,7 +48,8 @@ public sealed class CheckCommand : Command
                     Response += $": {message}";
                 }
 
-                Response += $" ({TimeHelper.GetUnixDifference(user.AfkTime)} ago)";
+                TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
+                Response += $" ({span.Format()} ago)";
             }
             else
             {
@@ -70,23 +71,25 @@ public sealed class CheckCommand : Command
                 return;
             }
 
-            List<string> responses = new()
+            TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
+            List<string> reminderProps = new()
             {
                 $"From: {reminder.Creator} || To: {reminder.Target}",
-                $"Set: {TimeHelper.GetUnixDifference(reminder.Time)} ago"
+                $"Set: {span.Format()} ago"
             };
 
             if (reminder.ToTime > 0)
             {
-                responses.Add($"Fires in: {TimeHelper.GetUnixDifference(reminder.ToTime)}");
+                span = DateTimeOffset.FromUnixTimeMilliseconds(reminder.ToTime) - DateTime.UtcNow;
+                reminderProps.Add($"Fires in: {span.Format()}");
             }
 
             if (!string.IsNullOrEmpty(reminder.Message))
             {
-                responses.Add($"Message: {reminder.Message}");
+                reminderProps.Add($"Message: {reminder.Message}");
             }
 
-            Response = responses.JoinToString(" || ");
+            Response = reminderProps.JoinToString(" || ");
         }
     }
 }

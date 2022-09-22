@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using HLE.Time;
 using System.Timers;
 
 namespace OkayegTeaTime.Utils;
@@ -21,9 +20,11 @@ public sealed class Restarter
     public void Start()
     {
         Stop();
+        TimeOnly now = TimeOnly.FromDateTime(DateTime.UtcNow);
         foreach ((int hour, int minute) in _restartTimes)
         {
-            long interval = TimeHelper.MillisecondsUntil(hour, minute);
+            TimeOnly restartTime = new(hour, minute);
+            double interval = (restartTime - now).TotalMilliseconds;
             Timer timer = new(interval);
             timer.Elapsed += RestartTimer_OnElapsed!;
             timer.Start();

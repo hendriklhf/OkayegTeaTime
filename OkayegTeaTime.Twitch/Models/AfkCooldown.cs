@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 using OkayegTeaTime.Files;
 
 #pragma warning disable CS0659
@@ -14,7 +14,7 @@ public sealed class AfkCooldown
     public AfkCooldown(long userId)
     {
         UserId = userId;
-        Time = TimeHelper.Now() + AppSettings.AfkCooldown;
+        Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + AppSettings.AfkCooldown;
     }
 
     public override bool Equals(object? obj)

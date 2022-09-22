@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HLE.Time;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch;
 
@@ -32,7 +33,8 @@ public static class BotActions
         }
 
         string creator = rmndrs[0].Creator == rmndrs[0].Target ? "yourself" : rmndrs[0].Creator;
-        string message = $"{rmndrs[0].Target}, reminder from {creator} ({TimeHelper.GetUnixDifference(rmndrs[0].Time)} ago)";
+        TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(rmndrs[0].Time);
+        string message = $"{rmndrs[0].Target}, reminder from {creator} ({span.Format()} ago)";
         StringBuilder builder = new(message);
         twitchBot.Reminders.Remove(rmndrs[0].Id);
         if (rmndrs[0].Message?.Length > 0)
@@ -46,7 +48,8 @@ public static class BotActions
             {
                 twitchBot.Reminders.Remove(r.Id);
                 creator = r.Creator == r.Target ? "yourself" : r.Creator;
-                builder.Append($" || {creator} ({TimeHelper.GetUnixDifference(r.Time)} ago)");
+                span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(r.Time);
+                builder.Append($" || {creator} ({span.Format()} ago)");
                 if (r.Message?.Length > 0)
                 {
                     builder.Append($": {r.Message}");
@@ -60,7 +63,8 @@ public static class BotActions
     public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
     {
         string creator = reminder.Target == reminder.Creator ? "yourself" : reminder.Creator;
-        string message = $"{reminder.Target}, reminder from {creator} ({TimeHelper.GetUnixDifference(reminder.Time)} ago)";
+        TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
+        string message = $"{reminder.Target}, reminder from {creator} ({span.Format()} ago)";
         if (!string.IsNullOrEmpty(reminder.Message))
         {
             message += $": {reminder.Message}";

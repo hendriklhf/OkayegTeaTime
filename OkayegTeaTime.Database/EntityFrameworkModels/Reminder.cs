@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 
 #nullable disable
 
@@ -16,7 +16,7 @@ public sealed class Reminder
 
     public string Channel { get; set; }
 
-    public long Time { get; set; } = TimeHelper.Now();
+    public long Time { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public long ToTime { get; set; }
 

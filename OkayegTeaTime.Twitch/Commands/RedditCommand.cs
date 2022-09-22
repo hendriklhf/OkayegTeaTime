@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using HLE.Collections;
 using HLE.Emojis;
 using HLE.Http;
-using HLE.Time;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -54,7 +53,7 @@ public sealed class RedditCommand : Command
     {
         try
         {
-            if (_redditPosts.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > TimeHelper.Now())
+            if (_redditPosts.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 return redditPosts;
             }

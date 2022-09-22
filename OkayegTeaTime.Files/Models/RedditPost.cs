@@ -1,5 +1,5 @@
+using System;
 using System.Text.Json.Serialization;
-using HLE.Time;
 
 #nullable disable
 
@@ -31,5 +31,5 @@ public sealed class RedditPost
     [JsonPropertyName("score")]
     public int Score { get; set; }
 
-    public long TimeOfRequest { get; } = TimeHelper.Now();
+    public long TimeOfRequest { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 }

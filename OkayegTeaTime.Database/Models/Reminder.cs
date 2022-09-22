@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -14,7 +14,7 @@ public sealed class Reminder : CacheModel
 
     public string Channel { get; }
 
-    public long Time { get; } = TimeHelper.Now();
+    public long Time { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public long ToTime { get; }
 

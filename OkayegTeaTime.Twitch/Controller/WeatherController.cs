@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Text.Json;
 using HLE.Emojis;
 using HLE.Http;
-using HLE.Time;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
 
@@ -27,7 +26,7 @@ public sealed class WeatherController
             City = city
         };
 
-        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > TimeHelper.Now())
+        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
             return data;
         }
@@ -60,7 +59,7 @@ public sealed class WeatherController
             Longitude = longitude
         };
 
-        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > TimeHelper.Now())
+        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
             return data;
         }
@@ -94,7 +93,7 @@ public sealed class WeatherController
             City = city
         };
 
-        if (loadFromCache && _forecastCache.TryGetValue(key, out OwmForecastData? data) && data.TimeOfRequest + _forecastCacheTime > TimeHelper.Now())
+        if (loadFromCache && _forecastCache.TryGetValue(key, out OwmForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
             return data;
         }

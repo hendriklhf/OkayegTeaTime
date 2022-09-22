@@ -22,7 +22,5 @@ public sealed class Channel
     {
         Id = id;
         Name = name;
-        EmoteInFront = null;
-        Prefix = null;
     }
 }

@@ -1,5 +1,5 @@
-﻿using HLE;
-using HLE.Time;
+﻿using System;
+using HLE;
 
 #nullable disable
 
@@ -15,7 +15,7 @@ public sealed class Suggestion
 
     public string Channel { get; set; }
 
-    public long Time { get; set; } = TimeHelper.Now();
+    public long Time { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public string Status { get; set; } = "Open";
 

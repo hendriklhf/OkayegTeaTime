@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 
 #nullable disable
 
@@ -14,7 +14,7 @@ public sealed class User
 
     public int AfkType { get; set; }
 
-    public long AfkTime { get; set; } = TimeHelper.Now();
+    public long AfkTime { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public bool IsAfk { get; set; }
 

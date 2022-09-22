@@ -7,7 +7,6 @@ using System.Text;
 #if DEBUG
 using System.Text.Json;
 #endif
-using HLE.Time;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.EntityFrameworkModels;
 using OkayegTeaTime.Files;
@@ -61,7 +60,7 @@ public static class DbController
         {
             user.AccessToken = accessToken;
             user.RefreshToken = refreshToken;
-            user.Time = TimeHelper.Now();
+            user.Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
         database.SaveChanges();

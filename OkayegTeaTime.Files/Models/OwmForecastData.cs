@@ -1,5 +1,5 @@
+using System;
 using System.Text.Json.Serialization;
-using HLE.Time;
 
 #nullable disable
 
@@ -17,5 +17,5 @@ public sealed class OwmForecastData
     public OwmForecast[] Forecasts { get; set; }
 
     [JsonIgnore]
-    public long TimeOfRequest { get; } = TimeHelper.Now();
+    public long TimeOfRequest { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 }

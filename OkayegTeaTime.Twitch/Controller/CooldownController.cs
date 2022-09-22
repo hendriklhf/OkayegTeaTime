@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using HLE.Time;
 #if DEBUG
 using OkayegTeaTime.Files;
 #endif
@@ -59,11 +59,11 @@ public sealed class CooldownController
 
     public bool IsOnCooldown(long userId, CommandType type)
     {
-        return _cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > TimeHelper.Now());
+        return _cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 
     public bool IsOnAfkCooldown(long userId)
     {
-        return _afkCooldowns.Any(c => c.UserId == userId && c.Time > TimeHelper.Now());
+        return _afkCooldowns.Any(c => c.UserId == userId && c.Time > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 }

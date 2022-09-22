@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 
 #pragma warning disable CS0659
 
@@ -16,7 +16,7 @@ public sealed class Cooldown
     {
         UserId = userId;
         Type = type;
-        Time = TimeHelper.Now() + cmdCooldown;
+        Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + cmdCooldown;
     }
 
     public override bool Equals(object? obj)

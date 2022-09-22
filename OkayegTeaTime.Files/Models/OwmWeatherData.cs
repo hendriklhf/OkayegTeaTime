@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using HLE.Time;
+﻿using System;
+using System.Text.Json.Serialization;
 
 #nullable disable
 
@@ -47,5 +47,5 @@ public sealed class OwmWeatherData
     public string Message { get; set; }
 
     [JsonIgnore]
-    public long TimeOfRequest { get; } = TimeHelper.Now();
+    public long TimeOfRequest { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 }

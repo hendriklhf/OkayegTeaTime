@@ -1,4 +1,4 @@
-﻿using HLE.Time;
+﻿using System;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
@@ -27,7 +27,7 @@ public sealed class AfkCommandHandler
         string? message = chatMessage.Split.Length > 1 ? chatMessage.Message[(chatMessage.Split[0].Length + 1)..] : null;
         user.AfkMessage = message;
         user.AfkType = type;
-        user.AfkTime = TimeHelper.Now();
+        user.AfkTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         user.IsAfk = true;
 
         AfkCommand cmd = _twitchBot.CommandController[type];

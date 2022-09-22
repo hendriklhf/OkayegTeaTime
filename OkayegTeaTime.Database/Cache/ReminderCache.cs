@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using HLE.Collections;
-using HLE.Time;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -119,7 +118,7 @@ public sealed class ReminderCache : DbCache<Reminder>
 
     public IEnumerable<Reminder> GetExpiredReminders()
     {
-        return this.Where(r => r.ToTime > 0 && r.ToTime <= TimeHelper.Now() && !r.HasBeenSent);
+        return this.Where(r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent);
     }
 
     private Reminder? GetReminder(int id)
