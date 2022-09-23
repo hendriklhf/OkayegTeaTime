@@ -33,7 +33,7 @@ public sealed class SolutionCleaner
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unable to delete {dir} => {ex.GetType().FullName}: {ex.Message}");
+                Console.WriteLine($"Unable to delete \"{dir}\" => {ex.GetType().FullName}: {ex.Message}");
             }
         }
     }

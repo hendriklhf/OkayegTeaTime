@@ -58,12 +58,12 @@ public sealed class ResourceSyncer
             Directory.CreateDirectory(cloudResourcePath);
         }
 
-        if (!Directory.Exists(_resourcePath))
+        if (Directory.Exists(_resourcePath))
         {
-            Console.WriteLine($"Directory \"{_resourcePath}\" could not be found.");
-            return false;
+            return true;
         }
 
-        return true;
+        Console.WriteLine($"Directory \"{_resourcePath}\" could not be found.");
+        return false;
     }
 }

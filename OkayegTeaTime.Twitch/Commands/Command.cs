@@ -1,5 +1,4 @@
 ﻿using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -7,7 +6,7 @@ public abstract class Command
 {
     protected TwitchChatMessage ChatMessage { get; }
 
-    protected Response Response { get; private protected set; } = Response.Empty;
+    public Response Response { get; private protected set; } = Response.Empty;
 
     private protected readonly TwitchBot _twitchBot;
     private protected readonly string? _prefix;
@@ -22,13 +21,4 @@ public abstract class Command
     }
 
     public abstract void Handle();
-
-    public void SendResponse()
-    {
-        string message = Response;
-        if (!message.IsNullOrEmptyOrWhitespace())
-        {
-            _twitchBot.Send(ChatMessage.Channel, message);
-        }
-    }
 }

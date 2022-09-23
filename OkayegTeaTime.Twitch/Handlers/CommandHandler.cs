@@ -53,7 +53,7 @@ public sealed class CommandHandler : Handler
                     }
 
                     _twitchBot.CommandCount++;
-                    InvokeCommandHandle(type, _twitchBot, chatMessage, alias);
+                    InvokeCommandHandle(type, chatMessage, alias);
                     _cooldownController.AddCooldown(chatMessage.UserId, type);
                     return true;
                 }
@@ -91,16 +91,21 @@ public sealed class CommandHandler : Handler
     ///     Attempts to handle a command through a handler via reflection
     /// </summary>
     /// <param name="type">The command handler class type</param>
-    /// <param name="twitchBot">The currently running bot that received this command</param>
     /// <param name="chatMessage">The chat message to handle</param>
     /// <param name="alias">A command alias</param>
     /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
-    private void InvokeCommandHandle(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias)
+    private void InvokeCommandHandle(CommandType type, TwitchChatMessage chatMessage, string alias)
     {
         CommandHandle handle = _commandHandles[type];
-        Command command = handle.CreateCommandInstance(twitchBot, chatMessage, alias);
+        Command command = handle.CreateCommandInstance(_twitchBot, chatMessage, alias);
         command.Handle();
-        command.SendResponse();
+        string response = command.Response;
+        if (response.IsNullOrEmptyOrWhitespace())
+        {
+            return;
+        }
+
+        _twitchBot.Send(chatMessage.Channel, response);
     }
 
     private static Dictionary<CommandType, CommandHandle> BuildCommandCache()

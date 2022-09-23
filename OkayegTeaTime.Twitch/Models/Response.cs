@@ -7,6 +7,7 @@ public sealed class Response
     public static Response Empty { get; } = new(string.Empty);
 
     private readonly string _value;
+    private string? _builderValue;
     private StringBuilder? _builder;
 
     private Response(string init)
@@ -22,12 +23,12 @@ public sealed class Response
 
     private string GetMessage()
     {
-        return _builder is null ? _value : _builder.ToString();
+        return _builder is null ? _value : _builderValue ??= _builder.ToString();
     }
 
     public static Response operator +(Response left, string right)
     {
-        if (left == Empty)
+        if (ReferenceEquals(left, Empty))
         {
             left = new(string.Empty);
         }
@@ -38,7 +39,7 @@ public sealed class Response
 
     public static Response operator +(Response left, char right)
     {
-        if (left == Empty)
+        if (ReferenceEquals(left, Empty))
         {
             left = new(string.Empty);
         }
@@ -55,6 +56,16 @@ public sealed class Response
     public static implicit operator string(Response response)
     {
         return response.GetMessage();
+    }
+
+    public static bool operator ==(Response left, Response right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Response left, Response right)
+    {
+        return !(left == right);
     }
 
     public override bool Equals(object? obj)
