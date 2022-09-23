@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
+using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Tools;
 
@@ -25,6 +26,7 @@ public sealed class Builder
     private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
     private const string _commitIdSourcePath = "./.git/logs/HEAD";
     private const string _commitIdFile = "./OkayegTeaTime.Resources/LastCommit";
+    private const string _codeFilesFile = "./OkayegTeaTime.Resources/CodeFiles";
 
     public Builder(string[] args)
     {
@@ -47,6 +49,7 @@ public sealed class Builder
             string outputDir = $"./Build/{runtime.Identifier}/";
             DeleteDirectory(outputDir);
             CreateLastCommitFile();
+            CreateCodeFilesFile();
             Console.WriteLine($"Starting builds for {runtime.Name} runtime.");
             BuildApi(outputDir, runtime);
             BuildBot(outputDir, runtime);
@@ -111,6 +114,14 @@ public sealed class Builder
         string commitId = lines[^1].Split(' ')[1][..7];
         Console.WriteLine($"Last commit: {commitId}");
         File.WriteAllText(_commitIdFile, commitId);
+    }
+
+    private static void CreateCodeFilesFile()
+    {
+        Console.WriteLine("Creating \"CodeFiles\" file");
+        Regex fileRegex = new($@"^\.[\\/]{AppSettings.AssemblyName.Split('.')[0]}(\.\w+)?[\\/](?!((bin)|(obj)[\\/])).*\.cs$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(f => f[2..].Replace('\\', '/')).Order().ToArray();
+        File.WriteAllLines(_codeFilesFile, files);
     }
 
     private bool GetSelfContained()

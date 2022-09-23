@@ -1,16 +1,28 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using HLE.Collections;
+using OkayegTeaTime.Files;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using JCommand = OkayegTeaTime.Files.Models.Command;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Code)]
 public sealed class CodeCommand : Command
 {
+    private static string[]? _codeFiles;
+
     public CodeCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
+        _codeFiles ??= ResourceController.CodeFiles.Split(new[]
+        {
+            "\r\n",
+            "\n",
+            "\r"
+        }, StringSplitOptions.RemoveEmptyEntries);
     }
 
     public override void Handle()
@@ -18,14 +30,25 @@ public sealed class CodeCommand : Command
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            JCommand? command = _twitchBot.CommandController.FindCommand(ChatMessage.LowerSplit[1]);
-            if (command is null)
+            Regex? filePattern;
+            try
             {
-                Response = $"{ChatMessage.Username}, no matching command found";
+                filePattern = new(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+            }
+            catch (Exception)
+            {
+                Response = $"{ChatMessage.Username}, the given pattern is invalid";
                 return;
             }
 
-            Response = $"{ChatMessage.Username}, https://github.com/Sterbehilfe/OkayegTeaTime/blob/master/OkayegTeaTime.Twitch/Commands/{command.Name}Command.cs";
+            string[] matchingFiles = _codeFiles!.Where(f => filePattern.IsMatch(f)).ToArray();
+            Response = matchingFiles.Length switch
+            {
+                0 => $"{ChatMessage.Username}, your pattern matched no source code files",
+                1 => $"{ChatMessage.Username}, {AppSettings.RepositoryUrl}/blob/master/{matchingFiles[0]}",
+                <= 5 => $"{ChatMessage.Username}, your pattern matched {matchingFiles.Length} files: {matchingFiles.JoinToString(", ")}. Please specify",
+                _ => $"{ChatMessage.Username}, your pattern matched too many ({matchingFiles.Length}) files. Please specify"
+            };
         }
     }
 }

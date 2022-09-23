@@ -14,6 +14,7 @@ OkayegTeaTime/Properties/
 OkayegTeaTime.Resources/DatabaseModels.*
 OkayegTeaTime.Resources/[Tt]odo.*
 OkayegTeaTime.Resources/LastCommit
+OkayegTeaTime.Resources/CodeFiles
 
 OkayegTeaTime.Api/Properties/
 OkayegTeaTime.Api/appsettings.*

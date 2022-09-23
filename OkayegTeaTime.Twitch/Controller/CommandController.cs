@@ -38,12 +38,6 @@ public sealed class CommandController
         });
     }
 
-    public Command? FindCommand(string searchValue)
-    {
-        Regex pattern = new($"^{searchValue}$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-        return Commands.FirstOrDefault(c => pattern.IsMatch(c.Name) || c.Aliases.Any(a => pattern.IsMatch(a)));
-    }
-
     private Command GetCommand(CommandType type)
     {
         Command? command = Commands.FirstOrDefault(c => string.Equals(c.Name, type.ToString(), StringComparison.OrdinalIgnoreCase));
