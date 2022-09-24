@@ -276,7 +276,7 @@ public sealed class TwitchBot
 
     private void InitializeTimers()
     {
-        _timerCollection.Add(OnTimer1000, 1000);
+        _timerCollection.Add(OnTimer1000, TimeSpan.FromSeconds(1).TotalMilliseconds);
         _timerCollection.Add(OnTimer10Days, TimeSpan.FromDays(10).TotalMilliseconds);
     }
 

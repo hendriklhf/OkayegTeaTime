@@ -17,5 +17,5 @@ public sealed class OwmForecastData
     public OwmForecast[] Forecasts { get; set; }
 
     [JsonIgnore]
-    public long TimeOfRequest { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public DateTime TimeOfRequest { get; } = DateTime.UtcNow;
 }

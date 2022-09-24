@@ -15,8 +15,8 @@ public sealed class WeatherController
 {
     private readonly Dictionary<WeatherDataKey, OwmWeatherData> _weatherCache = new();
     private readonly Dictionary<WeatherDataKey, OwmForecastData> _forecastCache = new();
-    private readonly long _cacheTime = (long)TimeSpan.FromMinutes(30).TotalMilliseconds;
-    private readonly long _forecastCacheTime = (long)TimeSpan.FromDays(1).TotalMilliseconds;
+    private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(30);
+    private readonly TimeSpan _forecastCacheTime = TimeSpan.FromDays(1);
 
     public OwmWeatherData? GetWeather(string city, bool loadFromCache = true)
     {
@@ -26,7 +26,7 @@ public sealed class WeatherController
             City = city
         };
 
-        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -59,7 +59,7 @@ public sealed class WeatherController
             Longitude = longitude
         };
 
-        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -93,7 +93,7 @@ public sealed class WeatherController
             City = city
         };
 
-        if (loadFromCache && _forecastCache.TryGetValue(key, out OwmForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        if (loadFromCache && _forecastCache.TryGetValue(key, out OwmForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
         {
             return data;
         }

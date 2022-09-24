@@ -114,14 +114,17 @@ public sealed class Builder
         string commitId = lines[^1].Split(' ')[1][..7];
         Console.WriteLine($"Last commit: {commitId}");
         File.WriteAllText(_commitIdFile, commitId);
+        Console.WriteLine("Created \"LastCommit\" file");
     }
 
     private static void CreateCodeFilesFile()
     {
-        Console.WriteLine("Creating \"CodeFiles\" file");
+        Console.WriteLine("Searching for .cs files");
         Regex fileRegex = new($@"^\.[\\/]{AppSettings.AssemblyName.Split('.')[0]}(\.\w+)?[\\/](?!((bin)|(obj)[\\/])).*\.cs$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(f => f[2..].Replace('\\', '/')).Order().ToArray();
+        Console.WriteLine($"Found {files.Length} .cs files");
         File.WriteAllLines(_codeFilesFile, files);
+        Console.WriteLine("Created \"CodeFiles\" file");
     }
 
     private bool GetSelfContained()

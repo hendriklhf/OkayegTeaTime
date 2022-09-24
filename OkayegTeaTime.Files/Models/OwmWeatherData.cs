@@ -47,5 +47,5 @@ public sealed class OwmWeatherData
     public string Message { get; set; }
 
     [JsonIgnore]
-    public long TimeOfRequest { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public DateTime TimeOfRequest { get; } = DateTime.UtcNow;
 }

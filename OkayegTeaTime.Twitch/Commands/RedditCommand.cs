@@ -18,7 +18,8 @@ namespace OkayegTeaTime.Twitch.Commands;
 public sealed class RedditCommand : Command
 {
     private static readonly Dictionary<string, RedditPost[]> _redditPosts = new();
-    private static readonly long _cacheTime = (long)TimeSpan.FromHours(1).TotalMilliseconds;
+    private static readonly TimeSpan _cacheTime = TimeSpan.FromHours(1);
+    private static readonly Func<RedditPost, bool> _postFilter = rp => !rp.Pinned && !rp.IsNsfw;
 
     public RedditCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
@@ -53,7 +54,7 @@ public sealed class RedditCommand : Command
     {
         try
         {
-            if (_redditPosts.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            if (_redditPosts.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > DateTime.UtcNow)
             {
                 return redditPosts;
             }
@@ -71,7 +72,7 @@ public sealed class RedditCommand : Command
                 rawPosts.Add(posts[i].GetProperty("data").GetRawText());
             }
 
-            redditPosts = JsonSerializer.Deserialize<RedditPost[]>('[' + rawPosts.JoinToString(',') + ']')?.Where(p => !p.Pinned && !p.IsNsfw).ToArray();
+            redditPosts = JsonSerializer.Deserialize<RedditPost[]>('[' + rawPosts.JoinToString(',') + ']')?.Where(_postFilter).ToArray();
             if (redditPosts is null)
             {
                 return null;

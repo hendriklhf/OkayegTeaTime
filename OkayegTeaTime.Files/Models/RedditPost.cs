@@ -31,5 +31,5 @@ public sealed class RedditPost
     [JsonPropertyName("score")]
     public int Score { get; set; }
 
-    public long TimeOfRequest { get; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    public DateTime TimeOfRequest { get; } = DateTime.UtcNow;
 }

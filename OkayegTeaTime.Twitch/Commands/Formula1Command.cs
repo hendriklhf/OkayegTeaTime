@@ -23,11 +23,11 @@ public sealed class Formula1Command : Command
 
     public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
     {
+        _races ??= GetRaces();
     }
 
     public override void Handle()
     {
-        _races ??= GetRaces();
         if (_races is null)
         {
             Response = $"{ChatMessage.Username}, api error";
@@ -63,8 +63,8 @@ public sealed class Formula1Command : Command
                 $"{race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ";
             if (race.Race.Start > DateTime.UtcNow)
             {
-                TimeSpan ts = race.Race.Start - DateTime.UtcNow;
-                Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {ts.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
+                TimeSpan timeBetweenNowAndRaceStart = race.Race.Start - DateTime.UtcNow;
+                Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {timeBetweenNowAndRaceStart.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
             }
             else
             {
@@ -72,15 +72,15 @@ public sealed class Formula1Command : Command
             }
 
             Formula1Session session = GetNextOrCurrentSession(race);
-            if (session == race.Race)
+            if (ReferenceEquals(session, race.Race))
             {
                 return;
             }
 
             if (session.Start > DateTime.UtcNow)
             {
-                TimeSpan ts = session.Start - DateTime.UtcNow;
-                Response += $"Next session: {session.Name}, starting on {session.Start:R} (in {ts.ToString("g").Split('.')[0]}).";
+                TimeSpan timeBetweenNowAndRaceStart = session.Start - DateTime.UtcNow;
+                Response += $"Next session: {session.Name}, starting on {session.Start:R} (in {timeBetweenNowAndRaceStart.ToString("g").Split('.')[0]}).";
             }
             else if (session.Start + _nonRaceLength > DateTime.UtcNow)
             {
@@ -116,7 +116,7 @@ public sealed class Formula1Command : Command
             }
         };
 
-        return sessions.First(s => (s == race.Race ? s.Start + _raceLength : s.Start + _nonRaceLength) > DateTime.UtcNow);
+        return sessions.First(s => (ReferenceEquals(s, race.Race) ? s.Start + _raceLength : s.Start + _nonRaceLength) > DateTime.UtcNow);
     }
 
     private static Formula1Race[]? GetRaces()
