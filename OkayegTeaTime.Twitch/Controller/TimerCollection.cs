@@ -7,13 +7,13 @@ using Timer = System.Timers.Timer;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public sealed class TimerController : IEnumerable<Timer>
+public sealed class TimerCollection : IEnumerable<Timer>
 {
     private readonly List<Timer> _timers = new();
 
     public void Add(Action<object?, ElapsedEventArgs> action, double interval, bool autoReset = true)
     {
-        Timer? timer = _timers.FirstOrDefault(t => Math.Abs(t.Interval - interval) <= 0.5 && t.AutoReset == autoReset);
+        Timer? timer = _timers.FirstOrDefault(t => Math.Abs(t.Interval - interval) <= 0 && t.AutoReset == autoReset);
         if (timer is null)
         {
             timer = new(interval)

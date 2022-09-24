@@ -50,7 +50,7 @@ public sealed class TwitchBot
 
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
-    private readonly TimerController _timerController = new();
+    private readonly TimerCollection _timerCollection = new();
     private readonly LastMessageController _lastMessageController;
 
     private readonly Restarter _restarter = new(new[]
@@ -273,8 +273,8 @@ public sealed class TwitchBot
 
     private void InitializeTimers()
     {
-        _timerController.Add(OnTimer1000, 1000);
-        _timerController.Add(OnTimer10Days, TimeSpan.FromDays(10).TotalMilliseconds);
+        _timerCollection.Add(OnTimer1000, 1000);
+        _timerCollection.Add(OnTimer10Days, TimeSpan.FromDays(10).TotalMilliseconds);
     }
 
     private void OnTimer1000(object? sender, ElapsedEventArgs e)
