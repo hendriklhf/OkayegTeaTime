@@ -48,6 +48,8 @@ public sealed class TwitchBot
 
     public DateTime StartTime { get; } = DateTime.Now;
 
+    public long Latency { get; private set; }
+
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
     private readonly TimerCollection _timerCollection = new();
@@ -211,6 +213,7 @@ public sealed class TwitchBot
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
+        Latency = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - long.Parse(e.ChatMessage.TmiSentTs);
         ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
         _messageHandler.Handle(new(e.ChatMessage));
     }
