@@ -635,6 +635,24 @@
       ],
       "Cooldown": 10000,
       "Document": true
+    },
+    {
+      "Name": "Guid",
+      "Description": "Sends a GUID",
+      "Aliases": [
+        "guid",
+        "uuid",
+        "globallyuniqueidentifier",
+        "universaluniqueidentifier"
+      ],
+      "Parameters": [
+        "(none)"
+      ],
+      "ParameterDescription": [
+        "Sends a GUID"
+      ],
+      "Cooldown": 5000,
+      "Document": true
     }
   ],
   "AfkCommands": [

@@ -16,6 +16,7 @@ public enum CommandType
     Fuck,
     Gachi,
     Go,
+    Guid,
     Help,
     Id,
     Invalidate,
