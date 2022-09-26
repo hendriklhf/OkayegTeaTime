@@ -6,7 +6,7 @@ namespace OkayegTeaTime.Utils;
 
 public static class ProcessUtils
 {
-    public static void ConsoleOut(string value, ConsoleColor fontColor = ConsoleColor.Gray, bool logging = false)
+    public static void ConsoleOut(string value, ConsoleColor fontColor = default, bool logging = false)
     {
         Console.ForegroundColor = fontColor;
         try

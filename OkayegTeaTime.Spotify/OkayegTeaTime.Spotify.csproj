@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpotifyAPI.Web" Version="6.2.2"/>
+    <PackageReference Include="SpotifyAPI.Web" Version="6.3.0"/>
   </ItemGroup>
 
   <ItemGroup>
