@@ -8,6 +8,7 @@ namespace OkayegTeaTime.Utils;
 public static class StringHelper
 {
     private static readonly Regex _onlyWhitespacesPattern = new(@"^\s+$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _channelPattern = new(@"^#?\w{3,25}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
     public static string Antiping(this string value)
     {
@@ -22,6 +23,22 @@ public static class StringHelper
     public static bool IsNullOrEmptyOrWhitespace(this string? value)
     {
         return value is null || value.Length == 0 || _onlyWhitespacesPattern.IsMatch(value);
+    }
+
+    public static bool FormatChannel(ref string channel, bool withHashTag = false)
+    {
+        if (!_channelPattern.IsMatch(channel))
+        {
+            return false;
+        }
+
+        channel = withHashTag switch
+        {
+            true => channel[0] == '#' ? channel.ToLower() : '#' + channel.ToLower(),
+            _ => channel[0] == '#' ? channel[1..].ToLower() : channel.ToLower()
+        };
+
+        return true;
     }
 
     public static string Format(this TimeSpan span)

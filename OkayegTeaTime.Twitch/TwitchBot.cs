@@ -142,47 +142,36 @@ public sealed class TwitchBot
         _lastMessageController[channel] = message;
     }
 
-    public string JoinChannel(string channel)
+    public bool JoinChannel(string channel)
     {
-        User? user = TwitchApi.GetUser(channel);
-        if (user is null)
-        {
-            return $"channel #{channel} does not exist";
-        }
-
-        Channel? chnl = Channels[channel];
-        if (chnl is not null)
-        {
-            return $"the bot is already connected to #{channel}";
-        }
-
-        Channels.Add(long.Parse(user.Id), channel);
         try
         {
             _twitchClient.JoinChannel(channel);
             Send(channel, $"{Emoji.Wave} hello");
-            return $"successfully joined #{channel}";
+            long channelId = TwitchApi.GetUserId(channel);
+            Channels.Add(channelId, channel);
+            return true;
         }
         catch (Exception ex)
         {
             DbController.LogException(ex);
-            return $"unable to join #{channel}";
+            return false;
         }
     }
 
-    public string LeaveChannel(string channel)
+    public bool LeaveChannel(string channel)
     {
         try
         {
             Send(channel, $"{Emoji.Wave} bye");
-            Channels.Remove(channel);
             _twitchClient.LeaveChannel(channel);
-            return $"successfully left #{channel}";
+            Channels.Remove(channel);
+            return true;
         }
         catch (Exception ex)
         {
             DbController.LogException(ex);
-            return $"unable to leave #{channel}";
+            return false;
         }
     }
 

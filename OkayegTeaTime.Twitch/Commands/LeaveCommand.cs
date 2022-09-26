@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -15,7 +14,7 @@ public sealed class LeaveCommand : Command
 
     public override void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s#?\w+");
+        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s#?\w{3,25}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (!ChatMessage.IsBotModerator)
@@ -24,9 +23,23 @@ public sealed class LeaveCommand : Command
                 return;
             }
 
-            string channel = ChatMessage.LowerSplit[1].Remove("#");
-            string response = _twitchBot.LeaveChannel(channel);
-            Response = $"{ChatMessage.Username}, {response}";
+            string channel = ChatMessage.LowerSplit[1];
+            bool isValidChannel = StringHelper.FormatChannel(ref channel);
+            if (!isValidChannel)
+            {
+                Response = $"{ChatMessage.Username}, the given channel is invalid";
+                return;
+            }
+
+            bool isJoined = _twitchBot.Channels[channel] is not null;
+            if (!isJoined)
+            {
+                Response = $"{ChatMessage.Username}, the bot is not connected to #{channel}";
+                return;
+            }
+
+            bool success = _twitchBot.LeaveChannel(channel);
+            Response = $"{ChatMessage.Username}, {(success ? "successfully left" : "failed to leave")} #{channel}";
         }
     }
 }
