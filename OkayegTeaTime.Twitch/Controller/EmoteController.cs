@@ -12,7 +12,7 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class EmoteController
 {
-    public IEnumerable<FfzEmote> FfzGlobalEmotes
+    public FfzEmote[] FfzGlobalEmotes
     {
         get
         {
@@ -26,7 +26,7 @@ public sealed class EmoteController
         }
     }
 
-    public IEnumerable<BttvEmote> BttvGlobalEmotes
+    public BttvEmote[] BttvGlobalEmotes
     {
         get
         {
@@ -40,7 +40,7 @@ public sealed class EmoteController
         }
     }
 
-    public IEnumerable<SevenTvGlobalEmote> SevenTvGlobalEmotes
+    public SevenTvGlobalEmote[] SevenTvGlobalEmotes
     {
         get
         {
@@ -56,28 +56,28 @@ public sealed class EmoteController
 
     private readonly ChannelCache? _channelCache;
 
-    private IEnumerable<FfzEmote>? _ffzGlobalEmotes;
-    private IEnumerable<BttvEmote>? _bttvGlobalEmotes;
-    private IEnumerable<SevenTvGlobalEmote>? _sevenTvGlobalEmotes;
+    private FfzEmote[]? _ffzGlobalEmotes;
+    private BttvEmote[]? _bttvGlobalEmotes;
+    private SevenTvGlobalEmote[]? _sevenTvGlobalEmotes;
 
-    private readonly Dictionary<long, IEnumerable<FfzEmote>> _ffzChannelsEmotes = new();
-    private readonly Dictionary<long, IEnumerable<BttvEmote>> _bttvEmotes = new();
-    private readonly Dictionary<long, IEnumerable<SevenTvEmote>> _sevenTvChannelEmotes = new();
+    private readonly Dictionary<long, FfzEmote[]> _ffzChannelsEmotes = new();
+    private readonly Dictionary<long, BttvEmote[]> _bttvEmotes = new();
+    private readonly Dictionary<long, SevenTvEmote[]> _sevenTvChannelEmotes = new();
 
     public EmoteController(ChannelCache? channelCache = null)
     {
         _channelCache = channelCache;
     }
 
-    public IEnumerable<FfzEmote> GetFfzEmotes(long channelId, bool loadFromCache = true)
+    public FfzEmote[] GetFfzEmotes(long channelId, bool loadFromCache = true)
     {
-        if (loadFromCache && _ffzChannelsEmotes.TryGetValue(channelId, out IEnumerable<FfzEmote>? result))
+        if (loadFromCache && _ffzChannelsEmotes.TryGetValue(channelId, out FfzEmote[]? emotes))
         {
-            return result;
+            return emotes;
         }
 
         FfzRequest? request = GetFfzRequest(channelId);
-        IEnumerable<FfzEmote>? emotes = request?.Set?.EmoteSet?.Emotes;
+        emotes = request?.Set?.EmoteSet?.Emotes;
         if (emotes is not null && !_ffzChannelsEmotes.TryAdd(channelId, emotes))
         {
             _ffzChannelsEmotes[channelId] = emotes;
@@ -86,15 +86,15 @@ public sealed class EmoteController
         return emotes ?? Array.Empty<FfzEmote>();
     }
 
-    public IEnumerable<BttvEmote> GetBttvEmotes(long channelId, bool loadFromCache = true)
+    public BttvEmote[] GetBttvEmotes(long channelId, bool loadFromCache = true)
     {
-        if (loadFromCache && _bttvEmotes.TryGetValue(channelId, out IEnumerable<BttvEmote>? result))
+        if (loadFromCache && _bttvEmotes.TryGetValue(channelId, out BttvEmote[]? emotes))
         {
-            return result;
+            return emotes;
         }
 
         BttvRequest? request = GetBttvRequest(channelId);
-        BttvEmote[]? emotes = request?.ChannelEmotes?.Concat(request.SharedEmotes).ToArray();
+        emotes = request?.ChannelEmotes?.Concat(request.SharedEmotes).ToArray();
         if (emotes is not null && !_bttvEmotes.TryAdd(channelId, emotes))
         {
             _bttvEmotes[channelId] = emotes;
@@ -103,15 +103,15 @@ public sealed class EmoteController
         return emotes ?? Array.Empty<BttvEmote>();
     }
 
-    public IEnumerable<SevenTvEmote> GetSevenTvEmotes(long channelId, bool loadFromCache = true)
+    public SevenTvEmote[] GetSevenTvEmotes(long channelId, bool loadFromCache = true)
     {
-        if (loadFromCache && _sevenTvChannelEmotes.TryGetValue(channelId, out IEnumerable<SevenTvEmote>? result))
+        if (loadFromCache && _sevenTvChannelEmotes.TryGetValue(channelId, out SevenTvEmote[]? emotes))
         {
-            return result;
+            return emotes;
         }
 
         SevenTvRequest? request = GetSevenTvRequest(channelId);
-        SevenTvEmote[]? emotes = request?.Data?.User?.Emotes;
+        emotes = request?.Data?.User?.Emotes;
         if (emotes is not null && !_sevenTvChannelEmotes.TryAdd(channelId, emotes))
         {
             _sevenTvChannelEmotes[channelId] = emotes;
@@ -148,7 +148,7 @@ public sealed class EmoteController
         }
     }
 
-    private static IEnumerable<SevenTvGlobalEmote>? GetSevenTvGlobalEmotes()
+    private static SevenTvGlobalEmote[]? GetSevenTvGlobalEmotes()
     {
         try
         {
@@ -172,7 +172,7 @@ public sealed class EmoteController
         }
     }
 
-    private static IEnumerable<BttvEmote>? GetBttvGlobalEmotes()
+    private static BttvEmote[]? GetBttvGlobalEmotes()
     {
         try
         {
@@ -227,7 +227,7 @@ public sealed class EmoteController
         }
     }
 
-    private static IEnumerable<FfzEmote>? GetFfzGlobalEmotes()
+    private static FfzEmote[]? GetFfzGlobalEmotes()
     {
         try
         {

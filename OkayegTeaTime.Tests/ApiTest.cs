@@ -1,6 +1,5 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Controller;
 
 namespace OkayegTeaTime.Tests;
@@ -13,42 +12,36 @@ public sealed class ApiTest
     [TestMethod]
     public void GetSevenTvEmotesTest()
     {
-        SevenTvEmote[] emotes = new EmoteController().GetSevenTvEmotes(_testChannel).ToArray();
-        Assert.IsTrue(emotes.Any());
+        Assert.IsTrue(new EmoteController().GetSevenTvEmotes(_testChannel).Any());
     }
 
     [TestMethod]
     public void GetBttvEmotesTest()
     {
-        BttvEmote[] emotes = new EmoteController().GetBttvEmotes(_testChannel).ToArray();
-        Assert.IsTrue(emotes.Any());
+        Assert.IsTrue(new EmoteController().GetBttvEmotes(_testChannel).Any());
     }
 
     [TestMethod]
     public void GetFfzEmotesTest()
     {
-        FfzEmote[] emotes = new EmoteController().GetFfzEmotes(_testChannel).ToArray();
-        Assert.IsTrue(emotes.Any());
+        Assert.IsTrue(new EmoteController().GetFfzEmotes(_testChannel).Any());
     }
 
     [TestMethod]
     public void GetSevenTvGlobalEmotes()
     {
-        SevenTvGlobalEmote[] emotes = new EmoteController().SevenTvGlobalEmotes.ToArray();
-        Assert.IsTrue(emotes.Any());
+        Assert.IsTrue(new EmoteController().SevenTvGlobalEmotes.Any());
     }
 
     [TestMethod]
     public void GetBttvGlobalEmotesTest()
     {
-        BttvEmote[] emotes = new EmoteController().BttvGlobalEmotes.ToArray();
-        Assert.IsTrue(emotes.Any());
+        Assert.IsTrue(new EmoteController().BttvGlobalEmotes.Any());
     }
 
     [TestMethod]
     public void GetFfzGlobalEmotesTest()
     {
-        FfzEmote[] emotes = new EmoteController().FfzGlobalEmotes.ToArray();
-        Assert.IsTrue(emotes.Any());
+        Assert.IsTrue(new EmoteController().FfzGlobalEmotes.Any());
     }
 }
