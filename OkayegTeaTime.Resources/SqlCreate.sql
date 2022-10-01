@@ -11,10 +11,11 @@ create table ExceptionLogs
 (
     Id         int auto_increment
         primary key,
-    Type       varchar(100)  null,
-    Origin     varchar(100)  null,
-    Message    varchar(1000) null,
-    StackTrace varchar(3000) null
+    Type       varchar(100)                         null,
+    Origin     varchar(100)                         null,
+    Message    varchar(1000)                        null,
+    StackTrace varchar(3000)                        null,
+    Time       datetime default current_timestamp() not null
 );
 
 create table Reminders
@@ -33,11 +34,11 @@ create table Spotify
 (
     Id                 bigint auto_increment
         primary key,
-    Username           varchar(25)      not null,
-    AccessToken        varchar(300)     not null,
-    RefreshToken       varchar(300)     not null,
-    Time               bigint default 0 not null,
-    SongRequestEnabled bit              not null
+    AccessToken        varchar(300)           not null,
+    RefreshToken       varchar(300)           not null,
+    Time               bigint      default 0  not null,
+    SongRequestEnabled bit                    not null,
+    Username           varchar(25) default '' not null
 );
 
 create table Suggestions
@@ -63,4 +64,3 @@ create table Users
     Location          varchar(100)           null,
     IsPrivateLocation bit                    not null
 );
-
