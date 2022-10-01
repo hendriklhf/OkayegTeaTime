@@ -241,7 +241,7 @@ public sealed class SpotifyUser : CacheModel
 
         List<SpotifyTrack> result = new();
         int offset = 0;
-        while (true)
+        do
         {
             try
             {
@@ -269,7 +269,7 @@ public sealed class SpotifyUser : CacheModel
                 DbController.LogException(ex);
                 break;
             }
-        }
+        } while (true);
 
         return result;
     }

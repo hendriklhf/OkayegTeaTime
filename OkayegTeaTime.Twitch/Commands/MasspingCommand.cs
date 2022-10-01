@@ -12,7 +12,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Massping)]
 public sealed class MasspingCommand : Command
 {
-    private readonly long[] _disabledChannels =
+    private static readonly long[] _disabledChannels =
     {
         35933008
     };
@@ -54,7 +54,7 @@ public sealed class MasspingCommand : Command
             chatters = GetChatters(ChatMessage.Channel).Select(c => c.Username).ToArray();
             if (chatters.Length == 0)
             {
-                Response = string.Empty;
+                Response = Response.Empty;
                 return;
             }
         }
@@ -67,7 +67,7 @@ public sealed class MasspingCommand : Command
         Response += string.Join($" {emote} ", chatters);
     }
 
-    private IEnumerable<Chatter> GetChatters(string channel)
+    private Chatter[] GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
         if (!request.IsValidJsonData)
@@ -87,6 +87,6 @@ public sealed class MasspingCommand : Command
             }
         }
 
-        return result;
+        return result.ToArray();
     }
 }

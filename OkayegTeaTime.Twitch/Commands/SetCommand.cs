@@ -42,24 +42,22 @@ public sealed class SetCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
+            if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
             {
-                string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength ? AppSettings.MaxEmoteInFrontLength : ChatMessage.Split[2].Length)];
-                Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
-                if (channel is null)
-                {
-                    Response = $"{ChatMessage.Username}, an error occurred while trying to set the emote";
-                    return;
-                }
-
-                channel.Emote = emote;
-                Response = $"{ChatMessage.Username}, emote set to: {emote}";
-            }
-            else
-            {
-                Response += PredefinedMessages.NoModOrBroadcasterMessage;
+                Response = $"{ChatMessage.Message}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+                return;
             }
 
+            string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength ? AppSettings.MaxEmoteInFrontLength : ChatMessage.Split[2].Length)];
+            Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
+            if (channel is null)
+            {
+                Response = $"{ChatMessage.Username}, an error occurred while trying to set the emote";
+                return;
+            }
+
+            channel.Emote = emote;
+            Response = $"{ChatMessage.Username}, emote set to: {emote}";
             return;
         }
 

@@ -46,7 +46,7 @@ public static class SpotifyController
                 await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
             return (response.AccessToken, response.RefreshToken);
         }
-        catch (Exception)
+        catch
         {
             // log exception if needed
             return null;

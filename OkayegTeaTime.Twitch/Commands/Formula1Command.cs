@@ -136,7 +136,7 @@ public sealed class Formula1Command : Command
                 return null;
             }
 
-            GetDateTimes(races, jRaces);
+            CreateSessionStartTimes(races, jRaces);
             return races;
         }
         catch (Exception ex)
@@ -146,7 +146,7 @@ public sealed class Formula1Command : Command
         }
     }
 
-    private static void GetDateTimes(Formula1Race[] races, JsonElement jRaces)
+    private static void CreateSessionStartTimes(Formula1Race[] races, JsonElement jRaces)
     {
         try
         {
