@@ -100,7 +100,7 @@ public sealed class CommandHandler : Handler
         Command command = handle.CreateCommandInstance(_twitchBot, chatMessage, alias);
         command.Handle();
         string response = command.Response;
-        if (response.IsNullOrEmptyOrWhitespace())
+        if (string.IsNullOrWhiteSpace(response))
         {
             return;
         }

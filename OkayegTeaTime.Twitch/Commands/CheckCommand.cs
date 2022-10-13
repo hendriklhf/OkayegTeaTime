@@ -43,7 +43,7 @@ public sealed class CheckCommand : Command
                 AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
                 Response += new AfkMessage(user, cmd).GoingAway;
                 string? message = user.AfkMessage;
-                if (!string.IsNullOrEmpty(message))
+                if (!string.IsNullOrWhiteSpace(message))
                 {
                     Response += $": {message}";
                 }
@@ -84,7 +84,7 @@ public sealed class CheckCommand : Command
                 reminderProps.Add($"Fires in: {span.Format()}");
             }
 
-            if (!string.IsNullOrEmpty(reminder.Message))
+            if (!string.IsNullOrWhiteSpace(reminder.Message))
             {
                 reminderProps.Add($"Message: {reminder.Message}");
             }

@@ -15,7 +15,7 @@ public static class PatternCreator
     public static Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
     {
         // TODO: kinda don't like how this is passed in
-        string patternPrefix = '^' + Regex.Escape(string.IsNullOrEmpty(prefix) ? alias + AppSettings.Suffix : prefix + alias);
+        string patternPrefix = '^' + Regex.Escape(string.IsNullOrWhiteSpace(prefix) ? alias + AppSettings.Suffix : prefix + alias);
         addition ??= string.Empty;
         string patternKey = patternPrefix + addition + @"(\s|$)";
 

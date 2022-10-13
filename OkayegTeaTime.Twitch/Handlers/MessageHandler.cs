@@ -117,7 +117,7 @@ public sealed class MessageHandler : Handler
         }
 
         string? prefix = _twitchBot.Channels[chatMessage.Channel]?.Prefix;
-        string message = string.IsNullOrEmpty(prefix) ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}" : $"{chatMessage.Username}, Prefix: {prefix}";
+        string message = string.IsNullOrWhiteSpace(prefix) ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}" : $"{chatMessage.Username}, Prefix: {prefix}";
         _twitchBot.Send(chatMessage.Channel, message);
     }
 }

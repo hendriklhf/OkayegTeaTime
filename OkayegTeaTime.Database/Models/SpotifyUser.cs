@@ -196,7 +196,7 @@ public sealed class SpotifyUser : CacheModel
     {
         async Task AddToChatPlaylistLocal()
         {
-            string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty).Where(u => !string.IsNullOrEmpty(u)).ToArray();
+            string[] uris = songs.Select(s => SpotifyController.ParseSongToUri(s) ?? string.Empty).Where(u => !string.IsNullOrWhiteSpace(u)).ToArray();
 
             if (uris.Length == 0)
             {

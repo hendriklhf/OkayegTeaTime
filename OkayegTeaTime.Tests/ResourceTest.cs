@@ -15,7 +15,7 @@ public sealed class ResourceTest
         foreach (PropertyInfo prop in properties)
         {
             string? value = (string?)prop.GetValue(null);
-            Assert.IsTrue(!string.IsNullOrEmpty(value));
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(value));
         }
     }
 }

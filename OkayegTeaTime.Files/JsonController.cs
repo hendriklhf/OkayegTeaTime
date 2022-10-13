@@ -24,7 +24,7 @@ public static class JsonController
             return _settings;
         }
 
-        if (string.IsNullOrEmpty(SettingsPath))
+        if (string.IsNullOrWhiteSpace(SettingsPath))
         {
             SettingsPath = FileLocator.Find(AppSettings.SettingsFileName);
             Console.WriteLine($"Found Settings file at: {SettingsPath}");

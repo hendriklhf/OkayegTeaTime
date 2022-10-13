@@ -45,7 +45,7 @@ public sealed class GoCommand : Command
         }
 
         string error = request.Data.GetProperty("Errors").GetString()!;
-        bool hasError = !string.IsNullOrEmpty(error);
+        bool hasError = !string.IsNullOrWhiteSpace(error);
         string result = hasError ? error : request.Data.GetProperty("Events")[0].GetProperty("Message").GetString()!;
         return (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
     }

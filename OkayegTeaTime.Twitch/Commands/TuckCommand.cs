@@ -21,7 +21,7 @@ public sealed class TuckCommand : Command
             string target = ChatMessage.LowerSplit[1];
             Response = $"{Emoji.PointRight} {Emoji.Bed} {ChatMessage.Username} tucked {target} to bed";
             string emote = ChatMessage.LowerSplit.Length > 2 ? ChatMessage.Split[2] : string.Empty;
-            if (!string.IsNullOrEmpty(emote))
+            if (!string.IsNullOrWhiteSpace(emote))
             {
                 Response += $" {emote}";
             }

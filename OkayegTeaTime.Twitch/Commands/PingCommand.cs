@@ -18,7 +18,7 @@ public sealed class PingCommand : Command
 
     public override void Handle()
     {
-        Response = $"Pingeg, I'm here! Uptime: {DateTime.Now - _twitchBot.StartTime:c} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
+        Response = $"Pingeg, I'm here! Uptime: {DateTime.UtcNow - _twitchBot.StartTime:c} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
             $"|| Ping: {_twitchBot.Latency}ms || Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit} || Cached patterns: {PatternCreator.CacheSize}";
     }
 

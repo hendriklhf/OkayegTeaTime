@@ -52,7 +52,7 @@ public sealed class Channel : CacheModel
         Name = channel.Name;
 
         string? emote = channel.EmoteInFront;
-        _emote = string.IsNullOrEmpty(emote) ? AppSettings.DefaultEmote : emote;
+        _emote = string.IsNullOrWhiteSpace(emote) ? AppSettings.DefaultEmote : emote;
 
         _prefix = channel.Prefix;
     }

@@ -50,7 +50,7 @@ public sealed class CppCommand : Command
         }
 
         string result = Regex.Match(request.Result.NewLinesToSpaces(), @"\$main(</b>|</span>|<br>){3}.*").Value[20..].NewLinesToSpaces().TrimAll();
-        return result.IsNullOrEmptyOrWhitespace() ? "compiled successfully" : result.Length > 450 ? $"{result[450..]}..." : result;
+        return string.IsNullOrWhiteSpace(result) ? "compiled successfully" : result.Length > 450 ? $"{result[450..]}..." : result;
     }
 
     private static string GetCppOnlineCompilerTemplate(string code)

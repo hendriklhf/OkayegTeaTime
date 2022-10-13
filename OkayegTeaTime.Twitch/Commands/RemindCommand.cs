@@ -18,7 +18,7 @@ public sealed class RemindCommand : Command
 {
     private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-    private const string _timeIndentificator = "in";
+    private const string _timeIdentificator = "in";
     private const string _yourself = "me";
 
     [TimePattern(nameof(TimeSpan.FromDays), 365)]
@@ -197,7 +197,7 @@ public sealed class RemindCommand : Command
     {
         for (int i = 2; i < ChatMessage.LowerSplit.Length; i++)
         {
-            if (ChatMessage.LowerSplit[i] == _timeIndentificator)
+            if (ChatMessage.LowerSplit[i] == _timeIdentificator)
             {
                 return i + 1;
             }

@@ -65,7 +65,7 @@ public static class BotActions
         string creator = reminder.Target == reminder.Creator ? "yourself" : reminder.Creator;
         TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
         string message = $"{reminder.Target}, reminder from {creator} ({span.Format()} ago)";
-        if (!string.IsNullOrEmpty(reminder.Message))
+        if (!string.IsNullOrWhiteSpace(reminder.Message))
         {
             message += $": {reminder.Message}";
         }

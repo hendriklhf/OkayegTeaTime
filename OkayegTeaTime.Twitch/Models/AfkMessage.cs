@@ -19,7 +19,7 @@ public sealed class AfkMessage
 
             TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(_user.AfkTime);
             _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username).Replace("{time}", $"{span.Format()} ago").Replace("{message}", _user.AfkMessage);
-            _comingBack = string.IsNullOrEmpty(_user.AfkMessage) ? _comingBack.Remove(":").TrimAll() : _comingBack;
+            _comingBack = string.IsNullOrWhiteSpace(_user.AfkMessage) ? _comingBack.Remove(":").TrimAll() : _comingBack;
             return _comingBack;
         }
     }
