@@ -37,7 +37,7 @@ public sealed class SpotifyCommand : Command
             SpotifyItem? item;
             try
             {
-                item = await user.GetCurrentlyPlayingItem();
+                item = await SpotifyController.GetCurrentlyPlayingItem(user);
             }
             catch (SpotifyException ex)
             {

@@ -34,7 +34,7 @@ public sealed class SkipCommand : Command
 
             try
             {
-                await user.Skip();
+                await SpotifyController.Skip(user);
                 Response = $"{ChatMessage.Username}, skipped to the next song in {ChatMessage.Channel.Antiping()}'s queue";
             }
             catch (SpotifyException ex)
@@ -43,21 +43,27 @@ public sealed class SkipCommand : Command
             }
 
             List<SpotifyUser> usersToRemove = new();
-            foreach (SpotifyUser u in user.ListeningUsers)
+            ListeningSession? listeningSession = SpotifyController.GetListeningSession(user);
+            if (listeningSession is null)
+            {
+                return;
+            }
+
+            foreach (SpotifyUser listener in listeningSession.Listeners)
             {
                 try
                 {
-                    await u.ListenAlongWith(user);
+                    await SpotifyController.ListenAlongWith(listener, user);
                 }
                 catch (SpotifyException)
                 {
-                    usersToRemove.Add(u);
+                    usersToRemove.Add(listener);
                 }
             }
 
             foreach (SpotifyUser u in usersToRemove)
             {
-                user.ListeningUsers.Remove(u);
+                listeningSession.Listeners.Remove(u);
             }
         }).Wait();
     }

@@ -42,7 +42,7 @@ public sealed class SongRequestCommand : Command
                 SpotifyItem? item;
                 try
                 {
-                    item = await user.GetCurrentlyPlayingItem();
+                    item = await SpotifyController.GetCurrentlyPlayingItem(user);
                 }
                 catch (SpotifyException ex)
                 {
@@ -63,13 +63,13 @@ public sealed class SongRequestCommand : Command
                     return;
                 }
 
-                SpotifyTrack track = (item as SpotifyTrack)!;
+                SpotifyTrack track = (SpotifyTrack)item;
                 Dictionary<SpotifyUser, string?> success = new();
                 foreach (SpotifyUser target in targets)
                 {
                     try
                     {
-                        await target.AddToQueue(track.Uri);
+                        await SpotifyController.AddToQueue(target, track.Uri);
                         success.Add(target, null);
                     }
                     catch (SpotifyException ex)
@@ -110,7 +110,7 @@ public sealed class SongRequestCommand : Command
                 SpotifyItem? item;
                 try
                 {
-                    item = await target.GetCurrentlyPlayingItem();
+                    item = await SpotifyController.GetCurrentlyPlayingItem(target);
                 }
                 catch (SpotifyException ex)
                 {
@@ -126,7 +126,7 @@ public sealed class SongRequestCommand : Command
 
                 try
                 {
-                    await user.AddToQueue(item.Uri);
+                    await SpotifyController.AddToQueue(user, item.Uri);
                 }
                 catch (SpotifyException ex)
                 {
@@ -160,7 +160,7 @@ public sealed class SongRequestCommand : Command
                 SpotifyTrack? track = null;
                 try
                 {
-                    track = await targets[0].SearchTrack(song);
+                    track = await SpotifyController.SearchTrack(targets[0], song);
                 }
                 catch (SpotifyException ex)
                 {
@@ -178,7 +178,7 @@ public sealed class SongRequestCommand : Command
                 {
                     try
                     {
-                        await target.AddToQueue(track.Uri);
+                        await SpotifyController.AddToQueue(target, track.Uri);
                         success.Add(target, null);
                     }
                     catch (SpotifyException ex)
@@ -212,7 +212,7 @@ public sealed class SongRequestCommand : Command
                 SpotifyItem? item;
                 try
                 {
-                    item = await user.GetCurrentlyPlayingItem();
+                    item = await SpotifyController.GetCurrentlyPlayingItem(user);
                 }
                 catch (SpotifyException ex)
                 {
@@ -235,7 +235,7 @@ public sealed class SongRequestCommand : Command
 
                 try
                 {
-                    await target.AddToQueue(item.Uri);
+                    await SpotifyController.AddToQueue(target, item.Uri);
                 }
                 catch (SpotifyException ex)
                 {
@@ -267,7 +267,7 @@ public sealed class SongRequestCommand : Command
 
                 try
                 {
-                    SpotifyTrack track = await target.AddToQueue(ChatMessage.Split[1..].JoinToString(' '));
+                    SpotifyTrack track = await SpotifyController.AddToQueue(target, ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]);
                     Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
                 }
                 catch (SpotifyException ex)

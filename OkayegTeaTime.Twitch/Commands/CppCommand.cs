@@ -3,7 +3,9 @@ using System.Web;
 using HLE;
 using HLE.Http;
 using OkayegTeaTime.Resources;
+#if DEBUG
 using OkayegTeaTime.Twitch.Attributes;
+#endif
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 

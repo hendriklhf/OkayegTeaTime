@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj"/>
-    <ProjectReference Include="..\OkayegTeaTime.Spotify\OkayegTeaTime.Spotify.csproj"/>
     <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
   </ItemGroup>
 

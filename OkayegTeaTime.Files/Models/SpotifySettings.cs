@@ -8,9 +8,7 @@ public sealed class SpotifySettings
 
     public string ClientSecret { get; set; }
 
-#if RELEASE
     public string ChatPlaylistId { get; set; }
 
     public long[] ChatPlaylistUsers { get; set; }
-#endif
 }

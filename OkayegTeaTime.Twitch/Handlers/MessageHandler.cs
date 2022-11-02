@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 #if RELEASE
 using System.Linq;
+using OkayegTeaTime.Database;
 #endif
 using System.Text.RegularExpressions;
 using OkayegTeaTime.Database.Cache.Enums;
@@ -100,11 +101,11 @@ public sealed class MessageHandler : Handler
         string[] songs = chatMessage.Split.Where(s => Pattern.SpotifyLink.IsMatch(s) || Pattern.SpotifyUri.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
         try
         {
-            playlistUser.AddToChatPlaylist(songs);
+            SpotifyController.AddToPlaylist(playlistUser, songs);
         }
-        catch (SpotifyException)
+        catch (SpotifyException ex)
         {
-            // ignored
+            DbController.LogException(ex);
         }
     }
 #endif

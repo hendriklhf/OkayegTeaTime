@@ -28,22 +28,23 @@ public sealed class ListenCommand : Command
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s((leave)|(stop))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
-            if (user is null)
+            SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
+            if (listener is null)
             {
                 Response = $"{ChatMessage.Username}, you aren't registered, you have to register first";
                 return;
             }
 
-            SpotifyUser? target = _twitchBot.SpotifyUsers.GetListeningTo(user);
-            if (target is null)
+            SpotifyUser? host = SpotifyController.GetListeningTo(listener);
+            if (host is null)
             {
                 Response = $"{ChatMessage.Username}, you aren't listening along with anybody";
                 return;
             }
 
-            target.ListeningUsers.Remove(user);
-            Response = $"{ChatMessage.Username}, stopped listening along with {target.Username.Antiping()}";
+            ListeningSession? listeningSession = SpotifyController.GetListeningSession(host);
+            listeningSession?.Listeners.Remove(listener);
+            Response = $"{ChatMessage.Username}, stopped listening along with {host.Username.Antiping()}";
             return;
         }
 
@@ -52,15 +53,15 @@ public sealed class ListenCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (user is null)
+                SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
+                if (listener is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't sync, you have to register first";
                     return;
                 }
 
-                SpotifyUser? target = _twitchBot.SpotifyUsers.GetListeningTo(user);
-                if (target is null)
+                SpotifyUser? host = SpotifyController.GetListeningTo(listener);
+                if (host is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't sync, because you aren't listening along with anybody";
                     return;
@@ -69,7 +70,7 @@ public sealed class ListenCommand : Command
                 SpotifyItem item;
                 try
                 {
-                    item = await user.ListenAlongWith(target);
+                    item = await SpotifyController.ListenAlongWith(listener, host);
                 }
                 catch (SpotifyException ex)
                 {
@@ -82,14 +83,14 @@ public sealed class ListenCommand : Command
                     case SpotifyTrack track:
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
+                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
                         break;
                     }
                     case SpotifyEpisode episode:
-                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing " + $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing " + $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
                         break;
                     default:
-                        Response = $"{ChatMessage.Username}, synced with {target.Username.Antiping()} and playing an unknown item type monkaS";
+                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing an unknown item type monkaS";
                         break;
                 }
             }).Wait();
@@ -101,15 +102,15 @@ public sealed class ListenCommand : Command
         {
             Task.Run(async () =>
             {
-                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (user is null)
+                SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
+                if (listener is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't listen to other users, you have to register first";
                     return;
                 }
 
-                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[1]];
-                if (target is null)
+                SpotifyUser? host = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[1]];
+                if (host is null)
                 {
                     Response = $"{ChatMessage.Username}, you can't listen to {ChatMessage.LowerSplit[1]}'s music, they have to register first";
                     return;
@@ -118,7 +119,7 @@ public sealed class ListenCommand : Command
                 SpotifyItem item;
                 try
                 {
-                    item = await user.ListenAlongWith(target);
+                    item = await SpotifyController.ListenAlongWith(listener, host);
                 }
                 catch (SpotifyException ex)
                 {
@@ -131,17 +132,17 @@ public sealed class ListenCommand : Command
                     case SpotifyTrack track:
                     {
                         string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " + $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
+                        Response = $"{ChatMessage.Username}, now listening along with {host.Username.Antiping()} " + $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
                         break;
                     }
                     case SpotifyEpisode episode:
                     {
-                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} " + $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        Response = $"{ChatMessage.Username}, now listening along with {host.Username.Antiping()} " + $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
                         break;
                     }
                     default:
                     {
-                        Response = $"{ChatMessage.Username}, now listening along with {target.Username.Antiping()} and playing an unknown item type monkaS";
+                        Response = $"{ChatMessage.Username}, now listening along with {host.Username.Antiping()} and playing an unknown item type monkaS";
                         break;
                     }
                 }

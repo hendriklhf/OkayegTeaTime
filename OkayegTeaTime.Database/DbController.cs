@@ -49,9 +49,9 @@ public static class DbController
     public static long? AddSpotifyUser(string username, string accessToken, string refreshToken)
     {
         using OkayegTeaTimeContext database = new();
-        EntityFrameworkModels.Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
+        Spotify? user = database.Spotify.FirstOrDefault(s => s.Username == username);
 
-        EntityEntry<EntityFrameworkModels.Spotify>? entry = null;
+        EntityEntry<Spotify>? entry = null;
         if (user is null)
         {
             entry = database.Spotify.Add(new(username, accessToken, refreshToken));
@@ -112,13 +112,13 @@ public static class DbController
         return database.Reminders.ToArray();
     }
 
-    public static EntityFrameworkModels.Spotify? GetSpotifyUser(string username)
+    public static Spotify? GetSpotifyUser(string username)
     {
         using OkayegTeaTimeContext database = new();
         return database.Spotify.FirstOrDefault(s => s.Username == username);
     }
 
-    public static EntityFrameworkModels.Spotify[] GetSpotifyUsers()
+    public static Spotify[] GetSpotifyUsers()
     {
         using OkayegTeaTimeContext database = new();
         return database.Spotify.ToArray();
@@ -157,23 +157,23 @@ public static class DbController
         {
             WriteIndented = true
         }));
-#elif RELEASE
+#else
         using OkayegTeaTimeContext database = new();
         database.ExceptionLogs.Add(log);
         database.SaveChanges();
 #endif
     }
 
-    public static void RemoveChannel(long id)
+    public static void RemoveChannel(long channelId)
     {
         using OkayegTeaTimeContext database = new();
-        Channel? chnl = database.Channels.FirstOrDefault(c => c.Id == id);
-        if (chnl is null)
+        Channel? channel = database.Channels.FirstOrDefault(c => c.Id == channelId);
+        if (channel is null)
         {
             return;
         }
 
-        database.Channels.Remove(chnl);
+        database.Channels.Remove(channel);
         database.SaveChanges();
     }
 
