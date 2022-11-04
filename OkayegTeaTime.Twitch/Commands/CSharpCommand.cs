@@ -38,7 +38,7 @@ public sealed class CSharpCommand : Command
             ("NuGetPackageVersionIds", AppSettings.HleNugetVersionId)
         });
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
-        return string.IsNullOrWhiteSpace(result) ? (result!.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces() : "executed successfully";
+        return !string.IsNullOrWhiteSpace(result) ? (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces() : "executed successfully";
     }
 
     private static string GetCSharpOnlineCompilerTemplate(string code)
