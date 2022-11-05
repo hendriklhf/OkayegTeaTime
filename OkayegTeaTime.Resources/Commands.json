@@ -621,6 +621,21 @@
       ],
       "Cooldown": 5000,
       "Document": true
+    },
+    {
+      "Name": "Kotlin",
+      "Description": "Executes the given Kotlin code",
+      "Aliases": [
+        "kotlin"
+      ],
+      "Parameters": [
+        "[code]"
+      ],
+      "ParameterDescription": [
+        "Executes the given Kotlin code"
+      ],
+      "Cooldown": 15000,
+      "Document": true
     }
   ],
   "AfkCommands": [

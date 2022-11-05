@@ -19,6 +19,7 @@ public enum CommandType
     Id,
     Invalidate,
     Join,
+    Kotlin,
     Leave,
     Listen,
     Massping,
