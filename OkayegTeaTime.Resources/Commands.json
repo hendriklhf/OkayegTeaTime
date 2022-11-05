@@ -459,22 +459,6 @@
       "Document": false
     },
     {
-      "Name": "Go",
-      "Description": "Executes the given Go code",
-      "Aliases": [
-        "go",
-        "golang"
-      ],
-      "Parameters": [
-        "[code]"
-      ],
-      "ParameterDescriptions": [
-        "Executes the given Go code"
-      ],
-      "Cooldown": 10000,
-      "Document": true
-    },
-    {
       "Name": "Stream",
       "Description": "Sends information about a stream",
       "Aliases": [
@@ -521,22 +505,6 @@
         "Lets you listen along with another user"
       ],
       "Cooldown": 30000,
-      "Document": false
-    },
-    {
-      "Name": "Cpp",
-      "Description": "Executes the given C++ code",
-      "Aliases": [
-        "cpp",
-        "c++"
-      ],
-      "Parameters": [
-        "[code]"
-      ],
-      "ParameterDescriptions": [
-        "Executes the given C++ code"
-      ],
-      "Cooldown": 15000,
       "Document": false
     },
     {

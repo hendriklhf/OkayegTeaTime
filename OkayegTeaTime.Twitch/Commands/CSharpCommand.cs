@@ -22,13 +22,13 @@ public sealed class CSharpCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
-            Response = $"{ChatMessage.Username}, {GetCSharpOnlineCompilerResult(code)}";
+            Response = $"{ChatMessage.Username}, {GetProgramOutput(code)}";
         }
     }
 
-    private static string GetCSharpOnlineCompilerResult(string input)
+    private static string GetProgramOutput(string input)
     {
-        string encodedInput = HttpUtility.HtmlEncode(GetCSharpOnlineCompilerTemplate(input));
+        string encodedInput = HttpUtility.HtmlEncode(ResourceController.CSharpTemplate.Replace("{code}", input));
         HttpPost request = new("https://dotnetfiddle.net/Home/Run", new[]
         {
             ("CodeBlock", encodedInput),
@@ -39,10 +39,5 @@ public sealed class CSharpCommand : Command
         });
         string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
         return !string.IsNullOrWhiteSpace(result) ? (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces() : "executed successfully";
-    }
-
-    private static string GetCSharpOnlineCompilerTemplate(string code)
-    {
-        return ResourceController.CompilerTemplateCSharp.Replace("{code}", code);
     }
 }

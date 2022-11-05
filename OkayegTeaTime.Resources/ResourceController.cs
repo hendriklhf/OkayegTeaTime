@@ -12,18 +12,11 @@ public static class ResourceController
         private set => _commands = value;
     }
 
-    [FileName("CompilerTemplateCSharp.cs")]
-    public static string CompilerTemplateCSharp
+    [FileName("CSharpTemplate.cs")]
+    public static string CSharpTemplate
     {
-        get => GetFileContent(nameof(CompilerTemplateCSharp), ref _compilerTemplateCSharp);
-        private set => _compilerTemplateCSharp = value;
-    }
-
-    [FileName("CompilerTemplateGo.go")]
-    public static string CompilerTemplateGo
-    {
-        get => GetFileContent(nameof(CompilerTemplateGo), ref _compilerTemplateGo);
-        private set => _compilerTemplateGo = value;
+        get => GetFileContent(nameof(CSharpTemplate), ref _csharpTemplate);
+        private set => _csharpTemplate = value;
     }
 
     [FileName("GachiSongs.json")]
@@ -31,13 +24,6 @@ public static class ResourceController
     {
         get => GetFileContent(nameof(GachiSongs), ref _gachiSongs);
         private set => _gachiSongs = value;
-    }
-
-    [FileName("CompilerTemplateCpp.cpp")]
-    public static string CompilerTemplateCpp
-    {
-        get => GetFileContent(nameof(CompilerTemplateCpp), ref _compilerTemplateCpp);
-        private set => _compilerTemplateCpp = value;
     }
 
     [FileName("LastCommit")]
@@ -54,13 +40,19 @@ public static class ResourceController
         private set => _codeFiles = value;
     }
 
+    [FileName("KotlinTemplate.kt")]
+    public static string KotlinTemplate
+    {
+        get => GetFileContent(nameof(KotlinTemplate), ref _kotlinTemplate);
+        private set => _kotlinTemplate = value;
+    }
+
     private static string? _commands;
-    private static string? _compilerTemplateCSharp;
-    private static string? _compilerTemplateGo;
-    private static string? _compilerTemplateCpp;
+    private static string? _csharpTemplate;
     private static string? _gachiSongs;
     private static string? _lastCommit;
     private static string? _codeFiles;
+    private static string? _kotlinTemplate;
 
     private static readonly Assembly _assembly = Assembly.GetCallingAssembly();
 

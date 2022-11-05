@@ -29,6 +29,7 @@ public sealed class TwitchApi
     {
         _api.Settings.ClientId = AppSettings.Twitch.ApiClientId;
         _api.Settings.Secret = AppSettings.Twitch.ApiClientSecret;
+        _api.Settings.AccessToken = GetAccessToken();
         _api.Settings.Scopes = new()
         {
             AuthScopes.Channel_Check_Subscription,
@@ -36,7 +37,6 @@ public sealed class TwitchApi
             AuthScopes.Helix_Channel_Read_Subscriptions,
             AuthScopes.User_Subscriptions
         };
-        RefreshAccessToken();
     }
 
     private User? GetUserFromCache(UserKey key)

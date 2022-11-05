@@ -27,17 +27,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="CompilerTemplateCSharp.cs"/>
+    <Compile Remove="CSharpTemplate.cs"/>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Commands.json"/>
     <EmbeddedResource Include="GachiSongs.json"/>
-    <EmbeddedResource Include="CompilerTemplateCpp.cpp"/>
-    <EmbeddedResource Include="CompilerTemplateCSharp.cs"/>
-    <EmbeddedResource Include="CompilerTemplateGo.go"/>
     <EmbeddedResource Include="LastCommit"/>
     <EmbeddedResource Include="CodeFiles"/>
+    <EmbeddedResource Include="KotlinTemplate.kt"/>
   </ItemGroup>
 
   <ItemGroup>
