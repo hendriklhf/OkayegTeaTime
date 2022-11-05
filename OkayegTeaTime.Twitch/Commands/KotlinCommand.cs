@@ -57,7 +57,7 @@ public sealed class KotlinCommand : Command
                     {
                         name = _kotlinFileName,
                         publicId = string.Empty,
-                        text = code[..^2]
+                        text = code[..^2] //these two chars (\r\n) have to be removed, otherwise the api returns 502
                     }
                 },
                 confType = "java"

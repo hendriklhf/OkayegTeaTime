@@ -7,6 +7,7 @@ using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Files.Models.SevenTv;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
@@ -40,7 +41,7 @@ public sealed class EmoteController
         }
     }
 
-    public SevenTvGlobalEmote[] SevenTvGlobalEmotes
+    public Emote[] SevenTvGlobalEmotes
     {
         get
         {
@@ -50,7 +51,7 @@ public sealed class EmoteController
             }
 
             _sevenTvGlobalEmotes = GetSevenTvGlobalEmotes();
-            return _sevenTvGlobalEmotes ?? Array.Empty<SevenTvGlobalEmote>();
+            return _sevenTvGlobalEmotes ?? Array.Empty<Emote>();
         }
     }
 
@@ -58,11 +59,11 @@ public sealed class EmoteController
 
     private FfzEmote[]? _ffzGlobalEmotes;
     private BttvEmote[]? _bttvGlobalEmotes;
-    private SevenTvGlobalEmote[]? _sevenTvGlobalEmotes;
+    private Emote[]? _sevenTvGlobalEmotes;
 
     private readonly Dictionary<long, FfzEmote[]> _ffzChannelsEmotes = new();
     private readonly Dictionary<long, BttvEmote[]> _bttvEmotes = new();
-    private readonly Dictionary<long, SevenTvEmote[]> _sevenTvChannelEmotes = new();
+    private readonly Dictionary<long, Emote[]> _sevenTvChannelEmotes = new();
 
     public EmoteController(ChannelCache? channelCache = null)
     {
@@ -103,43 +104,29 @@ public sealed class EmoteController
         return emotes ?? Array.Empty<BttvEmote>();
     }
 
-    public SevenTvEmote[] GetSevenTvEmotes(long channelId, bool loadFromCache = true)
+    public Emote[] GetSevenTvEmotes(long channelId, bool loadFromCache = true)
     {
-        if (loadFromCache && _sevenTvChannelEmotes.TryGetValue(channelId, out SevenTvEmote[]? emotes))
+        if (loadFromCache && _sevenTvChannelEmotes.TryGetValue(channelId, out Emote[]? emotes))
         {
             return emotes;
         }
 
-        SevenTvRequest? request = GetSevenTvRequest(channelId);
-        emotes = request?.Data?.User?.Emotes;
+        User? user = GetSevenTvUser(channelId);
+        emotes = user?.EmoteSet?.Emotes;
         if (emotes is not null && !_sevenTvChannelEmotes.TryAdd(channelId, emotes))
         {
             _sevenTvChannelEmotes[channelId] = emotes;
         }
 
-        return emotes ?? Array.Empty<SevenTvEmote>();
+        return emotes ?? Array.Empty<Emote>();
     }
 
-    private SevenTvRequest? GetSevenTvRequest(long channelId)
+    private static User? GetSevenTvUser(long channelId)
     {
         try
         {
-            string? channelName = _channelCache is null ? DbController.GetChannel(channelId)?.Name : _channelCache[channelId]?.Name;
-            if (channelName is null)
-            {
-                return null;
-            }
-
-            HttpPost request = new("https://api.7tv.app/v2/gql", new[]
-            {
-                ("query",
-                    "{user(id: \"" + channelName + "\") {...FullUser}}fragment FullUser on User {id,email, display_name, login,description,role " +
-                    "{id,name,position,color,allowed,denied},emotes { id, name, status, visibility, width, height },owned_emotes { id, name, status, visibility, width, height }," +
-                    "emote_ids,editor_ids,editors {id, display_name, login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},editor_in {id, display_name, " +
-                    "login,role { id, name, position, color, allowed, denied },profile_image_url,emote_ids},twitch_id,broadcaster_type,profile_image_url,created_at}")
-            });
-
-            return request.Result is null ? null : JsonSerializer.Deserialize<SevenTvRequest>(request.Result);
+            HttpGet request = new($"https://7tv.io/v3/users/twitch/{channelId}");
+            return string.IsNullOrWhiteSpace(request.Result) ? null : JsonSerializer.Deserialize<User>(request.Result);
         }
         catch (Exception ex)
         {
@@ -148,22 +135,13 @@ public sealed class EmoteController
         }
     }
 
-    private static SevenTvGlobalEmote[]? GetSevenTvGlobalEmotes()
+    private static Emote[]? GetSevenTvGlobalEmotes()
     {
         try
         {
-            HttpPost request = new("https://api.7tv.app/v2/gql", new[]
-            {
-                ("query", "{search_emotes(query: \"\", globalState: \"only\", page: 1, limit: 150, pageSize: 150) {id,name,provider,provider_id,visibility,mime,owner {id,display_name,login,twitch_id}}}")
-            });
-
-            if (!request.IsValidJsonData)
-            {
-                return null;
-            }
-
-            string result = request.Data.GetProperty("data").GetProperty("search_emotes").GetRawText();
-            return JsonSerializer.Deserialize<SevenTvGlobalEmote[]>(result);
+            HttpGet request = new("https://7tv.io/v3/emote-sets/global");
+            EmoteSet? emoteSet = string.IsNullOrWhiteSpace(request.Result) ? null : JsonSerializer.Deserialize<EmoteSet>(request.Result);
+            return emoteSet?.Emotes;
         }
         catch (Exception ex)
         {

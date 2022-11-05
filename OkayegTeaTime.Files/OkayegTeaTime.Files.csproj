@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj"/>
+      <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj"/>
   </ItemGroup>
 
 </Project>
