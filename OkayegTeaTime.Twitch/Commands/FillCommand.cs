@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using OkayegTeaTime.Files;
@@ -25,23 +24,11 @@ public sealed class FillCommand : Command
             string[] split = ChatMessage.Split[1..];
             string emote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
-            while (true)
+            string nextMessagePart = split.Random()!;
+            for (int currentMessageLength = 0; currentMessageLength + nextMessagePart.Length + 1 < maxLength; currentMessageLength += nextMessagePart.Length + 1)
             {
-                string? messagePart = split.Random();
-                if (messagePart is null)
-                {
-                    break;
-                }
-
-                int currentMessageLength = messageParts.Sum(m => m.Length) + messageParts.Count + messagePart.Length;
-                if (currentMessageLength <= maxLength)
-                {
-                    messageParts.Add(messagePart);
-                }
-                else
-                {
-                    break;
-                }
+                messageParts.Add(nextMessagePart);
+                nextMessagePart = split.Random()!;
             }
 
             Response = string.Join(' ', messageParts);
