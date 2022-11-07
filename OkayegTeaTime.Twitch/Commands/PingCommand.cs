@@ -18,12 +18,40 @@ public sealed class PingCommand : Command
 
     public override void Handle()
     {
-        Response = $"Pingeg, I'm here! Uptime: {DateTime.UtcNow - _twitchBot.StartTime:c} || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
-            $"|| Ping: {_twitchBot.Latency}ms || Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit} || Cached patterns: {PatternCreator.CacheSize}";
+        Response = $"Pingeg, I'm here! Uptime: {DateTime.UtcNow - _twitchBot.StartTime:c}";
+        string? temp = GetTemperature();
+        if (temp is not null)
+        {
+            Response += $" || Temperature: {temp}";
+        }
+
+        Response += $" || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
+            $"|| Ping: {_twitchBot.Latency}ms || Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit}";
     }
 
     private static double GetMemoryUsage()
     {
         return Process.GetCurrentProcess().PrivateMemorySize64 / UnitPrefix.Mega;
+    }
+
+    private static string? GetTemperature()
+    {
+        try
+        {
+            Process tempProcess = new()
+            {
+                StartInfo = new("vcgencmd", "measure_temp")
+                {
+                    RedirectStandardOutput = true
+                }
+            };
+            tempProcess.Start();
+            tempProcess.WaitForExit();
+            return tempProcess.StandardOutput.ReadToEnd().Split('=')[1];
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
