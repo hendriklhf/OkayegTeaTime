@@ -5,7 +5,6 @@ using HLE.Maths;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
