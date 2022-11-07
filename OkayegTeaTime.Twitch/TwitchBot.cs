@@ -55,15 +55,15 @@ public sealed class TwitchBot
     private readonly TimerCollection _timerCollection = new();
     private readonly LastMessageController _lastMessageController;
 
-    private readonly Restarter _restarter = new(new[]
+    private readonly Restarter _restarter = new(new TimeOnly[]
     {
-        (4, 0),
-        (4, 10),
-        (4, 20),
-        (4, 30),
-        (4, 40),
-        (4, 50),
-        (5, 0)
+        new(4, 0),
+        new(4, 10),
+        new(4, 20),
+        new(4, 30),
+        new(4, 40),
+        new(4, 50),
+        new(5, 0)
     });
 
     public TwitchBot(IEnumerable<string>? channels = null, IEnumerable<string>? excludedChannels = null)
@@ -106,12 +106,19 @@ public sealed class TwitchBot
         _messageHandler = new(this);
         _lastMessageController = new(Channels);
         _restarter.Start();
+        InitializeTimers();
     }
 
     public void Connect()
     {
         _twitchClient.Connect();
-        InitializeTimers();
+        _timerCollection.StartAll();
+    }
+
+    public void Disconnect()
+    {
+        _timerCollection.StopAll();
+        _twitchClient.Disconnect();
     }
 
     public void Send(string channel, string message)
@@ -265,19 +272,13 @@ public sealed class TwitchBot
 
     private void InitializeTimers()
     {
-        _timerCollection.Add(OnTimer1000, TimeSpan.FromSeconds(1).TotalMilliseconds);
-        _timerCollection.Add(OnTimer10Days, TimeSpan.FromDays(10).TotalMilliseconds);
+        _timerCollection.Add(OnTimer1000, TimeSpan.FromSeconds(1).TotalMilliseconds, startDirectly: false);
     }
 
     private void OnTimer1000(object? sender, ElapsedEventArgs e)
     {
         IEnumerable<Reminder> reminders = Reminders.GetExpiredReminders();
         reminders.ForEach(this.SendTimedReminder);
-    }
-
-    private void OnTimer10Days(object? sender, ElapsedEventArgs e)
-    {
-        TwitchApi.RefreshAccessToken();
     }
 
     #endregion Timer

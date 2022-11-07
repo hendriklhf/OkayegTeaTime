@@ -65,11 +65,6 @@ public sealed class TwitchApi
         throw ex;
     }
 
-    public void RefreshAccessToken()
-    {
-        _api.Settings.AccessToken = GetAccessToken();
-    }
-
     public User? GetUser(string username)
     {
         UserKey key = new(username);

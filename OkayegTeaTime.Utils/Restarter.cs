@@ -9,10 +9,9 @@ namespace OkayegTeaTime.Utils;
 public sealed class Restarter
 {
     private readonly List<Timer> _restartTimers = new();
+    private readonly TimeOnly[] _restartTimes;
 
-    private readonly (int Hour, int Minute)[] _restartTimes;
-
-    public Restarter(IEnumerable<(int, int)> restartTimes)
+    public Restarter(IEnumerable<TimeOnly> restartTimes)
     {
         _restartTimes = restartTimes.ToArray();
     }
@@ -21,9 +20,8 @@ public sealed class Restarter
     {
         Stop();
         TimeOnly now = TimeOnly.FromDateTime(DateTime.UtcNow);
-        foreach ((int hour, int minute) in _restartTimes)
+        foreach (TimeOnly restartTime in _restartTimes)
         {
-            TimeOnly restartTime = new(hour, minute);
             double interval = (restartTime - now).TotalMilliseconds;
             Timer timer = new(interval);
             timer.Elapsed += RestartTimer_OnElapsed!;
