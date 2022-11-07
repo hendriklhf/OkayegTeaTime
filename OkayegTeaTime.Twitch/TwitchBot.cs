@@ -46,7 +46,7 @@ public sealed class TwitchBot
 
     public uint CommandCount { get; set; }
 
-    public DateTime StartTime { get; } = DateTime.Now;
+    public DateTime StartTime { get; } = DateTime.UtcNow;
 
     public long Latency { get; private set; }
 
