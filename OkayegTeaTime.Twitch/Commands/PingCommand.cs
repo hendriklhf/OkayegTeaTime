@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using HLE;
 using HLE.Maths;
 using OkayegTeaTime.Resources;
@@ -19,11 +18,13 @@ public sealed class PingCommand : Command
     public override void Handle()
     {
         Response = $"Pingeg, I'm here! Uptime: {DateTime.UtcNow - _twitchBot.StartTime:c}";
+#if DEBUG
         string? temperature = GetTemperature();
         if (temperature is not null)
         {
             Response += $" || Temperature: {temperature}";
         }
+#endif
 
         Response += $" || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
             $"|| Ping: {_twitchBot.Latency}ms || Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit}";
@@ -34,6 +35,7 @@ public sealed class PingCommand : Command
         return Process.GetCurrentProcess().PrivateMemorySize64 / UnitPrefix.Mega;
     }
 
+#if DEBUG
     private static string? GetTemperature()
     {
         try
@@ -63,4 +65,5 @@ public sealed class PingCommand : Command
             return null;
         }
     }
+#endif
 }
