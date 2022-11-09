@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using HLE.Collections;
 using OkayegTeaTime.Files;
+using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Controller;
 
 namespace OkayegTeaTime.Tools;
@@ -51,37 +51,61 @@ public sealed class ReadMeGenerator
         CommandController commandController = new();
 
         builder.Append($"<h1>{_title}</h1><h2>{_header1}</h2>");
-        _header1Text.ForEach(h => builder.Append($"{h}<br/>"));
-        builder.Append("<br/><table><tr>");
-        _cmdTableHeader.ForEach(h => builder.Append($"<th>{h}</th>"));
-        builder.Append("<tr/>");
-        commandController.Commands.Where(c => c.Document).OrderBy(c => c.Name).ForEach(c =>
+        foreach (string headerText in _header1Text)
         {
-            builder.Append($"<tr><td>{c.Name}</td><td><table>");
-            c.Aliases.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
-            builder.Append("</table></td><td><table>");
-            for (int i = 0; i < c.Parameters.Length; i++)
+            builder.Append($"{headerText}<br/>");
+        }
+
+        builder.Append("<br/><table><tr>");
+        foreach (string cmdHeader in _cmdTableHeader)
+        {
+            builder.Append($"<th>{cmdHeader}</th>");
+        }
+
+        builder.Append("<tr/>");
+        Command[] commands = commandController.Commands.Where(c => c.Document).OrderBy(c => c.Name).ToArray();
+        foreach (Command cmd in commands)
+        {
+            builder.Append($"<tr><td>{cmd.Name}</td><td><table>");
+            foreach (string alias in cmd.Aliases)
             {
-                builder.Append($"<tr><td>{c.Parameters[i]}</td><td>{c.ParameterDescriptions[i]}</td></tr>");
+                builder.Append($"<tr><td>{alias}</td></tr>");
+            }
+
+            builder.Append("</table></td><td><table>");
+            for (int i = 0; i < cmd.Parameters.Length; i++)
+            {
+                builder.Append($"<tr><td>{cmd.Parameters[i]}</td><td>{cmd.ParameterDescriptions[i]}</td></tr>");
             }
 
             builder.Append("</table></td></tr>");
-        });
+        }
+
         builder.Append($"</table><h2>{_header2}</h2><table><tr>");
-        _afkCmdTableHeader.ForEach(h => builder.Append($"<th>{h}</th>"));
-        builder.Append("</tr>");
-        commandController.AfkCommands.Where(c => c.Document).OrderBy(c => c.Name).ForEach(c =>
+        foreach (string cmdHeader in _afkCmdTableHeader)
         {
-            builder.Append($"<tr><td>{c.Name}</td><td><table>");
-            c.Aliases.ForEach(a => builder.Append($"<tr><td>{a}</td></tr>"));
-            builder.Append("</table></td>");
-            for (int i = 0; i < c.Parameters.Length; i++)
+            builder.Append($"<th>{cmdHeader}</th>");
+        }
+
+        builder.Append("</tr>");
+        AfkCommand[] afkCommands = commandController.AfkCommands.Where(c => c.Document).OrderBy(c => c.Name).ToArray();
+        foreach (AfkCommand cmd in afkCommands)
+        {
+            builder.Append($"<tr><td>{cmd.Name}</td><td><table>");
+            foreach (string alias in cmd.Aliases)
             {
-                builder.Append($"<td>{c.Parameters[i]}</td><td>{c.ParameterDescriptions[i]}</td>");
+                builder.Append($"<tr><td>{alias}</td></tr>");
+            }
+
+            builder.Append("</table></td>");
+            for (int i = 0; i < cmd.Parameters.Length; i++)
+            {
+                builder.Append($"<td>{cmd.Parameters[i]}</td><td>{cmd.ParameterDescriptions[i]}</td>");
             }
 
             builder.Append("</td></tr>");
-        });
+        }
+
         builder.Append("</table>");
         return builder.ToString();
     }

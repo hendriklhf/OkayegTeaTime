@@ -40,13 +40,13 @@ public sealed class CommandController
 
     private Command GetCommand(CommandType type)
     {
-        Command? command = Commands.FirstOrDefault(c => string.Equals(c.Name, type.ToString(), StringComparison.OrdinalIgnoreCase));
-        return command ?? throw new ArgumentNullException(nameof(command));
+        string typeName = type.ToString();
+        return Commands.First(c => c.Name == typeName);
     }
 
     private AfkCommand GetAfkCommand(AfkType type)
     {
-        AfkCommand? command = AfkCommands.FirstOrDefault(c => string.Equals(c.Name, type.ToString(), StringComparison.OrdinalIgnoreCase));
-        return command ?? throw new ArgumentNullException(nameof(command));
+        string typeName = type.ToString().ToLower();
+        return AfkCommands.First(c => c.Name == typeName);
     }
 }
