@@ -16,7 +16,7 @@ public sealed class Builder
     private readonly Dictionary<Runtime, Regex> _runtimes = new[]
     {
         (Runtime.Windows64Bit, NewRegex("^win(dows)?(-?x?64)?$")),
-        (Runtime.LinuxArm, NewRegex("^((linux-?)?arm)|((raspberry)?pi)$")),
+        (Runtime.LinuxArm, NewRegex("^((linux-?)?arm)|((raspberry-?)?pi)$")),
         (Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
         (Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
     }.ToDictionary();

@@ -616,7 +616,7 @@
       "Parameters": [
         "(none)"
       ],
-      "ParameterDescription": [
+      "ParameterDescriptions": [
         "Sends a GUID"
       ],
       "Cooldown": 5000,
@@ -631,7 +631,7 @@
       "Parameters": [
         "[code]"
       ],
-      "ParameterDescription": [
+      "ParameterDescriptions": [
         "Executes the given Kotlin code"
       ],
       "Cooldown": 15000,
