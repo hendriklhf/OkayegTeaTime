@@ -12,7 +12,6 @@ namespace OkayegTeaTime.Tools;
 public sealed class Builder
 {
     private readonly string[] _args;
-    private readonly bool _selfContained;
 
     private readonly Dictionary<Runtime, Regex> _runtimes = new[]
     {
@@ -31,7 +30,6 @@ public sealed class Builder
     public Builder(string[] args)
     {
         _args = args;
-        _selfContained = GetSelfContained();
     }
 
     public void Build()
@@ -62,21 +60,21 @@ public sealed class Builder
         return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
     }
 
-    private void BuildApi(string outputDir, Runtime runtime)
+    private static void BuildApi(string outputDir, Runtime runtime)
     {
         StartBuildProcess(outputDir, runtime, _apiProjectPath, _apiProjectPath[16..19]);
     }
 
-    private void BuildBot(string outputDir, Runtime runtime)
+    private static void BuildBot(string outputDir, Runtime runtime)
     {
         StartBuildProcess(outputDir, runtime, _botProjectPath, _botProjectPath[2..15]);
     }
 
-    private void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
+    private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
     {
         Process buildProcess = new()
         {
-            StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --{(_selfContained ? string.Empty : "no-")}self-contained {projectPath}")
+            StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --no-self-contained {projectPath}")
             {
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
@@ -98,7 +96,7 @@ public sealed class Builder
 
     private static void DeleteDirectory(string dir)
     {
-        Console.WriteLine($"Deleting directory: \"{dir}\"");
+        Console.WriteLine($"Deleting directory: \"{dir}\"{Environment.NewLine}");
         if (!Directory.Exists(dir))
         {
             return;
@@ -114,7 +112,7 @@ public sealed class Builder
         string commitId = lines[^1].Split(' ')[1][..7];
         Console.WriteLine($"Last commit: {commitId}");
         File.WriteAllText(_commitIdFile, commitId);
-        Console.WriteLine("Created \"LastCommit\" file");
+        Console.WriteLine($"Created \"LastCommit\" file{Environment.NewLine}");
     }
 
     private static void CreateCodeFilesFile()
@@ -124,12 +122,7 @@ public sealed class Builder
         string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(f => f[2..].Replace('\\', '/')).Order().ToArray();
         Console.WriteLine($"Found {files.Length} .cs files");
         File.WriteAllLines(_codeFilesFile, files);
-        Console.WriteLine("Created \"CodeFiles\" file");
-    }
-
-    private bool GetSelfContained()
-    {
-        return _args.Contains("--self-contained");
+        Console.WriteLine($"Created \"CodeFiles\" file{Environment.NewLine}");
     }
 
     private static void PrintError(string message)

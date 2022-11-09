@@ -1,4 +1,5 @@
-﻿using System;
+﻿global using static OkayegTeaTime.Tools.Program;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
@@ -26,21 +27,6 @@ public static class Program
             {
                 ReadMeGenerator generator = new();
                 generator.Generate();
-                break;
-            }
-            case "sync" when args.Length > 1:
-            {
-                ResourceSyncer syncer = new();
-                switch (args[1])
-                {
-                    case "up":
-                        syncer.Upload();
-                        break;
-                    case "down":
-                        syncer.Download();
-                        break;
-                }
-
                 break;
             }
             case "clean":
