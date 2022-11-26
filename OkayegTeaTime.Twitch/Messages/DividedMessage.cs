@@ -16,7 +16,7 @@ public sealed class DividedMessage
     {
         _channel = channel;
         _twitchBot = twitchBot;
-        _messages = message.Split(AppSettings.MaxMessageLength, true).ToArray();
+        _messages = message.Part(AppSettings.MaxMessageLength, ' ').ToArray();
     }
 
     public void StartSending()

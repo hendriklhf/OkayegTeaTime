@@ -39,5 +39,5 @@ public static class AppSettings
     public const string SettingsFileName = "Settings.json";
     public const string FfzSetIdReplacement = "mainSet";
     public const string ChatterinoChar = "\uDB40\uDC00";
-    public const string HleNugetVersionId = "105263";
+    public const string HleNugetVersionId = "107874";
 }

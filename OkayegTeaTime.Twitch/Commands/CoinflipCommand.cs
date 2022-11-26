@@ -14,7 +14,7 @@ public sealed class CoinflipCommand : Command
 
     public override void Handle()
     {
-        string result = Random.Bool() ? "yes/heads" : "no/tails";
+        string result = Random.StrongBool() ? "yes/heads" : "no/tails";
         Response = $"{ChatMessage.Username}, {result} {Emoji.Coin}";
     }
 }

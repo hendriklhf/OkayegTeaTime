@@ -26,7 +26,7 @@ public sealed class PingCommand : Command
         }
 #endif
 
-        Response += $" || Memory usage: {GetMemoryUsage()}MB || Executed commands: {_twitchBot.CommandCount.InsertKDots()} " +
+        Response += $" || Memory usage: {GetMemoryUsage()}MB || Executed commands: {NumberHelper.InsertKDots(_twitchBot.CommandCount)} " +
             $"|| Ping: {_twitchBot.Latency}ms || Running on .NET {Environment.Version} || Commit: {ResourceController.LastCommit}";
     }
 
@@ -50,14 +50,8 @@ public sealed class PingCommand : Command
             temperatureProcess.Start();
             temperatureProcess.WaitForExit();
             string temperature = temperatureProcess.StandardOutput.ReadToEnd().Split('=')[1];
-            unsafe
-            {
-                fixed (char* ptr = temperature)
-                {
-                    ptr[4] = '°';
-                }
-            }
-
+            Span<char> tempSpan = ((ReadOnlySpan<char>)(temperature)).AsSpan();
+            tempSpan[4] = '°';
             return temperature;
         }
         catch

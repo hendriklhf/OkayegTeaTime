@@ -59,11 +59,13 @@ public sealed class CooldownController
 
     public bool IsOnCooldown(long userId, CommandType type)
     {
-        return _cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        long unixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        return _cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > unixNow);
     }
 
     public bool IsOnAfkCooldown(long userId)
     {
-        return _afkCooldowns.Any(c => c.UserId == userId && c.Time > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        long unixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        return _afkCooldowns.Any(c => c.UserId == userId && c.Time > unixNow);
     }
 }

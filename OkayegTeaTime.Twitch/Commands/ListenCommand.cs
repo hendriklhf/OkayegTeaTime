@@ -87,7 +87,7 @@ public sealed class ListenCommand : Command
                         break;
                     }
                     case SpotifyEpisode episode:
-                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing " + $"{episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
+                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
                         break;
                     default:
                         Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing an unknown item type monkaS";

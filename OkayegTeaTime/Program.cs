@@ -12,7 +12,7 @@ public static class Program
     private static void Main(string[] args)
     {
         Console.Title = "OkayegTeaTime";
-        Console.OutputEncoding = Encoding.UTF8;
+        Console.OutputEncoding = Encoding.Unicode;
 
         ArgsResolver argsResolver = new(args);
         argsResolver.Resolve();

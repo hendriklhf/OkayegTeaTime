@@ -25,10 +25,10 @@ public sealed class ChattersCommand : Command
             switch (chatterCount)
             {
                 case > 1:
-                    Response = $"{ChatMessage.Username}, there are {chatterCount.InsertKDots()} chatters in the channel of {channel.Antiping()}";
+                    Response = $"{ChatMessage.Username}, there are {NumberHelper.InsertKDots(chatterCount)} chatters in the channel of {channel.Antiping()}";
                     return;
                 case > 0:
-                    Response = $"{ChatMessage.Username}, there is {chatterCount.InsertKDots()} chatter in the channel of {channel.Antiping()}";
+                    Response = $"{ChatMessage.Username}, there is {NumberHelper.InsertKDots(chatterCount)} chatter in the channel of {channel.Antiping()}";
                     return;
                 default:
                     Response = $"{ChatMessage.Username}, there are no chatters in the channel of {channel.Antiping()}";
