@@ -50,7 +50,7 @@ public sealed class PingCommand : Command
             temperatureProcess.Start();
             temperatureProcess.WaitForExit();
             string temperature = temperatureProcess.StandardOutput.ReadToEnd().Split('=')[1];
-            Span<char> tempSpan = ((ReadOnlySpan<char>)(temperature)).AsSpan();
+            Span<char> tempSpan = ((ReadOnlySpan<char>)temperature).AsSpan();
             tempSpan[4] = '°';
             return temperature;
         }
