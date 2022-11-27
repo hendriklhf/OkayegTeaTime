@@ -71,7 +71,7 @@ public sealed class KotlinCommand : Command
             if (errorLength > 0)
             {
                 List<string> errorTexts = new();
-                for (int i = 0; i < errors.GetArrayLength(); i++)
+                for (int i = 0; i < errorLength; i++)
                 {
                     JsonElement error = errors[i];
                     string severity = error.GetProperty("severity").GetString()!;

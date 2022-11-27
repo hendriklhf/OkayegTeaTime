@@ -1,4 +1,4 @@
-#define HLE
+//#define HLE // nuget import currently broken on api
 
 using System;
 using System.Buffers;
@@ -46,8 +46,7 @@ using System.Drawing.Text;
 using System.Dynamic;
 using System.Formats;
 using System.Formats.Asn1;
-// .NET 7 namespace
-//using System.Formats.Tar;
+using System.Formats.Tar;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -161,13 +160,23 @@ public static class Program
         {code}
     }
 
-    public static void print(params object?[] input)
+    public static void print(params object?[]? input)
     {
         Print(input);
     }
-    public static void Print(params object?[] input)
+
+    public static void Print(params object?[]? input)
     {
+        if (input is null)
+        {
+            Console.Write("null ");
+            return;
+        }
+
         for (int i = 0; i < input.Length; i++)
-            Console.Write($"{input[i] ?? "null"} ");
+        {
+            string output = input[i]?.ToString() ?? "null";
+            Console.Write($"{output} ");
+        }
     }
 }

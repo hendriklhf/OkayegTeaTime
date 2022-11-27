@@ -1,6 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
-using HLE.Http;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -22,22 +27,38 @@ public sealed class CSharpCommand : Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
-            Response = $"{ChatMessage.Username}, {GetProgramOutput(code)}";
+            Response = $"{ChatMessage.Username}, {GetProgramOutput(code).Result}";
         }
     }
 
-    private static string GetProgramOutput(string input)
+    private static async Task<string> GetProgramOutput(string input)
     {
-        string encodedInput = HttpUtility.HtmlEncode(ResourceController.CSharpTemplate.Replace("{code}", input));
-        HttpPost request = new("https://dotnetfiddle.net/Home/Run", new[]
+        try
         {
-            ("CodeBlock", encodedInput),
-            ("Compiler", "NetCore22"),
-            ("Language", "CSharp"),
-            ("ProjectType", "Console"),
-            ("NuGetPackageVersionIds", AppSettings.HleNugetVersionId)
-        });
-        string? result = request.IsValidJsonData ? request.Data.GetProperty("ConsoleOutput").GetString() : "compiler service error";
-        return !string.IsNullOrWhiteSpace(result) ? (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces() : "executed successfully";
+            string codeBlock = HttpUtility.HtmlEncode(ResourceController.CSharpTemplate.Replace("{code}", input));
+            using HttpClient httpClient = new();
+            using HttpResponseMessage response = await httpClient.PostAsync("https://dotnetfiddle.net/home/run", new FormUrlEncodedContent(new KeyValuePair<string, string>[]
+            {
+                new("CodeBlock", codeBlock),
+                new("Compiler", "Net7"),
+                new("Language", "CSharp"),
+                new("MvcViewEngine", "Razor"),
+                new("NuGetPackageVersionIds", AppSettings.HleNugetVersionId),
+                new("OriginalCodeBlock", codeBlock),
+                new("OriginalFiddleId", "CsConsCore"),
+                new("ProjectType", "Console"),
+                new("TimeOffset", "1"),
+                new("UseResultCache", "false")
+            }));
+            string result = await response.Content.ReadAsStringAsync();
+            JsonElement json = JsonSerializer.Deserialize<JsonElement>(result);
+            string output = json.GetProperty("ConsoleOutput").GetString()!.NewLinesToSpaces();
+            return !string.IsNullOrWhiteSpace(output) ? (output.Length > 450 ? $"{output[..450]}..." : output) : "executed successfully";
+        }
+        catch (Exception ex)
+        {
+            DbController.LogException(ex);
+            return "an unexpected error occurred. The API might not be available.";
+        }
     }
 }
