@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using HLE.Emojis;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Resources;
@@ -57,6 +58,11 @@ public sealed class CSharpCommand : Command
         }
         catch (Exception ex)
         {
+            if (input.Contains('\''))
+            {
+                return $"for some reason the API doesn't like the char \"'\". Please try to avoid it. {Emoji.SlightlySmilingFace}";
+            }
+
             DbController.LogException(ex);
             return "an unexpected error occurred. The API might not be available.";
         }
