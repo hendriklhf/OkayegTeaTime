@@ -4,7 +4,6 @@ using HLE;
 using OkayegTeaTime.Files;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Models;
-using TwitchLib = TwitchLib.Client.Models;
 
 namespace OkayegTeaTime.Twitch.Models;
 

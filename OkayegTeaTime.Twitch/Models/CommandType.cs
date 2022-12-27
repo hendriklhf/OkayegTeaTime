@@ -1,6 +1,6 @@
 ﻿namespace OkayegTeaTime.Twitch.Models;
 
-public enum CommandType
+public enum CommandType : byte
 {
     BanFromFile,
     Chatterino7,

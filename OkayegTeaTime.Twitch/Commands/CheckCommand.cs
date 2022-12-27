@@ -11,49 +11,62 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Check)]
-public sealed class CheckCommand : Command
+public readonly unsafe ref struct CheckCommand
 {
-    public CheckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public CheckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\safk\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, ";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
             string username = ChatMessage.LowerSplit[2];
             long userId = _twitchBot.TwitchApi.GetUserId(username);
             if (userId == -1)
             {
-                Response += PredefinedMessages.UserNotFoundMessage;
+                Response->Append(PredefinedMessages.CouldNotFindAnyMatchingUser);
                 return;
             }
 
             User? user = _twitchBot.Users.GetUser(userId, username);
             if (user is null)
             {
-                Response += PredefinedMessages.UserNotFoundMessage;
+                Response->Append(PredefinedMessages.CouldNotFindAnyMatchingUser);
                 return;
             }
 
             if (user.IsAfk)
             {
                 AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
-                Response += new AfkMessage(user, cmd).GoingAway;
+                Response->Append(new AfkMessage(user, cmd).GoingAway);
                 string? message = user.AfkMessage;
                 if (!string.IsNullOrWhiteSpace(message))
                 {
-                    Response += $": {message}";
+                    Response->Append(": ", message);
                 }
 
                 TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
-                Response += $" ({span.Format()} ago)";
+                Response->Append(" (", span.Format(), " ago)");
             }
             else
             {
-                Response += $"{username} is not afk";
+                Response->Append(username, " is not afk");
             }
 
             return;
@@ -62,12 +75,12 @@ public sealed class CheckCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, ";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
             int id = int.Parse(ChatMessage.Split[2]);
             Reminder? reminder = _twitchBot.Reminders[id];
             if (reminder is null)
             {
-                Response += PredefinedMessages.ReminderNotFoundMessage;
+                Response->Append(PredefinedMessages.CouldNotFindAnyMatchingReminder);
                 return;
             }
 
@@ -89,7 +102,7 @@ public sealed class CheckCommand : Command
                 reminderProps.Add($"Message: {reminder.Message}");
             }
 
-            Response = reminderProps.JoinToString(" || ");
+            Response->Append(reminderProps.JoinToString(" || "));
         }
     }
 }

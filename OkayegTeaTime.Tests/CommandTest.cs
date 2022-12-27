@@ -44,7 +44,7 @@ public sealed class CommandTest
     {
         HandledCommand[]? handles = Assembly.GetAssembly(typeof(HandledCommand))?.GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null).Select(t => t.GetCustomAttribute<HandledCommand>()!).ToArray();
         Assert.IsNotNull(handles);
-        Assert.IsTrue(handles.Length == _commandTypes.Length);
+        Assert.IsTrue(handles?.Length == _commandTypes.Length);
 
         foreach (HandledCommand handle in handles)
         {

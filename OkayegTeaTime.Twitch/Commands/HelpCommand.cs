@@ -1,4 +1,6 @@
-﻿using HLE.Emojis;
+﻿using System.Diagnostics.CodeAnalysis;
+using HLE;
+using HLE.Emojis;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -6,15 +8,30 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Help)]
-public sealed class HelpCommand : Command
+[SuppressMessage("ReSharper", "NotAccessedField.Local")]
+[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+public readonly unsafe ref struct HelpCommand
 {
-    public HelpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public HelpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         string username = ChatMessage.Split.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Username;
-        Response = $"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {AppSettings.RepositoryUrl}";
+        Response->Append(Emoji.PointRight, StringHelper.Whitespace, username, PredefinedMessages.CommaSpace, "here you can find a list of commands and the repository: ", AppSettings.RepositoryUrl);
     }
 }

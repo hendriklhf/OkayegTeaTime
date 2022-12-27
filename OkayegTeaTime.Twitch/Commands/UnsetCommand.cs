@@ -7,13 +7,26 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Unset)]
-public sealed class UnsetCommand : Command
+public readonly unsafe ref struct UnsetCommand
 {
-    public UnsetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public UnsetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix");
         if (pattern.IsMatch(ChatMessage.Message))
@@ -23,16 +36,16 @@ public sealed class UnsetCommand : Command
                 Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
-                    Response = $"{ChatMessage.Username}, an error occurred while trying to set the prefix";
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredWhileTryingToSetThePrefix);
                     return;
                 }
 
                 channel.Prefix = null;
-                Response += $"{ChatMessage.Username}, the prefix has been unset";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThePrefixHasBeenUnset);
             }
             else
             {
-                Response += PredefinedMessages.NoModOrBroadcasterMessage;
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModOrTheBroadcaster);
             }
 
             return;
@@ -41,40 +54,32 @@ public sealed class UnsetCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, ";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
             int reminderId = int.Parse(ChatMessage.Split[2]);
             bool removed = _twitchBot.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
-            if (removed)
-            {
-                Response += "the reminder has been unset";
-            }
-            else
-            {
-                Response += "the reminder couldn't be unset";
-            }
-
+            Response->Append(removed ? PredefinedMessages.TheReminderHasBeenUnset : PredefinedMessages.TheReminderCouldntBeUnset);
             return;
         }
 
         pattern = PatternCreator.Create(_alias, _prefix, @"\semote");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, ";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
                 Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
-                    Response += "an error occurred while trying to set the emote";
+                    Response->Append(PredefinedMessages.AnErrorOccurredWhileTryingToSetTheEmote);
                     return;
                 }
 
                 channel.Emote = null;
-                Response += "the emote has been unset";
+                Response->Append(PredefinedMessages.TheEmoteHasBeenUnset);
             }
             else
             {
-                Response += PredefinedMessages.NoModOrBroadcasterMessage;
+                Response->Append(PredefinedMessages.YouArentAModOrTheBroadcaster);
             }
 
             return;
@@ -86,12 +91,12 @@ public sealed class UnsetCommand : Command
             User? user = _twitchBot.Users[ChatMessage.UserId];
             if (user is null)
             {
-                Response = $"{ChatMessage.Username}, you haven't set your location yet";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouHaventSetYourLocationYet);
                 return;
             }
 
             user.Location = null;
-            Response = $"{ChatMessage.Username}, your location has been unset";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YourLocationHasBeenUnset);
         }
     }
 }

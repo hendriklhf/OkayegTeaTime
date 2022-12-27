@@ -11,76 +11,105 @@ using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.SongRequest)]
-public sealed class SongRequestCommand : Command
+public readonly unsafe ref struct SongRequestCommand
 {
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
     private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         #region sr {users...} me
 
         Regex pattern = PatternCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
+            if (user is null)
             {
-                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (user is null)
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentRegisteredYouHaveToRegisterFirst);
+                return;
+            }
+
+            SpotifyItem? item;
+            try
+            {
+                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(user);
+                task.Wait();
+                item = task.Result;
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, you aren't registered yet";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                SpotifyItem? item;
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
+
+            if (item is null or not SpotifyTrack)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentListeningToATrack);
+                return;
+            }
+
+            SpotifyUser[] targets = GetTargets();
+            if (targets.Length == 0)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.NoneOfTheGivenUsersAreRegistered);
+                return;
+            }
+
+            SpotifyTrack track = (SpotifyTrack)item;
+            Dictionary<SpotifyUser, string?> success = new();
+            foreach (SpotifyUser target in targets)
+            {
                 try
                 {
-                    item = await SpotifyController.GetCurrentlyPlayingItem(user);
+                    SpotifyController.AddToQueue(target, track.Uri).Wait();
+                    success.Add(target, null);
                 }
                 catch (SpotifyException ex)
                 {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                    return;
+                    success.Add(target, ex.Message);
                 }
-
-                if (item is null or not SpotifyTrack)
+                catch (AggregateException ex)
                 {
-                    Response = $"{ChatMessage.Username}, you aren't listening to a song";
-                    return;
+                    success.Add(target, ex.InnerException is null ? PredefinedMessages.ApiError : ex.InnerException.Message);
                 }
+            }
 
-                SpotifyUser[] targets = GetTargets();
-                if (targets.Length == 0)
-                {
-                    Response = $"{ChatMessage.Username}, none of the given users are registered";
-                    return;
-                }
-
-                SpotifyTrack track = (SpotifyTrack)item;
-                Dictionary<SpotifyUser, string?> success = new();
-                foreach (SpotifyUser target in targets)
-                {
-                    try
-                    {
-                        await SpotifyController.AddToQueue(target, track.Uri);
-                        success.Add(target, null);
-                    }
-                    catch (SpotifyException ex)
-                    {
-                        success.Add(target, ex.Message);
-                        DbController.LogException(ex);
-                    }
-                }
-
-                CreateMultipleTargetResponse(success, track);
-            }).Wait();
+            CreateMultipleTargetResponse(success, track);
             return;
         }
 
@@ -91,52 +120,78 @@ public sealed class SongRequestCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\sme\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
+            if (user is null)
             {
-                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (user is null)
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentRegisteredYouHaveToRegisterFirst);
+                return;
+            }
+
+            SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[2]];
+            if (target is null)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ChatMessage.LowerSplit[2].Antiping(), " isn't registered yet, they have to register first");
+                return;
+            }
+
+            SpotifyItem? item;
+            try
+            {
+                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(target);
+                task.Wait();
+                item = task.Result;
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, you aren't registered yet, you have to register first";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[2]];
-                if (target is null)
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
+
+            if (item is null or not SpotifyTrack)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ChatMessage.LowerSplit[2].Antiping(), " isn't listening to a track");
+                return;
+            }
+
+            try
+            {
+                SpotifyController.AddToQueue(user, item.Uri).Wait();
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't registered yet, they have to register first";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                SpotifyItem? item;
-                try
-                {
-                    item = await SpotifyController.GetCurrentlyPlayingItem(target);
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                    return;
-                }
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
 
-                if (item is null or not SpotifyTrack)
-                {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.LowerSplit[2].Antiping()} isn't listening to a track";
-                    return;
-                }
-
-                try
-                {
-                    await SpotifyController.AddToQueue(user, item.Uri);
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                    return;
-                }
-
-                SpotifyTrack track = (item as SpotifyTrack)!;
-                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {user.Username.Antiping()}";
-            }).Wait();
+            SpotifyTrack track = (item as SpotifyTrack)!;
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
+            Response->Append(" has been added to the queue of ", user.Username.Antiping());
             return;
         }
 
@@ -147,49 +202,64 @@ public sealed class SongRequestCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser[] targets = GetTargets();
+            if (targets.Length == 0)
             {
-                SpotifyUser[] targets = GetTargets();
-                if (targets.Length == 0)
-                {
-                    Response = $"{ChatMessage.Username}, none of the given users are registered";
-                    return;
-                }
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.NoneOfTheGivenUsersAreRegistered);
+                return;
+            }
 
-                string song = _exceptTargetPattern.Replace(ChatMessage.Message, string.Empty);
-                SpotifyTrack? track = null;
+            string song = _exceptTargetPattern.Replace(ChatMessage.Message, string.Empty);
+            SpotifyTrack? track = null;
+            try
+            {
+                Task<SpotifyTrack?> task = SpotifyController.SearchTrack(targets[0], song);
+                task.Wait();
+                track = task.Result;
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
+                {
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
+                }
+                else
+                {
+                    Response->Append(ex.InnerException.Message);
+                }
+            }
+
+            if (track is null)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.NoMatchingTrackCouldBeFound);
+                return;
+            }
+
+            Dictionary<SpotifyUser, string?> success = new();
+            foreach (SpotifyUser target in targets)
+            {
                 try
                 {
-                    track = await SpotifyController.SearchTrack(targets[0], song);
+                    SpotifyController.AddToQueue(target, track.Uri).Wait();
+                    success.Add(target, null);
                 }
                 catch (SpotifyException ex)
                 {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                    success.Add(target, ex.Message);
                 }
-
-                if (track is null)
+                catch (AggregateException ex)
                 {
-                    Response = $"{ChatMessage.Username}, no matching track could be found";
-                    return;
+                    success.Add(target, ex.InnerException is null ? PredefinedMessages.ApiError : ex.InnerException.Message);
                 }
+            }
 
-                Dictionary<SpotifyUser, string?> success = new();
-                foreach (SpotifyUser target in targets)
-                {
-                    try
-                    {
-                        await SpotifyController.AddToQueue(target, track.Uri);
-                        success.Add(target, null);
-                    }
-                    catch (SpotifyException ex)
-                    {
-                        success.Add(target, ex.Message);
-                        DbController.LogException(ex);
-                    }
-                }
-
-                CreateMultipleTargetResponse(success, track);
-            }).Wait();
+            CreateMultipleTargetResponse(success, track);
             return;
         }
 
@@ -200,52 +270,78 @@ public sealed class SongRequestCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
+            if (user is null)
             {
-                SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (user is null)
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentRegisteredYouHaveToRegisterFirst);
+                return;
+            }
+
+            SpotifyItem? item;
+            try
+            {
+                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(user);
+                task.Wait();
+                item = task.Result;
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, you aren't registered yet, you have to register first";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                SpotifyItem? item;
-                try
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
+
+            if (item is null or not SpotifyTrack)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentListeningToATrack);
+                return;
+            }
+
+            SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
+            if (target is null)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ChatMessage.Channel.Antiping(), " isn't registered yet, they have to register first");
+                return;
+            }
+
+            try
+            {
+                SpotifyController.AddToQueue(target, item.Uri).Wait();
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    item = await SpotifyController.GetCurrentlyPlayingItem(user);
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                if (item is null or not SpotifyTrack)
-                {
-                    Response = $"{ChatMessage.Username}, you aren't listening to a track";
-                    return;
-                }
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
 
-                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
-                if (target is null)
-                {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
-                    return;
-                }
-
-                try
-                {
-                    await SpotifyController.AddToQueue(target, item.Uri);
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                    return;
-                }
-
-                SpotifyTrack track = (item as SpotifyTrack)!;
-                Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
-            }).Wait();
+            SpotifyTrack track = (item as SpotifyTrack)!;
+            Response->Append(ChatMessage.Username, StringHelper.Whitespace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
+            Response->Append(" has been added to the queue of ", target.Username.Antiping());
             return;
         }
 
@@ -256,25 +352,37 @@ public sealed class SongRequestCommand : Command
         pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
+            if (target is null)
             {
-                SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
-                if (target is null)
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ChatMessage.Channel.Antiping(), " isn't registered yet, they have to register first");
+                return;
+            }
+
+            try
+            {
+                Task<SpotifyTrack> task = SpotifyController.AddToQueue(target, ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]);
+                task.Wait();
+                SpotifyTrack track = task.Result;
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
+                Response->Append(" has been added to the queue of ", target.Username.Antiping());
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, {ChatMessage.Channel.Antiping()} isn't registered yet, they have to register first";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                try
-                {
-                    SpotifyTrack track = await SpotifyController.AddToQueue(target, ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]);
-                    Response = $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue of {target.Username.Antiping()}";
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                }
-            }).Wait();
+                Response->Append(ex.InnerException.Message);
+            }
         }
 
         #endregion sr {song}
@@ -284,7 +392,8 @@ public sealed class SongRequestCommand : Command
     {
         Match match = Pattern.MultipleTargets.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
         string[] targets = match.Value.Split(',');
-        return targets.Select(t => t.TrimAll()).Distinct().Select(t => _twitchBot.SpotifyUsers[t]).Where(t => t is not null).Take(5).ToArray()!;
+        TwitchBot twitchBot = _twitchBot;
+        return targets.Select(t => t.TrimAll()).Distinct().Select(t => twitchBot.SpotifyUsers[t]).Where(t => t is not null).Take(5).ToArray()!;
     }
 
     private void CreateMultipleTargetResponse(Dictionary<SpotifyUser, string?> success, SpotifyTrack track)
@@ -294,33 +403,31 @@ public sealed class SongRequestCommand : Command
 
         if (successUsers.Length > 0)
         {
-            Response += $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} has been added to the queue";
-            Response += successUsers.Length > 1 ? "s of " : " of ";
-            Response += successUsers.JoinToString(", ");
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
+            Response->Append(" has been added to the queue", successUsers.Length > 1 ? "s of " : " of ", successUsers.JoinToString(PredefinedMessages.CommaSpace));
             if (failedUsers.Length == 0)
             {
                 return;
             }
 
-            Response += ". ";
-            Response += failedUsers.JoinToString(", ");
+            Response->Append(". ", failedUsers.JoinToString(PredefinedMessages.CommaSpace));
         }
         else
         {
             if (failedUsers.Length == 1)
             {
-                Response = $"{ChatMessage.Username}, {failedUsers[0]}";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, failedUsers[0]);
             }
             else
             {
-                Response += $"{ChatMessage.Username}, {track} || {(track.IsLocal ? "local file" : track.Uri)} hasn't been added to any queue";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
+                Response->Append(" hasn't been added to any queue");
                 if (failedUsers.Length == 0)
                 {
                     return;
                 }
 
-                Response += ". ";
-                Response += failedUsers.JoinToString(", ");
+                Response->Append(". ", failedUsers.JoinToString(PredefinedMessages.CommaSpace));
             }
         }
     }

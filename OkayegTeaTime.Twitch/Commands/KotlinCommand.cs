@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -14,9 +15,17 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Kotlin)]
-public sealed class KotlinCommand : Command
+public readonly unsafe ref struct KotlinCommand
 {
-    private readonly HttpClient _httpClient = new();
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
 
     private const string _kotlinFileName = "File.kt";
     /// <summary>
@@ -29,21 +38,27 @@ public sealed class KotlinCommand : Command
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public KotlinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
-            Response = $"{ChatMessage.Username}, {GetProgramOutput(code).Result}";
+            string result = GetProgramOutput(code);
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, result);
         }
     }
 
-    private async Task<string> GetProgramOutput(string input)
+    private static string GetProgramOutput(string input)
     {
         try
         {
@@ -63,8 +78,14 @@ public sealed class KotlinCommand : Command
                 confType = "java"
             };
             StringContent content = new(JsonSerializer.Serialize(contentObj), Encoding.UTF8, "application/json");
-            using HttpResponseMessage responseMessage = await _httpClient.PostAsync("https://api.kotlinlang.org/api/1.7.20/compiler/run", content);
-            string response = await responseMessage.Content.ReadAsStringAsync();
+            using HttpClient httpClient = new();
+            Task<HttpResponseMessage> postTask = httpClient.PostAsync("https://api.kotlinlang.org/api/1.7.20/compiler/run", content);
+            postTask.Wait();
+            using HttpResponseMessage responseMessage = postTask.Result;
+
+            Task<string> readContentTask = responseMessage.Content.ReadAsStringAsync();
+            readContentTask.Wait();
+            string response = readContentTask.Result;
             JsonElement json = JsonSerializer.Deserialize<JsonElement>(response);
             JsonElement errors = json.GetProperty("errors").GetProperty(_kotlinFileName);
             int errorLength = errors.GetArrayLength();
@@ -85,13 +106,13 @@ public sealed class KotlinCommand : Command
                     errorTexts.Add($"{severity} at ch{start - _mainFunLength}: {message}");
                 }
 
-                return string.Join(", ", errorTexts);
+                return string.Join(PredefinedMessages.CommaSpace, errorTexts);
             }
 
             string? result = json.GetProperty("text").GetString();
             if (result is null)
             {
-                return "api error";
+                return PredefinedMessages.ApiError;
             }
 
             result = result[_outStreamLabelLength..^(_outStreamLabelLength + 1)];
@@ -100,7 +121,7 @@ public sealed class KotlinCommand : Command
         catch (Exception ex)
         {
             DbController.LogException(ex);
-            return "api error";
+            return PredefinedMessages.ApiError;
         }
     }
 }

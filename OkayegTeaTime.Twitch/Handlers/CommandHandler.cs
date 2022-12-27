@@ -14,18 +14,18 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public sealed class CommandHandler : Handler
 {
+    private readonly CommandExecutor _commandExecutor = new();
     private readonly AfkCommandHandler _afkCommandHandler;
     private readonly CooldownController _cooldownController;
 
-    private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
+    private readonly CommandType[] _commandTypes;
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
-    private readonly Dictionary<CommandType, CommandHandle> _commandHandles;
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
         _cooldownController = new(_twitchBot.CommandController);
-        _commandHandles = BuildCommandCache();
+        _commandTypes = GetHandledCommandTypes();
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
@@ -53,7 +53,7 @@ public sealed class CommandHandler : Handler
                     }
 
                     _twitchBot.CommandCount++;
-                    InvokeCommandHandle(type, chatMessage, alias);
+                    _commandExecutor.Execute(type, _twitchBot, chatMessage, prefix, alias);
                     _cooldownController.AddCooldown(chatMessage.UserId, type);
                     return true;
                 }
@@ -87,48 +87,15 @@ public sealed class CommandHandler : Handler
         }
     }
 
-    /// <summary>
-    ///     Attempts to handle a command through a handler via reflection
-    /// </summary>
-    /// <param name="type">The command handler class type</param>
-    /// <param name="chatMessage">The chat message to handle</param>
-    /// <param name="alias">A command alias</param>
-    /// <exception cref="InvalidOperationException">The command handler doesn't conform</exception>
-    private void InvokeCommandHandle(CommandType type, TwitchChatMessage chatMessage, string alias)
+    private static CommandType[] GetHandledCommandTypes()
     {
-        CommandHandle handle = _commandHandles[type];
-        Command command = handle.CreateCommandInstance(_twitchBot, chatMessage, alias);
-        command.Handle();
-        string response = command.Response;
-        if (string.IsNullOrWhiteSpace(response))
-        {
-            return;
-        }
-
-        _twitchBot.Send(chatMessage.Channel, response);
-    }
-
-    private static Dictionary<CommandType, CommandHandle> BuildCommandCache()
-    {
-        Dictionary<CommandType, CommandHandle> commandHandles = new();
+        List<CommandType> commandTypes = new();
         Type[] commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null).ToArray();
         foreach (Type command in commands)
         {
-            ConstructorInfo? constructor = command.GetConstructor(new[]
-            {
-                typeof(TwitchBot),
-                typeof(TwitchChatMessage),
-                typeof(string)
-            });
-            if (constructor is null)
-            {
-                throw new InvalidOperationException($"Could not get constructor for class {command.FullName}");
-            }
-
-            CommandHandle handle = new(constructor);
-            commandHandles.Add(command.GetCustomAttribute<HandledCommand>()!.CommandType, handle);
+            commandTypes.Add(command.GetCustomAttribute<HandledCommand>()!.CommandType);
         }
 
-        return commandHandles;
+        return commandTypes.ToArray();
     }
 }

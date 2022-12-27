@@ -112,7 +112,6 @@ public sealed class ReminderCache : DbCache<Reminder>
             return false;
         }
 
-        username = username.ToLower();
         return this.Where(r => username == r.Target && EvaluateReminderType(r) && !r.HasBeenSent);
     }
 

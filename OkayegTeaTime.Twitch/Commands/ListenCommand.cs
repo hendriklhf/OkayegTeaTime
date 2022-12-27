@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Spotify;
@@ -11,17 +13,30 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Listen)]
-public sealed class ListenCommand : Command
+public readonly unsafe ref struct ListenCommand
 {
-    public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         if (!AppSettings.UserLists.SecretUsers.Contains(ChatMessage.UserId))
         {
-            Response = $"{ChatMessage.Username}, this command is still being tested, you aren't allowed to use this command";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "this command is still being tested, you aren't allowed to use this command");
             return;
         }
 
@@ -31,122 +46,147 @@ public sealed class ListenCommand : Command
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
             if (listener is null)
             {
-                Response = $"{ChatMessage.Username}, you aren't registered, you have to register first";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentRegisteredYouHaveToRegisterFirst);
                 return;
             }
 
             SpotifyUser? host = SpotifyController.GetListeningTo(listener);
             if (host is null)
             {
-                Response = $"{ChatMessage.Username}, you aren't listening along with anybody";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentListeningAlongWithAnybody);
                 return;
             }
 
             ListeningSession? listeningSession = SpotifyController.GetListeningSession(host);
             listeningSession?.Listeners.Remove(listener);
-            Response = $"{ChatMessage.Username}, stopped listening along with {host.Username.Antiping()}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "stopped listening along with ", host.Username.Antiping());
             return;
         }
 
         pattern = PatternCreator.Create(_alias, _prefix, @"\ssync");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
+            if (listener is null)
             {
-                SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (listener is null)
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouCantSyncYouHaveToRegisterFirst);
+                return;
+            }
+
+            SpotifyUser? host = SpotifyController.GetListeningTo(listener);
+            if (host is null)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouCantSyncBecauseYouArentListeningAlongWithAnybody);
+                return;
+            }
+
+            SpotifyItem item;
+            try
+            {
+                Task<SpotifyItem> task = SpotifyController.ListenAlongWith(listener, host);
+                task.Wait();
+                item = task.Result;
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, you can't sync, you have to register first";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                SpotifyUser? host = SpotifyController.GetListeningTo(listener);
-                if (host is null)
-                {
-                    Response = $"{ChatMessage.Username}, you can't sync, because you aren't listening along with anybody";
-                    return;
-                }
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
 
-                SpotifyItem item;
-                try
-                {
-                    item = await SpotifyController.ListenAlongWith(listener, host);
-                }
-                catch (SpotifyException ex)
-                {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                    return;
-                }
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "synced with ", host.Username.Antiping(), " and playing ");
+            switch (item)
+            {
+                case SpotifyTrack track:
+                    string artists = string.Join(PredefinedMessages.CommaSpace, track.Artists.Select(a => a.Name));
+                    Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : track.Uri);
+                    break;
+                case SpotifyEpisode episode:
+                    Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
+                    break;
+                default:
+                    Response->Append("an unknown item type monkaS");
+                    break;
+            }
 
-                switch (item)
-                {
-                    case SpotifyTrack track:
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
-                        break;
-                    }
-                    case SpotifyEpisode episode:
-                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
-                        break;
-                    default:
-                        Response = $"{ChatMessage.Username}, synced with {host.Username.Antiping()} and playing an unknown item type monkaS";
-                        break;
-                }
-            }).Wait();
             return;
         }
 
         pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Task.Run(async () =>
+            SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
+            if (listener is null)
             {
-                SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
-                if (listener is null)
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouCantListenToOtherUsersYouHaveToRegisterFirst);
+                return;
+            }
+
+            SpotifyUser? host = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[1]];
+            if (host is null)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "you can't listen to ", ChatMessage.LowerSplit[1], "'s music , they have to register first");
+                return;
+            }
+
+            SpotifyItem item;
+            try
+            {
+                Task<SpotifyItem> task = SpotifyController.ListenAlongWith(listener, host);
+                task.Wait();
+                item = task.Result;
+            }
+            catch (SpotifyException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                return;
+            }
+            catch (AggregateException ex)
+            {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                if (ex.InnerException is null)
                 {
-                    Response = $"{ChatMessage.Username}, you can't listen to other users, you have to register first";
+                    DbController.LogException(ex);
+                    Response->Append(PredefinedMessages.ApiError);
                     return;
                 }
 
-                SpotifyUser? host = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[1]];
-                if (host is null)
-                {
-                    Response = $"{ChatMessage.Username}, you can't listen to {ChatMessage.LowerSplit[1]}'s music, they have to register first";
-                    return;
-                }
+                Response->Append(ex.InnerException.Message);
+                return;
+            }
 
-                SpotifyItem item;
-                try
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "now listening along with ", host.Username.Antiping(), " and playing ");
+            switch (item)
+            {
+                case SpotifyTrack track:
                 {
-                    item = await SpotifyController.ListenAlongWith(listener, host);
+                    string artists = string.Join(PredefinedMessages.CommaSpace, track.Artists.Select(a => a.Name));
+                    Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : track.Uri);
+                    break;
                 }
-                catch (SpotifyException ex)
+                case SpotifyEpisode episode:
                 {
-                    Response = $"{ChatMessage.Username}, {ex.Message}";
-                    return;
+                    Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
+                    break;
                 }
-
-                switch (item)
+                default:
                 {
-                    case SpotifyTrack track:
-                    {
-                        string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                        Response = $"{ChatMessage.Username}, now listening along with {host.Username.Antiping()} " + $"and playing {track.Name} by {artists} || {(track.IsLocal ? "local file" : track.Uri)}";
-                        break;
-                    }
-                    case SpotifyEpisode episode:
-                    {
-                        Response = $"{ChatMessage.Username}, now listening along with {host.Username.Antiping()} " + $"and playing {episode.Name} by {episode.Show.Name} || {(episode.IsLocal ? "local file" : episode.Uri)}";
-                        break;
-                    }
-                    default:
-                    {
-                        Response = $"{ChatMessage.Username}, now listening along with {host.Username.Antiping()} and playing an unknown item type monkaS";
-                        break;
-                    }
+                    Response->Append("an unknown item type monkaS");
+                    break;
                 }
-            }).Wait();
+            }
         }
     }
 }

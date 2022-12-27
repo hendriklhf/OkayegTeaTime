@@ -13,35 +13,11 @@ public class ChatMessage
 {
     public string DisplayName { get; }
 
-    public string[] LowerSplit
-    {
-        get
-        {
-            if (_lowerSplit is not null)
-            {
-                return _lowerSplit;
-            }
-
-            _lowerSplit = GetLowerSplit();
-            return _lowerSplit;
-        }
-    }
+    public string[] LowerSplit => _lowerSplit ??= GetLowerSplit();
 
     public string Message { get; }
 
-    public string[] Split
-    {
-        get
-        {
-            if (_split is not null)
-            {
-                return _split;
-            }
-
-            _split = GetSplit();
-            return _split;
-        }
-    }
+    public string[] Split => _split ??= GetSplit();
 
     public string Username { get; }
 
@@ -71,6 +47,13 @@ public class ChatMessage
 
     private string[] GetLowerSplit()
     {
-        return Message.ToLower().Split();
+        string[] split = Message.Split();
+        ReadOnlySpan<string> splitSpan = split;
+        for (int i = 0; i < splitSpan.Length; i++)
+        {
+            StringHelper.ToLower(splitSpan[i]);
+        }
+
+        return split;
     }
 }

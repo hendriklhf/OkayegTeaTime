@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Text;
+using System.Globalization;
 using System.Text.RegularExpressions;
-using HLE;
 
 namespace OkayegTeaTime.Utils;
 
 public static class StringHelper
 {
     private static readonly Regex _channelPattern = new(@"^#?\w{3,25}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+
+    private const string _commaSpace = ", ";
+    private const string _spanFormatDefault = "<1s";
 
     public static string Antiping(this string value)
     {
@@ -16,7 +18,7 @@ public static class StringHelper
 
     public static string NewLinesToSpaces(this string value)
     {
-        return value.Remove("\r").Replace('\n', ' ');
+        return value.ReplaceLineEndings(HLE.StringHelper.Whitespace);
     }
 
     public static bool FormatChannel(ref string channel, bool withHashTag = false)
@@ -26,10 +28,11 @@ public static class StringHelper
             return false;
         }
 
+        HLE.StringHelper.ToLower(channel);
         channel = withHashTag switch
         {
-            true => channel[0] == '#' ? channel.ToLower() : '#' + channel.ToLower(),
-            _ => channel[0] == '#' ? channel[1..].ToLower() : channel.ToLower()
+            true => channel[0] == '#' ? channel : '#' + channel,
+            _ => channel[0] == '#' ? channel[1..] : channel
         };
 
         return true;
@@ -37,32 +40,66 @@ public static class StringHelper
 
     public static string Format(this TimeSpan span)
     {
-        StringBuilder builder = new();
+        Span<char> resultBuffer = stackalloc char[100];
+        int resultLength = 0;
         if (span.Days > 0)
         {
-            builder.Append($"{span.Days}d");
+            string days = span.Days.ToString(CultureInfo.InvariantCulture);
+            days.CopyTo(resultBuffer[resultLength..]);
+            resultLength += days.Length;
+            resultBuffer[resultLength++] = 'd';
         }
 
         if (span.Hours > 0)
         {
-            builder.Append(builder.Length > 0 ? $", {span.Hours}h" : $"{span.Hours}h");
+            if (resultLength > 0)
+            {
+                _commaSpace.CopyTo(resultBuffer[resultLength..]);
+                resultLength += _commaSpace.Length;
+            }
+
+            string hours = span.Hours.ToString(CultureInfo.InvariantCulture);
+            hours.CopyTo(resultBuffer[resultLength..]);
+            resultLength += hours.Length;
+            resultBuffer[resultLength++] = 'h';
         }
 
         if (span.Minutes > 0)
         {
-            builder.Append(builder.Length > 0 ? $", {span.Minutes}min" : $"{span.Minutes}min");
+            if (resultLength > 0)
+            {
+                _commaSpace.CopyTo(resultBuffer[resultLength..]);
+                resultLength += _commaSpace.Length;
+            }
+
+            string minutes = span.Minutes.ToString(CultureInfo.InvariantCulture);
+            minutes.CopyTo(resultBuffer[resultLength..]);
+            resultLength += minutes.Length;
+            resultBuffer[resultLength++] = 'm';
+            resultBuffer[resultLength++] = 'i';
+            resultBuffer[resultLength++] = 'n';
         }
 
         if (span.Seconds > 0)
         {
-            builder.Append(builder.Length > 0 ? $", {span.Seconds}s" : $"{span.Seconds}s");
+            if (resultLength > 0)
+            {
+                _commaSpace.CopyTo(resultBuffer[resultLength..]);
+                resultLength += _commaSpace.Length;
+            }
+
+            string seconds = span.Seconds.ToString(CultureInfo.InvariantCulture);
+            seconds.CopyTo(resultBuffer[resultLength..]);
+            resultLength += seconds.Length;
+            resultBuffer[resultLength++] = 's';
         }
 
-        if (builder.Length == 0)
+        if (resultLength == 0)
         {
-            builder.Append("<1s");
+            _spanFormatDefault.CopyTo(resultBuffer);
+            resultLength += _spanFormatDefault.Length;
         }
 
-        return builder.ToString();
+        return new(resultBuffer[..resultLength]);
     }
 }

@@ -16,7 +16,7 @@ public sealed class Formula1Race
     public string WikipediaUrl { get; set; }
 
     [JsonPropertyName("raceName")]
-    public string Racename { get; set; }
+    public string Name { get; set; }
 
     [JsonPropertyName("Circuit")]
     public Formula1Circuit Circuit { get; set; }

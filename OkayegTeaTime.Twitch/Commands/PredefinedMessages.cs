@@ -2,10 +2,49 @@
 
 public static class PredefinedMessages
 {
-    public const string NoModOrBroadcasterMessage = "you aren't a mod or the broadcaster";
-    public const string TwitchUserDoesntExistMessage = "Twitch user doesn't exist";
-    public const string TooManyRemindersMessage = "that user has too many reminders set for them";
-    public const string UserNotFoundMessage = "could not find any matching user";
-    public const string ReminderNotFoundMessage = "could not find any matching reminder";
-    public const string NoBotModerator = "you aren't a moderator of the bot";
+    public const string CommaSpace = ", ";
+    public const string YouArentAModOrTheBroadcaster = "you aren't a mod or the broadcaster";
+    public const string TwitchUserDoesntExist = "Twitch user doesn't exist";
+    public const string ThatUserHasTooManyRemindersSetForThem = "that user has too many reminders set for them";
+    public const string CouldNotFindAnyMatchingUser = "could not find any matching user";
+    public const string CouldNotFindAnyMatchingReminder = "could not find any matching reminder";
+    public const string YouArentAModeratorOfTheBot = "you aren't a moderator of the bot";
+    public const string TheGivenPatternIsInvalid = "the given pattern is invalid";
+    public const string YourPatternMatchedNoSourceCodeFiles = "your pattern matched no source code files";
+    public const string ApiError = "api error";
+    public const string ThereIsNoNextRace = "there is no next race";
+    public const string CouldntFindASong = "couldn't find a song";
+    public const string GivenChannelIsInvalid = "the given channel is invalid";
+    public const string GivenChannelDoesNotExist = "the given channel does not exist";
+    public const string YouArentRegisteredYouHaveToRegisterFirst = "you aren't registered, you have to register first";
+    public const string YouArentListeningAlongWithAnybody = "you aren't listening along with anybody";
+    public const string YouCantSyncYouHaveToRegisterFirst = "you can't sync, you have to register first";
+    public const string YouCantSyncBecauseYouArentListeningAlongWithAnybody = "you can't sync, because you aren't listening along with anybody";
+    public const string YouCantListenToOtherUsersYouHaveToRegisterFirst = "you can't listen to other users, you have to register first";
+    public const string ThisCommandIsDisabledInThisChannel = "this command is disabled in this channel";
+    public const string NoItemsProvided = "no items provided";
+    public const string CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore = "can't resume your afk status, because you never went afk before";
+    public const string ThereAreNoPostsAvailable = "there are no posts available";
+    public const string TheMinimumTimeForATimedReminderIs30S = "the minimum time for a timed a reminder is 30s";
+    public const string TheTargetUserDoesNotExist = "the target user does not exist";
+    public const string AllTargetUsersDoNotExist = "all target users do not exist";
+    public const string AllTargetUsersHaveTooManyRemindersSetForThem = "all target users have too many reminders set for them";
+    public const string AnErrorOccurredWhileTryingToSetThePrefix = "an error occurred while trying to set the prefix";
+    public const string AnErrorOccurredWhileTryingToSetTheEmote = "an error occurred while trying to set the emote";
+    public const string YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings = "you have to be a mod or the broadcaster to set song request settings";
+    public const string TheStateCanOnlyBeSetToEnabledOrDisabled = "the state can only be set to \"enabled\" or \"disabled\"";
+    public const string ThereAreNoThirdPartyEmotesEnabledInThisChannel = "there are no third party emotes enabled in this channel";
+    public const string ThereIsNoEmoteMatchingYouProvidedPattern = "there is no emote matching your provided pattern";
+    public const string YouArentListeningToATrack = "you aren't listening to a track";
+    public const string NoneOfTheGivenUsersAreRegistered = "none of the given users are registered";
+    public const string NoMatchingTrackCouldBeFound = "no matching track could be found";
+    public const string ListeningToAnUnknownSpotifyItemTypeMonkaS = "listening to an unknown Spotify item type monkaS";
+    public const string ThisChannelIsCurrentlyNotStreaming = "this channel is currently not streaming";
+    public const string YourSuggestionHasBeenNoted = "your suggestion has been noted";
+    public const string ThePrefixHasBeenUnset = "the prefix has been unset";
+    public const string TheReminderHasBeenUnset = "the reminder has been unset";
+    public const string TheReminderCouldntBeUnset = "the reminder couldn't be unset";
+    public const string TheEmoteHasBeenUnset = "the emote has been unset";
+    public const string YouHaventSetYourLocationYet = "you haven't set your location yet";
+    public const string YourLocationHasBeenUnset = "your location has been unset";
 }

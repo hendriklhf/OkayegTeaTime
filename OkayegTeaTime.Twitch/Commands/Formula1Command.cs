@@ -11,33 +11,47 @@ using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Formula1)]
-public sealed class Formula1Command : Command
+public readonly unsafe ref struct Formula1Command
 {
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
     private static Formula1Race[]? _races;
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
         _races ??= GetRaces();
     }
 
-    public override void Handle()
+    public void Handle()
     {
         if (_races is null)
         {
-            Response = $"{ChatMessage.Username}, api error";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
             return;
         }
 
         Formula1Race? race = GetNextOrCurrentRace(_races);
         if (race is null)
         {
-            Response = $"{ChatMessage.Username}, there is no next race";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereIsNoNextRace);
             return;
         }
 
@@ -49,26 +63,28 @@ public sealed class Formula1Command : Command
             OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(latitude, longitude, false);
             if (weatherData is null)
             {
-                Response = $"{ChatMessage.Username}, api error";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
                 return;
             }
 
             weatherData.CityName = race.Circuit.Location.Name;
             weatherData.Location.Country = race.Circuit.Location.Country;
-            Response = $"{ChatMessage.Username}, {WeatherController.CreateResponse(weatherData, false)}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, WeatherController.CreateResponse(weatherData, false));
         }
         else
         {
-            Response = $"{ChatMessage.Username}, {(race.Race.Start > DateTime.UtcNow ? "Next" : "Current")} race: " +
-                $"{race.Racename} at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, race.Race.Start > DateTime.UtcNow ? "Next" : "Current", "race: ", race.Name);
+            Response->Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, PredefinedMessages.CommaSpace, race.Circuit.Location.Country, ". ");
+            Response->Append(Emoji.RacingCar, StringHelper.Whitespace);
             if (race.Race.Start > DateTime.UtcNow)
             {
                 TimeSpan timeBetweenNowAndRaceStart = race.Race.Start - DateTime.UtcNow;
-                Response += $"The {race.Race.Name} will start on {race.Race.Start:R} (in {timeBetweenNowAndRaceStart.ToString("g").Split('.')[0]}). {Emoji.CheckeredFlag} ";
+                Response->Append("The ", race.Race.Name, " will start on ", race.Race.Start.ToString("R"));
+                Response->Append(" (in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], "). ", Emoji.CheckeredFlag);
             }
             else
             {
-                Response += $"The {race.Race.Name} started {race.Race.Start:t} GMT. {Emoji.CheckeredFlag}";
+                Response->Append("The ", race.Race.Name, " started ", race.Race.Start.ToString("t"), " GMT. ", Emoji.CheckeredFlag);
             }
 
             Formula1Session session = GetNextOrCurrentSession(race);
@@ -80,11 +96,11 @@ public sealed class Formula1Command : Command
             if (session.Start > DateTime.UtcNow)
             {
                 TimeSpan timeBetweenNowAndRaceStart = session.Start - DateTime.UtcNow;
-                Response += $"Next session: {session.Name}, starting on {session.Start:R} (in {timeBetweenNowAndRaceStart.ToString("g").Split('.')[0]}).";
+                Response->Append("Next session: ", session.Name, ", starting on ", session.Start.ToString("R"), "(in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], ").");
             }
             else if (session.Start + _nonRaceLength > DateTime.UtcNow)
             {
-                Response += $"Current session: {session.Name}, started {session.Start:t}.";
+                Response->Append("Current session: ", session.Name, ", started ", session.Start.ToString("t"));
             }
         }
     }

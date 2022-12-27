@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using HLE;
 using HLE.Http;
 using OkayegTeaTime.Twitch.Attributes;
@@ -8,13 +9,28 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Chatters)]
-public sealed class ChattersCommand : Command
+public readonly unsafe ref struct ChattersCommand
 {
-    public ChattersCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public ChattersCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix);
         if (pattern.IsMatch(ChatMessage.Message))
@@ -25,14 +41,14 @@ public sealed class ChattersCommand : Command
             switch (chatterCount)
             {
                 case > 1:
-                    Response = $"{ChatMessage.Username}, there are {NumberHelper.InsertKDots(chatterCount)} chatters in the channel of {channel.Antiping()}";
-                    return;
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there are ", NumberHelper.InsertKDots(chatterCount), " chatters in the channel of ", channel.Antiping());
+                    break;
                 case > 0:
-                    Response = $"{ChatMessage.Username}, there is {NumberHelper.InsertKDots(chatterCount)} chatter in the channel of {channel.Antiping()}";
-                    return;
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there is ", NumberHelper.InsertKDots(chatterCount), " chatter in the channel of ", channel.Antiping());
+                    break;
                 default:
-                    Response = $"{ChatMessage.Username}, there are no chatters in the channel of {channel.Antiping()}";
-                    return;
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there are no chatters in the channel of ", channel.Antiping());
+                    break;
             }
         }
     }

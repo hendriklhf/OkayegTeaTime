@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
@@ -7,6 +6,7 @@ using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
@@ -46,7 +46,8 @@ public sealed class CommandController
 
     private AfkCommand GetAfkCommand(AfkType type)
     {
-        string typeName = type.ToString().ToLower();
+        string typeName = type.ToString();
+        StringHelper.ToLower(typeName);
         return AfkCommands.First(c => c.Name == typeName);
     }
 }

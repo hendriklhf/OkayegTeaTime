@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -7,20 +8,35 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Suggest)]
-public sealed class SuggestCommand : Command
+public readonly unsafe ref struct SuggestCommand
 {
-    public SuggestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public SuggestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S{3,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string suggestion = ChatMessage.Message[(ChatMessage.LowerSplit[0].Length + 1)..];
             DbController.AddSuggestion(ChatMessage.Username, ChatMessage.Channel, suggestion);
-            Response = $"{ChatMessage.Username}, your suggestion has been noted";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YourSuggestionHasBeenNoted);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
+using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -6,25 +8,47 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Id)]
-public sealed class IdCommand : Command
+public readonly unsafe ref struct IdCommand
 {
-    public IdCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public IdCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
-        Response = $"{ChatMessage.Username}, ";
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
+        long userId;
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string username = ChatMessage.LowerSplit[1];
-            long userId = _twitchBot.TwitchApi.GetUserId(username);
-            Response += userId > -1 ? userId.ToString() : PredefinedMessages.TwitchUserDoesntExistMessage;
+            userId = _twitchBot.TwitchApi.GetUserId(username);
+            if (userId == -1)
+            {
+                Response->Append(PredefinedMessages.TwitchUserDoesntExist);
+                return;
+            }
         }
         else
         {
-            Response += ChatMessage.UserId.ToString();
+            userId = ChatMessage.UserId;
         }
+
+        Span<char> userIdChars = stackalloc char[NumberHelper.GetNumberLength(userId)];
+        NumberHelper.NumberToChars(userId, userIdChars);
+        Response->Append(userIdChars);
     }
 }

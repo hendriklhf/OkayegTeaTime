@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -9,20 +10,36 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Set)]
-public sealed class SetCommand : Command
+public readonly unsafe ref struct SetCommand
 {
-    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    private static readonly Regex _enabledPattern = new(@"(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _disabledPattern = new(@"(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+
+    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+            if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
             {
-                Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModOrTheBroadcaster);
                 return;
             }
 
@@ -30,21 +47,21 @@ public sealed class SetCommand : Command
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
-                Response = $"{ChatMessage.Username}, an error occurred while trying to set the prefix";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredWhileTryingToSetThePrefix);
                 return;
             }
 
             channel.Prefix = prefix;
-            Response = $"{ChatMessage.Username}, prefix set to: {prefix}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "prefix set to: ", prefix);
             return;
         }
 
         pattern = PatternCreator.Create(_alias, _prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+            if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
             {
-                Response = $"{ChatMessage.Message}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+                Response->Append(ChatMessage.Username, PredefinedMessages.YouArentAModOrTheBroadcaster);
                 return;
             }
 
@@ -52,50 +69,50 @@ public sealed class SetCommand : Command
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
-                Response = $"{ChatMessage.Username}, an error occurred while trying to set the emote";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredWhileTryingToSetTheEmote);
                 return;
             }
 
             channel.Emote = emote;
-            Response = $"{ChatMessage.Username}, emote set to: {emote}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "emote set to: ", emote);
             return;
         }
 
         pattern = PatternCreator.Create(_alias, _prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, ";
-            if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
             {
-                Response += "you have to be a mod or the broadcaster to set song request settings";
+                Response->Append(PredefinedMessages.YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings);
                 return;
             }
 
             bool? state = null;
-            if (Regex.IsMatch(ChatMessage.Split[2], @"(1|true|enabled?)"))
+            if (_enabledPattern.IsMatch(ChatMessage.Split[2]))
             {
                 state = true;
             }
-            else if (Regex.IsMatch(ChatMessage.Split[2], @"(0|false|disabled?)"))
+            else if (_disabledPattern.IsMatch(ChatMessage.Split[2]))
             {
                 state = false;
             }
 
             if (state is null)
             {
-                Response += "the state can only be set to \"enabled\" or \"disabled\"";
+                Response->Append(PredefinedMessages.TheStateCanOnlyBeSetToEnabledOrDisabled);
                 return;
             }
 
             SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
             if (user is null)
             {
-                Response += $"channel {ChatMessage.Channel} is not registered, they have to register first";
+                Response->Append("channel ", ChatMessage.Channel, " is not registered, they have to register first");
                 return;
             }
 
             user.AreSongRequestsEnabled = state.Value;
-            Response += $"song requests {(state.Value ? "enabled" : "disabled")} for channel {ChatMessage.Channel}";
+            Response->Append("song requests ", state.Value ? "enabled" : "disabled", "for channel ", ChatMessage.Channel);
             return;
         }
 
@@ -120,7 +137,7 @@ public sealed class SetCommand : Command
                 user.IsPrivateLocation = isPrivate;
             }
 
-            Response = $"{ChatMessage.Username}, your {(isPrivate ? "private" : "public")} location has been set";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "your ", isPrivate ? "private" : "public", " location has been set");
         }
     }
 }

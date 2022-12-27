@@ -9,13 +9,26 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Weather)]
-public sealed class WeatherCommand : Command
+public readonly unsafe ref struct WeatherCommand
 {
-    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         string? city;
         bool isPrivateLocation;
@@ -33,7 +46,7 @@ public sealed class WeatherCommand : Command
             isPrivateLocation = user?.IsPrivateLocation == true;
             if (city is null)
             {
-                Response = $"{ChatMessage.Username}, you haven't set your location yet";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouHaventSetYourLocationYet);
                 return;
             }
         }
@@ -41,16 +54,16 @@ public sealed class WeatherCommand : Command
         OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(city);
         if (weatherData is null)
         {
-            Response = $"{ChatMessage.Username}, api error";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
             return;
         }
 
         if (weatherData.Message is not null)
         {
-            Response = $"{ChatMessage.Username}, {weatherData.Message}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, weatherData.Message);
             return;
         }
 
-        Response = $"{ChatMessage.Username}, {WeatherController.CreateResponse(weatherData, isPrivateLocation)}";
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, WeatherController.CreateResponse(weatherData, isPrivateLocation));
     }
 }

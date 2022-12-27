@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
+using HLE;
 using HLE.Http;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
@@ -10,14 +12,26 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Massping)]
-public sealed class MasspingCommand : Command
+public readonly unsafe ref struct MasspingCommand
 {
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly string? _prefix;
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly string _alias;
+
     private static readonly long[] _disabledChannels =
     {
         35933008
     };
 
-    private readonly string[] _chatRoles =
+    private static readonly string[] _chatRoles =
     {
         "broadcaster",
         "vips",
@@ -28,21 +42,26 @@ public sealed class MasspingCommand : Command
         "viewers"
     };
 
-    public MasspingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public MasspingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         if (_disabledChannels.Contains(ChatMessage.ChannelId))
         {
-            Response = $"{ChatMessage.Username}, this command is disabled in this channel";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThisCommandIsDisabledInThisChannel);
             return;
         }
 
-        if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+        if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
         {
-            Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModeratorOfTheBot);
             return;
         }
 
@@ -54,20 +73,26 @@ public sealed class MasspingCommand : Command
             chatters = GetChatters(ChatMessage.Channel).Select(c => c.Username).ToArray();
             if (chatters.Length == 0)
             {
-                Response = Response.Empty;
                 return;
             }
         }
         else
         {
-            Response = $"OkayegTeaTime {emote} ";
+            Response->Append("OkayegTeaTime", StringHelper.Whitespace, emote, StringHelper.Whitespace);
             chatters = AppSettings.OfflineChatEmotes;
         }
 
-        Response += string.Join($" {emote} ", chatters);
+        ReadOnlySpan<char> users = string.Join($" {emote} ", chatters);
+        if (users.Length > 2000)
+        {
+            Response->Append(users[..1997], "...");
+            return;
+        }
+
+        Response->Append(users);
     }
 
-    private Chatter[] GetChatters(string channel)
+    private static Chatter[] GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
         if (!request.IsValidJsonData)

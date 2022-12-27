@@ -1,18 +1,34 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Guid)]
-public class GuidCommand : Command
+[SuppressMessage("ReSharper", "NotAccessedField.Local")]
+[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+public readonly unsafe ref struct GuidCommand
 {
-    public GuidCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public GuidCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
-        Response = $"{ChatMessage.Username}, {Guid.NewGuid():D}";
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, Guid.NewGuid().ToString("D"));
     }
 }

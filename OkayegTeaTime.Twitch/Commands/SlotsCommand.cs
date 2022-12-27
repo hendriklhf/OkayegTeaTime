@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -10,15 +11,28 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Slots)]
-public sealed class SlotsCommand : Command
+public readonly unsafe ref struct SlotsCommand
 {
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
     private const byte _emoteSlotCount = 3;
 
-    public SlotsCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public SlotsCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex? emotePattern = null;
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
@@ -30,7 +44,7 @@ public sealed class SlotsCommand : Command
             }
             catch (ArgumentException)
             {
-                Response = $"{ChatMessage.Username}, your provided pattern is invalid";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.TheGivenPatternIsInvalid);
                 return;
             }
         }
@@ -42,7 +56,7 @@ public sealed class SlotsCommand : Command
 
         if (!emotes.Any())
         {
-            Response = $"{ChatMessage.Username}, there are no third party emotes enabled in this channel";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
             return;
         }
 
@@ -53,7 +67,7 @@ public sealed class SlotsCommand : Command
 
         if (!emotes.Any())
         {
-            Response = $"{ChatMessage.Username}, there is no emote matching your provided pattern";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereIsNoEmoteMatchingYouProvidedPattern);
             return;
         }
 
@@ -64,6 +78,9 @@ public sealed class SlotsCommand : Command
         }
 
         string msgEmotes = string.Join(' ', randomEmotes);
-        Response = $"{ChatMessage.Username}, [ {msgEmotes} ] ({emotes.Length} emote{(emotes.Length > 1 ? 's' : string.Empty)})";
+        Span<char> lengthChars = stackalloc char[NumberHelper.GetNumberLength(emotes.Length)];
+        NumberHelper.NumberToChars(emotes.Length, lengthChars);
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "[ ", msgEmotes, " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty,
+            ")");
     }
 }

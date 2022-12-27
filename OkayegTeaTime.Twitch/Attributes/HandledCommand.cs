@@ -3,7 +3,7 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Attributes;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Struct)]
 public sealed class HandledCommand : Attribute
 {
     public CommandType CommandType { get; }

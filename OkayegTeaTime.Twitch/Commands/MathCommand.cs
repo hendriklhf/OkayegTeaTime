@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using System.Web;
 using HLE.Http;
 using OkayegTeaTime.Twitch.Attributes;
@@ -8,24 +9,39 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Math)]
-public sealed class MathCommand : Command
+public readonly unsafe ref struct MathCommand
 {
-    public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response = $"{ChatMessage.Username}, {GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..])}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]));
         }
     }
 
     private static string GetMathResult(string expression)
     {
         HttpGet request = new($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
-        return request.Result ?? "api error";
+        return request.Result ?? PredefinedMessages.ApiError;
     }
 }

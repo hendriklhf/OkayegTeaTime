@@ -4,18 +4,28 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Remind)]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class RemindCommand : Command
+public readonly unsafe ref struct RemindCommand
 {
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
     private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     private const string _timeIdentificator = "in";
@@ -45,14 +55,18 @@ public sealed class RemindCommand : Command
     private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
     private static readonly short _minimumTimedReminderTime = (short)TimeSpan.FromSeconds(30).TotalMilliseconds;
 
-    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase,
-        TimeSpan.FromMilliseconds(500));
+    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
 
-    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         string[] targets;
         string message;
@@ -65,7 +79,7 @@ public sealed class RemindCommand : Command
             toTime = GetToTime();
             if (toTime < _minimumTimedReminderTime + _now)
             {
-                Response = $"{ChatMessage.Username}, the minimum time for a timed a reminder is 30s";
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.TheMinimumTimeForATimedReminderIs30S);
                 return;
             }
 
@@ -82,13 +96,13 @@ public sealed class RemindCommand : Command
             return;
         }
 
-        Response = $"{ChatMessage.Username}, ";
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
         if (targets.Length == 1)
         {
             bool targetExists = _twitchBot.TwitchApi.DoesUserExist(targets[0]);
             if (!targetExists)
             {
-                Response += "the target user does not exist";
+                Response->Append(PredefinedMessages.TheTargetUserDoesNotExist);
                 return;
             }
 
@@ -96,19 +110,21 @@ public sealed class RemindCommand : Command
             int id = _twitchBot.Reminders.Add(reminder);
             if (id == -1)
             {
-                Response += PredefinedMessages.TooManyRemindersMessage;
+                Response->Append(PredefinedMessages.ThatUserHasTooManyRemindersSetForThem);
                 return;
             }
 
-            Response += $"set a {(toTime == 0 ? string.Empty : "timed ")}reminder for {(targets[0] == ChatMessage.Username ? "yourself" : targets[0])} (ID: {id})";
+            Response->Append("set a ", toTime == 0 ? string.Empty : "timed ", "reminder for ", targets[0] == ChatMessage.Username ? "yourself" : targets[0]);
+            Response->Append(" (ID: ", id.ToString(), ")");
         }
         else
         {
             Dictionary<string, bool> exist = _twitchBot.TwitchApi.DoUsersExist(targets);
-            Reminder[] reminders = targets.Where(t => exist[t]).Select(t => new Reminder(ChatMessage.Username, t, message, ChatMessage.Channel, toTime)).ToArray();
+            TwitchChatMessage chatMessage = ChatMessage;
+            Reminder[] reminders = targets.Where(t => exist[t]).Select(t => new Reminder(chatMessage.Username, t, message, chatMessage.Channel, toTime)).ToArray();
             if (reminders.Length == 0)
             {
-                Response += "all target users do not exist";
+                Response->Append(PredefinedMessages.AllTargetUsersDoNotExist);
                 return;
             }
 
@@ -116,19 +132,20 @@ public sealed class RemindCommand : Command
             int count = ids.Count(i => i != -1);
             if (count == 0)
             {
-                Response += "all target users have too many reminders set for them";
+                Response->Append(PredefinedMessages.AllTargetUsersHaveTooManyRemindersSetForThem);
                 return;
             }
 
             bool multi = count > 1;
-            Response += $"set{(multi ? string.Empty : " a")} {(toTime == 0 ? string.Empty : "timed ")}reminder{(multi ? 's' : string.Empty)} for ";
+            Response->Append("set", multi ? string.Empty : " a", StringHelper.Whitespace, toTime == 0 ? string.Empty : "timed ");
+            Response->Append("reminder", multi ? "s" : string.Empty, " for ");
             string[] responses = ids.Select(i =>
             {
                 Reminder? reminder = reminders.FirstOrDefault(r => r.Id == i);
                 return reminder is null ? null : $"{reminder.Target} ({reminder.Id})";
             }).Where(r => r is not null).ToArray()!;
 
-            Response += string.Join(", ", responses);
+            Response->Append(string.Join(", ", responses));
         }
     }
 
@@ -166,16 +183,25 @@ public sealed class RemindCommand : Command
 
     private string[] GetTargets()
     {
-        Match match = _targetPattern.Match(ChatMessage.Message);
-        int firstWordLength = match.Value.Split()[0].Length + 1;
-        string[] targets = match.Value[firstWordLength..].Split(',').Select(t => t.Trim()).ToArray();
-        return targets.Replace(t => t.ToLower() == _yourself, ChatMessage.Username).Select(t => t.ToLower()).Distinct().Take(5).ToArray();
+        ReadOnlySpan<char> match = _targetPattern.Match(ChatMessage.Message).Value;
+        int firstWordLength = match[match.GetRangesOfSplit()[0]].Length + 1;
+        match = match[firstWordLength..];
+        ReadOnlySpan<Range> ranges = match.GetRangesOfSplit(',');
+        string[] targets = new string[ranges.Length];
+        for (int i = 0; i < ranges.Length; i++)
+        {
+            ReadOnlySpan<char> targetSpan = match[ranges[i]].Trim();
+            string target = new(targetSpan);
+            StringHelper.ToLower(target);
+            targets[i] = target == _yourself ? ChatMessage.Username : target;
+        }
+
+        return targets.Distinct().Take(5).ToArray();
     }
 
     private static string GetTimePattern()
     {
-        IEnumerable<string> pattern =
-            typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePattern>() is not null).Select(f => f.GetValue(null)!.ToString()![2..^2]);
+        IEnumerable<string> pattern = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePattern>() is not null).Select(f => f.GetValue(null)!.ToString()![2..^2]);
         return '(' + string.Join(")|(", pattern) + ')';
     }
 

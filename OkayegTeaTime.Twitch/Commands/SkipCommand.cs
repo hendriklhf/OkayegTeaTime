@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
@@ -9,62 +11,90 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Skip)]
-public sealed class SkipCommand : Command
+public readonly unsafe ref struct SkipCommand
 {
-    public SkipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly string? _prefix;
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    private readonly string _alias;
+
+    public SkipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
-        if (!ChatMessage.IsModerator && !ChatMessage.IsBroadcaster)
+        if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
         {
-            Response = $"{ChatMessage.Username}, {PredefinedMessages.NoModOrBroadcasterMessage}";
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModOrTheBroadcaster);
             return;
         }
 
-        Task.Run(async () =>
+        SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
+        if (user is null)
         {
-            SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
-            if (user is null)
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
+            return;
+        }
+
+        try
+        {
+            SpotifyController.Skip(user).Wait();
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
+        }
+        catch (SpotifyException ex)
+        {
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+            return;
+        }
+        catch (AggregateException ex)
+        {
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            if (ex.InnerException is null)
             {
-                Response = $"{ChatMessage.Username}, you can't skip songs of {ChatMessage.Channel.Antiping()}, they have to register first";
+                DbController.LogException(ex);
+                Response->Append(PredefinedMessages.ApiError);
                 return;
             }
 
+            Response->Append(ex.InnerException.Message);
+            return;
+        }
+
+        List<SpotifyUser> usersToRemove = new();
+        ListeningSession? listeningSession = SpotifyController.GetListeningSession(user);
+        if (listeningSession is null)
+        {
+            return;
+        }
+
+        foreach (SpotifyUser listener in listeningSession.Listeners)
+        {
             try
             {
-                await SpotifyController.Skip(user);
-                Response = $"{ChatMessage.Username}, skipped to the next song in {ChatMessage.Channel.Antiping()}'s queue";
+                SpotifyController.ListenAlongWith(listener, user).Wait();
             }
-            catch (SpotifyException ex)
+            catch (Exception)
             {
-                Response = $"{ChatMessage.Username}, {ex.Message}";
+                usersToRemove.Add(listener);
             }
+        }
 
-            List<SpotifyUser> usersToRemove = new();
-            ListeningSession? listeningSession = SpotifyController.GetListeningSession(user);
-            if (listeningSession is null)
-            {
-                return;
-            }
-
-            foreach (SpotifyUser listener in listeningSession.Listeners)
-            {
-                try
-                {
-                    await SpotifyController.ListenAlongWith(listener, user);
-                }
-                catch (SpotifyException)
-                {
-                    usersToRemove.Add(listener);
-                }
-            }
-
-            foreach (SpotifyUser u in usersToRemove)
-            {
-                listeningSession.Listeners.Remove(u);
-            }
-        }).Wait();
+        foreach (SpotifyUser u in usersToRemove)
+        {
+            listeningSession.Listeners.Remove(u);
+        }
     }
 }

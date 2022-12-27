@@ -1,4 +1,6 @@
-﻿using HLE.Collections;
+﻿using System.Diagnostics.CodeAnalysis;
+using HLE;
+using HLE.Collections;
 using HLE.Emojis;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
@@ -8,21 +10,36 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Gachi)]
-public sealed class GachiCommand : Command
+[SuppressMessage("ReSharper", "NotAccessedField.Local")]
+[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+public readonly unsafe ref struct GachiCommand
 {
-    public GachiCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, string alias) : base(twitchBot, chatMessage, alias)
+    public TwitchChatMessage ChatMessage { get; }
+
+    public Response* Response { get; }
+
+    private readonly TwitchBot _twitchBot;
+    private readonly string? _prefix;
+    private readonly string _alias;
+
+    public GachiCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
     {
+        ChatMessage = chatMessage;
+        Response = response;
+        _twitchBot = twitchBot;
+        _prefix = prefix;
+        _alias = alias;
     }
 
-    public override void Handle()
+    public void Handle()
     {
         GachiSong? gachi = JsonController.GetGachiSongs().Random();
         if (gachi is null)
         {
-            Response = "couldn't find a song";
+            Response->Append(PredefinedMessages.CouldntFindASong);
             return;
         }
 
-        Response = $"{Emoji.PointRight} {gachi.Title} || {gachi.Url} gachiBASS";
+        Response->Append(Emoji.PointRight, StringHelper.Whitespace, gachi.Title, " || ", gachi.Url, " gachiBASS");
     }
 }

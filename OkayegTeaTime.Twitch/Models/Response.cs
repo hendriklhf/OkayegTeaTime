@@ -1,66 +1,113 @@
-using System.Text;
+using System;
+
+#pragma warning disable CS0660, CS0661
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public sealed class Response
+public ref struct Response
 {
-    public static Response Empty { get; } = new(string.Empty);
+    public int Length { get; private set; }
 
-    private readonly string _value;
-    private string? _builderValue;
-    private StringBuilder? _builder;
+    private readonly Span<char> _response = Span<char>.Empty;
 
-    private Response(string init)
+    public Response()
     {
-        _value = init;
     }
 
-    private Response(StringBuilder builder)
+    public Response(Span<char> responseBuffer)
     {
-        _value = string.Empty;
-        _builder = builder;
+        _response = responseBuffer;
     }
 
-    private string GetMessage()
+    public void Append(scoped ReadOnlySpan<char> msg, scoped ReadOnlySpan<char> msg2 = default, scoped ReadOnlySpan<char> msg3 = default, scoped ReadOnlySpan<char> msg4 = default, scoped ReadOnlySpan<char> msg5 = default,
+        scoped ReadOnlySpan<char> msg6 = default, scoped ReadOnlySpan<char> msg7 = default, scoped ReadOnlySpan<char> msg8 = default, scoped ReadOnlySpan<char> msg9 = default, scoped ReadOnlySpan<char> msg10 = default)
     {
-        return _builder is null ? _value : _builderValue ??= _builder.ToString();
-    }
+        msg.CopyTo(_response[Length..]);
+        Length += msg.Length;
 
-    public static Response operator +(Response left, string right)
-    {
-        if (ReferenceEquals(left, Empty))
+        if (msg2 == default)
         {
-            left = new(string.Empty);
+            return;
         }
 
-        left._builder ??= new(left.GetMessage());
-        return new(left._builder.Append(right));
-    }
+        msg2.CopyTo(_response[Length..]);
+        Length += msg2.Length;
 
-    public static Response operator +(Response left, char right)
-    {
-        if (ReferenceEquals(left, Empty))
+        if (msg3 == default)
         {
-            left = new(string.Empty);
+            return;
         }
 
-        left._builder ??= new(left.GetMessage());
-        return new(left._builder.Append(right));
-    }
+        msg3.CopyTo(_response[Length..]);
+        Length += msg3.Length;
 
-    public static implicit operator Response(string str)
-    {
-        return new(str);
+        if (msg4 == default)
+        {
+            return;
+        }
+
+        msg4.CopyTo(_response[Length..]);
+        Length += msg4.Length;
+
+        if (msg5 == default)
+        {
+            return;
+        }
+
+        msg5.CopyTo(_response[Length..]);
+        Length += msg5.Length;
+
+        if (msg6 == default)
+        {
+            return;
+        }
+
+        msg6.CopyTo(_response[Length..]);
+        Length += msg6.Length;
+
+        if (msg7 == default)
+        {
+            return;
+        }
+
+        msg7.CopyTo(_response[Length..]);
+        Length += msg7.Length;
+
+        if (msg8 == default)
+        {
+            return;
+        }
+
+        msg8.CopyTo(_response[Length..]);
+        Length += msg8.Length;
+
+        if (msg9 == default)
+        {
+            return;
+        }
+
+        msg9.CopyTo(_response[Length..]);
+        Length += msg9.Length;
+
+        if (msg10 == default)
+        {
+            return;
+        }
+
+        msg10.CopyTo(_response[Length..]);
+        Length += msg10.Length;
     }
 
     public static implicit operator string(Response response)
     {
-        return response.GetMessage();
+        return response.ToString();
     }
 
     public static bool operator ==(Response left, Response right)
     {
-        return left.Equals(right);
+        ReadOnlySpan<char> leftResponse = left._response[..left.Length];
+        ReadOnlySpan<char> rightResponse = right._response[..right.Length];
+        return leftResponse.Equals(rightResponse, StringComparison.Ordinal);
     }
 
     public static bool operator !=(Response left, Response right)
@@ -68,18 +115,13 @@ public sealed class Response
         return !(left == right);
     }
 
-    public override bool Equals(object? obj)
+    public readonly bool Equals(Response other)
     {
-        return obj is Response res && res.GetMessage() == GetMessage();
+        return this == other;
     }
 
-    public override int GetHashCode()
+    public readonly override string ToString()
     {
-        return GetMessage().GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return GetMessage();
+        return new(_response[..Length]);
     }
 }
