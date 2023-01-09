@@ -40,7 +40,7 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
         return user;
     }
 
-    private protected override void GetAllFromDb()
+    private protected override void GetAllItemsFromDatabase()
     {
         if (_containsAll)
         {

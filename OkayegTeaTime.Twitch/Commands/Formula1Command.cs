@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Emojis;
-using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -20,7 +20,7 @@ public readonly unsafe ref struct Formula1Command
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -30,7 +30,7 @@ public readonly unsafe ref struct Formula1Command
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public Formula1Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -140,12 +140,13 @@ public readonly unsafe ref struct Formula1Command
         try
         {
             HttpGet request = new("https://ergast.com/api/f1/current.json");
-            if (request.Result is null || !request.IsValidJsonData)
+            if (request.Result is null)
             {
                 return null;
             }
 
-            JsonElement jRaces = request.Data.GetProperty("MRData").GetProperty("RaceTable").GetProperty("Races");
+            JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+            JsonElement jRaces = json.GetProperty("MRData").GetProperty("RaceTable").GetProperty("Races");
             Formula1Race[]? races = JsonSerializer.Deserialize<Formula1Race[]?>(jRaces.GetRawText());
             if (races is null)
             {

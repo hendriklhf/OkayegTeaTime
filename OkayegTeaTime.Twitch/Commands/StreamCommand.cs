@@ -14,7 +14,7 @@ public readonly unsafe ref struct StreamCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -25,7 +25,7 @@ public readonly unsafe ref struct StreamCommand
         149489313
     };
 
-    public StreamCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public StreamCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

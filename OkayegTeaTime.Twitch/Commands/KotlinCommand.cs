@@ -11,6 +11,7 @@ using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringBuilder = HLE.StringBuilder;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -19,7 +20,7 @@ public readonly unsafe ref struct KotlinCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -38,7 +39,7 @@ public readonly unsafe ref struct KotlinCommand
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public KotlinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -115,8 +116,21 @@ public readonly unsafe ref struct KotlinCommand
                 return PredefinedMessages.ApiError;
             }
 
-            result = result[_outStreamLabelLength..^(_outStreamLabelLength + 1)];
-            return string.IsNullOrWhiteSpace(result) ? "executed successfully" : (result.Length > 450 ? $"{result[..450]}..." : result).NewLinesToSpaces();
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                return "executed successfully";
+            }
+
+            ReadOnlySpan<char> resultSpan = result;
+            resultSpan = resultSpan[_outStreamLabelLength..^(_outStreamLabelLength + 1)];
+            if (resultSpan.Length <= 450)
+            {
+                return result[_outStreamLabelLength..^(_outStreamLabelLength + 1)].NewLinesToSpaces();
+            }
+
+            StringBuilder resultBuilder = stackalloc char[500];
+            resultBuilder.Append(resultSpan, "...");
+            return resultBuilder.ToString().NewLinesToSpaces();
         }
         catch (Exception ex)
         {

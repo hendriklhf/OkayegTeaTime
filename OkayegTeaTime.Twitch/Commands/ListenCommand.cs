@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
@@ -17,13 +18,13 @@ public readonly unsafe ref struct ListenCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public ListenCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

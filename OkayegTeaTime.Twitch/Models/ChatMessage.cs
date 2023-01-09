@@ -24,8 +24,8 @@ public class ChatMessage
     private string[]? _lowerSplit;
     private string[]? _split;
 
-    private static readonly Regex _messagePattern = new(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
-    private static readonly Regex _messageReplacePattern = new(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _messagePattern = new(@"(WHISPER|PRIVMSG)\s#?\w+\s:.+$", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+    private static readonly Regex _messageReplacePattern = new(@"^(WHISPER|PRIVMSG)\s#?\w+\s:", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     protected ChatMessage(TwitchLibMessage message)
     {
@@ -47,13 +47,6 @@ public class ChatMessage
 
     private string[] GetLowerSplit()
     {
-        string[] split = Message.Split();
-        ReadOnlySpan<string> splitSpan = split;
-        for (int i = 0; i < splitSpan.Length; i++)
-        {
-            StringHelper.ToLower(splitSpan[i]);
-        }
-
-        return split;
+        return Message.ToLower().Split();
     }
 }

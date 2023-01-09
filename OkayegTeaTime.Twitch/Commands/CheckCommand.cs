@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
@@ -15,13 +16,13 @@ public readonly unsafe ref struct CheckCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public CheckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public CheckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -62,7 +63,9 @@ public readonly unsafe ref struct CheckCommand
                 }
 
                 TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
-                Response->Append(" (", span.Format(), " ago)");
+                Span<char> spanChars = stackalloc char[100];
+                int spanCharsLength = span.Format(spanChars);
+                Response->Append(" (", spanChars[..spanCharsLength], " ago)");
             }
             else
             {
@@ -85,6 +88,7 @@ public readonly unsafe ref struct CheckCommand
             }
 
             TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
+            // TODO: get rid of this list, unnecessarily allocates
             List<string> reminderProps = new()
             {
                 $"From: {reminder.Creator} || To: {reminder.Target}",

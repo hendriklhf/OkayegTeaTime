@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -11,7 +12,7 @@ public readonly unsafe ref struct Chatterino7Command
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -19,7 +20,7 @@ public readonly unsafe ref struct Chatterino7Command
 
     private const string _response = "Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
 
-    public Chatterino7Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public Chatterino7Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -30,6 +31,6 @@ public readonly unsafe ref struct Chatterino7Command
 
     public void Handle()
     {
-        Response->Append(_response);
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, _response);
     }
 }

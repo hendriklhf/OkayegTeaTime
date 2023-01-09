@@ -16,13 +16,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpotifyAPI.Web" Version="6.3.0"/>
+    <PackageReference Include="SpotifyAPI.Web" Version="7.0.0"/>
   </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj"/>
-        <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj"/>
-        <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj"/>
+    <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj"/>
+    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
+  </ItemGroup>
 
 </Project>

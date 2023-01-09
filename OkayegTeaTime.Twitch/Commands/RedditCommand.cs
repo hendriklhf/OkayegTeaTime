@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -21,7 +21,7 @@ public readonly unsafe ref struct RedditCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -33,7 +33,7 @@ public readonly unsafe ref struct RedditCommand
     private static readonly TimeSpan _cacheTime = TimeSpan.FromHours(1);
     private static readonly Func<RedditPost, bool> _postFilter = rp => rp is { Pinned: false, IsNsfw: false };
 
-    public RedditCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public RedditCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -63,7 +63,10 @@ public readonly unsafe ref struct RedditCommand
 
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
             CheckForNsfwAndSpoiler(post);
-            Response->Append(post.Title, StringHelper.Whitespace, post.Url, " Score: ", post.Score.ToString());
+            Span<char> scoreChars = stackalloc char[30];
+            post.Score.TryFormat(scoreChars, out int scoreLength);
+            scoreChars = scoreChars[..scoreLength];
+            Response->Append(post.Title, StringHelper.Whitespace, post.Url, " Score: ", scoreChars);
         }
     }
 
@@ -77,12 +80,13 @@ public readonly unsafe ref struct RedditCommand
             }
 
             HttpGet request = new($"https://www.reddit.com/r/{subReddit}/hot.json?limit=50");
-            if (request.Result is null || !request.IsValidJsonData)
+            if (request.Result is null)
             {
                 return null;
             }
 
-            JsonElement posts = request.Data.GetProperty("data").GetProperty("children");
+            JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+            JsonElement posts = json.GetProperty("data").GetProperty("children");
             List<string> rawPosts = new();
             for (int i = 0; i < posts.GetArrayLength(); i++)
             {

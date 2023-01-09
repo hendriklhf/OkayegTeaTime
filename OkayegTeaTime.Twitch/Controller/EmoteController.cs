@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using HLE.Http;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Files.Models.SevenTv;
+using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
@@ -189,12 +189,13 @@ public sealed class EmoteController
             }
 
             HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channelName}");
-            if (!request.IsValidJsonData || request.Result is null)
+            if (request.Result is null)
             {
                 return null;
             }
 
-            int setId = request.Data.GetProperty("room").GetProperty("set").GetInt32();
+            JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+            int setId = json.GetProperty("room").GetProperty("set").GetInt32();
             string result = request.Result.Replace($"\"{setId}\":", $"\"{AppSettings.FfzSetIdReplacement}\":");
             return JsonSerializer.Deserialize<FfzRequest>(result);
         }
@@ -210,14 +211,15 @@ public sealed class EmoteController
         try
         {
             HttpGet request = new("https://api.frankerfacez.com/v1/set/global");
-            if (!request.IsValidJsonData || request.Result is null)
+            if (request.Result is null)
             {
                 return null;
             }
 
-            int setId = request.Data.GetProperty("default_sets")[0].GetInt32();
+            JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+            int setId = json.GetProperty("default_sets")[0].GetInt32();
             string result = request.Result.Replace($"\"{setId}\":", $"\"{AppSettings.FfzSetIdReplacement}\":");
-            JsonElement json = JsonSerializer.Deserialize<JsonElement>(result);
+            json = JsonSerializer.Deserialize<JsonElement>(result);
             string firstSet = json.GetProperty("sets").GetProperty(AppSettings.FfzSetIdReplacement).GetProperty("emoticons").GetRawText();
             string secondSet = json.GetProperty("sets").GetProperty("4330").GetProperty("emoticons").GetRawText();
             FfzEmote[] firstEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(firstSet) ?? Array.Empty<FfzEmote>();

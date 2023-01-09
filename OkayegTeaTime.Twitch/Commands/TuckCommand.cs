@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Emojis;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -13,7 +14,7 @@ public readonly unsafe ref struct TuckCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -21,7 +22,7 @@ public readonly unsafe ref struct TuckCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public TuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public TuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

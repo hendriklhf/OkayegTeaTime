@@ -15,7 +15,7 @@ public readonly unsafe ref struct PingCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
@@ -25,7 +25,7 @@ public readonly unsafe ref struct PingCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public PingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public PingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -36,19 +36,21 @@ public readonly unsafe ref struct PingCommand
 
     public void Handle()
     {
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
         TimeSpan uptime = DateTime.UtcNow - _twitchBot.StartTime;
         Response->Append("Pingeg, I'm here! Uptime: ", uptime.ToString("c"));
 
 #if DEBUG
-        string? temperature = GetTemperature();
-        if (temperature is not null)
+        ReadOnlySpan<char> temperature = GetTemperature();
+        if (temperature.Length > 0)
         {
             Response->Append(" || Temperature: ", temperature);
         }
 #endif
 
-        Span<char> latencyChars = stackalloc char[NumberHelper.GetNumberLength(_twitchBot.Latency)];
-        NumberHelper.NumberToChars(_twitchBot.Latency, latencyChars);
+        Span<char> latencyChars = stackalloc char[30];
+        _twitchBot.Latency.TryFormat(latencyChars, out int latencyLength);
+        latencyChars = latencyChars[..latencyLength];
 
         Response->Append(" || Memory usage: ", GetMemoryUsage().ToString(CultureInfo.InvariantCulture), "MB || Executed commands: ");
         Response->Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ", latencyChars);
@@ -61,7 +63,7 @@ public readonly unsafe ref struct PingCommand
     }
 
 #if DEBUG
-    private static string? GetTemperature()
+    private static ReadOnlySpan<char> GetTemperature()
     {
         try
         {
@@ -80,7 +82,7 @@ public readonly unsafe ref struct PingCommand
             ReadOnlySpan<char> temperature = output[ranges[1]];
             Span<char> tempSpan = temperature.AsMutableSpan();
             tempSpan[4] = '°';
-            return new(temperature);
+            return temperature;
         }
         catch
         {

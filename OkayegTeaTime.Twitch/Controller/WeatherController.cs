@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 using HLE.Emojis;
-using HLE.Http;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Utils;
 
 #pragma warning disable CS0659
 
@@ -32,7 +32,7 @@ public sealed class WeatherController
         }
 
         HttpGet request = new($"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
-        if (request.Result is null || !request.IsValidJsonData)
+        if (request.Result is null)
         {
             return null;
         }
@@ -65,7 +65,7 @@ public sealed class WeatherController
         }
 
         HttpGet request = new($"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
-        if (request.Result is null || !request.IsValidJsonData)
+        if (request.Result is null)
         {
             return null;
         }
@@ -99,7 +99,7 @@ public sealed class WeatherController
         }
 
         HttpGet request = new($"https://api.openweathermap.org/data/2.5/forecast/daily?q={city}&cnt=16&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
-        if (request.Result is null || !request.IsValidJsonData)
+        if (request.Result is null)
         {
             return null;
         }

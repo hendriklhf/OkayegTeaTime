@@ -4,10 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using HLE;
-using HLE.Http;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -16,7 +17,7 @@ public readonly unsafe ref struct MasspingCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
@@ -42,7 +43,7 @@ public readonly unsafe ref struct MasspingCommand
         "viewers"
     };
 
-    public MasspingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public MasspingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -70,9 +71,10 @@ public readonly unsafe ref struct MasspingCommand
         string[] chatters;
         if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
         {
-            chatters = GetChatters(ChatMessage.Channel).Select(c => c.Username).ToArray();
+            chatters = GetChatters(ChatMessage.Channel);
             if (chatters.Length == 0)
             {
+                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredOrThereAreNoChattersInThisChannel);
                 return;
             }
         }
@@ -83,32 +85,27 @@ public readonly unsafe ref struct MasspingCommand
         }
 
         ReadOnlySpan<char> users = string.Join($" {emote} ", chatters);
-        if (users.Length > 2000)
-        {
-            Response->Append(users[..1997], "...");
-            return;
-        }
-
         Response->Append(users);
     }
 
-    private static Chatter[] GetChatters(string channel)
+    private static string[] GetChatters(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
-        if (!request.IsValidJsonData)
+        if (request.Result is null)
         {
-            return Array.Empty<Chatter>();
+            return Array.Empty<string>();
         }
 
-        List<Chatter> result = new();
-        JsonElement chatters = request.Data.GetProperty("chatters");
-        byte roleIdx = 0;
+        JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+        List<string> result = new();
+        JsonElement chatters = json.GetProperty("chatters");
         foreach (string role in _chatRoles)
         {
             JsonElement chatterList = chatters.GetProperty(role);
-            for (int i = 0; i < chatterList.GetArrayLength(); i++)
+            int chatterLength = chatterList.GetArrayLength();
+            for (int i = 0; i < chatterLength; i++)
             {
-                result.Add(new(chatterList[i].GetString()!, (ChatRole)roleIdx++));
+                result.Add(chatterList[i].GetString()!);
             }
         }
 

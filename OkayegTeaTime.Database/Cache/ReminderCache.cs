@@ -63,7 +63,7 @@ public sealed class ReminderCache : DbCache<Reminder>
             return false;
         }
 
-        Reminder? reminder = this.FirstOrDefault(r => r.Id == reminderId);
+        Reminder? reminder = this[reminderId];
         if (reminder is null)
         {
             return removed;
@@ -80,7 +80,7 @@ public sealed class ReminderCache : DbCache<Reminder>
     public void Remove(int reminderId)
     {
         DbController.RemoveReminder(reminderId);
-        Reminder? reminder = this.FirstOrDefault(r => r.Id == reminderId);
+        Reminder? reminder = this[reminderId];
         if (reminder is null)
         {
             return;
@@ -90,21 +90,21 @@ public sealed class ReminderCache : DbCache<Reminder>
         reminder.HasBeenSent = true;
     }
 
-    public IEnumerable<Reminder> GetRemindersFor(string username, ReminderType type)
+    public Reminder[] GetRemindersFor(string username, ReminderType type)
     {
-        bool EvaluateReminderType(Reminder r)
+        static bool EvaluateReminderType(Reminder r, ReminderType t)
         {
-            if (type.HasFlag(ReminderType.Timed | ReminderType.NonTimed))
+            if ((int)(t & (ReminderType.Timed | ReminderType.NonTimed)) == (int)(ReminderType.Timed | ReminderType.NonTimed))
             {
                 return true;
             }
 
-            if (type.HasFlag(ReminderType.Timed))
+            if ((int)(t & ReminderType.Timed) == (int)ReminderType.Timed)
             {
                 return r.ToTime > 0;
             }
 
-            if (type.HasFlag(ReminderType.NonTimed))
+            if ((int)(t & ReminderType.NonTimed) == (int)ReminderType.NonTimed)
             {
                 return r.ToTime == 0;
             }
@@ -112,12 +112,12 @@ public sealed class ReminderCache : DbCache<Reminder>
             return false;
         }
 
-        return this.Where(r => username == r.Target && EvaluateReminderType(r) && !r.HasBeenSent);
+        return this.Where(r => !r.HasBeenSent && username == r.Target && EvaluateReminderType(r, type)).ToArray();
     }
 
-    public IEnumerable<Reminder> GetExpiredReminders()
+    public Reminder[] GetExpiredReminders()
     {
-        return this.Where(r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent);
+        return this.Where(r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
     }
 
     private Reminder? GetReminder(int id)
@@ -150,7 +150,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         return this.Count(condition) >= AppSettings.MaxReminders;
     }
 
-    private protected override void GetAllFromDb()
+    private protected override void GetAllItemsFromDatabase()
     {
         if (_containsAll)
         {
@@ -158,7 +158,6 @@ public sealed class ReminderCache : DbCache<Reminder>
         }
 
         DbController.GetReminders().Where(r => _items.All(i => i.Id != r.Id)).ForEach(r => _items.Add(new(r)));
-
         _containsAll = true;
     }
 }

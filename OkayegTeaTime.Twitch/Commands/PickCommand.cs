@@ -1,5 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -12,7 +14,7 @@ public readonly unsafe ref struct PickCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -20,7 +22,7 @@ public readonly unsafe ref struct PickCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public PickCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public PickCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -38,6 +40,8 @@ public readonly unsafe ref struct PickCommand
             return;
         }
 
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ChatMessage.Split[1..].Random());
+        Span<string> split = ChatMessage.Split;
+        Span<string> pickOptions = split[1..];
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, pickOptions.Random());
     }
 }

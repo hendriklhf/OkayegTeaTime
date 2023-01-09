@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using HLE;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
@@ -11,6 +10,13 @@ namespace OkayegTeaTime.Twitch;
 
 public static class BotActions
 {
+    private const string _yourself = "yourself";
+    private const string _reminderFromSpace = "reminder from ";
+    private const string _spaceParentheses = " (";
+    private const string _spaceAgoParentheses = " ago)";
+    private const string _colonSpace = ": ";
+    private const string _spaceBarBarSpace = " || ";
+
     public static void SendComingBack(this TwitchBot twitchBot, long userId, string channel)
     {
         User? user = twitchBot.Users[userId];
@@ -19,41 +25,51 @@ public static class BotActions
             return;
         }
 
+        SendComingBack(twitchBot, user, channel);
+    }
+
+    public static void SendComingBack(this TwitchBot twitchBot, User user, string channel)
+    {
         AfkCommand cmd = twitchBot.CommandController[user.AfkType];
         string afkMessage = new AfkMessage(user, cmd).ComingBack;
         twitchBot.Send(channel, afkMessage);
     }
 
-    public static void SendReminder(this TwitchBot twitchBot, string channel, IEnumerable<Reminder> reminders)
+    public static void SendReminder(this TwitchBot twitchBot, string channel, ReadOnlySpan<Reminder> reminders)
     {
-        Reminder[] rmndrs = reminders.ToArray();
-        if (rmndrs.Length == 0)
+        if (reminders.Length == 0)
         {
             return;
         }
 
-        string creator = rmndrs[0].Creator == rmndrs[0].Target ? "yourself" : rmndrs[0].Creator;
-        TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(rmndrs[0].Time);
-        string message = $"{rmndrs[0].Target}, reminder from {creator} ({span.Format()} ago)";
-        StringBuilder builder = new(message);
-        twitchBot.Reminders.Remove(rmndrs[0].Id);
-        if (rmndrs[0].Message?.Length > 0)
+        string creator = reminders[0].Creator == reminders[0].Target ? _yourself : reminders[0].Creator;
+        TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminders[0].Time);
+        Span<char> spanBuffer = stackalloc char[100];
+        int spanLength = span.Format(spanBuffer);
+
+        StringBuilder builder = stackalloc char[500];
+        builder.Append(reminders[0].Target, PredefinedMessages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+        twitchBot.Reminders.Remove(reminders[0].Id);
+        if (reminders[0].Message?.Length > 0)
         {
-            builder.Append($": {rmndrs[0].Message}");
+            builder.Append(_colonSpace, reminders[0].Message);
         }
 
-        if (rmndrs.Length > 1)
+        if (reminders.Length <= 1)
         {
-            foreach (Reminder r in rmndrs[1..])
+            return;
+        }
+
+        foreach (Reminder r in reminders[1..])
+        {
+            twitchBot.Reminders.Remove(r.Id);
+            creator = r.Creator == r.Target ? _yourself : r.Creator;
+            span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(r.Time);
+            spanLength = span.Format(spanBuffer);
+            builder.Append(_spaceBarBarSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+            if (r.Message?.Length > 0)
             {
-                twitchBot.Reminders.Remove(r.Id);
-                creator = r.Creator == r.Target ? "yourself" : r.Creator;
-                span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(r.Time);
-                builder.Append($" || {creator} ({span.Format()} ago)");
-                if (r.Message?.Length > 0)
-                {
-                    builder.Append($": {r.Message}");
-                }
+                builder.Append(_colonSpace, r.Message);
             }
         }
 
@@ -62,15 +78,19 @@ public static class BotActions
 
     public static void SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
     {
-        string creator = reminder.Target == reminder.Creator ? "yourself" : reminder.Creator;
+        string creator = reminder.Target == reminder.Creator ? _yourself : reminder.Creator;
         TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
-        string message = $"{reminder.Target}, reminder from {creator} ({span.Format()} ago)";
+        Span<char> spanBuffer = stackalloc char[100];
+        int spanLength = span.Format(spanBuffer);
+
+        StringBuilder builder = stackalloc char[500];
+        builder.Append(reminder.Target, PredefinedMessages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
         if (!string.IsNullOrWhiteSpace(reminder.Message))
         {
-            message += $": {reminder.Message}";
+            builder.Append(_colonSpace, reminder.Message);
         }
 
         twitchBot.Reminders.Remove(reminder.Id);
-        twitchBot.Send(reminder.Channel, message);
+        twitchBot.Send(reminder.Channel, builder.ToString());
     }
 }

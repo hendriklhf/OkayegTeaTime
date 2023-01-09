@@ -17,7 +17,7 @@ public readonly unsafe ref struct CodeCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -27,7 +27,7 @@ public readonly unsafe ref struct CodeCommand
 
     private static string[]? _codeFiles;
 
-    public CodeCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public CodeCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -51,7 +51,7 @@ public readonly unsafe ref struct CodeCommand
             Regex? filePattern;
             try
             {
-                filePattern = new(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+                filePattern = new(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             }
             catch (Exception)
             {
@@ -60,8 +60,9 @@ public readonly unsafe ref struct CodeCommand
             }
 
             string[] matchingFiles = _codeFiles!.Where(f => filePattern.IsMatch(f)).ToArray();
-            Span<char> lengthChars = stackalloc char[22];
-            int length;
+            Span<char> lengthChars = stackalloc char[30];
+            matchingFiles.Length.TryFormat(lengthChars, out int lengthLength);
+            lengthChars = lengthChars[..lengthLength];
             switch (matchingFiles.Length)
             {
                 case 0:
@@ -71,12 +72,10 @@ public readonly unsafe ref struct CodeCommand
                     Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
-                    length = NumberHelper.NumberToChars(matchingFiles.Length, lengthChars);
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "your pattern matched ", lengthChars[..length], " files: ", matchingFiles.JoinToString(PredefinedMessages.CommaSpace), ". Please specify");
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "your pattern matched ", lengthChars, " files: ", matchingFiles.JoinToString(PredefinedMessages.CommaSpace), ". Please specify");
                     break;
                 default:
-                    length = NumberHelper.NumberToChars(matchingFiles.Length, lengthChars);
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "your pattern matched too many (", lengthChars[..length], ") files. Please specify");
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "your pattern matched too many (", lengthChars, ") files. Please specify");
                     break;
             }
         }

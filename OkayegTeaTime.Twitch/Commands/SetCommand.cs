@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Collections;
+using HLE;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
@@ -14,16 +14,16 @@ public readonly unsafe ref struct SetCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    private static readonly Regex _enabledPattern = new(@"(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-    private static readonly Regex _disabledPattern = new(@"(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _enabledPattern = new(@"(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex _disabledPattern = new(@"(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -43,7 +43,6 @@ public readonly unsafe ref struct SetCommand
                 return;
             }
 
-            string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength ? AppSettings.MaxPrefixLength : ChatMessage.LowerSplit[2].Length)];
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
@@ -51,6 +50,7 @@ public readonly unsafe ref struct SetCommand
                 return;
             }
 
+            string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength ? AppSettings.MaxPrefixLength : ChatMessage.LowerSplit[2].Length)];
             channel.Prefix = prefix;
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "prefix set to: ", prefix);
             return;
@@ -119,7 +119,7 @@ public readonly unsafe ref struct SetCommand
         pattern = PatternCreator.Create(_alias, _prefix, @"\slocation\s((private)|(public))\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string city = ChatMessage.Split[3..].JoinToString(' ');
+            string city = string.Join(' ', ChatMessage.Split, 3, ChatMessage.Split.Length - 3);
             bool isPrivate = ChatMessage.LowerSplit[2][1] == 'r';
             User? user = _twitchBot.Users[ChatMessage.UserId];
             if (user is null)

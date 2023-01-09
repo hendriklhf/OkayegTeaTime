@@ -15,7 +15,7 @@ public readonly unsafe ref struct SlotsCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -23,7 +23,7 @@ public readonly unsafe ref struct SlotsCommand
 
     private const byte _emoteSlotCount = 3;
 
-    public SlotsCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public SlotsCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -40,7 +40,7 @@ public readonly unsafe ref struct SlotsCommand
         {
             try
             {
-                emotePattern = new(ChatMessage.Split[1], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+                emotePattern = new(ChatMessage.Split[1], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             }
             catch (ArgumentException)
             {
@@ -67,7 +67,7 @@ public readonly unsafe ref struct SlotsCommand
 
         if (!emotes.Any())
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereIsNoEmoteMatchingYouProvidedPattern);
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereIsNoEmoteMatchingYourProvidedPattern);
             return;
         }
 
@@ -78,9 +78,9 @@ public readonly unsafe ref struct SlotsCommand
         }
 
         string msgEmotes = string.Join(' ', randomEmotes);
-        Span<char> lengthChars = stackalloc char[NumberHelper.GetNumberLength(emotes.Length)];
-        NumberHelper.NumberToChars(emotes.Length, lengthChars);
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "[ ", msgEmotes, " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty,
-            ")");
+        Span<char> lengthChars = stackalloc char[30];
+        emotes.Length.TryFormat(lengthChars, out int lengthLength);
+        lengthChars = lengthChars[..lengthLength];
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "[ ", msgEmotes, " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty, ")");
     }
 }

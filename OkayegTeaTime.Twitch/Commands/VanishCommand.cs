@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -9,7 +10,7 @@ public readonly unsafe ref struct VanishCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
@@ -19,7 +20,7 @@ public readonly unsafe ref struct VanishCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

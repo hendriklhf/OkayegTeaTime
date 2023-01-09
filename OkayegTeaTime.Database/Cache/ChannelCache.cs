@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 
@@ -44,7 +45,19 @@ public sealed class ChannelCache : DbCache<Channel>
 
     private Channel? GetChannel(long id)
     {
-        Channel? channel = this.FirstOrDefault(c => c.Id == id);
+        GetAllItemsFromDatabase();
+        Channel? channel = null;
+        Span<Channel> channels = CollectionsMarshal.AsSpan(_items);
+        int channelsLength = channels.Length;
+        for (int i = 0; i < channelsLength; i++)
+        {
+            Channel c = channels[i];
+            if (c.Id == id)
+            {
+                channel = c;
+            }
+        }
+
         if (channel is not null)
         {
             return channel;
@@ -63,10 +76,22 @@ public sealed class ChannelCache : DbCache<Channel>
 
     private Channel? GetChannel(string name)
     {
-        Channel? c = this.FirstOrDefault(c => string.Equals(name, c.Name, StringComparison.OrdinalIgnoreCase));
-        if (c is not null)
+        GetAllItemsFromDatabase();
+        Channel? channel = null;
+        Span<Channel> channels = CollectionsMarshal.AsSpan(_items);
+        int channelsLength = channels.Length;
+        for (int i = 0; i < channelsLength; i++)
         {
-            return c;
+            Channel c = channels[i];
+            if (string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                channel = c;
+            }
+        }
+
+        if (channel is not null)
+        {
+            return channel;
         }
 
         EntityFrameworkModels.Channel? efChannel = DbController.GetChannel(name);
@@ -75,12 +100,12 @@ public sealed class ChannelCache : DbCache<Channel>
             return null;
         }
 
-        c = new(efChannel);
-        _items.Add(c);
-        return c;
+        channel = new(efChannel);
+        _items.Add(channel);
+        return channel;
     }
 
-    private protected override void GetAllFromDb()
+    private protected override void GetAllItemsFromDatabase()
     {
         if (_containsAll)
         {

@@ -90,8 +90,7 @@ public static class SpotifyController
     {
         try
         {
-            AuthorizationCodeTokenResponse response =
-                await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
+            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
             return (response.AccessToken, response.RefreshToken);
         }
         catch
@@ -201,7 +200,7 @@ public static class SpotifyController
                 Paging<PlaylistTrack<IPlayableItem>> playlistItems = await client.Playlists.GetItems(playlistUri, new()
                 {
                     Offset = offset
-                });
+                }, default);
                 // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 SpotifyTrack[]? items = playlistItems?.Items?.Select(i => new SpotifyTrack(i.Track)).ToArray();
                 if (items is null)
@@ -255,7 +254,7 @@ public static class SpotifyController
             }
 
             await client.Player.AddToQueue(new(uri));
-            FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..], new());
+            FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..]);
             return new(item);
         }
         catch (APIException ex)
@@ -285,7 +284,7 @@ public static class SpotifyController
                 throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             }
 
-            await client.Player.SkipNext(new());
+            await client.Player.SkipNext();
         }
         catch (Exception ex)
         {
@@ -384,7 +383,7 @@ public static class SpotifyController
                 throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             }
 
-            await client.Player.SkipNext(new());
+            await client.Player.SkipNext();
             if (seekToMs > 0)
             {
                 await client.Player.SeekTo(new(seekToMs));
@@ -487,7 +486,7 @@ public static class SpotifyController
         {
             try
             {
-                FullTrack? track = await client.Tracks.Get(uri.Split(':')[^1], new());
+                FullTrack? track = await client.Tracks.Get(uri.Split(':')[^1]);
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (track is not null)
                 {
@@ -526,7 +525,7 @@ public static class SpotifyController
             throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         }
 
-        CurrentlyPlayingContext? playback = await client.Player.GetCurrentPlayback(new());
+        CurrentlyPlayingContext? playback = await client.Player.GetCurrentPlayback();
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (playback is null || !playback.IsPlaying)
         {

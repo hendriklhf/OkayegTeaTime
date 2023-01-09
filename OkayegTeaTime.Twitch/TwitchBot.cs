@@ -132,7 +132,7 @@ public sealed class TwitchBot
         else
         {
             DividedMessage dividedMessage = new(this, channel, message);
-            dividedMessage.StartSending();
+            dividedMessage.Send();
         }
 
         _lastMessageController[channel] = message;
@@ -277,7 +277,7 @@ public sealed class TwitchBot
 
     private void OnTimer1000(object? sender, ElapsedEventArgs e)
     {
-        IEnumerable<Reminder> reminders = Reminders.GetExpiredReminders();
+        Reminder[] reminders = Reminders.GetExpiredReminders();
         reminders.ForEach(this.SendTimedReminder);
     }
 

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 
@@ -14,9 +16,23 @@ public sealed class UserCache : DbCache<User>
         _items.Add(user);
     }
 
+    /// <summary>
+    /// This method also accepts a username to update the username in the database if the user has changed it.
+    /// </summary>
     public User? GetUser(long id, string? username = null)
     {
-        User? user = this.FirstOrDefault(u => u.Id == id);
+        GetAllItemsFromDatabase();
+        User? user = null;
+        Span<User> users = CollectionsMarshal.AsSpan(_items);
+        for (int i = 0; i < users.Length; i++)
+        {
+            User u = users[i];
+            if (u.Id == id)
+            {
+                user = u;
+            }
+        }
+
         if (user is not null && (username is null || user.Username == username))
         {
             return user;
@@ -44,7 +60,7 @@ public sealed class UserCache : DbCache<User>
         return user;
     }
 
-    private protected override void GetAllFromDb()
+    private protected override void GetAllItemsFromDatabase()
     {
         if (_containsAll)
         {

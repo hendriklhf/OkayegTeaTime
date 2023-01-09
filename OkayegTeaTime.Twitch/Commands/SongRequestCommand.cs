@@ -20,15 +20,15 @@ public readonly unsafe ref struct SongRequestCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -390,7 +390,8 @@ public readonly unsafe ref struct SongRequestCommand
 
     private SpotifyUser[] GetTargets()
     {
-        Match match = Pattern.MultipleTargets.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
+        //Match match = Pattern.MultipleTargets.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
+        Match match = Pattern.MultipleTargets.Match(string.Join(' ', ChatMessage.LowerSplit, 1, ChatMessage.LowerSplit.Length - 2));
         string[] targets = match.Value.Split(',');
         TwitchBot twitchBot = _twitchBot;
         return targets.Select(t => t.TrimAll()).Distinct().Select(t => twitchBot.SpotifyUsers[t]).Where(t => t is not null).Take(5).ToArray()!;

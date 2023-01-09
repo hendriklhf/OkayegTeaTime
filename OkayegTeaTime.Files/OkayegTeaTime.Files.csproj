@@ -16,11 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HLE" Version="2.0.7"/>
+    <PackageReference Include="HLE" Version="2.0.8"/>
   </ItemGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj"/>
+    <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj"/>
   </ItemGroup>
 
 </Project>

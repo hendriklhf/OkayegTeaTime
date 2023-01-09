@@ -34,7 +34,7 @@ public static class PredefinedMessages
     public const string YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings = "you have to be a mod or the broadcaster to set song request settings";
     public const string TheStateCanOnlyBeSetToEnabledOrDisabled = "the state can only be set to \"enabled\" or \"disabled\"";
     public const string ThereAreNoThirdPartyEmotesEnabledInThisChannel = "there are no third party emotes enabled in this channel";
-    public const string ThereIsNoEmoteMatchingYouProvidedPattern = "there is no emote matching your provided pattern";
+    public const string ThereIsNoEmoteMatchingYourProvidedPattern = "there is no emote matching your provided pattern";
     public const string YouArentListeningToATrack = "you aren't listening to a track";
     public const string NoneOfTheGivenUsersAreRegistered = "none of the given users are registered";
     public const string NoMatchingTrackCouldBeFound = "no matching track could be found";
@@ -47,4 +47,5 @@ public static class PredefinedMessages
     public const string TheEmoteHasBeenUnset = "the emote has been unset";
     public const string YouHaventSetYourLocationYet = "you haven't set your location yet";
     public const string YourLocationHasBeenUnset = "your location has been unset";
+    public const string AnErrorOccurredOrThereAreNoChattersInThisChannel = "an error occurred or there are no chatter in this channel";
 }

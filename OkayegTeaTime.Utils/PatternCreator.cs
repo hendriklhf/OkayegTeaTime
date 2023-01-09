@@ -1,23 +1,36 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using HLE;
 using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Utils;
 
 public static class PatternCreator
 {
-    public static int CacheSize => _cachedPatterns.Count;
-
     private static readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
 
-    public static Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
+    private const string _patternEnding = @"(\s|$)";
+
+    public static unsafe Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
     {
-        // TODO: kinda don't like how this is passed in
-        string patternPrefix = '^' + Regex.Escape(string.IsNullOrWhiteSpace(prefix) ? alias + AppSettings.Suffix : prefix + alias);
-        addition ??= string.Empty;
-        string patternKey = patternPrefix + addition + @"(\s|$)";
+        StringBuilder builder = stackalloc char[512];
+        builder.Append('^');
+
+        Span<string?> patternItems = new[]
+        {
+            prefix,
+            alias,
+            AppSettings.Suffix
+        };
+        bool isEmpty = string.IsNullOrEmpty(prefix);
+        byte isEmptyAsByte = Unsafe.As<bool, byte>(ref isEmpty);
+        builder.Append(patternItems[isEmptyAsByte], patternItems[++isEmptyAsByte]);
+        builder.Append(addition, _patternEnding);
+        string patternKey = builder.ToString();
 
         if (_cachedPatterns.TryGetValue(patternKey, out Regex? cachedPattern))
         {

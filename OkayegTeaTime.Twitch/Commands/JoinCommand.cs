@@ -1,7 +1,9 @@
 ﻿using System.Text.RegularExpressions;
+using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = OkayegTeaTime.Utils.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -10,13 +12,13 @@ public readonly unsafe ref struct JoinCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

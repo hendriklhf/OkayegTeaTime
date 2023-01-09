@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Twitch.Attributes;
-using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -40,23 +38,31 @@ public sealed class CommandHandler : Handler
     private bool HandleCommand(TwitchChatMessage chatMessage)
     {
         string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        foreach (CommandType type in _commandTypes)
+        Span<CommandType> commandTypes = _commandTypes;
+        int commandTypesLength = _commandTypes.Length;
+        for (int i = 0; i < commandTypesLength; i++)
         {
-            foreach (string alias in _twitchBot.CommandController[type].Aliases)
+            CommandType type = commandTypes[i];
+            Span<string> aliases = _twitchBot.CommandController[type].Aliases;
+            int aliasesLength = aliases.Length;
+            for (int j = 0; j < aliasesLength; j++)
             {
+                string alias = aliases[j];
                 Regex pattern = PatternCreator.Create(alias, prefix);
-                if (pattern.IsMatch(chatMessage.Message))
+                if (!pattern.IsMatch(chatMessage.Message))
                 {
-                    if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
-                    {
-                        return false;
-                    }
-
-                    _twitchBot.CommandCount++;
-                    _commandExecutor.Execute(type, _twitchBot, chatMessage, prefix, alias);
-                    _cooldownController.AddCooldown(chatMessage.UserId, type);
-                    return true;
+                    continue;
                 }
+
+                if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
+                {
+                    return false;
+                }
+
+                _commandExecutor.Execute(type, _twitchBot, chatMessage, prefix, alias);
+                _twitchBot.CommandCount++;
+                _cooldownController.AddCooldown(chatMessage.UserId, type);
+                return true;
             }
         }
 
@@ -66,34 +72,42 @@ public sealed class CommandHandler : Handler
     private void HandleAfkCommand(TwitchChatMessage chatMessage)
     {
         string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        foreach (AfkType type in _afkTypes)
+        Span<AfkType> afkTypes = _afkTypes;
+        int afkTypesLength = _afkTypes.Length;
+        for (int i = 0; i < afkTypesLength; i++)
         {
-            foreach (string alias in _twitchBot.CommandController[type].Aliases)
+            AfkType type = afkTypes[i];
+            Span<string> aliases = _twitchBot.CommandController[type].Aliases;
+            int aliasesLength = aliases.Length;
+            for (int j = 0; j < aliasesLength; j++)
             {
+                string alias = aliases[j];
                 Regex pattern = PatternCreator.Create(alias, prefix);
-                if (pattern.IsMatch(chatMessage.Message))
+                if (!pattern.IsMatch(chatMessage.Message))
                 {
-                    if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
-                    {
-                        return;
-                    }
+                    continue;
+                }
 
-                    _twitchBot.CommandCount++;
-                    _afkCommandHandler.Handle(chatMessage, type);
-                    _cooldownController.AddAfkCooldown(chatMessage.UserId);
+                if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
+                {
                     return;
                 }
+
+                _twitchBot.CommandCount++;
+                _afkCommandHandler.Handle(chatMessage, type);
+                _cooldownController.AddAfkCooldown(chatMessage.UserId);
+                return;
             }
         }
     }
 
     private static CommandType[] GetHandledCommandTypes()
     {
-        List<CommandType> commandTypes = new();
-        Type[] commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null).ToArray();
-        foreach (Type command in commands)
+        Span<Type> commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null).ToArray();
+        CommandType[] commandTypes = new CommandType[commands.Length];
+        for (int i = 0; i < commandTypes.Length; i++)
         {
-            commandTypes.Add(command.GetCustomAttribute<HandledCommand>()!.CommandType);
+            commandTypes[i] = commands[i].GetCustomAttribute<HandledCommandAttribute>()!.CommandType;
         }
 
         return commandTypes.ToArray();

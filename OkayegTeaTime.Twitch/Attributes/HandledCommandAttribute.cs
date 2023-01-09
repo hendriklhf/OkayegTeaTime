@@ -1,14 +1,16 @@
 using System;
+using JetBrains.Annotations;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Attributes;
 
 [AttributeUsage(AttributeTargets.Struct)]
-public sealed class HandledCommand : Attribute
+[MeansImplicitUse]
+public sealed class HandledCommandAttribute : Attribute
 {
     public CommandType CommandType { get; }
 
-    public HandledCommand(CommandType commandType)
+    public HandledCommandAttribute(CommandType commandType)
     {
         CommandType = commandType;
     }

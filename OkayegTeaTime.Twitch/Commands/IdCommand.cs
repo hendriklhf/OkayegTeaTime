@@ -12,13 +12,13 @@ public readonly unsafe ref struct IdCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public IdCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public IdCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -47,8 +47,9 @@ public readonly unsafe ref struct IdCommand
             userId = ChatMessage.UserId;
         }
 
-        Span<char> userIdChars = stackalloc char[NumberHelper.GetNumberLength(userId)];
-        NumberHelper.NumberToChars(userId, userIdChars);
+        Span<char> userIdChars = stackalloc char[30];
+        userId.TryFormat(userIdChars, out int userIdLength);
+        userIdChars = userIdChars[..userIdLength];
         Response->Append(userIdChars);
     }
 }

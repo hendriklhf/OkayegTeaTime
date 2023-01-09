@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 #if RELEASE
 using System.Linq;
 using OkayegTeaTime.Database;
@@ -23,7 +22,7 @@ public sealed class MessageHandler : Handler
     private readonly CommandHandler _commandHandler;
     private readonly PajaAlertHandler _pajaAlertHandler;
 
-    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     public MessageHandler(TwitchBot twitchBot) : base(twitchBot)
     {
@@ -65,7 +64,7 @@ public sealed class MessageHandler : Handler
             return;
         }
 
-        _twitchBot.SendComingBack(chatMessage.UserId, chatMessage.Channel);
+        _twitchBot.SendComingBack(user, chatMessage.Channel);
         if (!_twitchBot.CommandController.IsAfkCommand(_twitchBot.Channels[chatMessage.ChannelId]?.Prefix, chatMessage.Message))
         {
             user.IsAfk = false;
@@ -74,7 +73,7 @@ public sealed class MessageHandler : Handler
 
     private void CheckForReminder(string username, string channel)
     {
-        IEnumerable<Reminder> reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
+        Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
         _twitchBot.SendReminder(channel, reminders);
     }
 

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HLE;
-using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -20,7 +19,7 @@ public readonly unsafe ref struct RemindCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -32,32 +31,32 @@ public readonly unsafe ref struct RemindCommand
     private const string _yourself = "me";
 
     [TimePattern(nameof(TimeSpan.FromDays), 365)]
-    private static readonly Regex _yearPattern = new(@"\b\d+([,\.]\d+)?\s?y(ear)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _yearPattern = new(@"\b\d+([,\.]\d+)?\s?y(ear)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromDays), 7)]
-    private static readonly Regex _weekPattern = new(@"\b\d+([,\.]\d+)?\s?w(eek)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _weekPattern = new(@"\b\d+([,\.]\d+)?\s?w(eek)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromDays))]
-    private static readonly Regex _dayPattern = new(@"\b\d+([,\.]\d+)?\s?d(ay)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _dayPattern = new(@"\b\d+([,\.]\d+)?\s?d(ay)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromHours))]
-    private static readonly Regex _hourPattern = new(@"\b\d+([,\.]\d+)?\s?h(our)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _hourPattern = new(@"\b\d+([,\.]\d+)?\s?h(our)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromMinutes))]
-    private static readonly Regex _minutePattern = new(@"\b\d+([,\.]\d+)?\s?m(in(ute)?)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _minutePattern = new(@"\b\d+([,\.]\d+)?\s?m(in(ute)?)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromSeconds))]
-    private static readonly Regex _secondPattern = new(@"\b\d+([,\.]\d+)?\s?s(ec(ond)?)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _secondPattern = new(@"\b\d+([,\.]\d+)?\s?s(ec(ond)?)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    private static readonly Regex _beginningNumberPattern = new(@"^\d+([,\.]\d+)?", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _beginningNumberPattern = new(@"^\d+([,\.]\d+)?", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     private static readonly string _timePattern = GetTimePattern();
     private static readonly TimeConversionMethod[] _timeConversions = GetTimeConversionMethods();
-    private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     private static readonly short _minimumTimedReminderTime = (short)TimeSpan.FromSeconds(30).TotalMilliseconds;
 
-    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
+    private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -115,7 +114,10 @@ public readonly unsafe ref struct RemindCommand
             }
 
             Response->Append("set a ", toTime == 0 ? string.Empty : "timed ", "reminder for ", targets[0] == ChatMessage.Username ? "yourself" : targets[0]);
-            Response->Append(" (ID: ", id.ToString(), ")");
+            Span<char> idChars = stackalloc char[30];
+            id.TryFormat(idChars, out int idLength);
+            idChars = idChars[..idLength];
+            Response->Append(" (ID: ", idChars, ")");
         }
         else
         {
@@ -157,8 +159,9 @@ public readonly unsafe ref struct RemindCommand
     private long GetToTime()
     {
         long result = 0;
-        string times = ChatMessage.Split[GetTimeStartIdx()..].JoinToString(' ');
-        string[] matches = _timeConversions.Select(t => t.Regex).Select(r => r.Matches(times).Select(m => m.Value)).SelectMany().ToArray();
+        int timeStartIndex = GetTimeStartIdx();
+        string times = string.Join(' ', ChatMessage.Split, timeStartIndex, ChatMessage.Split.Length - timeStartIndex);
+        string[] matches = _timeConversions.Select(t => t.Regex).Select(r => r.Matches(times).Select(m => m.Value)).SelectMany(m => m).ToArray();
         foreach (string match in matches)
         {
             foreach (TimeConversionMethod timeConversion in _timeConversions)
@@ -169,11 +172,9 @@ public readonly unsafe ref struct RemindCommand
                 }
 
                 string number = _beginningNumberPattern.Match(match).Value;
-                double d = double.Parse(number.Replace(',', '.')) * timeConversion.Factor;
-                TimeSpan span = (TimeSpan)timeConversion.Method.Invoke(null, new object?[]
-                {
-                    d
-                })!;
+                StringHelper.Replace(number, ',', '.');
+                double d = double.Parse(number) * timeConversion.Factor;
+                TimeSpan span = timeConversion.Method(d);
                 result += (long)Math.Round(span.TotalMilliseconds);
             }
         }
@@ -201,21 +202,21 @@ public readonly unsafe ref struct RemindCommand
 
     private static string GetTimePattern()
     {
-        IEnumerable<string> pattern = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePattern>() is not null).Select(f => f.GetValue(null)!.ToString()![2..^2]);
+        IEnumerable<string> pattern = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePatternAttribute>() is not null).Select(f => f.GetValue(null)!.ToString()![2..^2]);
         return '(' + string.Join(")|(", pattern) + ')';
     }
 
     private static TimeConversionMethod[] GetTimeConversionMethods()
     {
-        FieldInfo[] fields = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePattern>() is not null).ToArray();
-        string[] methodNames = fields.Select(f => f.GetCustomAttribute<TimePattern>()!.ConversionMethod).ToArray();
+        FieldInfo[] fields = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePatternAttribute>() is not null).ToArray();
+        string[] methodNames = fields.Select(f => f.GetCustomAttribute<TimePatternAttribute>()!.ConversionMethod).ToArray();
         MethodInfo[] methods = typeof(TimeSpan).GetMethods(BindingFlags.Static | BindingFlags.Public).Where(f => methodNames.Contains(f.Name)).ToArray();
         return fields.Select(f =>
         {
-            TimePattern attr = f.GetCustomAttribute<TimePattern>()!;
+            TimePatternAttribute attr = f.GetCustomAttribute<TimePatternAttribute>()!;
             Regex regex = (Regex)f.GetValue(null)!;
             MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod);
-            return new TimeConversionMethod(regex, method, attr.Factor);
+            return new TimeConversionMethod(regex, (delegate*<double, TimeSpan>)method.MethodHandle.GetFunctionPointer(), attr.Factor);
         }).ToArray();
     }
 

@@ -40,6 +40,6 @@ public static class Program
 
     public static Regex NewRegex([StringSyntax(StringSyntaxAttribute.Regex)] string pattern)
     {
-        return new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+        return new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     }
 }

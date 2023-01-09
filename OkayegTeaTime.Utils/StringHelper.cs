@@ -6,7 +6,7 @@ namespace OkayegTeaTime.Utils;
 
 public static class StringHelper
 {
-    private static readonly Regex _channelPattern = new(@"^#?\w{3,25}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _channelPattern = new(@"^#?\w{3,25}$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     private const string _commaSpace = ", ";
     private const string _spanFormatDefault = "<1s";
@@ -28,78 +28,84 @@ public static class StringHelper
             return false;
         }
 
-        HLE.StringHelper.ToLower(channel);
-        channel = withHashTag switch
+        channel = (withHashTag switch
         {
             true => channel[0] == '#' ? channel : '#' + channel,
             _ => channel[0] == '#' ? channel[1..] : channel
-        };
+        }).ToLower();
 
         return true;
     }
 
-    public static string Format(this TimeSpan span)
+    public static int Format(this TimeSpan span, Span<char> buffer)
     {
-        Span<char> resultBuffer = stackalloc char[100];
         int resultLength = 0;
         if (span.Days > 0)
         {
             string days = span.Days.ToString(CultureInfo.InvariantCulture);
-            days.CopyTo(resultBuffer[resultLength..]);
+            days.CopyTo(buffer[resultLength..]);
             resultLength += days.Length;
-            resultBuffer[resultLength++] = 'd';
+            buffer[resultLength++] = 'd';
         }
 
         if (span.Hours > 0)
         {
             if (resultLength > 0)
             {
-                _commaSpace.CopyTo(resultBuffer[resultLength..]);
+                _commaSpace.CopyTo(buffer[resultLength..]);
                 resultLength += _commaSpace.Length;
             }
 
             string hours = span.Hours.ToString(CultureInfo.InvariantCulture);
-            hours.CopyTo(resultBuffer[resultLength..]);
+            hours.CopyTo(buffer[resultLength..]);
             resultLength += hours.Length;
-            resultBuffer[resultLength++] = 'h';
+            buffer[resultLength++] = 'h';
         }
 
         if (span.Minutes > 0)
         {
             if (resultLength > 0)
             {
-                _commaSpace.CopyTo(resultBuffer[resultLength..]);
+                _commaSpace.CopyTo(buffer[resultLength..]);
                 resultLength += _commaSpace.Length;
             }
 
             string minutes = span.Minutes.ToString(CultureInfo.InvariantCulture);
-            minutes.CopyTo(resultBuffer[resultLength..]);
+            minutes.CopyTo(buffer[resultLength..]);
             resultLength += minutes.Length;
-            resultBuffer[resultLength++] = 'm';
-            resultBuffer[resultLength++] = 'i';
-            resultBuffer[resultLength++] = 'n';
+            buffer[resultLength++] = 'm';
+            buffer[resultLength++] = 'i';
+            buffer[resultLength++] = 'n';
         }
 
         if (span.Seconds > 0)
         {
             if (resultLength > 0)
             {
-                _commaSpace.CopyTo(resultBuffer[resultLength..]);
+                _commaSpace.CopyTo(buffer[resultLength..]);
                 resultLength += _commaSpace.Length;
             }
 
             string seconds = span.Seconds.ToString(CultureInfo.InvariantCulture);
-            seconds.CopyTo(resultBuffer[resultLength..]);
+            seconds.CopyTo(buffer[resultLength..]);
             resultLength += seconds.Length;
-            resultBuffer[resultLength++] = 's';
+            buffer[resultLength++] = 's';
         }
 
-        if (resultLength == 0)
+        if (resultLength != 0)
         {
-            _spanFormatDefault.CopyTo(resultBuffer);
-            resultLength += _spanFormatDefault.Length;
+            return resultLength;
         }
 
-        return new(resultBuffer[..resultLength]);
+        _spanFormatDefault.CopyTo(buffer);
+        resultLength += _spanFormatDefault.Length;
+        return resultLength;
+    }
+
+    public static string Format(this TimeSpan span)
+    {
+        Span<char> buffer = stackalloc char[100];
+        int length = span.Format(buffer);
+        return new(buffer[..length]);
     }
 }

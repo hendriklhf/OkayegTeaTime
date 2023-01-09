@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using HLE.Collections;
-using HLE.Http;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Files;
+using OkayegTeaTime.Utils;
 using TwitchLib.Api;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Helix.Models.Chat.Emotes;
@@ -54,15 +54,19 @@ public sealed class TwitchApi
             ("grant_type", "client_credentials")
         });
 
-        string? accessToken = request.IsValidJsonData ? request.Data.GetProperty("access_token").GetString() : null;
+        if (request.Result is null)
+        {
+            throw new ArgumentNullException($"{nameof(request)}.{nameof(request.Result)}");
+        }
+
+        JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+        string? accessToken = json.GetProperty("access_token").GetString();
         if (accessToken is not null)
         {
             return accessToken;
         }
 
-        ArgumentNullException ex = new(nameof(accessToken));
-        DbController.LogException(ex);
-        throw ex;
+        throw new ArgumentNullException(nameof(accessToken));
     }
 
     public User? GetUser(string username)
@@ -91,10 +95,10 @@ public sealed class TwitchApi
 
     public Dictionary<string, User?> GetUsers(IEnumerable<string> usernames)
     {
-        string[] arr = usernames.Select(u => u.ToLower()).ToArray();
-        string[] cachedUsernames = arr.Where(u => GetUserFromCache(new(u)) is not null).ToArray();
+        string[] usernameArray = usernames.Select(u => u.ToLower()).ToArray();
+        string[] cachedUsernames = usernameArray.Where(u => GetUserFromCache(new(u)) is not null).ToArray();
         Dictionary<string, User?> result = cachedUsernames.Select(u => GetUserFromCache(new(u))!).ToDictionary<User, string, User?>(u => u.Login, u => u);
-        List<string> notCachedUsernames = arr.Where(u => GetUserFromCache(new(u)) is null).ToList();
+        List<string> notCachedUsernames = usernameArray.Where(u => GetUserFromCache(new(u)) is null).ToList();
         if (notCachedUsernames.Count == 0)
         {
             return result;

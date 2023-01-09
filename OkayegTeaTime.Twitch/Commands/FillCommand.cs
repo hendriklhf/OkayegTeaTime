@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
+using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
@@ -13,13 +15,13 @@ public readonly unsafe ref struct FillCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public FillCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public FillCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -33,14 +35,15 @@ public readonly unsafe ref struct FillCommand
         Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string[] split = ChatMessage.Split[1..];
+            Span<string> split = ChatMessage.Split;
+            Span<string> fillParts = split[1..];
             string emote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
-            string nextMessagePart = split.Random()!;
+            string nextMessagePart = fillParts.Random()!;
             for (int currentMessageLength = 0; currentMessageLength + nextMessagePart.Length + 1 < maxLength; currentMessageLength += nextMessagePart.Length + 1)
             {
                 Response->Append(nextMessagePart, StringHelper.Whitespace);
-                nextMessagePart = split.Random()!;
+                nextMessagePart = fillParts.Random()!;
             }
         }
     }

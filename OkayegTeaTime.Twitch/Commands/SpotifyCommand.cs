@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
@@ -17,7 +18,7 @@ public readonly unsafe ref struct SpotifyCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
@@ -27,9 +28,9 @@ public readonly unsafe ref struct SpotifyCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    public SpotifyCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public SpotifyCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

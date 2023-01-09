@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE;
-using HLE.Http;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -13,7 +13,7 @@ public readonly unsafe ref struct ChattersCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -21,7 +21,7 @@ public readonly unsafe ref struct ChattersCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public ChattersCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public ChattersCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -46,8 +46,11 @@ public readonly unsafe ref struct ChattersCommand
                 case > 0:
                     Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there is ", NumberHelper.InsertKDots(chatterCount), " chatter in the channel of ", channel.Antiping());
                     break;
-                default:
+                case 0:
                     Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there are no chatters in the channel of ", channel.Antiping());
+                    break;
+                default:
+                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
                     break;
             }
         }
@@ -56,6 +59,12 @@ public readonly unsafe ref struct ChattersCommand
     private static int GetChatterCount(string channel)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
-        return !request.IsValidJsonData ? 0 : request.Data.GetProperty("chatter_count").GetInt32();
+        if (request.Result is null)
+        {
+            return -1;
+        }
+
+        JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
+        return json.GetProperty("chatter_count").GetInt32();
     }
 }

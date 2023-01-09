@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using HLE;
-using HLE.Collections;
 using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Twitch.Messages;
 
-public sealed class DividedMessage
+public readonly struct DividedMessage
 {
     private readonly string _channel;
     private readonly string[] _messages;
@@ -19,18 +19,20 @@ public sealed class DividedMessage
         _messages = message.Part(AppSettings.MaxMessageLength, ' ').ToArray();
     }
 
-    public void StartSending()
+    public void Send()
     {
-        _twitchBot.SendText(_channel, _messages[0]);
-        if (_messages.Length < 2)
+        Span<string> messages = _messages;
+        int messageCount = messages.Length;
+        if (messageCount < 2)
         {
+            _twitchBot.Send(_channel, messages[0]);
             return;
         }
 
-        _messages[1..].ForEach(str =>
+        for (int i = 0; i < messageCount; i++)
         {
-            Thread.Sleep(AppSettings.DelayBetweenSentMessages);
-            _twitchBot.SendText(_channel, str);
-        });
+            _twitchBot.Send(_channel, messages[i]);
+            Task.Delay(AppSettings.DelayBetweenSentMessages).Wait();
+        }
     }
 }

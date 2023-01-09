@@ -9,7 +9,7 @@ public abstract class DbCache<T> : IEnumerable<T> where T : CacheModel
     private protected readonly List<T> _items = new();
     private protected bool _containsAll;
 
-    private protected abstract void GetAllFromDb();
+    private protected abstract void GetAllItemsFromDatabase();
 
     public void Invalidate()
     {
@@ -19,7 +19,7 @@ public abstract class DbCache<T> : IEnumerable<T> where T : CacheModel
 
     public IEnumerator<T> GetEnumerator()
     {
-        GetAllFromDb();
+        GetAllItemsFromDatabase();
         return _items.GetEnumerator();
     }
 

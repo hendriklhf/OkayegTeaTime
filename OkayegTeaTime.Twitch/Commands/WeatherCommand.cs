@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using HLE;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
@@ -13,13 +14,13 @@ public readonly unsafe ref struct WeatherCommand
 {
     public TwitchChatMessage ChatMessage { get; }
 
-    public Response* Response { get; }
+    public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, Response* response, string? prefix, string alias)
+    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

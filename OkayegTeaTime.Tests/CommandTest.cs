@@ -42,11 +42,12 @@ public sealed class CommandTest
     [TestMethod]
     public void CommandCompletenessFromHandledCommands()
     {
-        HandledCommand[]? handles = Assembly.GetAssembly(typeof(HandledCommand))?.GetTypes().Where(t => t.GetCustomAttribute<HandledCommand>() is not null).Select(t => t.GetCustomAttribute<HandledCommand>()!).ToArray();
+        HandledCommandAttribute[]? handles = Assembly.GetAssembly(typeof(HandledCommandAttribute))?.GetTypes().Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null).Select(t => t.GetCustomAttribute<HandledCommandAttribute>()!)
+            .ToArray();
         Assert.IsNotNull(handles);
-        Assert.IsTrue(handles?.Length == _commandTypes.Length);
+        Assert.IsTrue(handles.Length == _commandTypes.Length);
 
-        foreach (HandledCommand handle in handles)
+        foreach (HandledCommandAttribute handle in handles)
         {
             Assert.IsNotNull(_commandController[handle.CommandType]);
             Assert.IsTrue(_commandTypes.Contains(handle.CommandType));
