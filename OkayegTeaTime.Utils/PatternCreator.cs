@@ -17,18 +17,24 @@ public static class PatternCreator
 
     public static unsafe Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
     {
-        StringBuilder builder = stackalloc char[512];
-        builder.Append('^');
-
         Span<string?> patternItems = new[]
         {
             prefix,
             alias,
             AppSettings.Suffix
         };
+
         bool isEmpty = string.IsNullOrEmpty(prefix);
         byte isEmptyAsByte = Unsafe.As<bool, byte>(ref isEmpty);
-        builder.Append(patternItems[isEmptyAsByte], patternItems[++isEmptyAsByte]);
+        StringBuilder builder = stackalloc char[512];
+        builder.Append('^');
+
+        Span<char> escapedItem = stackalloc char[100];
+        int length = StringHelper.RegexEscape(patternItems[isEmptyAsByte], escapedItem);
+        builder.Append(escapedItem[..length]);
+        length = StringHelper.RegexEscape(patternItems[++isEmptyAsByte], escapedItem);
+        builder.Append(escapedItem[..length]);
+
         builder.Append(addition, _patternEnding);
         string patternKey = builder.ToString();
 

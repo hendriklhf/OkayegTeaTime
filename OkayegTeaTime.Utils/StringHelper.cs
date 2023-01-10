@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using HLE;
 
 namespace OkayegTeaTime.Utils;
 
@@ -107,5 +110,41 @@ public static class StringHelper
         Span<char> buffer = stackalloc char[100];
         int length = span.Format(buffer);
         return new(buffer[..length]);
+    }
+
+    public static int RegexEscape(ReadOnlySpan<char> input, Span<char> escapedInput)
+    {
+        StringBuilder builder = escapedInput;
+        int inputLength = input.Length;
+        ref char firstChar = ref MemoryMarshal.GetReference(input);
+        for (int i = 0; i < inputLength; i++)
+        {
+            char c = Unsafe.Add(ref firstChar, i);
+            switch (c)
+            {
+                case '\\':
+                case '*':
+                case '+':
+                case '?':
+                case '|':
+                case '{':
+                case '[':
+                case '(':
+                case ')':
+                case '^':
+                case '$':
+                case '.':
+                    builder.Append('\\', c);
+                    continue;
+                case ' ':
+                    builder.Append('\\', 's');
+                    continue;
+                default:
+                    builder.Append(c);
+                    break;
+            }
+        }
+
+        return builder.Length;
     }
 }
