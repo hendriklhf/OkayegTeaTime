@@ -41,7 +41,7 @@ public readonly unsafe ref struct SongRequestCommand
     {
         #region sr {users...} me
 
-        Regex pattern = PatternCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\sme");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
@@ -117,7 +117,7 @@ public readonly unsafe ref struct SongRequestCommand
 
         #region sr me {user}
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\sme\s\w+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sme\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
@@ -199,7 +199,7 @@ public readonly unsafe ref struct SongRequestCommand
 
         #region sr {users...} {song}
 
-        pattern = PatternCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\s\S+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, $@"\s{Pattern.MultipleTargets}\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser[] targets = GetTargets();
@@ -267,7 +267,7 @@ public readonly unsafe ref struct SongRequestCommand
 
         #region sr me
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\sme$");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
@@ -349,7 +349,7 @@ public readonly unsafe ref struct SongRequestCommand
 
         #region sr {song}
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
@@ -390,7 +390,6 @@ public readonly unsafe ref struct SongRequestCommand
 
     private SpotifyUser[] GetTargets()
     {
-        //Match match = Pattern.MultipleTargets.Match(ChatMessage.LowerSplit[1..^1].JoinToString(' '));
         Match match = Pattern.MultipleTargets.Match(string.Join(' ', ChatMessage.LowerSplit, 1, ChatMessage.LowerSplit.Length - 2));
         string[] targets = match.Value.Split(',');
         TwitchBot twitchBot = _twitchBot;

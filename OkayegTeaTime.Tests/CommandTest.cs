@@ -17,7 +17,7 @@ public sealed class CommandTest
 {
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
-    private readonly CommandController _commandController = new();
+    private readonly CommandController _commandController = new(null);
 
     [TestMethod]
     public void CommandCompletenessTestFromEnum()

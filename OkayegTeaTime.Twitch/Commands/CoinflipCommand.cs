@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using HLE;
 using HLE.Emojis;
 using OkayegTeaTime.Twitch.Attributes;
@@ -20,8 +21,11 @@ public readonly unsafe ref struct CoinflipCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    private const string _yes = "yes/heads";
-    private const string _no = "no/tails";
+    private static readonly string[] _answers =
+    {
+        "no/tails",
+        "yes/heads"
+    };
 
     public CoinflipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
@@ -34,7 +38,8 @@ public readonly unsafe ref struct CoinflipCommand
 
     public void Handle()
     {
-        string result = Random.StrongBool() ? _yes : _no;
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, result, StringHelper.Whitespace, Emoji.Coin);
+        bool result = Random.StrongBool();
+        string answer = _answers[Unsafe.As<bool, byte>(ref result)];
+        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, answer, StringHelper.Whitespace, Emoji.Coin);
     }
 }

@@ -5,7 +5,6 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -34,7 +33,7 @@ public readonly unsafe ref struct SetCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
@@ -56,7 +55,7 @@ public readonly unsafe ref struct SetCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\semote\s\S+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
@@ -78,7 +77,7 @@ public readonly unsafe ref struct SetCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
@@ -116,7 +115,7 @@ public readonly unsafe ref struct SetCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\slocation\s((private)|(public))\s\S+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\slocation\s((private)|(public))\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string city = string.Join(' ', ChatMessage.Split, 3, ChatMessage.Split.Length - 3);

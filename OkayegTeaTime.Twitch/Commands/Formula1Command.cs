@@ -55,7 +55,7 @@ public readonly unsafe ref struct Formula1Command
             return;
         }
 
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sweather");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sweather");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             int latitude = (int)Math.Round(double.Parse(race.Circuit.Location.Latitude));

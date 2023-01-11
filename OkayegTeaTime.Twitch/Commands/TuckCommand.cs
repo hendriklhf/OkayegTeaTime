@@ -4,7 +4,6 @@ using HLE;
 using HLE.Emojis;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -33,7 +32,7 @@ public readonly unsafe ref struct TuckCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+(\s\S+)?");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+(\s\S+)?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string target = ChatMessage.LowerSplit[1];

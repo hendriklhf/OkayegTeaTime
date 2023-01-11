@@ -32,7 +32,7 @@ public readonly unsafe ref struct MathCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s.+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]));

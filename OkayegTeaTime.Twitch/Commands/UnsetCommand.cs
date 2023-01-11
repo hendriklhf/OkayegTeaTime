@@ -3,7 +3,6 @@ using HLE;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -29,7 +28,7 @@ public readonly unsafe ref struct UnsetCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\sprefix");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sprefix");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
@@ -52,7 +51,7 @@ public readonly unsafe ref struct UnsetCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
@@ -62,7 +61,7 @@ public readonly unsafe ref struct UnsetCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\semote");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\semote");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
@@ -86,7 +85,7 @@ public readonly unsafe ref struct UnsetCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\slocation");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\slocation");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             User? user = _twitchBot.Users[ChatMessage.UserId];

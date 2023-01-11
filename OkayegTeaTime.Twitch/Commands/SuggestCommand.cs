@@ -4,7 +4,6 @@ using HLE;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -32,7 +31,7 @@ public readonly unsafe ref struct SuggestCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S{3,}");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S{3,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string suggestion = ChatMessage.Message[(ChatMessage.LowerSplit[0].Length + 1)..];

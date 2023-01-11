@@ -41,7 +41,7 @@ public readonly unsafe ref struct ListenCommand
             return;
         }
 
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s((leave)|(stop))");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s((leave)|(stop))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
@@ -64,7 +64,7 @@ public readonly unsafe ref struct ListenCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\ssync");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\ssync");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
@@ -125,7 +125,7 @@ public readonly unsafe ref struct ListenCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];

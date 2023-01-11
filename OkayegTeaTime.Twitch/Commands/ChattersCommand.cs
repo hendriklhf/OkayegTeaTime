@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE;
 using OkayegTeaTime.Twitch.Attributes;
@@ -15,8 +14,6 @@ public readonly unsafe ref struct ChattersCommand
 
     public StringBuilder* Response { get; }
 
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
@@ -32,7 +29,7 @@ public readonly unsafe ref struct ChattersCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix);
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;

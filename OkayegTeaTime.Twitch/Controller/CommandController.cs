@@ -22,10 +22,12 @@ public sealed class CommandController
 
     public AfkCommand[] AfkCommands { get; }
 
+    private readonly TwitchBot? _twitchBot;
     private readonly string[] _afkCommandAliases;
 
-    public CommandController()
+    public CommandController(TwitchBot? twitchBot)
     {
+        _twitchBot = twitchBot;
         Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
         AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
         _afkCommandAliases = AfkCommands.SelectMany(c => c.Aliases).ToArray();
@@ -33,11 +35,12 @@ public sealed class CommandController
 
     public bool IsAfkCommand(string? prefix, string message)
     {
+        RegexCreator regexCreator = _twitchBot?.RegexCreator ?? new();
         ref string firstAlias = ref MemoryMarshal.GetArrayDataReference(_afkCommandAliases);
         for (int i = 0; i < firstAlias.Length; i++)
         {
             string alias = Unsafe.Add(ref firstAlias, i);
-            Regex pattern = PatternCreator.Create(alias, prefix);
+            Regex pattern = regexCreator.Create(alias, prefix);
             if (pattern.IsMatch(message))
             {
                 return true;

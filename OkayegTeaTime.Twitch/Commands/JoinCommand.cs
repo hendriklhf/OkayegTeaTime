@@ -2,7 +2,6 @@
 using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 using StringHelper = OkayegTeaTime.Utils.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -29,7 +28,7 @@ public readonly unsafe ref struct JoinCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s#?\w{3,25}");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s#?\w{3,25}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             if (!ChatMessage.IsBotModerator)

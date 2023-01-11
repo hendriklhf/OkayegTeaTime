@@ -5,7 +5,6 @@ using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -34,7 +33,7 @@ public readonly unsafe ref struct WeatherCommand
         string? city;
         bool isPrivateLocation;
 
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             city = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];

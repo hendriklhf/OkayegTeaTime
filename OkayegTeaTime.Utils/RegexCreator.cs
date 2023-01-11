@@ -9,13 +9,13 @@ using OkayegTeaTime.Files;
 
 namespace OkayegTeaTime.Utils;
 
-public static class PatternCreator
+public sealed class RegexCreator
 {
-    private static readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
+    private readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
 
     private const string _patternEnding = @"(\s|$)";
 
-    public static unsafe Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
+    public Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
     {
         Span<string?> patternItems = new[]
         {

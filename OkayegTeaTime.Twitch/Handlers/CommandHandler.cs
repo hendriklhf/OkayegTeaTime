@@ -6,7 +6,6 @@ using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
@@ -48,7 +47,7 @@ public sealed class CommandHandler : Handler
             for (int j = 0; j < aliasesLength; j++)
             {
                 string alias = aliases[j];
-                Regex pattern = PatternCreator.Create(alias, prefix);
+                Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix);
                 if (!pattern.IsMatch(chatMessage.Message))
                 {
                     continue;
@@ -82,7 +81,7 @@ public sealed class CommandHandler : Handler
             for (int j = 0; j < aliasesLength; j++)
             {
                 string alias = aliases[j];
-                Regex pattern = PatternCreator.Create(alias, prefix);
+                Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix);
                 if (!pattern.IsMatch(chatMessage.Message))
                 {
                     continue;

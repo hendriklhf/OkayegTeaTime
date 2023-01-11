@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -30,7 +29,7 @@ public readonly unsafe ref struct IdCommand
     public void Handle()
     {
         Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
         long userId;
         if (pattern.IsMatch(ChatMessage.Message))
         {

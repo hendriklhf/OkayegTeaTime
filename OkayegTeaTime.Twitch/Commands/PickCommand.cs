@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -16,8 +14,6 @@ public readonly unsafe ref struct PickCommand
 
     public StringBuilder* Response { get; }
 
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
@@ -33,7 +29,7 @@ public readonly unsafe ref struct PickCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (!pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.NoItemsProvided);

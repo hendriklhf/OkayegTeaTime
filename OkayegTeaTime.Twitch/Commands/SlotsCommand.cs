@@ -6,7 +6,6 @@ using HLE;
 using HLE.Collections;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -35,7 +34,7 @@ public readonly unsafe ref struct SlotsCommand
     public void Handle()
     {
         Regex? emotePattern = null;
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             try

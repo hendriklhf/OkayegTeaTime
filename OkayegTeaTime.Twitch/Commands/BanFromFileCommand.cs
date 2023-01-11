@@ -34,7 +34,7 @@ public readonly unsafe ref struct BanFromFileCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);

@@ -44,6 +44,8 @@ public sealed class TwitchBot
 
     public TwitchApi TwitchApi { get; } = new();
 
+    public RegexCreator RegexCreator { get; set; } = new();
+
     public uint CommandCount { get; set; }
 
     public DateTime StartTime { get; } = DateTime.UtcNow;
@@ -101,7 +103,7 @@ public sealed class TwitchBot
         _twitchClient.OnReconnected += Client_OnReconnected!;
         _twitchClient.OnUserJoined += Client_OnUserJoinedChannel!;
 
-        CommandController = new();
+        CommandController = new(this);
         EmoteController = new(Channels);
         _messageHandler = new(this);
         _lastMessageController = new(Channels);

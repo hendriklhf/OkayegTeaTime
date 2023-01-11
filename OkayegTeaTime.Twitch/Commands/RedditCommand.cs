@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -23,8 +22,6 @@ public readonly unsafe ref struct RedditCommand
 
     public StringBuilder* Response { get; }
 
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
@@ -44,7 +41,7 @@ public readonly unsafe ref struct RedditCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             RedditPost[]? posts = GetRedditPosts(ChatMessage.LowerSplit[1]);

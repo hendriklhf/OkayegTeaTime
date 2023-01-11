@@ -7,7 +7,7 @@ namespace OkayegTeaTime.Api.Controllers;
 [Route("api/cmds")]
 public sealed class CommandController : ControllerBase
 {
-    private readonly Twitch.Controller.CommandController _commandController = new();
+    private readonly Twitch.Controller.CommandController _commandController = new(null);
 
     private readonly JsonSerializerOptions _options = new()
     {

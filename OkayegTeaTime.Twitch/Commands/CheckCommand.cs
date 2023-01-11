@@ -33,7 +33,7 @@ public readonly unsafe ref struct CheckCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\safk\s\w+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\safk\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
@@ -75,7 +75,7 @@ public readonly unsafe ref struct CheckCommand
             return;
         }
 
-        pattern = PatternCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
+        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);

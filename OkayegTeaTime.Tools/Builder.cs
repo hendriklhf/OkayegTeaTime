@@ -94,15 +94,15 @@ public sealed class Builder
         }
     }
 
-    private static void DeleteDirectory(string dir)
+    private static void DeleteDirectory(string directory)
     {
-        Console.WriteLine($"Deleting directory: \"{dir}\"{Environment.NewLine}");
-        if (!Directory.Exists(dir))
+        Console.WriteLine($"Deleting directory: \"{directory}\"{Environment.NewLine}");
+        if (!Directory.Exists(directory))
         {
             return;
         }
 
-        Directory.Delete(dir, true);
+        Directory.Delete(directory, true);
     }
 
     private static void CreateLastCommitFile()

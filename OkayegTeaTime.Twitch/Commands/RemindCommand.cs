@@ -71,8 +71,8 @@ public readonly unsafe ref struct RemindCommand
         string message;
         long toTime = 0;
 
-        Regex timedReminderPattern = PatternCreator.Create(_alias, _prefix, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
-        Regex normalReminderPattern = PatternCreator.Create(_alias, _prefix, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
+        Regex timedReminderPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
+        Regex normalReminderPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
         if (timedReminderPattern.IsMatch(ChatMessage.Message))
         {
             toTime = GetToTime();

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -21,8 +20,6 @@ public readonly unsafe ref struct CSharpCommand
 
     public StringBuilder* Response { get; }
 
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
@@ -38,7 +35,7 @@ public readonly unsafe ref struct CSharpCommand
 
     public void Handle()
     {
-        Regex pattern = PatternCreator.Create(_alias, _prefix, @"\s.+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];

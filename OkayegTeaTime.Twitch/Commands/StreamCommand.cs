@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -36,7 +35,7 @@ public readonly unsafe ref struct StreamCommand
 
     public void Handle()
     {
-        Regex channelPattern = PatternCreator.Create(_alias, _prefix, @"\s\w+");
+        Regex channelPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
         Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
 
         Stream? stream = channelPattern.IsMatch(ChatMessage.Message) ? _twitchBot.TwitchApi.GetStream(ChatMessage.Split[1]) : _twitchBot.TwitchApi.GetStream(ChatMessage.ChannelId);
