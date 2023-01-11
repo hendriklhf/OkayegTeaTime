@@ -46,6 +46,8 @@ public sealed class TwitchBot
 
     public RegexCreator RegexCreator { get; set; } = new();
 
+    public LastMessageController LastMessages { get; }
+
     public uint CommandCount { get; set; }
 
     public DateTime StartTime { get; } = DateTime.UtcNow;
@@ -55,7 +57,6 @@ public sealed class TwitchBot
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
     private readonly TimerCollection _timerCollection = new();
-    private readonly LastMessageController _lastMessageController;
 
     private readonly Restarter _restarter = new(new TimeOnly[]
     {
@@ -105,8 +106,8 @@ public sealed class TwitchBot
 
         CommandController = new(this);
         EmoteController = new(Channels);
+        LastMessages = new(Channels);
         _messageHandler = new(this);
-        _lastMessageController = new(Channels);
         _restarter.Start();
         InitializeTimers();
     }
@@ -123,32 +124,40 @@ public sealed class TwitchBot
         _twitchClient.Disconnect();
     }
 
-    public void Send(string channel, string message)
+    public void Send(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
     {
-        string emote = Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
-        message = message == _lastMessageController[channel] ? string.Join(' ', emote, message, AppSettings.ChatterinoChar) : string.Join(' ', emote, message);
-        if (message.Length <= AppSettings.MaxMessageLength)
+        if (addEmote)
         {
-            _twitchClient.SendMessage(channel, message);
+            string emote = Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
+            message = emote + ' ' + message;
         }
-        else
+
+        if (checkDuplicate && message == LastMessages[channel])
+        {
+            message = message + ' ' + AppSettings.ChatterinoChar;
+        }
+
+        if (checkLength && message.Length >= AppSettings.MaxMessageLength)
         {
             DividedMessage dividedMessage = new(this, channel, message);
             dividedMessage.Send();
         }
+        else
+        {
+            _twitchClient.SendMessage(channel, message);
+        }
 
-        _lastMessageController[channel] = message;
+        LastMessages[channel] = message;
     }
 
     public void SendText(string channel, string message)
     {
-        if (message == _lastMessageController[channel])
+        if (message == LastMessages[channel])
         {
             message = $"{message} {AppSettings.ChatterinoChar}";
         }
 
-        _twitchClient.SendMessage(channel, message);
-        _lastMessageController[channel] = message;
+        LastMessages[channel] = message;
     }
 
     public bool JoinChannel(string channel)

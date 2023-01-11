@@ -20,21 +20,14 @@ public sealed class LastMessageController
         set => Set(channel, value);
     }
 
-    private void Add(string channel, string message = "")
-    {
-        _lastMessages.Add(channel, message);
-    }
-
     private void Set(string channel, string message)
     {
-        if (_lastMessages.ContainsKey(channel))
+        if (_lastMessages.TryAdd(channel, message))
         {
-            _lastMessages[channel] = message;
+            return;
         }
-        else
-        {
-            Add(channel, message);
-        }
+
+        _lastMessages[channel] = message;
     }
 
     private string Get(string channel)
@@ -44,7 +37,7 @@ public sealed class LastMessageController
             return message;
         }
 
-        Add(channel);
+        _lastMessages.Add(channel, string.Empty);
         return string.Empty;
     }
 }

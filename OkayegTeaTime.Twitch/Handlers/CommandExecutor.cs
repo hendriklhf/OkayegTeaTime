@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using HLE;
 using JetBrains.Annotations;
+using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
 
@@ -31,16 +32,23 @@ public sealed unsafe class CommandExecutor
 
     public void Execute(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string? prefix, string alias)
     {
-        delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void> executionMethod = _executionMethods[(int)type];
         StringBuilder response = stackalloc char[_responseBufferSize];
+        string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
+        response.Append(emote);
+
+        delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void> executionMethod = _executionMethods[(int)type];
         executionMethod(twitchBot, chatMessage, &response, prefix!, alias);
-        string responseMessage = response.ToString();
-        if (string.IsNullOrWhiteSpace(responseMessage))
+        if (response.Length <= emote.Length)
         {
             return;
         }
 
-        twitchBot.Send(chatMessage.Channel, responseMessage);
+        if (response.Equals(twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
+        {
+            response.Append(AppSettings.ChatterinoChar);
+        }
+
+        twitchBot.Send(chatMessage.Channel, response.ToString(), false, true, false);
     }
 
     [UsedImplicitly]
