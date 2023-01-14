@@ -47,17 +47,12 @@ public static class BotActions
         Span<char> spanBuffer = stackalloc char[100];
         int spanLength = span.Format(spanBuffer);
 
-        StringBuilder builder = stackalloc char[500];
+        StringBuilder builder = stackalloc char[2048];
         builder.Append(reminders[0].Target, PredefinedMessages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
         twitchBot.Reminders.Remove(reminders[0].Id);
         if (reminders[0].Message?.Length > 0)
         {
             builder.Append(_colonSpace, reminders[0].Message);
-        }
-
-        if (reminders.Length <= 1)
-        {
-            return;
         }
 
         foreach (Reminder r in reminders[1..])

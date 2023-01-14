@@ -58,8 +58,8 @@ public sealed class CommandHandler : Handler
                     return false;
                 }
 
-                _commandExecutor.Execute(type, _twitchBot, chatMessage, prefix, alias);
                 _twitchBot.CommandCount++;
+                _commandExecutor.Execute(type, _twitchBot, chatMessage, prefix, alias);
                 _cooldownController.AddCooldown(chatMessage.UserId, type);
                 return true;
             }

@@ -32,7 +32,9 @@ public sealed unsafe class CommandExecutor
 
     public void Execute(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string? prefix, string alias)
     {
-        StringBuilder response = stackalloc char[_responseBufferSize];
+        Span<char> buffer = stackalloc char[_responseBufferSize];
+        StringBuilder response = buffer;
+        // StringBuilder response = stackalloc char[_responseBufferSize];
         string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
         response.Append(emote);
 
@@ -43,7 +45,8 @@ public sealed unsafe class CommandExecutor
             return;
         }
 
-        if (response.Equals(twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
+        // if (response.Equals(twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
+        if (((ReadOnlySpan<char>)buffer[..response.Length]).Equals(twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
         {
             response.Append(AppSettings.ChatterinoChar);
         }
