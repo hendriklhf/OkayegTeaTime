@@ -36,7 +36,7 @@ public sealed unsafe class CommandExecutor
         StringBuilder response = buffer;
         // StringBuilder response = stackalloc char[_responseBufferSize];
         string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
-        response.Append(emote);
+        response.Append(emote, StringHelper.Whitespace);
 
         delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void> executionMethod = _executionMethods[(int)type];
         executionMethod(twitchBot, chatMessage, &response, prefix!, alias);
