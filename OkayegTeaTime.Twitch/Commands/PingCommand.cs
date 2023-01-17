@@ -37,8 +37,7 @@ public readonly unsafe ref struct PingCommand
     public void Handle()
     {
         Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
-        TimeSpan uptime = DateTime.UtcNow - _twitchBot.StartTime;
-        Response->Append("Pingeg, I'm here! Uptime: ", uptime.ToString("c"));
+        Response->Append("Pingeg, I'm here! Uptime: ", _twitchBot.Uptime.ToString("c"));
 
 #if DEBUG
         ReadOnlySpan<char> temperature = GetTemperature();

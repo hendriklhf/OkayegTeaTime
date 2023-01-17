@@ -35,19 +35,20 @@ public readonly unsafe ref struct ChattersCommand
             string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;
             int chatterCount = GetChatterCount(channel);
 
+            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
             switch (chatterCount)
             {
                 case > 1:
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there are ", NumberHelper.InsertKDots(chatterCount), " chatters in the channel of ", channel.Antiping());
+                    Response->Append("there are ", NumberHelper.InsertKDots(chatterCount), " chatters in the channel of ", channel.Antiping());
                     break;
-                case > 0:
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there is ", NumberHelper.InsertKDots(chatterCount), " chatter in the channel of ", channel.Antiping());
+                case 1:
+                    Response->Append("there is ", NumberHelper.InsertKDots(chatterCount), " chatter in the channel of ", channel.Antiping());
                     break;
                 case 0:
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "there are no chatters in the channel of ", channel.Antiping());
+                    Response->Append("there are no chatters in the channel of ", channel.Antiping());
                     break;
                 default:
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
+                    Response->Append(PredefinedMessages.ApiError);
                     break;
             }
         }

@@ -1,44 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Timers;
 
 namespace OkayegTeaTime.Utils;
 
 public sealed class Restarter
 {
-    private readonly List<Timer> _restartTimers = new();
+    private readonly Timer[] _restartTimers;
     private readonly TimeOnly[] _restartTimes;
 
     public Restarter(IEnumerable<TimeOnly> restartTimes)
     {
         _restartTimes = restartTimes.ToArray();
+        _restartTimers = new Timer[_restartTimes.Length];
     }
 
     public void Start()
     {
         Stop();
         TimeOnly now = TimeOnly.FromDateTime(DateTime.UtcNow);
-        foreach (TimeOnly restartTime in _restartTimes)
+        for (int i = 0; i < _restartTimes.Length; i++)
         {
-            double interval = (restartTime - now).TotalMilliseconds;
+            double interval = (_restartTimes[i] - now).TotalMilliseconds;
             Timer timer = new(interval);
             timer.Elapsed += RestartTimer_OnElapsed!;
             timer.Start();
-            _restartTimers.Add(timer);
+            _restartTimers[i] = timer;
         }
     }
 
     public void Stop()
     {
-        foreach (Timer timer in CollectionsMarshal.AsSpan(_restartTimers))
+        Span<Timer> timerSpan = _restartTimers;
+        for (int i = 0; i < timerSpan.Length; i++)
         {
-            timer.Stop();
-            timer.Dispose();
+            Timer t = timerSpan[i];
+            t.Stop();
+            t.Dispose();
         }
-
-        _restartTimers.Clear();
     }
 
     private static void RestartTimer_OnElapsed(object sender, ElapsedEventArgs e)

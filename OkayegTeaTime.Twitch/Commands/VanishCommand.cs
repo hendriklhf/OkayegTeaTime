@@ -33,7 +33,7 @@ public readonly unsafe ref struct VanishCommand
     {
         if (ChatMessage is { IsModerator: false, IsBroadcaster: false, IsStaff: false })
         {
-            _twitchBot.SendText(ChatMessage.Channel, $"/timeout {ChatMessage.Username} 1");
+            _twitchBot.Send(ChatMessage.Channel, $"/timeout {ChatMessage.Username} 1", false, false, false);
         }
     }
 }

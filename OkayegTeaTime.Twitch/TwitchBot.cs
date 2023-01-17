@@ -52,6 +52,8 @@ public sealed class TwitchBot
 
     public DateTime StartTime { get; } = DateTime.UtcNow;
 
+    public TimeSpan Uptime => DateTime.UtcNow - StartTime;
+
     public long Latency { get; private set; }
 
     private readonly TwitchClient _twitchClient;
@@ -145,16 +147,6 @@ public sealed class TwitchBot
         else
         {
             _twitchClient.SendMessage(channel, message);
-        }
-
-        LastMessages[channel] = message;
-    }
-
-    public void SendText(string channel, string message)
-    {
-        if (message == LastMessages[channel])
-        {
-            message = $"{message} {AppSettings.ChatterinoChar}";
         }
 
         LastMessages[channel] = message;

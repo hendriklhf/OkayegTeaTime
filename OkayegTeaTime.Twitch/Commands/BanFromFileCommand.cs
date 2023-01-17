@@ -57,7 +57,7 @@ public readonly unsafe ref struct BanFromFileCommand
                 Regex regex = new(ChatMessage.Split[2], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
                 TwitchBot twitchBot = _twitchBot;
                 TwitchChatMessage chatMessage = ChatMessage;
-                fileContent.Where(f => regex.IsMatch(f)).ForEach(f => twitchBot.SendText(chatMessage.Channel, _banPattern.IsMatch(f) ? f : $"/ban {f}"));
+                fileContent.Where(f => regex.IsMatch(f)).ForEach(f => twitchBot.Send(chatMessage.Channel, _banPattern.IsMatch(f) ? f : $"/ban {f}", false, false, false));
                 Response->Append("done :)");
             }
             catch (Exception ex)

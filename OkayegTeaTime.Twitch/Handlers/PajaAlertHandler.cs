@@ -22,7 +22,7 @@ public sealed class PajaAlertHandler : PajaHandler
             return;
         }
 
-        _twitchBot.SendText(_pajaAlertChannel, Message);
-        _twitchBot.SendText(AppSettings.OfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}");
+        _twitchBot.Send(_pajaAlertChannel, Message, false, false, false);
+        _twitchBot.Send(AppSettings.OfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}", false, false, false);
     }
 }

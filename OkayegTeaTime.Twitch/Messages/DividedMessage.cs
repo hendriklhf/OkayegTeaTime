@@ -25,13 +25,13 @@ public readonly struct DividedMessage
         int messageCount = messages.Length;
         if (messageCount < 2)
         {
-            _twitchBot.SendText(_channel, messages[0]);
+            _twitchBot.Send(_channel, messages[0], false, false, false);
             return;
         }
 
         for (int i = 0; i < messageCount; i++)
         {
-            _twitchBot.SendText(_channel, messages[i]);
+            _twitchBot.Send(_channel, messages[i], false, false, false);
             Task.Delay(AppSettings.DelayBetweenSentMessages).Wait();
         }
     }
