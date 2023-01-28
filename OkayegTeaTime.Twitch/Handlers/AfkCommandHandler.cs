@@ -17,7 +17,7 @@ public sealed class AfkCommandHandler
 
     public void Handle(TwitchChatMessage chatMessage, AfkType type)
     {
-        User? user = _twitchBot.Users.GetUser(chatMessage.UserId, chatMessage.Username);
+        User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
             user = new(chatMessage.UserId, chatMessage.Username);

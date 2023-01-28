@@ -29,7 +29,8 @@ public readonly unsafe ref struct MasspingCommand
 
     private static readonly long[] _disabledChannels =
     {
-        35933008
+        35933008,
+        93156665
     };
 
     private static readonly string[] _chatRoles =

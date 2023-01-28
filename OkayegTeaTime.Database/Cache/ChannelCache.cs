@@ -8,9 +8,9 @@ namespace OkayegTeaTime.Database.Cache;
 
 public sealed class ChannelCache : DbCache<Channel>
 {
-    public Channel? this[long id] => GetChannel(id);
+    public Channel? this[long id] => Get(id);
 
-    public Channel? this[string name] => GetChannel(name);
+    public Channel? this[string name] => Get(name);
 
     public void Add(long id, string name)
     {
@@ -43,10 +43,9 @@ public sealed class ChannelCache : DbCache<Channel>
         DbController.RemoveChannel(name);
     }
 
-    private Channel? GetChannel(long id)
+    private Channel? Get(long id)
     {
         GetAllItemsFromDatabase();
-        Channel? channel = null;
         Span<Channel> channels = CollectionsMarshal.AsSpan(_items);
         int channelsLength = channels.Length;
         for (int i = 0; i < channelsLength; i++)
@@ -54,13 +53,8 @@ public sealed class ChannelCache : DbCache<Channel>
             Channel c = channels[i];
             if (c.Id == id)
             {
-                channel = c;
+                return c;
             }
-        }
-
-        if (channel is not null)
-        {
-            return channel;
         }
 
         EntityFrameworkModels.Channel? efChannel = DbController.GetChannel(id);
@@ -69,15 +63,14 @@ public sealed class ChannelCache : DbCache<Channel>
             return null;
         }
 
-        channel = new(efChannel);
+        Channel channel = new(efChannel);
         _items.Add(channel);
         return channel;
     }
 
-    private Channel? GetChannel(string name)
+    private Channel? Get(string name)
     {
         GetAllItemsFromDatabase();
-        Channel? channel = null;
         Span<Channel> channels = CollectionsMarshal.AsSpan(_items);
         int channelsLength = channels.Length;
         for (int i = 0; i < channelsLength; i++)
@@ -85,13 +78,8 @@ public sealed class ChannelCache : DbCache<Channel>
             Channel c = channels[i];
             if (string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase))
             {
-                channel = c;
+                return c;
             }
-        }
-
-        if (channel is not null)
-        {
-            return channel;
         }
 
         EntityFrameworkModels.Channel? efChannel = DbController.GetChannel(name);
@@ -100,7 +88,7 @@ public sealed class ChannelCache : DbCache<Channel>
             return null;
         }
 
-        channel = new(efChannel);
+        Channel channel = new(efChannel);
         _items.Add(channel);
         return channel;
     }

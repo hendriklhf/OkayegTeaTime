@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 #if DEBUG
 using OkayegTeaTime.Files;
 #endif
@@ -59,13 +60,35 @@ public sealed class CooldownController
 
     public bool IsOnCooldown(long userId, CommandType type)
     {
-        long unixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        return _cooldowns.Any(c => c.UserId == userId && c.Type == type && c.Time > unixNow);
+        Span<Cooldown> cooldowns = CollectionsMarshal.AsSpan(_cooldowns);
+        int cooldownsLength = cooldowns.Length;
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        for (int i = 0; i < cooldownsLength; i++)
+        {
+            Cooldown cooldown = cooldowns[i];
+            if (cooldown.UserId == userId && cooldown.Type == type && cooldown.Time > now)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public bool IsOnAfkCooldown(long userId)
     {
-        long unixNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        return _afkCooldowns.Any(c => c.UserId == userId && c.Time > unixNow);
+        Span<AfkCooldown> cooldowns = CollectionsMarshal.AsSpan(_afkCooldowns);
+        int cooldownsLength = cooldowns.Length;
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        for (int i = 0; i < cooldownsLength; i++)
+        {
+            AfkCooldown cooldown = cooldowns[i];
+            if (cooldown.UserId == userId && cooldown.Time > now)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

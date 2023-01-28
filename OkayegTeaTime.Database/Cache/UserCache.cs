@@ -8,7 +8,7 @@ namespace OkayegTeaTime.Database.Cache;
 
 public sealed class UserCache : DbCache<User>
 {
-    public User? this[long id] => GetUser(id);
+    public User? this[long id] => Get(id);
 
     public void Add(User user)
     {
@@ -19,7 +19,7 @@ public sealed class UserCache : DbCache<User>
     /// <summary>
     /// This method also accepts a username to update the username in the database if the user has changed it.
     /// </summary>
-    public User? GetUser(long id, string? username = null)
+    public User? Get(long id, string? username = null)
     {
         GetAllItemsFromDatabase();
         User? user = null;
@@ -27,10 +27,13 @@ public sealed class UserCache : DbCache<User>
         for (int i = 0; i < users.Length; i++)
         {
             User u = users[i];
-            if (u.Id == id)
+            if (u.Id != id)
             {
-                user = u;
+                continue;
             }
+
+            user = u;
+            break;
         }
 
         if (user is not null && (username is null || user.Username == username))

@@ -58,7 +58,7 @@ public sealed class MessageHandler : Handler
 
     private void CheckForAfk(TwitchChatMessage chatMessage)
     {
-        User? user = _twitchBot.Users.GetUser(chatMessage.UserId, chatMessage.Username);
+        User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user?.IsAfk != true)
         {
             return;

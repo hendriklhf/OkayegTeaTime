@@ -7,7 +7,7 @@ namespace OkayegTeaTime.Database.Cache;
 
 public sealed class SpotifyUserCache : DbCache<SpotifyUser>
 {
-    public SpotifyUser? this[string username] => GetSpotifyUser(username);
+    public SpotifyUser? this[string username] => Get(username);
 
     public void Add(string username, string accessToken, string refreshToken)
     {
@@ -21,7 +21,7 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
         _items.Add(user);
     }
 
-    private SpotifyUser? GetSpotifyUser(string username)
+    private SpotifyUser? Get(string username)
     {
         SpotifyUser? user = this.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
         if (user is not null)

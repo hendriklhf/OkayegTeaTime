@@ -32,12 +32,12 @@ public sealed class Restarter
 
     public void Stop()
     {
-        Span<Timer> timerSpan = _restartTimers;
+        Span<Timer?> timerSpan = _restartTimers;
         for (int i = 0; i < timerSpan.Length; i++)
         {
-            Timer t = timerSpan[i];
-            t.Stop();
-            t.Dispose();
+            Timer? t = timerSpan[i];
+            t?.Stop();
+            t?.Dispose();
         }
     }
 

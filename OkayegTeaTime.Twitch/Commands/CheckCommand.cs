@@ -45,7 +45,7 @@ public readonly unsafe ref struct CheckCommand
                 return;
             }
 
-            User? user = _twitchBot.Users.GetUser(userId, username);
+            User? user = _twitchBot.Users.Get(userId, username);
             if (user is null)
             {
                 Response->Append(PredefinedMessages.CouldNotFindAnyMatchingUser);
