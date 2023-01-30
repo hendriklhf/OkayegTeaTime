@@ -22,7 +22,7 @@ public readonly unsafe ref struct HangmanCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split(Environment.NewLine);
+    private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
     private static readonly Dictionary<string, HangmanGame> _hangmanGames = new();
 
     public HangmanCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
