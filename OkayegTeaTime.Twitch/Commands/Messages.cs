@@ -59,7 +59,7 @@ public static class Messages
     public const string IsNotCorrect = "is not correct";
     public const string WrongChars = "Wrong chars";
     public const string WrongGuesses = "wrong guesses";
-    public const string TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas = "the maximum wrong guess have been reached. The solution was";
+    public const string TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas = "the maximum wrong guesses have been reached. The solution was";
     public const string IsCorrectIn = "is correct in";
     public const string Places = "places";
     public const string ThereIsNoGameRunningYouHaveToStartOneFirst = "there is no game running. You have to start one first";
