@@ -1,8 +1,12 @@
 ﻿namespace OkayegTeaTime.Twitch.Commands;
 
-public static class PredefinedMessages
+public static class Messages
 {
     public const string CommaSpace = ", ";
+    public const string Colon = ":";
+    public const string Comma = ",";
+    public const string QuotationMark = "\"";
+    public const string Dot = ".";
     public const string YouArentAModOrTheBroadcaster = "you aren't a mod or the broadcaster";
     public const string TwitchUserDoesntExist = "Twitch user doesn't exist";
     public const string ThatUserHasTooManyRemindersSetForThem = "that user has too many reminders set for them";
@@ -48,4 +52,15 @@ public static class PredefinedMessages
     public const string YouHaventSetYourLocationYet = "you haven't set your location yet";
     public const string YourLocationHasBeenUnset = "your location has been unset";
     public const string AnErrorOccurredOrThereAreNoChattersInThisChannel = "an error occurred or there are no chatter in this channel";
+    public const string ThereIsAlreadyAGameRunning = "there is already a game running";
+    public const string NewGameStarted = "new game started";
+    public const string IsCorrectTheGameHasBeenSolved = "is correct! The game has been solved";
+    public const string TheGameHasBeenSolved = "the game has been solved";
+    public const string IsNotCorrect = "is not correct";
+    public const string WrongChars = "Wrong chars";
+    public const string WrongGuesses = "wrong guesses";
+    public const string TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas = "the maximum wrong guess have been reached. The solution was";
+    public const string IsCorrectIn = "is correct in";
+    public const string Places = "places";
+    public const string ThereIsNoGameRunningYouHaveToStartOneFirst = "there is no game running. You have to start one first";
 }

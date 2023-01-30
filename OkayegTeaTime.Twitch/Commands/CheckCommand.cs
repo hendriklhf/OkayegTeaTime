@@ -36,19 +36,19 @@ public readonly unsafe ref struct CheckCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\safk\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             string username = ChatMessage.LowerSplit[2];
             long userId = _twitchBot.TwitchApi.GetUserId(username);
             if (userId == -1)
             {
-                Response->Append(PredefinedMessages.CouldNotFindAnyMatchingUser);
+                Response->Append(Messages.CouldNotFindAnyMatchingUser);
                 return;
             }
 
             User? user = _twitchBot.Users.Get(userId, username);
             if (user is null)
             {
-                Response->Append(PredefinedMessages.CouldNotFindAnyMatchingUser);
+                Response->Append(Messages.CouldNotFindAnyMatchingUser);
                 return;
             }
 
@@ -78,12 +78,12 @@ public readonly unsafe ref struct CheckCommand
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             int id = int.Parse(ChatMessage.Split[2]);
             Reminder? reminder = _twitchBot.Reminders[id];
             if (reminder is null)
             {
-                Response->Append(PredefinedMessages.CouldNotFindAnyMatchingReminder);
+                Response->Append(Messages.CouldNotFindAnyMatchingReminder);
                 return;
             }
 

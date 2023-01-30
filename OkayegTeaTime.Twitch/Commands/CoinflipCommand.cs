@@ -40,6 +40,6 @@ public readonly unsafe ref struct CoinflipCommand
     {
         bool result = Random.StrongBool();
         string answer = _answers[Unsafe.As<bool, byte>(ref result)];
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, answer, StringHelper.Whitespace, Emoji.Coin);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, answer, StringHelper.Whitespace, Emoji.Coin);
     }
 }

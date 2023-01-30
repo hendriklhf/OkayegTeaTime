@@ -36,12 +36,12 @@ public readonly unsafe ref struct StreamCommand
     public void Handle()
     {
         Regex channelPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
 
         Stream? stream = channelPattern.IsMatch(ChatMessage.Message) ? _twitchBot.TwitchApi.GetStream(ChatMessage.Split[1]) : _twitchBot.TwitchApi.GetStream(ChatMessage.ChannelId);
         if (stream is null)
         {
-            Response->Append(PredefinedMessages.ThisChannelIsCurrentlyNotStreaming);
+            Response->Append(Messages.ThisChannelIsCurrentlyNotStreaming);
             return;
         }
 

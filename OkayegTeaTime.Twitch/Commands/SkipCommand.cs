@@ -39,34 +39,34 @@ public readonly unsafe ref struct SkipCommand
     {
         if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModOrTheBroadcaster);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModOrTheBroadcaster);
             return;
         }
 
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
         if (user is null)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
             return;
         }
 
         try
         {
             SpotifyController.Skip(user).Wait();
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
         }
         catch (SpotifyException ex)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
             return;
         }
         catch (AggregateException ex)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             if (ex.InnerException is null)
             {
                 DbController.LogException(ex);
-                Response->Append(PredefinedMessages.ApiError);
+                Response->Append(Messages.ApiError);
                 return;
             }
 

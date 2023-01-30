@@ -31,6 +31,6 @@ public readonly unsafe ref struct Chatterino7Command
 
     public void Handle()
     {
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, _response);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, _response);
     }
 }

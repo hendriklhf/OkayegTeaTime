@@ -44,14 +44,14 @@ public readonly unsafe ref struct Formula1Command
     {
         if (_races is null)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
             return;
         }
 
         Formula1Race? race = GetNextOrCurrentRace(_races);
         if (race is null)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereIsNoNextRace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoNextRace);
             return;
         }
 
@@ -63,18 +63,18 @@ public readonly unsafe ref struct Formula1Command
             OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(latitude, longitude, false);
             if (weatherData is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
                 return;
             }
 
             weatherData.CityName = race.Circuit.Location.Name;
             weatherData.Location.Country = race.Circuit.Location.Country;
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, WeatherController.CreateResponse(weatherData, false));
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, WeatherController.CreateResponse(weatherData, false));
         }
         else
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, race.Race.Start > DateTime.UtcNow ? "Next" : "Current", "race: ", race.Name);
-            Response->Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, PredefinedMessages.CommaSpace, race.Circuit.Location.Country, ". ");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, race.Race.Start > DateTime.UtcNow ? "Next" : "Current", "race: ", race.Name);
+            Response->Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, Messages.CommaSpace, race.Circuit.Location.Country, ". ");
             Response->Append(Emoji.RacingCar, StringHelper.Whitespace);
             if (race.Race.Start > DateTime.UtcNow)
             {

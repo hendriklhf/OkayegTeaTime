@@ -21,11 +21,9 @@ public readonly unsafe ref struct SpotifyCommand
     public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string? _prefix;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
     private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
@@ -47,7 +45,8 @@ public readonly unsafe ref struct SpotifyCommand
         SpotifyUser? user = _twitchBot.SpotifyUsers[username];
         if (user is null)
         {
-            Response->Append(targetIsSender ? $"{ChatMessage.Username}, can't get your currently playing song, you have to register first"
+            Response->Append(targetIsSender
+                ? $"{ChatMessage.Username}, can't get your currently playing song, you have to register first"
                 : $"{ChatMessage.Username}, can't get the currently playing song of {username.Antiping()}, they have to register first");
             return;
         }
@@ -61,16 +60,16 @@ public readonly unsafe ref struct SpotifyCommand
         }
         catch (SpotifyException ex)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
             return;
         }
         catch (AggregateException ex)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             if (ex.InnerException is null)
             {
                 DbController.LogException(ex);
-                Response->Append(PredefinedMessages.ApiError);
+                Response->Append(Messages.ApiError);
                 return;
             }
 
@@ -78,7 +77,7 @@ public readonly unsafe ref struct SpotifyCommand
             return;
         }
 
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
         switch (item)
         {
             case null:
@@ -99,7 +98,7 @@ public readonly unsafe ref struct SpotifyCommand
             }
             default:
             {
-                Response->Append(PredefinedMessages.ListeningToAnUnknownSpotifyItemTypeMonkaS);
+                Response->Append(Messages.ListeningToAnUnknownSpotifyItemTypeMonkaS);
                 return;
             }
         }

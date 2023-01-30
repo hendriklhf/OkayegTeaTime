@@ -31,11 +31,11 @@ public readonly unsafe ref struct InvalidateCommand
     {
         if (!ChatMessage.IsBotModerator)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModeratorOfTheBot);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
             return;
         }
 
         _twitchBot.InvalidateCaches();
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "all database cached have been invalidated");
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, "all database cached have been invalidated");
     }
 }

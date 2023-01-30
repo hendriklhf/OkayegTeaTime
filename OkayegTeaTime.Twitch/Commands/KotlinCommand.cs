@@ -52,7 +52,7 @@ public readonly unsafe ref struct KotlinCommand
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
             string result = GetProgramOutput(code);
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, result);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, result);
         }
     }
 
@@ -104,13 +104,13 @@ public readonly unsafe ref struct KotlinCommand
                     errorTexts.Add($"{severity} at ch{start - _mainFunLength}: {message}");
                 }
 
-                return string.Join(PredefinedMessages.CommaSpace, errorTexts);
+                return string.Join(Messages.CommaSpace, errorTexts);
             }
 
             string? result = json.GetProperty("text").GetString();
             if (result is null)
             {
-                return PredefinedMessages.ApiError;
+                return Messages.ApiError;
             }
 
             if (string.IsNullOrWhiteSpace(result))
@@ -132,7 +132,7 @@ public readonly unsafe ref struct KotlinCommand
         catch (Exception ex)
         {
             DbController.LogException(ex);
-            return PredefinedMessages.ApiError;
+            return Messages.ApiError;
         }
     }
 }

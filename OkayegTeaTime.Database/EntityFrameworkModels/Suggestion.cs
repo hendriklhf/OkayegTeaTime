@@ -1,5 +1,4 @@
 ﻿using System;
-using HLE;
 
 #nullable disable
 
@@ -33,6 +32,11 @@ public sealed class Suggestion
     {
         Username = username;
         Content = suggestion;
-        Channel = $"#{channel.Remove("#")}";
+        if (channel[0] == '#')
+        {
+            channel = channel[1..];
+        }
+
+        Channel = '#' + channel;
     }
 }

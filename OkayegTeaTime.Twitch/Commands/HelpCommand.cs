@@ -32,6 +32,6 @@ public readonly unsafe ref struct HelpCommand
     public void Handle()
     {
         string username = ChatMessage.Split.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Username;
-        Response->Append(Emoji.PointRight, StringHelper.Whitespace, username, PredefinedMessages.CommaSpace, "here you can find a list of commands and the repository: ", AppSettings.RepositoryUrl);
+        Response->Append(Emoji.PointRight, StringHelper.Whitespace, username, Messages.CommaSpace, "here you can find a list of commands and the repository: ", AppSettings.RepositoryUrl);
     }
 }

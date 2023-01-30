@@ -636,6 +636,26 @@
       ],
       "Cooldown": 15000,
       "Document": true
+    },
+    {
+      "Name": "Hangman",
+      "Description": "Starts a hangman game",
+      "Aliases": [
+        "hangman",
+        "hm"
+      ],
+      "Parameters": [
+        "none",
+        "[letter]",
+        "[word]"
+      ],
+      "ParameterDescriptions": [
+        "",
+        "",
+        ""
+      ],
+      "Cooldown": 5000,
+      "Document": true
     }
   ],
   "AfkCommands": [

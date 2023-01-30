@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using HLE;
+using HLE.Collections;
 using HLE.Maths;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -36,7 +37,7 @@ public readonly unsafe ref struct PingCommand
 
     public void Handle()
     {
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
         Response->Append("Pingeg, I'm here! Uptime: ", _twitchBot.Uptime.ToString("c"));
 
 #if DEBUG

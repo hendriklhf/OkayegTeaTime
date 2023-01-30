@@ -35,13 +35,13 @@ public readonly unsafe ref struct MathCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]));
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]));
         }
     }
 
     private static string GetMathResult(string expression)
     {
         HttpGet request = new($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
-        return request.Result ?? PredefinedMessages.ApiError;
+        return request.Result ?? Messages.ApiError;
     }
 }

@@ -36,16 +36,16 @@ public readonly unsafe ref struct UnsetCommand
                 Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
-                    Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredWhileTryingToSetThePrefix);
+                    Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.AnErrorOccurredWhileTryingToSetThePrefix);
                     return;
                 }
 
                 channel.Prefix = null;
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThePrefixHasBeenUnset);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThePrefixHasBeenUnset);
             }
             else
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModOrTheBroadcaster);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModOrTheBroadcaster);
             }
 
             return;
@@ -54,32 +54,32 @@ public readonly unsafe ref struct UnsetCommand
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             int reminderId = int.Parse(ChatMessage.Split[2]);
             bool removed = _twitchBot.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
-            Response->Append(removed ? PredefinedMessages.TheReminderHasBeenUnset : PredefinedMessages.TheReminderCouldntBeUnset);
+            Response->Append(removed ? Messages.TheReminderHasBeenUnset : Messages.TheReminderCouldntBeUnset);
             return;
         }
 
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\semote");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             if (ChatMessage.IsModerator || ChatMessage.IsBroadcaster)
             {
                 Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
                 if (channel is null)
                 {
-                    Response->Append(PredefinedMessages.AnErrorOccurredWhileTryingToSetTheEmote);
+                    Response->Append(Messages.AnErrorOccurredWhileTryingToSetTheEmote);
                     return;
                 }
 
                 channel.Emote = null;
-                Response->Append(PredefinedMessages.TheEmoteHasBeenUnset);
+                Response->Append(Messages.TheEmoteHasBeenUnset);
             }
             else
             {
-                Response->Append(PredefinedMessages.YouArentAModOrTheBroadcaster);
+                Response->Append(Messages.YouArentAModOrTheBroadcaster);
             }
 
             return;
@@ -91,12 +91,12 @@ public readonly unsafe ref struct UnsetCommand
             User? user = _twitchBot.Users[ChatMessage.UserId];
             if (user is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouHaventSetYourLocationYet);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouHaventSetYourLocationYet);
                 return;
             }
 
             user.Location = null;
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YourLocationHasBeenUnset);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YourLocationHasBeenUnset);
         }
     }
 }

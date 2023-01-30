@@ -37,7 +37,7 @@ public readonly unsafe ref struct ListenCommand
     {
         if (!AppSettings.UserLists.SecretUsers.Contains(ChatMessage.UserId))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "this command is still being tested, you aren't allowed to use this command");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "this command is still being tested, you aren't allowed to use this command");
             return;
         }
 
@@ -47,20 +47,20 @@ public readonly unsafe ref struct ListenCommand
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
             if (listener is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentRegisteredYouHaveToRegisterFirst);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentRegisteredYouHaveToRegisterFirst);
                 return;
             }
 
             SpotifyUser? host = SpotifyController.GetListeningTo(listener);
             if (host is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentListeningAlongWithAnybody);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentListeningAlongWithAnybody);
                 return;
             }
 
             ListeningSession? listeningSession = SpotifyController.GetListeningSession(host);
             listeningSession?.Listeners.Remove(listener);
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "stopped listening along with ", host.Username.Antiping());
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "stopped listening along with ", host.Username.Antiping());
             return;
         }
 
@@ -70,14 +70,14 @@ public readonly unsafe ref struct ListenCommand
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
             if (listener is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouCantSyncYouHaveToRegisterFirst);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouCantSyncYouHaveToRegisterFirst);
                 return;
             }
 
             SpotifyUser? host = SpotifyController.GetListeningTo(listener);
             if (host is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouCantSyncBecauseYouArentListeningAlongWithAnybody);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouCantSyncBecauseYouArentListeningAlongWithAnybody);
                 return;
             }
 
@@ -90,16 +90,16 @@ public readonly unsafe ref struct ListenCommand
             }
             catch (SpotifyException ex)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
                 return;
             }
             catch (AggregateException ex)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace);
                 if (ex.InnerException is null)
                 {
                     DbController.LogException(ex);
-                    Response->Append(PredefinedMessages.ApiError);
+                    Response->Append(Messages.ApiError);
                     return;
                 }
 
@@ -107,11 +107,11 @@ public readonly unsafe ref struct ListenCommand
                 return;
             }
 
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "synced with ", host.Username.Antiping(), " and playing ");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "synced with ", host.Username.Antiping(), " and playing ");
             switch (item)
             {
                 case SpotifyTrack track:
-                    string artists = string.Join(PredefinedMessages.CommaSpace, track.Artists.Select(a => a.Name));
+                    string artists = string.Join(Messages.CommaSpace, track.Artists.Select(a => a.Name));
                     Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : track.Uri);
                     break;
                 case SpotifyEpisode episode:
@@ -131,14 +131,14 @@ public readonly unsafe ref struct ListenCommand
             SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
             if (listener is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouCantListenToOtherUsersYouHaveToRegisterFirst);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouCantListenToOtherUsersYouHaveToRegisterFirst);
                 return;
             }
 
             SpotifyUser? host = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[1]];
             if (host is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "you can't listen to ", ChatMessage.LowerSplit[1], "'s music , they have to register first");
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, "you can't listen to ", ChatMessage.LowerSplit[1], "'s music , they have to register first");
                 return;
             }
 
@@ -151,16 +151,16 @@ public readonly unsafe ref struct ListenCommand
             }
             catch (SpotifyException ex)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, ex.Message);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
                 return;
             }
             catch (AggregateException ex)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace);
                 if (ex.InnerException is null)
                 {
                     DbController.LogException(ex);
-                    Response->Append(PredefinedMessages.ApiError);
+                    Response->Append(Messages.ApiError);
                     return;
                 }
 
@@ -168,12 +168,12 @@ public readonly unsafe ref struct ListenCommand
                 return;
             }
 
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "now listening along with ", host.Username.Antiping(), " and playing ");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "now listening along with ", host.Username.Antiping(), " and playing ");
             switch (item)
             {
                 case SpotifyTrack track:
                 {
-                    string artists = string.Join(PredefinedMessages.CommaSpace, track.Artists.Select(a => a.Name));
+                    string artists = string.Join(Messages.CommaSpace, track.Artists.Select(a => a.Name));
                     Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : track.Uri);
                     break;
                 }

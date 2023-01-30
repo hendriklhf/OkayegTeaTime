@@ -51,7 +51,7 @@ public readonly unsafe ref struct CodeCommand
             }
             catch (Exception)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.TheGivenPatternIsInvalid);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.TheGivenPatternIsInvalid);
                 return;
             }
 
@@ -59,17 +59,17 @@ public readonly unsafe ref struct CodeCommand
             Span<char> lengthChars = stackalloc char[30];
             matchingFiles.Length.TryFormat(lengthChars, out int lengthLength);
             lengthChars = lengthChars[..lengthLength];
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             switch (matchingFiles.Length)
             {
                 case 0:
-                    Response->Append(PredefinedMessages.YourPatternMatchedNoSourceCodeFiles);
+                    Response->Append(Messages.YourPatternMatchedNoSourceCodeFiles);
                     break;
                 case 1:
                     Response->Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
-                    Response->Append("your pattern matched ", lengthChars, " files: ", matchingFiles.JoinToString(PredefinedMessages.CommaSpace), ". Please specify");
+                    Response->Append("your pattern matched ", lengthChars, " files: ", matchingFiles.JoinToString(Messages.CommaSpace), ". Please specify");
                     break;
                 default:
                     Response->Append("your pattern matched too many (", lengthChars, ") files. Please specify");

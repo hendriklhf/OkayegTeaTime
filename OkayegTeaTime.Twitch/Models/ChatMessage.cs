@@ -30,7 +30,7 @@ public class ChatMessage
     protected ChatMessage(TwitchLibMessage message)
     {
         DisplayName = message.DisplayName;
-        Message = GetMessage(message).Remove(AppSettings.ChatterinoChar).TrimAll();
+        Message = GetMessage(message).Replace(AppSettings.ChatterinoChar, string.Empty).TrimAll();
         Username = message.Username;
     }
 

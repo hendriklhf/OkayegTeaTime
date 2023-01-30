@@ -36,7 +36,7 @@ public readonly unsafe ref struct SuggestCommand
         {
             string suggestion = ChatMessage.Message[(ChatMessage.LowerSplit[0].Length + 1)..];
             DbController.AddSuggestion(ChatMessage.Username, ChatMessage.Channel, suggestion);
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YourSuggestionHasBeenNoted);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YourSuggestionHasBeenNoted);
         }
     }
 }

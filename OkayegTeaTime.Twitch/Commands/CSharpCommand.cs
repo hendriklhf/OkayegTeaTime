@@ -40,7 +40,7 @@ public readonly unsafe ref struct CSharpCommand
         {
             string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
             string result = GetProgramOutput(code);
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, result);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, result);
         }
     }
 

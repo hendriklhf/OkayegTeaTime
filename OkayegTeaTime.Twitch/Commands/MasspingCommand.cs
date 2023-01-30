@@ -57,13 +57,13 @@ public readonly unsafe ref struct MasspingCommand
     {
         if (_disabledChannels.Contains(ChatMessage.ChannelId))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThisCommandIsDisabledInThisChannel);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThisCommandIsDisabledInThisChannel);
             return;
         }
 
         if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModeratorOfTheBot);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
             return;
         }
 
@@ -75,7 +75,7 @@ public readonly unsafe ref struct MasspingCommand
             chatters = GetChatters(ChatMessage.Channel);
             if (chatters.Length == 0)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredOrThereAreNoChattersInThisChannel);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.AnErrorOccurredOrThereAreNoChattersInThisChannel);
                 return;
             }
         }

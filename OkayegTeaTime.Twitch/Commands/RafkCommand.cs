@@ -36,7 +36,7 @@ public readonly unsafe ref struct RafkCommand
         User? user = _twitchBot.Users.Get(ChatMessage.UserId, ChatMessage.Username);
         if (user is null)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore);
             return;
         }
 

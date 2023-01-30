@@ -146,6 +146,13 @@ public sealed unsafe class CommandExecutor
     }
 
     [UsedImplicitly]
+    private static void ExecuteHangmanCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    {
+        HangmanCommand command = new(twitchBot, chatMessage, response, prefix, alias);
+        command.Handle();
+    }
+
+    [UsedImplicitly]
     private static void ExecuteHelpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         HelpCommand command = new(twitchBot, chatMessage, response, prefix, alias);

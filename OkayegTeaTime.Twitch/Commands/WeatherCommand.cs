@@ -46,7 +46,7 @@ public readonly unsafe ref struct WeatherCommand
             isPrivateLocation = user?.IsPrivateLocation == true;
             if (city is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouHaventSetYourLocationYet);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouHaventSetYourLocationYet);
                 return;
             }
         }
@@ -54,16 +54,16 @@ public readonly unsafe ref struct WeatherCommand
         OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(city);
         if (weatherData is null)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
             return;
         }
 
         if (weatherData.Message is not null)
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, weatherData.Message);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, weatherData.Message);
             return;
         }
 
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, WeatherController.CreateResponse(weatherData, isPrivateLocation));
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, WeatherController.CreateResponse(weatherData, isPrivateLocation));
     }
 }

@@ -37,12 +37,12 @@ public readonly unsafe ref struct BanFromFileCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             try
             {
                 if (!ChatMessage.IsBotModerator)
                 {
-                    Response->Append(PredefinedMessages.YouArentAModeratorOfTheBot);
+                    Response->Append(Messages.YouArentAModeratorOfTheBot);
                     return;
                 }
 
@@ -53,7 +53,7 @@ public readonly unsafe ref struct BanFromFileCommand
                     return;
                 }
 
-                string[] fileContent = request.Result.Remove("\r").Split("\n");
+                string[] fileContent = request.Result.Replace("\r", string.Empty).Split("\n");
                 Regex regex = new(ChatMessage.Split[2], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
                 TwitchBot twitchBot = _twitchBot;
                 TwitchChatMessage chatMessage = ChatMessage;

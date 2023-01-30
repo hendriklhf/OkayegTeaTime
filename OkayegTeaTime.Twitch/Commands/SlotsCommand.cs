@@ -43,7 +43,7 @@ public readonly unsafe ref struct SlotsCommand
             }
             catch (ArgumentException)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.TheGivenPatternIsInvalid);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.TheGivenPatternIsInvalid);
                 return;
             }
         }
@@ -55,7 +55,7 @@ public readonly unsafe ref struct SlotsCommand
 
         if (!emotes.Any())
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
             return;
         }
 
@@ -66,7 +66,7 @@ public readonly unsafe ref struct SlotsCommand
 
         if (!emotes.Any())
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereIsNoEmoteMatchingYourProvidedPattern);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoEmoteMatchingYourProvidedPattern);
             return;
         }
 
@@ -80,6 +80,6 @@ public readonly unsafe ref struct SlotsCommand
         Span<char> lengthChars = stackalloc char[30];
         emotes.Length.TryFormat(lengthChars, out int lengthLength);
         lengthChars = lengthChars[..lengthLength];
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "[ ", msgEmotes, " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty, ")");
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, "[ ", msgEmotes, " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty, ")");
     }
 }

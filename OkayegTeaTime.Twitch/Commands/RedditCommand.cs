@@ -47,18 +47,18 @@ public readonly unsafe ref struct RedditCommand
             RedditPost[]? posts = GetRedditPosts(ChatMessage.LowerSplit[1]);
             if (posts is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ApiError);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
                 return;
             }
 
             RedditPost? post = posts.Random();
             if (post is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.ThereAreNoPostsAvailable);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereAreNoPostsAvailable);
                 return;
             }
 
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             CheckForNsfwAndSpoiler(post);
             Span<char> scoreChars = stackalloc char[30];
             post.Score.TryFormat(scoreChars, out int scoreLength);

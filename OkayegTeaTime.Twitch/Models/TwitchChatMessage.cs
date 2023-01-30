@@ -29,7 +29,7 @@ public sealed class TwitchChatMessage : TwitchMessage
         IsBroadcaster = chatMessage.IsBroadcaster;
         IsModerator = chatMessage.IsModerator;
         IsStaff = chatMessage.IsStaff;
-        Message = chatMessage.Message.Remove(AppSettings.ChatterinoChar).TrimAll();
+        Message = chatMessage.Message.Replace(AppSettings.ChatterinoChar, string.Empty).TrimAll();
         ChannelId = long.Parse(chatMessage.RoomId);
     }
 

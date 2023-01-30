@@ -36,6 +36,6 @@ public readonly unsafe ref struct GuidCommand
         Span<char> chars = stackalloc char[50];
         guid.TryFormat(chars, out int guidLength, format);
         chars = chars[..guidLength];
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, chars);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, chars);
     }
 }

@@ -15,6 +15,7 @@ public enum CommandType : byte
     Fuck,
     Gachi,
     Guid,
+    Hangman,
     Help,
     Id,
     Invalidate,

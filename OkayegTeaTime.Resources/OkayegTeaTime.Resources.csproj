@@ -27,22 +27,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="CSharpTemplate.cs"/>
+    <Compile Remove="CSharpTemplate.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="CSharpTemplate.cs"/>
-    <EmbeddedResource Include="Commands.json"/>
-    <EmbeddedResource Include="GachiSongs.json"/>
-    <EmbeddedResource Include="LastCommit"/>
-    <EmbeddedResource Include="CodeFiles"/>
-    <EmbeddedResource Include="KotlinTemplate.kt"/>
+    <EmbeddedResource Include="CSharpTemplate.cs" />
+    <EmbeddedResource Include="Commands.json" />
+    <EmbeddedResource Include="GachiSongs.json" />
+    <EmbeddedResource Include="LastCommit" />
+    <EmbeddedResource Include="CodeFiles" />
+    <EmbeddedResource Include="KotlinTemplate.kt" />
+    <EmbeddedResource Include="HangmanWords" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HLE" Version="2.0.9.1" />
   </ItemGroup>
 
 </Project>

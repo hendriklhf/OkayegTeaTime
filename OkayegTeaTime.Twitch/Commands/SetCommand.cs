@@ -38,20 +38,20 @@ public readonly unsafe ref struct SetCommand
         {
             if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModOrTheBroadcaster);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModOrTheBroadcaster);
                 return;
             }
 
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredWhileTryingToSetThePrefix);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.AnErrorOccurredWhileTryingToSetThePrefix);
                 return;
             }
 
             string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength ? AppSettings.MaxPrefixLength : ChatMessage.LowerSplit[2].Length)];
             channel.Prefix = prefix;
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "prefix set to: ", prefix);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "prefix set to: ", prefix);
             return;
         }
 
@@ -60,7 +60,7 @@ public readonly unsafe ref struct SetCommand
         {
             if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.YouArentAModOrTheBroadcaster);
+                Response->Append(ChatMessage.Username, Messages.YouArentAModOrTheBroadcaster);
                 return;
             }
 
@@ -68,22 +68,22 @@ public readonly unsafe ref struct SetCommand
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.AnErrorOccurredWhileTryingToSetTheEmote);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.AnErrorOccurredWhileTryingToSetTheEmote);
                 return;
             }
 
             channel.Emote = emote;
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "emote set to: ", emote);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "emote set to: ", emote);
             return;
         }
 
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace);
             if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
             {
-                Response->Append(PredefinedMessages.YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings);
+                Response->Append(Messages.YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings);
                 return;
             }
 
@@ -99,7 +99,7 @@ public readonly unsafe ref struct SetCommand
 
             if (state is null)
             {
-                Response->Append(PredefinedMessages.TheStateCanOnlyBeSetToEnabledOrDisabled);
+                Response->Append(Messages.TheStateCanOnlyBeSetToEnabledOrDisabled);
                 return;
             }
 
@@ -136,7 +136,7 @@ public readonly unsafe ref struct SetCommand
                 user.IsPrivateLocation = isPrivate;
             }
 
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "your ", isPrivate ? "private" : "public", " location has been set");
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, "your ", isPrivate ? "private" : "public", " location has been set");
         }
     }
 }

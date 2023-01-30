@@ -33,7 +33,7 @@ public readonly unsafe ref struct JoinCommand
         {
             if (!ChatMessage.IsBotModerator)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.YouArentAModeratorOfTheBot);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
                 return;
             }
 
@@ -41,26 +41,26 @@ public readonly unsafe ref struct JoinCommand
             bool isValidChannel = StringHelper.FormatChannel(ref channel);
             if (!isValidChannel)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.GivenChannelIsInvalid);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.GivenChannelIsInvalid);
                 return;
             }
 
             bool isJoined = _twitchBot.Channels[channel] is not null;
             if (isJoined)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, "the bot is already connected to #", channel);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, "the bot is already connected to #", channel);
                 return;
             }
 
             bool channelExists = _twitchBot.TwitchApi.DoesUserExist(channel);
             if (!channelExists)
             {
-                Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, PredefinedMessages.GivenChannelDoesNotExist);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.GivenChannelDoesNotExist);
                 return;
             }
 
             bool success = _twitchBot.JoinChannel(channel);
-            Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace, success ? "successfully joined" : "failed to join", " #", channel);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, success ? "successfully joined" : "failed to join", " #", channel);
         }
     }
 }

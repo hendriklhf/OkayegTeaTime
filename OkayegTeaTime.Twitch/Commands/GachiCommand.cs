@@ -36,7 +36,7 @@ public readonly unsafe ref struct GachiCommand
         GachiSong? gachi = JsonController.GetGachiSongs().Random();
         if (gachi is null)
         {
-            Response->Append(PredefinedMessages.CouldntFindASong);
+            Response->Append(Messages.CouldntFindASong);
             return;
         }
 

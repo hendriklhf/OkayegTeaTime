@@ -48,7 +48,7 @@ public static class BotActions
         int spanLength = span.Format(spanBuffer);
 
         StringBuilder builder = stackalloc char[2048];
-        builder.Append(reminders[0].Target, PredefinedMessages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+        builder.Append(reminders[0].Target, Commands.Messages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
         twitchBot.Reminders.Remove(reminders[0].Id);
         if (reminders[0].Message?.Length > 0)
         {
@@ -79,7 +79,7 @@ public static class BotActions
         int spanLength = span.Format(spanBuffer);
 
         StringBuilder builder = stackalloc char[500];
-        builder.Append(reminder.Target, PredefinedMessages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+        builder.Append(reminder.Target, Commands.Messages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
         if (!string.IsNullOrWhiteSpace(reminder.Message))
         {
             builder.Append(_colonSpace, reminder.Message);

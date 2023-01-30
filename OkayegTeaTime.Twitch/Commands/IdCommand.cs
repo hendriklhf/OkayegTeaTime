@@ -28,7 +28,7 @@ public readonly unsafe ref struct IdCommand
 
     public void Handle()
     {
-        Response->Append(ChatMessage.Username, PredefinedMessages.CommaSpace);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
         long userId;
         if (pattern.IsMatch(ChatMessage.Message))
@@ -37,7 +37,7 @@ public readonly unsafe ref struct IdCommand
             userId = _twitchBot.TwitchApi.GetUserId(username);
             if (userId == -1)
             {
-                Response->Append(PredefinedMessages.TwitchUserDoesntExist);
+                Response->Append(Messages.TwitchUserDoesntExist);
                 return;
             }
         }
