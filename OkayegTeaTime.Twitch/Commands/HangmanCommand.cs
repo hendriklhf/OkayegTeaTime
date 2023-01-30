@@ -66,7 +66,7 @@ public readonly unsafe ref struct HangmanCommand
             else
             {
                 Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
-                Response->Append(StringHelper.Whitespace, Emoji.Cry);
+                Response->Append(StringHelper.Whitespace, Emoji.Cry, StringHelper.Whitespace);
                 _hangmanGames.Remove(ChatMessage.Channel);
                 return;
             }
@@ -94,7 +94,12 @@ public readonly unsafe ref struct HangmanCommand
             if (correct)
             {
                 Response->Append(Messages.QuotationMark, game.Solution, Messages.QuotationMark);
-                Response->Append(StringHelper.Whitespace, Messages.IsCorrectTheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace);
+                Response->Append(StringHelper.Whitespace, Messages.IsCorrectTheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace, StringHelper.Whitespace);
+                AppendWordStatus(game);
+                Response->Append(Messages.CommaSpace);
+                AppendWrongCharStatus(game);
+                Response->Append(Messages.CommaSpace);
+                AppendGuessStatus(game);
                 _hangmanGames.Remove(ChatMessage.Channel);
             }
             else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
