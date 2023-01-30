@@ -35,8 +35,10 @@ public sealed class TwitchChatMessage : TwitchMessage
 
     private bool CheckIfIsIgnoredUser()
     {
-        ref long firstIgnoredUser = ref MemoryMarshal.GetArrayDataReference(AppSettings.UserLists.IgnoredUsers);
-        for (int i = 0; i < AppSettings.UserLists.IgnoredUsers.Length; i++)
+        long[] ignoredUsers = AppSettings.UserLists.IgnoredUsers;
+        ref long firstIgnoredUser = ref MemoryMarshal.GetArrayDataReference(ignoredUsers);
+        int userLength = AppSettings.UserLists.IgnoredUsers.Length;
+        for (int i = 0; i < userLength; i++)
         {
             long ignoredUser = Unsafe.Add(ref firstIgnoredUser, i);
             if (ignoredUser == UserId)
@@ -50,8 +52,10 @@ public sealed class TwitchChatMessage : TwitchMessage
 
     private bool CheckIfIsBotModerator()
     {
+        long[] moderators = AppSettings.UserLists.Moderators;
         ref long firstBotModerator = ref MemoryMarshal.GetArrayDataReference(AppSettings.UserLists.Moderators);
-        for (int i = 0; i < AppSettings.UserLists.IgnoredUsers.Length; i++)
+        int moderatorsLength = moderators.Length;
+        for (int i = 0; i < moderatorsLength; i++)
         {
             long ignoredUser = Unsafe.Add(ref firstBotModerator, i);
             if (ignoredUser == UserId)

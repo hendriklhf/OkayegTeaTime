@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using HLE;
-using HLE.Collections;
 using HLE.Emojis;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
@@ -71,7 +70,7 @@ public sealed class TwitchBot
         new(5, 0)
     });
 
-    public TwitchBot(IEnumerable<string>? channels = null, IEnumerable<string>? excludedChannels = null)
+    public TwitchBot(IEnumerable<string>? channels = null)
     {
         ConnectionCredentials connectionCredentials = new(AppSettings.Twitch.Username, AppSettings.Twitch.OAuthToken);
         ClientOptions clientOptions = new()
@@ -87,11 +86,6 @@ public sealed class TwitchBot
         };
 
         channels ??= Channels.Select(c => c.Name);
-        if (excludedChannels is not null)
-        {
-            channels = channels.Except(excludedChannels);
-        }
-
         _twitchClient.Initialize(connectionCredentials, channels.ToList());
 
         //_twitchClient.OnLog += Client_OnLog!;
@@ -280,8 +274,11 @@ public sealed class TwitchBot
 
     private void OnTimer1000(object? sender, ElapsedEventArgs e)
     {
-        Reminder[] reminders = Reminders.GetExpiredReminders();
-        reminders.ForEach(this.SendTimedReminder);
+        Span<Reminder> reminders = Reminders.GetExpiredReminders();
+        for (int i = 0; i < reminders.Length; i++)
+        {
+            this.SendTimedReminder(reminders[i]);
+        }
     }
 
     #endregion Timer

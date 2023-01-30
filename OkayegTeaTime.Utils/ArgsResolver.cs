@@ -1,78 +1,26 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Utils;
 
-public sealed class ArgsResolver
+public readonly ref struct ArgsResolver
 {
-    public string[]? Channels { get; private set; }
+    public string[]? Channels { get; }
 
-    public string? SettingsPath { get; private set; }
+    private readonly Span<string> _args;
 
-    public string[]? ExcludedChannels { get; private set; }
+    private static readonly Regex _channelListPattern = new(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled);
 
-    private readonly string[] _args;
-    private readonly Regex _channelListPattern = new(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled);
-
-    public ArgsResolver(string[] args)
+    public ArgsResolver(Span<string> args)
     {
         _args = args;
-    }
-
-    public void Resolve()
-    {
         Channels = GetChannels();
-        SettingsPath = GetSettingsPath();
-        ExcludedChannels = GetExcludedChannels();
     }
 
     private string[]? GetChannels()
     {
         int idx = GetArgIdx("--channels");
-        if (idx == -1)
-        {
-            return null;
-        }
-
-        if (_channelListPattern.IsMatch(_args[idx + 1]))
-        {
-            return _args[idx + 1].Split(',').Select(c => c.ToLower()).ToArray();
-        }
-
-        throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");
-    }
-
-    private string? GetSettingsPath()
-    {
-        int idx = GetArgIdx("--settings");
-        if (idx == -1)
-        {
-            return null;
-        }
-
-        string args = string.Join(' ', _args[idx + 1]);
-        Regex pattern = new("^\".+\"");
-        if (!pattern.IsMatch(args))
-        {
-            return null;
-        }
-
-        args = args[1..];
-        int quoteIdx = args.IndexOf('"');
-        string path = args[..quoteIdx];
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException($"The file ({path}) does not exist");
-        }
-
-        return path;
-    }
-
-    private string[]? GetExcludedChannels()
-    {
-        int idx = GetArgIdx("--excluded-channels");
         if (idx == -1)
         {
             return null;

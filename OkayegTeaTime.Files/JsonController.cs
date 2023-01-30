@@ -12,11 +12,6 @@ public static class JsonController
     private static CommandList? _commandList;
     private static GachiSong[]? _gachiSongs;
 
-    /// <summary>
-    ///     Can be set to use any Settings.json file. If not set, the <see cref="FileLocator" /> will search automatically for a file named "Settings.json".
-    /// </summary>
-    public static string? SettingsPath { get; set; }
-
     public static Settings GetSettings()
     {
         if (_settings is not null)
@@ -24,13 +19,7 @@ public static class JsonController
             return _settings;
         }
 
-        if (string.IsNullOrWhiteSpace(SettingsPath))
-        {
-            SettingsPath = FileLocator.Find(AppSettings.SettingsFileName);
-            Console.WriteLine($"Found Settings file at: {SettingsPath}");
-        }
-
-        _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(SettingsPath));
+        _settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(AppSettings.SettingsFileName));
         return _settings ?? throw new ArgumentNullException(nameof(_settings));
     }
 

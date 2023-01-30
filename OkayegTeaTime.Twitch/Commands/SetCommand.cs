@@ -111,7 +111,7 @@ public readonly unsafe ref struct SetCommand
             }
 
             user.AreSongRequestsEnabled = state.Value;
-            Response->Append("song requests ", state.Value ? "enabled" : "disabled", "for channel ", ChatMessage.Channel);
+            Response->Append("song requests ", state.Value ? "enabled" : "disabled", StringHelper.Whitespace, "for channel ", ChatMessage.Channel);
             return;
         }
 
