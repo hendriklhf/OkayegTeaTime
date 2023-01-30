@@ -26,7 +26,7 @@ public sealed class HangmanGame
     {
         Solution = solution;
         _discoveredWord = new char[solution.Length];
-        Array.Fill(_discoveredWord, '_');
+        ((Span<char>)_discoveredWord).Fill('_');
     }
 
     public int Guess(char c)
