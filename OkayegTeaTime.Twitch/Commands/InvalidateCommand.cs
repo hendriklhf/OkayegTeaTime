@@ -36,6 +36,6 @@ public readonly unsafe ref struct InvalidateCommand
         }
 
         _twitchBot.InvalidateCaches();
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "all database cached have been invalidated");
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, "all database caches have been invalidated");
     }
 }

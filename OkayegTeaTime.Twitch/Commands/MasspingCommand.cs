@@ -85,8 +85,9 @@ public readonly unsafe ref struct MasspingCommand
             chatters = AppSettings.OfflineChatEmotes;
         }
 
-        ReadOnlySpan<char> users = string.Join($" {emote} ", chatters);
-        Response->Append(users);
+        Span<char> joinBuffer = stackalloc char[500];
+        int bufferLength = StringHelper.Join(chatters, $" {emote} ", joinBuffer);
+        Response->Append(joinBuffer[..bufferLength]);
     }
 
     private static string[] GetChatters(string channel)

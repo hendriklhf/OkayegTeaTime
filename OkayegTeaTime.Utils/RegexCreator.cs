@@ -33,21 +33,21 @@ public sealed class RegexCreator
             builder.Append('^');
 
             Span<char> escapedItem = stackalloc char[100];
-            int length = StringHelper.RegexEscape(patternItems[isEmptyAsByte], escapedItem);
+            int length = HLE.StringHelper.RegexEscape(patternItems[isEmptyAsByte], escapedItem);
             builder.Append(escapedItem[..length]);
-            length = StringHelper.RegexEscape(patternItems[++isEmptyAsByte], escapedItem);
+            length = HLE.StringHelper.RegexEscape(patternItems[++isEmptyAsByte], escapedItem);
             builder.Append(escapedItem[..length]);
 
             builder.Append(addition, _patternEnding);
-            string patternKey = builder.ToString();
+            string pattern = builder.ToString();
 
-            if (_cachedPatterns.TryGetValue(patternKey, out Regex? cachedPattern))
+            if (_cachedPatterns.TryGetValue(pattern, out Regex? cachedPattern))
             {
                 return cachedPattern;
             }
 
-            Regex compiledRegex = new(patternKey, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
-            _cachedPatterns.Add(patternKey, compiledRegex);
+            Regex compiledRegex = new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+            _cachedPatterns.Add(pattern, compiledRegex);
             return compiledRegex;
         }
         finally

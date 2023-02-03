@@ -10,13 +10,13 @@ public sealed class Cooldown
 
     public CommandType Type { get; }
 
-    public long Time { get; }
+    public DateTimeOffset Until { get; }
 
     public Cooldown(long userId, int cmdCooldown, CommandType type)
     {
         UserId = userId;
         Type = type;
-        Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + cmdCooldown;
+        Until = DateTimeOffset.UtcNow.AddMilliseconds(cmdCooldown);
     }
 
     public override bool Equals(object? obj)

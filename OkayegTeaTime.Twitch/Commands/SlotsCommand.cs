@@ -64,7 +64,7 @@ public readonly unsafe ref struct SlotsCommand
             emotes = emotes.Where(e => emotePattern.IsMatch(e)).ToArray();
         }
 
-        if (!emotes.Any())
+        if (emotes.Length == 0)
         {
             Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoEmoteMatchingYourProvidedPattern);
             return;
@@ -76,10 +76,11 @@ public readonly unsafe ref struct SlotsCommand
             randomEmotes[i] = emotes.Random()!;
         }
 
-        string msgEmotes = string.Join(' ', randomEmotes);
+        Span<char> joinBuffer = stackalloc char[500];
+        int bufferLength = StringHelper.Join(randomEmotes, ' ', joinBuffer);
         Span<char> lengthChars = stackalloc char[30];
         emotes.Length.TryFormat(lengthChars, out int lengthLength);
         lengthChars = lengthChars[..lengthLength];
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "[ ", msgEmotes, " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty, ")");
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, "[ ", joinBuffer[..bufferLength], " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty, ")");
     }
 }

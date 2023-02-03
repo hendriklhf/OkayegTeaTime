@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using HLE;
-using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Files.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -106,7 +107,9 @@ public readonly unsafe ref struct CheckCommand
                 reminderProps.Add($"Message: {reminder.Message}");
             }
 
-            Response->Append(reminderProps.JoinToString(" || "));
+            Span<char> joinBuffer = stackalloc char[250];
+            int bufferLength = StringHelper.Join(CollectionsMarshal.AsSpan(reminderProps), " || ", joinBuffer);
+            Response->Append(joinBuffer[..bufferLength]);
         }
     }
 }

@@ -9,19 +9,27 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public sealed unsafe class CommandExecutor
+public sealed unsafe class CommandExecutor : IDisposable
 {
+    private readonly TwitchBot _twitchBot;
     private readonly delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>* _executionMethods;
 
     private const ushort _responseBufferSize = 2048;
 
-    public CommandExecutor()
+    public CommandExecutor(TwitchBot twitchBot)
     {
+        _twitchBot = twitchBot;
+
         Span<MethodInfo> methods = typeof(CommandExecutor).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
-        _executionMethods = (delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>*)NativeMemory.Alloc((nuint)methods.Length, (nuint)sizeof(delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>));
+        nuint elementCount = (nuint)methods.Length;
+        nuint elementSize = (nuint)sizeof(delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>);
+        void* ptr = NativeMemory.Alloc(elementCount, elementSize);
+        _executionMethods = (delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>*)ptr;
+
         for (int i = 0; i < methods.Length; i++)
         {
-            _executionMethods[i] = (delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>)methods[i].MethodHandle.GetFunctionPointer();
+            nint functionPtr = methods[i].MethodHandle.GetFunctionPointer();
+            _executionMethods[i] = (delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>)functionPtr;
         }
     }
 
@@ -30,28 +38,30 @@ public sealed unsafe class CommandExecutor
         NativeMemory.Free(_executionMethods);
     }
 
-    public void Execute(CommandType type, TwitchBot twitchBot, TwitchChatMessage chatMessage, string? prefix, string alias)
+    public void Dispose()
     {
-        Span<char> buffer = stackalloc char[_responseBufferSize];
-        StringBuilder response = buffer;
-        // StringBuilder response = stackalloc char[_responseBufferSize];
-        string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
+        GC.SuppressFinalize(this);
+        NativeMemory.Free(_executionMethods);
+    }
+
+    public void Execute(CommandType type, TwitchChatMessage chatMessage, string? prefix, string alias)
+    {
+        StringBuilder response = stackalloc char[_responseBufferSize];
+        string emote = _twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
         response.Append(emote, StringHelper.Whitespace);
 
-        delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void> executionMethod = _executionMethods[(int)type];
-        executionMethod(twitchBot, chatMessage, &response, prefix!, alias);
-        if (response.Length <= emote.Length)
+        _executionMethods[(int)type](_twitchBot, chatMessage, &response, prefix!, alias);
+        if (response.Length <= emote.Length + 1)
         {
             return;
         }
 
-        // if (response.Equals(twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
-        if (((ReadOnlySpan<char>)buffer[..response.Length]).Equals(twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
+        if (response.Equals(_twitchBot.LastMessages[chatMessage.Channel], StringComparison.Ordinal))
         {
             response.Append(AppSettings.ChatterinoChar);
         }
 
-        twitchBot.Send(chatMessage.Channel, response.ToString(), false, true, false);
+        _twitchBot.Send(chatMessage.Channel, response.ToString(), false, true, false);
     }
 
     [UsedImplicitly]

@@ -10,6 +10,7 @@ using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -87,8 +88,10 @@ public readonly unsafe ref struct SpotifyCommand
             }
             case SpotifyTrack track:
             {
-                string artists = string.Join(", ", track.Artists.Select(a => a.Name));
-                Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : returnUrl ? track.Url : track.Uri);
+                string[] artists = track.Artists.Select(a => a.Name).ToArray();
+                Span<char> joinBuffer = stackalloc char[250];
+                int bufferLength = StringHelper.Join(artists, Messages.CommaSpace, joinBuffer);
+                Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : returnUrl ? track.Url : track.Uri);
                 return;
             }
             case SpotifyEpisode episode:

@@ -72,7 +72,7 @@ public sealed class Builder
 
     private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
     {
-        Process buildProcess = new()
+        using Process buildProcess = new()
         {
             StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --no-self-contained {projectPath}")
             {

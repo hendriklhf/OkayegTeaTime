@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE;
-using HLE.Collections;
 using OkayegTeaTime.Files;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -69,7 +68,9 @@ public readonly unsafe ref struct CodeCommand
                     Response->Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
-                    Response->Append("your pattern matched ", lengthChars, " files: ", matchingFiles.JoinToString(Messages.CommaSpace), ". Please specify");
+                    Span<char> joinBuffer = stackalloc char[500];
+                    int bufferLength = StringHelper.Join(matchingFiles, Messages.CommaSpace, joinBuffer);
+                    Response->Append("your pattern matched ", lengthChars, " files: ", joinBuffer[..bufferLength], ". Please specify");
                     break;
                 default:
                     Response->Append("your pattern matched too many (", lengthChars, ") files. Please specify");

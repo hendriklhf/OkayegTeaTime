@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using HLE;
 using OkayegTeaTime.Files;
@@ -19,6 +20,8 @@ public sealed class TwitchChatMessage : TwitchMessage
 
     public long ChannelId { get; }
 
+    public long TmiSentTs { get; }
+
     public bool IsIgnoredUser => CheckIfIsIgnoredUser();
 
     public bool IsBotModerator => CheckIfIsBotModerator();
@@ -31,6 +34,7 @@ public sealed class TwitchChatMessage : TwitchMessage
         IsStaff = chatMessage.IsStaff;
         Message = chatMessage.Message.Replace(AppSettings.ChatterinoChar, string.Empty).TrimAll();
         ChannelId = long.Parse(chatMessage.RoomId);
+        TmiSentTs = long.Parse(chatMessage.TmiSentTs, NumberStyles.Integer, CultureInfo.InvariantCulture);
     }
 
     private bool CheckIfIsIgnoredUser()

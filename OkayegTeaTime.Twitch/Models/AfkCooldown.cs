@@ -9,12 +9,12 @@ public sealed class AfkCooldown
 {
     public long UserId { get; }
 
-    public long Time { get; }
+    public DateTimeOffset Until { get; }
 
     public AfkCooldown(long userId)
     {
         UserId = userId;
-        Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + AppSettings.AfkCooldown;
+        Until = DateTimeOffset.UtcNow.AddMilliseconds(AppSettings.AfkCooldown);
     }
 
     public override bool Equals(object? obj)

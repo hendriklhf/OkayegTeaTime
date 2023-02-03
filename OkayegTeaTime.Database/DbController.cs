@@ -37,7 +37,7 @@ public static class DbController
             }
         }
 
-        OkayegTeaTimeContext database = new();
+        using OkayegTeaTimeContext database = new();
         efUser = new(user.Id, user.Username)
         {
             AfkType = user.AfkType

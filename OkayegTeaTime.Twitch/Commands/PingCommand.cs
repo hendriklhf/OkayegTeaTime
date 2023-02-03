@@ -19,11 +19,9 @@ public readonly unsafe ref struct PingCommand
     public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string? _prefix;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
     public PingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
@@ -38,7 +36,10 @@ public readonly unsafe ref struct PingCommand
     public void Handle()
     {
         Response->Append(ChatMessage.Username, Messages.CommaSpace);
-        Response->Append("Pingeg, I'm here! Uptime: ", _twitchBot.Uptime.ToString("c"));
+        Span<char> buffer = stackalloc char[50];
+        ReadOnlySpan<char> format = stackalloc char[] { 'g' };
+        _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, format, CultureInfo.InvariantCulture);
+        Response->Append("Pingeg, I'm here! Uptime: ", buffer[..bufferLength]);
 
 #if DEBUG
         ReadOnlySpan<char> temperature = GetTemperature();
@@ -48,18 +49,21 @@ public readonly unsafe ref struct PingCommand
         }
 #endif
 
-        Span<char> latencyChars = stackalloc char[30];
-        _twitchBot.Latency.TryFormat(latencyChars, out int latencyLength);
-        latencyChars = latencyChars[..latencyLength];
+        GetMemoryUsage().TryFormat(buffer, out bufferLength, default, CultureInfo.InvariantCulture);
+        Response->Append(" || Memory usage: ", buffer[..bufferLength], "MB || Executed commands: ");
 
-        Response->Append(" || Memory usage: ", GetMemoryUsage().ToString(CultureInfo.InvariantCulture), "MB || Executed commands: ");
-        Response->Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ", latencyChars);
-        Response->Append("ms || Running on .NET ", Environment.Version.ToString(), " || Commit: ", ResourceController.LastCommit);
+        long latency = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ChatMessage.TmiSentTs - 5;
+        latency.TryFormat(buffer, out bufferLength);
+        Response->Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ", buffer[..bufferLength]);
+
+        Environment.Version.TryFormat(buffer, out bufferLength);
+        Response->Append("ms || Running on .NET ", buffer[..bufferLength], " || Commit: ", ResourceController.LastCommit);
     }
 
     private static double GetMemoryUsage()
     {
-        return Process.GetCurrentProcess().PrivateMemorySize64 / UnitPrefix.Mega;
+        double memory = Process.GetCurrentProcess().PrivateMemorySize64 / UnitPrefix.Mega;
+        return Math.Round(memory, 3);
     }
 
 #if DEBUG
@@ -67,7 +71,7 @@ public readonly unsafe ref struct PingCommand
     {
         try
         {
-            Process temperatureProcess = new()
+            using Process temperatureProcess = new()
             {
                 StartInfo = new("vcgencmd", "measure_temp")
                 {

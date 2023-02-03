@@ -62,11 +62,11 @@ public sealed class CooldownController
     {
         Span<Cooldown> cooldowns = CollectionsMarshal.AsSpan(_cooldowns);
         int cooldownsLength = cooldowns.Length;
-        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
         for (int i = 0; i < cooldownsLength; i++)
         {
             Cooldown cooldown = cooldowns[i];
-            if (cooldown.UserId == userId && cooldown.Type == type && cooldown.Time > now)
+            if (cooldown.UserId == userId && cooldown.Type == type && cooldown.Until > now)
             {
                 return true;
             }
@@ -79,11 +79,11 @@ public sealed class CooldownController
     {
         Span<AfkCooldown> cooldowns = CollectionsMarshal.AsSpan(_afkCooldowns);
         int cooldownsLength = cooldowns.Length;
-        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
         for (int i = 0; i < cooldownsLength; i++)
         {
             AfkCooldown cooldown = cooldowns[i];
-            if (cooldown.UserId == userId && cooldown.Time > now)
+            if (cooldown.UserId == userId && cooldown.Until > now)
             {
                 return true;
             }

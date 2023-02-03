@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public sealed class HangmanGame
+public sealed class HangmanGame : IDisposable
 {
     public string Solution { get; }
 
@@ -17,19 +18,28 @@ public sealed class HangmanGame
     public bool IsSolved => DiscoveredWord.Equals(Solution, StringComparison.OrdinalIgnoreCase);
 
     private readonly char[] _discoveredWord;
-    private readonly char[] _wrongChars = new char[26];
+    private readonly char[] _wrongChars;
     private int _wrongCharLength;
+
+    private static readonly ArrayPool<char> _charArrayPool = ArrayPool<char>.Create();
 
     public const int MaxWrongGuesses = 10;
 
     public HangmanGame(string solution)
     {
         Solution = solution;
-        _discoveredWord = new char[solution.Length];
+        _discoveredWord = _charArrayPool.Rent(solution.Length);
         ((Span<char>)_discoveredWord).Fill('_');
+        _wrongChars = _charArrayPool.Rent(26);
     }
 
-    public int Guess(char c)
+    ~HangmanGame()
+    {
+        _charArrayPool.Return(_discoveredWord);
+        _charArrayPool.Return(_wrongChars);
+    }
+
+    public int Guess(char guess)
     {
         ref char firstSolutionChar = ref MemoryMarshal.GetReference<char>(Solution);
         ref char firstDiscoveredWordChar = ref MemoryMarshal.GetReference<char>(_discoveredWord);
@@ -38,12 +48,12 @@ public sealed class HangmanGame
         for (int i = 0; i < solutionLength; i++)
         {
             char solutionChar = Unsafe.Add(ref firstSolutionChar, i);
-            if (solutionChar != c)
+            if (solutionChar != guess)
             {
                 continue;
             }
 
-            Unsafe.Add(ref firstDiscoveredWordChar, i) = c;
+            Unsafe.Add(ref firstDiscoveredWordChar, i) = guess;
             discoveryCount++;
         }
 
@@ -54,19 +64,19 @@ public sealed class HangmanGame
 
         WrongGuesses++;
         Span<char> wrongChars = _wrongChars;
-        if (wrongChars[.._wrongCharLength].Contains(c))
+        if (wrongChars[.._wrongCharLength].Contains(guess))
         {
             return 0;
         }
 
-        wrongChars[_wrongCharLength++] = c;
+        wrongChars[_wrongCharLength++] = guess;
         Array.Sort(_wrongChars, 0, _wrongCharLength);
         return 0;
     }
 
-    public bool Guess(ReadOnlySpan<char> word)
+    public bool Guess(ReadOnlySpan<char> guess)
     {
-        if (!word.Equals(Solution, StringComparison.OrdinalIgnoreCase))
+        if (!guess.Equals(Solution, StringComparison.OrdinalIgnoreCase))
         {
             WrongGuesses++;
             return false;
@@ -74,5 +84,12 @@ public sealed class HangmanGame
 
         Solution.CopyTo(_discoveredWord);
         return true;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _charArrayPool.Return(_discoveredWord);
+        _charArrayPool.Return(_wrongChars);
     }
 }

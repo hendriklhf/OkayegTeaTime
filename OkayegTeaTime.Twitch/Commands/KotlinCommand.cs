@@ -75,7 +75,7 @@ public readonly unsafe ref struct KotlinCommand
                 },
                 confType = "java"
             };
-            StringContent content = new(JsonSerializer.Serialize(contentObj), Encoding.UTF8, "application/json");
+            using StringContent content = new(JsonSerializer.Serialize(contentObj), Encoding.UTF8, "application/json");
             using HttpClient httpClient = new();
             Task<HttpResponseMessage> postTask = httpClient.PostAsync("https://api.kotlinlang.org/api/1.7.20/compiler/run", content);
             postTask.Wait();

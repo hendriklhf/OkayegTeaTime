@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
@@ -23,7 +22,6 @@ public readonly unsafe ref struct HangmanCommand
     private readonly string _alias;
 
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
-    private static readonly Dictionary<string, HangmanGame> _hangmanGames = new();
 
     public HangmanCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
@@ -39,7 +37,7 @@ public readonly unsafe ref struct HangmanCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s[a-z]");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!_hangmanGames.TryGetValue(ChatMessage.Channel, out HangmanGame? game))
+            if (!_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
             {
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoGameRunningYouHaveToStartOneFirst);
                 return;
@@ -52,7 +50,8 @@ public readonly unsafe ref struct HangmanCommand
             if (game.IsSolved)
             {
                 Response->Append(Messages.TheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace, StringHelper.Whitespace);
-                _hangmanGames.Remove(ChatMessage.Channel);
+                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+                game.Dispose();
             }
             else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
             {
@@ -67,7 +66,8 @@ public readonly unsafe ref struct HangmanCommand
             {
                 Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
                 Response->Append(StringHelper.Whitespace, Emoji.Cry, StringHelper.Whitespace);
-                _hangmanGames.Remove(ChatMessage.Channel);
+                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+                game.Dispose();
                 return;
             }
 
@@ -82,7 +82,7 @@ public readonly unsafe ref struct HangmanCommand
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s[a-z]{2,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!_hangmanGames.TryGetValue(ChatMessage.Channel, out HangmanGame? game))
+            if (!_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
             {
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoGameRunningYouHaveToStartOneFirst);
                 return;
@@ -100,7 +100,8 @@ public readonly unsafe ref struct HangmanCommand
                 AppendWrongCharStatus(game);
                 Response->Append(Messages.CommaSpace);
                 AppendGuessStatus(game);
-                _hangmanGames.Remove(ChatMessage.Channel);
+                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+                game.Dispose();
             }
             else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
             {
@@ -115,7 +116,8 @@ public readonly unsafe ref struct HangmanCommand
             {
                 Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
                 Response->Append(StringHelper.Whitespace, Emoji.Cry);
-                _hangmanGames.Remove(ChatMessage.Channel);
+                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+                game.Dispose();
             }
 
             return;
@@ -125,7 +127,7 @@ public readonly unsafe ref struct HangmanCommand
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, Messages.CommaSpace);
-            if (_hangmanGames.TryGetValue(ChatMessage.Channel, out HangmanGame? game))
+            if (_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
             {
                 Response->Append(Messages.ThereIsAlreadyAGameRunning);
             }
@@ -137,8 +139,7 @@ public readonly unsafe ref struct HangmanCommand
 
             Response->Append(Messages.Colon, StringHelper.Whitespace);
             AppendWordStatus(game);
-
-            _hangmanGames.Add(ChatMessage.Channel, game);
+            _twitchBot.HangmanGames.Add(ChatMessage.ChannelId, game);
         }
     }
 

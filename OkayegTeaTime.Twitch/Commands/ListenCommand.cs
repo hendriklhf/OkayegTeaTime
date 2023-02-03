@@ -10,6 +10,7 @@ using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -111,8 +112,10 @@ public readonly unsafe ref struct ListenCommand
             switch (item)
             {
                 case SpotifyTrack track:
-                    string artists = string.Join(Messages.CommaSpace, track.Artists.Select(a => a.Name));
-                    Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : track.Uri);
+                    string[] artists = track.Artists.Select(a => a.Name).ToArray();
+                    Span<char> joinBuffer = stackalloc char[250];
+                    int bufferLength = StringHelper.Join(artists, Messages.CommaSpace, joinBuffer);
+                    Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
                     break;
                 case SpotifyEpisode episode:
                     Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
@@ -173,8 +176,10 @@ public readonly unsafe ref struct ListenCommand
             {
                 case SpotifyTrack track:
                 {
-                    string artists = string.Join(Messages.CommaSpace, track.Artists.Select(a => a.Name));
-                    Response->Append(track.Name, " by ", artists, " || ", track.IsLocal ? "local file" : track.Uri);
+                    string[] artists = track.Artists.Select(a => a.Name).ToArray();
+                    Span<char> joinBuffer = stackalloc char[250];
+                    int bufferLength = StringHelper.Join(artists, Messages.CommaSpace, joinBuffer);
+                    Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
                     break;
                 }
                 case SpotifyEpisode episode:

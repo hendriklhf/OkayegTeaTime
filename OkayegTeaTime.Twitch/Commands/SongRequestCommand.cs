@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE;
-using HLE.Collections;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
@@ -401,16 +400,20 @@ public readonly unsafe ref struct SongRequestCommand
         string[] successUsers = success.Where(t => t.Value is null).Select(t => t.Key.Username.Antiping()).ToArray();
         string[] failedUsers = success.Where(t => t.Value is not null).Select(t => t.Value!).ToArray();
 
+        Span<char> joinBuffer = stackalloc char[500];
+        int bufferLength;
         if (successUsers.Length > 0)
         {
+            bufferLength = StringHelper.Join(successUsers, Messages.CommaSpace, joinBuffer);
             Response->Append(ChatMessage.Username, Messages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
-            Response->Append(" has been added to the queue", successUsers.Length > 1 ? "s of " : " of ", successUsers.JoinToString(Messages.CommaSpace));
+            Response->Append(" has been added to the queue", successUsers.Length > 1 ? "s of " : " of ", joinBuffer[..bufferLength]);
             if (failedUsers.Length == 0)
             {
                 return;
             }
 
-            Response->Append(". ", failedUsers.JoinToString(Messages.CommaSpace));
+            bufferLength = StringHelper.Join(failedUsers, Messages.CommaSpace, joinBuffer);
+            Response->Append(". ", joinBuffer[..bufferLength]);
         }
         else
         {
@@ -427,7 +430,8 @@ public readonly unsafe ref struct SongRequestCommand
                     return;
                 }
 
-                Response->Append(". ", failedUsers.JoinToString(Messages.CommaSpace));
+                bufferLength = StringHelper.Join(failedUsers, Messages.CommaSpace, joinBuffer);
+                Response->Append(". ", joinBuffer[..bufferLength]);
             }
         }
     }

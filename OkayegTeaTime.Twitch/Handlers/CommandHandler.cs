@@ -11,7 +11,7 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public sealed class CommandHandler : Handler
 {
-    private readonly CommandExecutor _commandExecutor = new();
+    private readonly CommandExecutor _commandExecutor;
     private readonly AfkCommandHandler _afkCommandHandler;
     private readonly CooldownController _cooldownController;
 
@@ -21,8 +21,9 @@ public sealed class CommandHandler : Handler
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
-        _cooldownController = new(_twitchBot.CommandController);
+        _cooldownController = new(twitchBot.CommandController);
         _commandTypes = GetHandledCommandTypes();
+        _commandExecutor = new(twitchBot);
     }
 
     public override void Handle(TwitchChatMessage chatMessage)
@@ -59,7 +60,7 @@ public sealed class CommandHandler : Handler
                 }
 
                 _twitchBot.CommandCount++;
-                _commandExecutor.Execute(type, _twitchBot, chatMessage, prefix, alias);
+                _commandExecutor.Execute(type, chatMessage, prefix, alias);
                 _cooldownController.AddCooldown(chatMessage.UserId, type);
                 return true;
             }

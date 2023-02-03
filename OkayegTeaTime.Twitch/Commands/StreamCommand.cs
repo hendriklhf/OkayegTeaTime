@@ -21,7 +21,8 @@ public readonly unsafe ref struct StreamCommand
 
     private readonly long[] _noViewerCount =
     {
-        149489313
+        149489313,
+        35933008
     };
 
     public StreamCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)

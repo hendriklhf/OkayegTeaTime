@@ -147,7 +147,9 @@ public readonly unsafe ref struct RemindCommand
                 return reminder is null ? null : $"{reminder.Target} ({reminder.Id})";
             }).Where(r => r is not null).ToArray()!;
 
-            Response->Append(string.Join(", ", responses));
+            Span<char> joinBuffer = stackalloc char[500];
+            int bufferLength = StringHelper.Join(responses, Messages.CommaSpace, joinBuffer);
+            Response->Append(joinBuffer[..bufferLength]);
         }
     }
 

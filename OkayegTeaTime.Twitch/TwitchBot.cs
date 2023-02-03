@@ -11,6 +11,7 @@ using OkayegTeaTime.Files;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Handlers;
 using OkayegTeaTime.Twitch.Messages;
+using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -47,13 +48,13 @@ public sealed class TwitchBot
 
     public LastMessageController LastMessages { get; }
 
+    public Dictionary<long, HangmanGame> HangmanGames { get; } = new();
+
     public uint CommandCount { get; set; }
 
     public DateTime StartTime { get; } = DateTime.UtcNow;
 
     public TimeSpan Uptime => DateTime.UtcNow - StartTime;
-
-    public long Latency { get; private set; }
 
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
@@ -206,7 +207,6 @@ public sealed class TwitchBot
 
     private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
     {
-        Latency = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - long.Parse(e.ChatMessage.TmiSentTs);
         ConsoleOut($"[TWITCH] <#{e.ChatMessage.Channel}> {e.ChatMessage.Username}: {e.ChatMessage.Message.TrimAll()}");
         _messageHandler.Handle(new(e.ChatMessage));
     }
