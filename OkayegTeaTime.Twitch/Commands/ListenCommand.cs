@@ -85,7 +85,7 @@ public readonly unsafe ref struct ListenCommand
             SpotifyItem item;
             try
             {
-                Task<SpotifyItem> task = SpotifyController.ListenAlongWith(listener, host);
+                Task<SpotifyItem> task = SpotifyController.ListenAlongWithAsync(listener, host);
                 task.Wait();
                 item = task.Result;
             }
@@ -148,7 +148,7 @@ public readonly unsafe ref struct ListenCommand
             SpotifyItem item;
             try
             {
-                Task<SpotifyItem> task = SpotifyController.ListenAlongWith(listener, host);
+                Task<SpotifyItem> task = SpotifyController.ListenAlongWithAsync(listener, host);
                 task.Wait();
                 item = task.Result;
             }

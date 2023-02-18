@@ -41,7 +41,7 @@ public static class SpotifyController
                 }
 
                 SpotifyUser user = new(efUser);
-                SpotifyTrack[] tracks = await GetPlaylistItems(user, AppSettings.Spotify.ChatPlaylistId);
+                SpotifyTrack[] tracks = await GetPlaylistItemsAsync(user, AppSettings.Spotify.ChatPlaylistId);
                 _chatPlaylistUris = tracks.Select(t => t.Uri).ToList();
             }
 
@@ -72,30 +72,30 @@ public static class SpotifyController
         return HttpUtility.UrlDecode(login.ToUri().AbsoluteUri).Replace(" ", "%20");
     }
 
-    private static async Task<string?> GetNewAccessToken(string refreshToken)
+    private static async Task<string?> GetNewAccessTokenAsync(string refreshToken)
     {
         try
         {
             AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
             return response.AccessToken;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // log exception if needed
+            DbController.LogException(ex);
             return null;
         }
     }
 
-    public static async Task<(string AccessToken, string RefreshToken)?> GetNewAuthTokens(string code)
+    public static async Task<(string AccessToken, string RefreshToken)?> GetNewAuthTokensAsync(string code)
     {
         try
         {
             AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
             return (response.AccessToken, response.RefreshToken);
         }
-        catch
+        catch (Exception ex)
         {
-            // log exception if needed
+            DbController.LogException(ex);
             return null;
         }
     }
@@ -128,7 +128,7 @@ public static class SpotifyController
             return new(user.AccessToken);
         }
 
-        string? accessToken = await GetNewAccessToken(user.RefreshToken);
+        string? accessToken = await GetNewAccessTokenAsync(user.RefreshToken);
         if (accessToken is null)
         {
             return null;
@@ -183,7 +183,7 @@ public static class SpotifyController
         thread.Start();
     }
 
-    private static async Task<SpotifyTrack[]> GetPlaylistItems(SpotifyUser user, string playlistUri)
+    private static async Task<SpotifyTrack[]> GetPlaylistItemsAsync(SpotifyUser user, string playlistUri)
     {
         SpotifyClient? client = await GetClient(user);
         if (client is null)
@@ -226,7 +226,7 @@ public static class SpotifyController
         return result.ToArray();
     }
 
-    public static async Task<SpotifyTrack> AddToQueue(SpotifyUser user, string song)
+    public static async Task<SpotifyTrack> AddToQueueAsync(SpotifyUser user, string song)
     {
         if (!user.AreSongRequestsEnabled)
         {
@@ -236,7 +236,7 @@ public static class SpotifyController
         string? uri = ParseSongToUri(song);
         if (uri is null)
         {
-            SpotifyTrack? searchResult = await SearchTrack(user, song);
+            SpotifyTrack? searchResult = await SearchTrackAsync(user, song);
             uri = searchResult?.Uri;
         }
 
@@ -269,7 +269,7 @@ public static class SpotifyController
         }
     }
 
-    public static async Task Skip(SpotifyUser user)
+    public static async Task SkipAsync(SpotifyUser user)
     {
         if (!user.AreSongRequestsEnabled)
         {
@@ -311,14 +311,14 @@ public static class SpotifyController
         return session;
     }
 
-    public static async Task<SpotifyItem> ListenAlongWith(SpotifyUser listener, SpotifyUser host)
+    public static async Task<SpotifyItem> ListenAlongWithAsync(SpotifyUser listener, SpotifyUser host)
     {
         if (string.Equals(host.Username, listener.Username, StringComparison.OrdinalIgnoreCase))
         {
             throw new SpotifyException("you can't listen to yourself :)");
         }
 
-        CurrentlyPlayingContext? playback = await GetCurrentlyPlayingContext(host);
+        CurrentlyPlayingContext? playback = await GetCurrentlyPlayingContextAsync(host);
         if (playback is null)
         {
             throw new SpotifyException($"{host.Username.Antiping()} isn't listening to anything at the moment");
@@ -332,7 +332,7 @@ public static class SpotifyController
         };
 
         int seekTo = playback.ProgressMs > 500 ? playback.ProgressMs : 0;
-        await ListenTo(listener, item, seekTo);
+        await ListenToAsync(listener, item, seekTo);
         ListeningSession? listenerSession = GetListeningSession(listener);
         if (listenerSession is not null)
         {
@@ -352,7 +352,7 @@ public static class SpotifyController
         return item;
     }
 
-    public static async Task ListenTo(SpotifyUser user, SpotifyItem item, int seekToMs = 0)
+    public static async Task ListenToAsync(SpotifyUser user, SpotifyItem item, int seekToMs = 0)
     {
         try
         {
@@ -396,7 +396,7 @@ public static class SpotifyController
         }
     }
 
-    public static async Task<SpotifyItem?> GetCurrentlyPlayingItem(SpotifyUser user)
+    public static async Task<SpotifyItem?> GetCurrentlyPlayingItemAsync(SpotifyUser user)
     {
         CurrentlyPlaying? currentlyPlaying;
         try
@@ -473,7 +473,7 @@ public static class SpotifyController
         return item;
     }
 
-    public static async Task<SpotifyTrack?> SearchTrack(SpotifyUser user, string query)
+    public static async Task<SpotifyTrack?> SearchTrackAsync(SpotifyUser user, string query)
     {
         SpotifyClient? client = await GetClient(user);
         if (client is null)
@@ -517,7 +517,7 @@ public static class SpotifyController
         }
     }
 
-    private static async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContext(SpotifyUser user)
+    private static async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContextAsync(SpotifyUser user)
     {
         SpotifyClient? client = await GetClient(user);
         if (client is null)
@@ -538,5 +538,24 @@ public static class SpotifyController
     public static SpotifyUser? GetListeningTo(SpotifyUser listener)
     {
         return _listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
+    }
+
+    public static async Task<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
+    {
+        SpotifyClient? client = await GetClient(user);
+        if (client is null)
+        {
+            throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
+        }
+
+        if (track.Artists.Count == 1)
+        {
+            FullArtist artist = await client.Artists.Get(track.Artists[0].Id);
+            return artist.Genres.ToArray();
+        }
+
+        List<string> artistIds = track.Artists.Select(a => a.Id).ToList();
+        ArtistsResponse artists = await client.Artists.GetSeveral(new(artistIds));
+        return artists.Artists.Select(a => a.Genres).SelectMany(a => a).Distinct().ToArray();
     }
 }

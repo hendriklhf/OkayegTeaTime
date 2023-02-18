@@ -19,6 +19,8 @@ public readonly unsafe ref struct GuidCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
+    private const string _guidFormat = "D";
+
     public GuidCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
@@ -31,10 +33,8 @@ public readonly unsafe ref struct GuidCommand
     public void Handle()
     {
         Guid guid = Guid.NewGuid();
-        Span<char> format = stackalloc char[1];
-        format[0] = 'D';
         Span<char> chars = stackalloc char[50];
-        guid.TryFormat(chars, out int guidLength, format);
+        guid.TryFormat(chars, out int guidLength, _guidFormat);
         chars = chars[..guidLength];
         Response->Append(ChatMessage.Username, Messages.CommaSpace, chars);
     }

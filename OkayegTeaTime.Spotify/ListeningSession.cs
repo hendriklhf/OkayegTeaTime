@@ -36,7 +36,7 @@ public sealed class ListeningSession
         SpotifyItem? song;
         try
         {
-            song = await SpotifyController.GetCurrentlyPlayingItem(Host);
+            song = await SpotifyController.GetCurrentlyPlayingItemAsync(Host);
         }
         catch (SpotifyException)
         {
@@ -60,7 +60,7 @@ public sealed class ListeningSession
         {
             try
             {
-                await SpotifyController.ListenTo(listener, song);
+                await SpotifyController.ListenToAsync(listener, song);
             }
             catch (SpotifyException)
             {

@@ -48,16 +48,13 @@ public readonly unsafe ref struct CodeCommand
             {
                 filePattern = new(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             }
-            catch (Exception)
+            catch (ArgumentException)
             {
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.TheGivenPatternIsInvalid);
                 return;
             }
 
             string[] matchingFiles = _codeFiles!.Where(f => filePattern.IsMatch(f)).ToArray();
-            Span<char> lengthChars = stackalloc char[30];
-            matchingFiles.Length.TryFormat(lengthChars, out int lengthLength);
-            lengthChars = lengthChars[..lengthLength];
             Response->Append(ChatMessage.Username, Messages.CommaSpace);
             switch (matchingFiles.Length)
             {
@@ -70,10 +67,14 @@ public readonly unsafe ref struct CodeCommand
                 case <= 5:
                     Span<char> joinBuffer = stackalloc char[500];
                     int bufferLength = StringHelper.Join(matchingFiles, Messages.CommaSpace, joinBuffer);
-                    Response->Append("your pattern matched ", lengthChars, " files: ", joinBuffer[..bufferLength], ". Please specify");
+                    Response->Append("your pattern matched ");
+                    Response->Append(matchingFiles.Length);
+                    Response->Append(" files: ", joinBuffer[..bufferLength], ". Please specify");
                     break;
                 default:
-                    Response->Append("your pattern matched too many (", lengthChars, ") files. Please specify");
+                    Response->Append("your pattern matched too many (");
+                    Response->Append(matchingFiles.Length);
+                    Response->Append(") files. Please specify");
                     break;
             }
         }

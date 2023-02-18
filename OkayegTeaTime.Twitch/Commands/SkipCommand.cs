@@ -52,7 +52,7 @@ public readonly unsafe ref struct SkipCommand
 
         try
         {
-            SpotifyController.Skip(user).Wait();
+            SpotifyController.SkipAsync(user).Wait();
             Response->Append(ChatMessage.Username, Messages.CommaSpace, "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
         }
         catch (SpotifyException ex)
@@ -85,7 +85,7 @@ public readonly unsafe ref struct SkipCommand
         {
             try
             {
-                SpotifyController.ListenAlongWith(listener, user).Wait();
+                SpotifyController.ListenAlongWithAsync(listener, user).Wait();
             }
             catch (Exception)
             {

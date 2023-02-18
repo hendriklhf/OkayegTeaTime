@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using HLE;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -46,9 +45,6 @@ public readonly unsafe ref struct IdCommand
             userId = ChatMessage.UserId;
         }
 
-        Span<char> userIdChars = stackalloc char[30];
-        userId.TryFormat(userIdChars, out int userIdLength);
-        userIdChars = userIdChars[..userIdLength];
-        Response->Append(userIdChars);
+        Response->Append(userId);
     }
 }

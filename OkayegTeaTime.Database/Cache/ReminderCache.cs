@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
@@ -30,26 +29,25 @@ public sealed class ReminderCache : DbCache<Reminder>
         return id;
     }
 
-    public int[] AddRange(IEnumerable<Reminder> reminders)
+    public int[] AddRange(Reminder[] reminders)
     {
-        Reminder[] rmdrs = reminders.ToArray();
-        int[] ids = new int[rmdrs.Length];
-        for (int i = 0; i < rmdrs.Length; i++)
+        int[] ids = new int[reminders.Length];
+        for (int i = 0; i < reminders.Length; i++)
         {
-            if (HasTooManyRemindersSet(rmdrs[i].Target, rmdrs[i].ToTime > 0))
+            if (HasTooManyRemindersSet(reminders[i].Target, reminders[i].ToTime > 0))
             {
                 ids[i] = -1;
                 continue;
             }
 
-            ids[i] = DbController.AddReminder(new(rmdrs[i]));
+            ids[i] = DbController.AddReminder(new(reminders[i]));
             if (ids[i] == -1)
             {
                 continue;
             }
 
-            rmdrs[i].Id = ids[i];
-            _items.Add(rmdrs[i]);
+            reminders[i].Id = ids[i];
+            _items.Add(reminders[i]);
         }
 
         return ids;

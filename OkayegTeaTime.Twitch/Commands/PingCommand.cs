@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using HLE;
-using HLE.Collections;
 using HLE.Maths;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -24,6 +23,8 @@ public readonly unsafe ref struct PingCommand
     [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
+    private const string _uptimeFormat = "g";
+
     public PingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
@@ -37,8 +38,7 @@ public readonly unsafe ref struct PingCommand
     {
         Response->Append(ChatMessage.Username, Messages.CommaSpace);
         Span<char> buffer = stackalloc char[50];
-        ReadOnlySpan<char> format = stackalloc char[] { 'g' };
-        _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, format, CultureInfo.InvariantCulture);
+        _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, _uptimeFormat, CultureInfo.InvariantCulture);
         Response->Append("Pingeg, I'm here! Uptime: ", buffer[..bufferLength]);
 
 #if DEBUG
@@ -52,9 +52,9 @@ public readonly unsafe ref struct PingCommand
         GetMemoryUsage().TryFormat(buffer, out bufferLength, default, CultureInfo.InvariantCulture);
         Response->Append(" || Memory usage: ", buffer[..bufferLength], "MB || Executed commands: ");
 
+        Response->Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ");
         long latency = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ChatMessage.TmiSentTs - 5;
-        latency.TryFormat(buffer, out bufferLength);
-        Response->Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ", buffer[..bufferLength]);
+        Response->Append(latency);
 
         Environment.Version.TryFormat(buffer, out bufferLength);
         Response->Append("ms || Running on .NET ", buffer[..bufferLength], " || Commit: ", ResourceController.LastCommit);
@@ -83,9 +83,8 @@ public readonly unsafe ref struct PingCommand
             ReadOnlySpan<char> output = temperatureProcess.StandardOutput.ReadToEnd();
             Span<Range> ranges = stackalloc Range[output.Length];
             output.GetRangesOfSplit('=', ranges);
-            ReadOnlySpan<char> temperature = output[ranges[1]];
-            Span<char> tempSpan = temperature.AsMutableSpan();
-            tempSpan[4] = '°';
+            Span<char> temperature = output[ranges[1]].AsMutableSpan();
+            temperature[4] = '°';
             return temperature;
         }
         catch

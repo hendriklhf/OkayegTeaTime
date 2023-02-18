@@ -114,10 +114,9 @@ public readonly unsafe ref struct RemindCommand
             }
 
             Response->Append("set a ", toTime == 0 ? string.Empty : "timed ", "reminder for ", targets[0] == ChatMessage.Username ? "yourself" : targets[0]);
-            Span<char> idChars = stackalloc char[30];
-            id.TryFormat(idChars, out int idLength);
-            idChars = idChars[..idLength];
-            Response->Append(" (ID: ", idChars, ")");
+            Response->Append(" (ID: ");
+            Response->Append(id);
+            Response->Append(')');
         }
         else
         {

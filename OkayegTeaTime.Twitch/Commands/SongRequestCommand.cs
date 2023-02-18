@@ -53,7 +53,7 @@ public readonly unsafe ref struct SongRequestCommand
             SpotifyItem? item;
             try
             {
-                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(user);
+                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItemAsync(user);
                 task.Wait();
                 item = task.Result;
             }
@@ -95,7 +95,7 @@ public readonly unsafe ref struct SongRequestCommand
             {
                 try
                 {
-                    SpotifyController.AddToQueue(target, track.Uri).Wait();
+                    SpotifyController.AddToQueueAsync(target, track.Uri).Wait();
                     success.Add(target, null);
                 }
                 catch (SpotifyException ex)
@@ -136,7 +136,7 @@ public readonly unsafe ref struct SongRequestCommand
             SpotifyItem? item;
             try
             {
-                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(target);
+                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItemAsync(target);
                 task.Wait();
                 item = task.Result;
             }
@@ -167,7 +167,7 @@ public readonly unsafe ref struct SongRequestCommand
 
             try
             {
-                SpotifyController.AddToQueue(user, item.Uri).Wait();
+                SpotifyController.AddToQueueAsync(user, item.Uri).Wait();
             }
             catch (SpotifyException ex)
             {
@@ -212,7 +212,7 @@ public readonly unsafe ref struct SongRequestCommand
             SpotifyTrack? track = null;
             try
             {
-                Task<SpotifyTrack?> task = SpotifyController.SearchTrack(targets[0], song);
+                Task<SpotifyTrack?> task = SpotifyController.SearchTrackAsync(targets[0], song);
                 task.Wait();
                 track = task.Result;
             }
@@ -245,7 +245,7 @@ public readonly unsafe ref struct SongRequestCommand
             {
                 try
                 {
-                    SpotifyController.AddToQueue(target, track.Uri).Wait();
+                    SpotifyController.AddToQueueAsync(target, track.Uri).Wait();
                     success.Add(target, null);
                 }
                 catch (SpotifyException ex)
@@ -279,7 +279,7 @@ public readonly unsafe ref struct SongRequestCommand
             SpotifyItem? item;
             try
             {
-                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(user);
+                Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItemAsync(user);
                 task.Wait();
                 item = task.Result;
             }
@@ -317,7 +317,7 @@ public readonly unsafe ref struct SongRequestCommand
 
             try
             {
-                SpotifyController.AddToQueue(target, item.Uri).Wait();
+                SpotifyController.AddToQueueAsync(target, item.Uri).Wait();
             }
             catch (SpotifyException ex)
             {
@@ -360,7 +360,7 @@ public readonly unsafe ref struct SongRequestCommand
 
             try
             {
-                Task<SpotifyTrack> task = SpotifyController.AddToQueue(target, ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]);
+                Task<SpotifyTrack> task = SpotifyController.AddToQueueAsync(target, ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]);
                 task.Wait();
                 SpotifyTrack track = task.Result;
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);

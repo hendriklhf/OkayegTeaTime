@@ -53,7 +53,7 @@ public readonly unsafe ref struct SlotsCommand
         IEnumerable<string> sevenTvEmotes = _twitchBot.EmoteController.GetSevenTvEmotes(ChatMessage.ChannelId).Select(e => e.Name).Concat(_twitchBot.EmoteController.SevenTvGlobalEmotes.Select(e => e.Name));
         string[] emotes = ffzEmotes.Concat(bttvEmotes).Concat(sevenTvEmotes).ToArray();
 
-        if (!emotes.Any())
+        if (emotes.Length == 0)
         {
             Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
             return;

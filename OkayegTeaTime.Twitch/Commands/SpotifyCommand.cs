@@ -55,7 +55,7 @@ public readonly unsafe ref struct SpotifyCommand
         SpotifyItem? item;
         try
         {
-            Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItem(user);
+            Task<SpotifyItem?> task = SpotifyController.GetCurrentlyPlayingItemAsync(user);
             task.Wait();
             item = task.Result;
         }

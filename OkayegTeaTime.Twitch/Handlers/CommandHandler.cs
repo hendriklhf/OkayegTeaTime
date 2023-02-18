@@ -110,6 +110,6 @@ public sealed class CommandHandler : Handler
             commandTypes[i] = commands[i].GetCustomAttribute<HandledCommandAttribute>()!.CommandType;
         }
 
-        return commandTypes.ToArray();
+        return commandTypes;
     }
 }

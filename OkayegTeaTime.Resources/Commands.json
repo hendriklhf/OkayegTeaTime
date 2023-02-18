@@ -650,9 +650,9 @@
         "[word]"
       ],
       "ParameterDescriptions": [
-        "",
-        "",
-        ""
+        "Starts a new game",
+        "Guesses a char",
+        "Guesses a word"
       ],
       "Cooldown": 5000,
       "Document": true

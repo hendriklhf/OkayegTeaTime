@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj"/>
+    <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj" />
   </ItemGroup>
 
 </Project>

@@ -23,8 +23,8 @@ public sealed unsafe class CommandExecutor : IDisposable
         Span<MethodInfo> methods = typeof(CommandExecutor).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
         nuint elementCount = (nuint)methods.Length;
         nuint elementSize = (nuint)sizeof(delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>);
-        void* ptr = NativeMemory.Alloc(elementCount, elementSize);
-        _executionMethods = (delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>*)ptr;
+        void* executionMethodsPointer = NativeMemory.Alloc(elementCount, elementSize);
+        _executionMethods = (delegate*<TwitchBot, TwitchChatMessage, StringBuilder*, string?, string, void>*)executionMethodsPointer;
 
         for (int i = 0; i < methods.Length; i++)
         {
