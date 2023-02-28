@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using HLE;
-using HLE.Collections;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
+using Random = HLE.Random;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Pick)]
 public readonly unsafe ref struct PickCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -18,7 +19,7 @@ public readonly unsafe ref struct PickCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public PickCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public PickCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -36,8 +37,9 @@ public readonly unsafe ref struct PickCommand
             return;
         }
 
-        Span<string> split = ChatMessage.Split;
-        Span<string> pickOptions = split[1..];
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, pickOptions.Random());
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        int randomIndex = Random.Int(1, messageExtension.Split.Length - 1);
+        ReadOnlySpan<char> randomPick = messageExtension.Split[randomIndex];
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, randomPick);
     }
 }

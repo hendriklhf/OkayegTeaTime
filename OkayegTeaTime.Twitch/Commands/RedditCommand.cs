@@ -6,8 +6,9 @@ using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
 using HLE.Emojis;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -18,7 +19,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Reddit)]
 public readonly unsafe ref struct RedditCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -26,11 +27,11 @@ public readonly unsafe ref struct RedditCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    private static readonly Dictionary<string, RedditPost[]> _redditPosts = new();
+    private static readonly Dictionary<string, RedditPost[]> _redditPostCache = new();
     private static readonly TimeSpan _cacheTime = TimeSpan.FromHours(1);
     private static readonly Func<RedditPost, bool> _postFilter = rp => rp is { Pinned: false, IsNsfw: false };
 
-    public RedditCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public RedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -44,7 +45,8 @@ public readonly unsafe ref struct RedditCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            RedditPost[]? posts = GetRedditPosts(ChatMessage.LowerSplit[1]);
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            RedditPost[]? posts = GetRedditPosts(new(messageExtension.LowerSplit[1]));
             if (posts is null)
             {
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
@@ -71,7 +73,7 @@ public readonly unsafe ref struct RedditCommand
     {
         try
         {
-            if (_redditPosts.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > DateTime.UtcNow)
+            if (_redditPostCache.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > DateTime.UtcNow)
             {
                 return redditPosts;
             }
@@ -96,9 +98,9 @@ public readonly unsafe ref struct RedditCommand
                 return null;
             }
 
-            if (!_redditPosts.TryAdd(subReddit, redditPosts))
+            if (!_redditPostCache.TryAdd(subReddit, redditPosts))
             {
-                _redditPosts[subReddit] = redditPosts;
+                _redditPostCache[subReddit] = redditPosts;
             }
 
             return redditPosts;

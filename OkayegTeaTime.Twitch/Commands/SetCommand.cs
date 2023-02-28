@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using HLE;
+using HLE.Memory;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
+using Channel = OkayegTeaTime.Database.Models.Channel;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Set)]
 public readonly unsafe ref struct SetCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -22,7 +25,7 @@ public readonly unsafe ref struct SetCommand
     private static readonly Regex _enabledPattern = new(@"(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
     private static readonly Regex _disabledPattern = new(@"(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public SetCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SetCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -36,9 +39,10 @@ public readonly unsafe ref struct SetCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModOrTheBroadcaster);
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOrTheBroadcaster);
                 return;
             }
 
@@ -49,7 +53,13 @@ public readonly unsafe ref struct SetCommand
                 return;
             }
 
-            string prefix = ChatMessage.LowerSplit[2][..(ChatMessage.LowerSplit[2].Length > AppSettings.MaxPrefixLength ? AppSettings.MaxPrefixLength : ChatMessage.LowerSplit[2].Length)];
+            ReadOnlySpan<char> prefixSpan = messageExtension.LowerSplit[2];
+            if (prefixSpan.Length > AppSettings.MaxPrefixLength)
+            {
+                prefixSpan = prefixSpan[..AppSettings.MaxPrefixLength];
+            }
+
+            string prefix = new(prefixSpan);
             channel.Prefix = prefix;
             Response->Append(ChatMessage.Username, Messages.CommaSpace, "prefix set to: ", prefix);
             return;
@@ -58,13 +68,13 @@ public readonly unsafe ref struct SetCommand
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
             {
-                Response->Append(ChatMessage.Username, Messages.YouArentAModOrTheBroadcaster);
+                Response->Append(ChatMessage.Username, Messages.YouArentAModeratorOrTheBroadcaster);
                 return;
             }
 
-            string emote = ChatMessage.Split[2][..(ChatMessage.Split[2].Length > AppSettings.MaxEmoteInFrontLength ? AppSettings.MaxEmoteInFrontLength : ChatMessage.Split[2].Length)];
             Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
             if (channel is null)
             {
@@ -72,6 +82,13 @@ public readonly unsafe ref struct SetCommand
                 return;
             }
 
+            ReadOnlySpan<char> emoteSpan = messageExtension.Split[2];
+            if (emoteSpan.Length > AppSettings.MaxEmoteInFrontLength)
+            {
+                emoteSpan = emoteSpan[..AppSettings.MaxPrefixLength];
+            }
+
+            string emote = new(emoteSpan);
             channel.Emote = emote;
             Response->Append(ChatMessage.Username, Messages.CommaSpace, "emote set to: ", emote);
             return;
@@ -81,18 +98,19 @@ public readonly unsafe ref struct SetCommand
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Response->Append(ChatMessage.Username, Messages.CommaSpace);
-            if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
             {
                 Response->Append(Messages.YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings);
                 return;
             }
 
             bool? state = null;
-            if (_enabledPattern.IsMatch(ChatMessage.Split[2]))
+            if (_enabledPattern.IsMatch(messageExtension.Split[2]))
             {
                 state = true;
             }
-            else if (_disabledPattern.IsMatch(ChatMessage.Split[2]))
+            else if (_disabledPattern.IsMatch(messageExtension.Split[2]))
             {
                 state = false;
             }
@@ -118,8 +136,14 @@ public readonly unsafe ref struct SetCommand
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\slocation\s((private)|(public))\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string city = string.Join(' ', ChatMessage.Split, 3, ChatMessage.Split.Length - 3);
-            bool isPrivate = ChatMessage.LowerSplit[2][1] == 'r';
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.Split.GetSplits();
+
+            Span<char> cityBuffer = stackalloc char[500];
+            int cityBufferLength = StringHelper.Join(splits, ' ', cityBuffer);
+            string city = new(cityBuffer[..cityBufferLength]);
+
+            bool isPrivate = messageExtension.LowerSplit[2][1] == 'r';
             User? user = _twitchBot.Users[ChatMessage.UserId];
             if (user is null)
             {

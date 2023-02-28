@@ -1,7 +1,7 @@
 ﻿using System;
 using HLE;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Models;
@@ -17,8 +17,8 @@ public sealed class AfkMessage
                 return _comingBack;
             }
 
-            TimeSpan span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(_user.AfkTime);
-            _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username).Replace("{time}", $"{span.Format()} ago").Replace("{message}", _user.AfkMessage);
+            TimeSpan afkTime = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(_user.AfkTime);
+            _comingBack = _afkCommand.ComingBack.Replace("{username}", _user.Username).Replace("{time}", $"{afkTime.Format()} ago").Replace("{message}", _user.AfkMessage);
             _comingBack = string.IsNullOrWhiteSpace(_user.AfkMessage) ? _comingBack.Replace(":", string.Empty).TrimAll() : _comingBack;
             return _comingBack;
         }

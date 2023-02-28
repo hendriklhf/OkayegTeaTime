@@ -12,7 +12,7 @@ public sealed class SolutionCleaner
         "OkayegTeaTime/bin/",
         "OkayegTeaTime.Api/bin/",
         "OkayegTeaTime.Database/bin/",
-        "OkayegTeaTime.Files/bin/",
+        "OkayegTeaTime.Settings/bin/",
         "OkayegTeaTime.Resources/bin/",
         "OkayegTeaTime.Spotify/bin/",
         "OkayegTeaTime.Tests/bin/",

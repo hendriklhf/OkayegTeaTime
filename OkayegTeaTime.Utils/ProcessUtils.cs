@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Utils;
 

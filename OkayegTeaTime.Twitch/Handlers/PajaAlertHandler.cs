@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using HLE.Emojis;
-using OkayegTeaTime.Files;
-using OkayegTeaTime.Twitch.Models;
+using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
@@ -15,7 +15,7 @@ public sealed class PajaAlertHandler : PajaHandler
     {
     }
 
-    public override void Handle(TwitchChatMessage chatMessage)
+    public override void Handle(ChatMessage chatMessage)
     {
         if (chatMessage.ChannelId != _pajaChannelId || chatMessage.UserId != _pajaAlertUserId || !Pattern.IsMatch(chatMessage.Message))
         {

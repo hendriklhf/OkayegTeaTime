@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using HLE.Collections;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
 using TwitchLib.Api;
 using TwitchLib.Api.Core.Enums;

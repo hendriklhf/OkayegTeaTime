@@ -1,7 +1,7 @@
 ﻿using System;
 using HLE;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 

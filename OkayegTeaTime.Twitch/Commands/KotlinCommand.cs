@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -17,7 +18,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Kotlin)]
 public readonly unsafe ref struct KotlinCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -36,7 +37,7 @@ public readonly unsafe ref struct KotlinCommand
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -50,7 +51,8 @@ public readonly unsafe ref struct KotlinCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            string code = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
             string result = GetProgramOutput(code);
             Response->Append(ChatMessage.Username, Messages.CommaSpace, result);
         }

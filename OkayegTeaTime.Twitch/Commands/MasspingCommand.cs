@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.Collections.Frozen;
 using System.Text.Json;
 using HLE;
-using OkayegTeaTime.Files;
+using HLE.Memory;
+using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -15,23 +15,21 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Massping)]
 public readonly unsafe ref struct MasspingCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    // ReSharper disable once NotAccessedField.Local
     private readonly string? _prefix;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    // ReSharper disable once NotAccessedField.Local
     private readonly string _alias;
 
-    private static readonly long[] _disabledChannels =
+    private static readonly FrozenSet<long> _disabledChannels = new long[]
     {
         35933008,
         93156665
-    };
+    }.ToFrozenSet();
 
     private static readonly string[] _chatRoles =
     {
@@ -44,7 +42,7 @@ public readonly unsafe ref struct MasspingCommand
         "viewers"
     };
 
-    public MasspingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public MasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -61,18 +59,19 @@ public readonly unsafe ref struct MasspingCommand
             return;
         }
 
-        if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        if (!ChatMessage.IsModerator || !messageExtension.IsBroadcaster)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
-        string emote = ChatMessage.Split.Length > 1 ? ChatMessage.Split[1] : channelEmote;
-        string[] chatters;
+        ReadOnlySpan<char> emote = messageExtension.Split.Length > 1 ? messageExtension.Split[1] : channelEmote;
+        using PoolBufferWriter<string> chatters = new(50, 50);
         if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
         {
-            chatters = GetChatters(ChatMessage.Channel);
+            GetChatters(ChatMessage.Channel, chatters);
             if (chatters.Length == 0)
             {
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.AnErrorOccurredOrThereAreNoChattersInThisChannel);
@@ -82,35 +81,42 @@ public readonly unsafe ref struct MasspingCommand
         else
         {
             Response->Append("OkayegTeaTime", StringHelper.Whitespace, emote, StringHelper.Whitespace);
-            chatters = AppSettings.OfflineChatEmotes;
+            int emotesLength = AppSettings.OfflineChatEmotes.Length;
+            AppSettings.OfflineChatEmotes.CopyTo(chatters.GetSpan(emotesLength));
+            chatters.Advance(emotesLength);
         }
 
+        Span<char> separator = stackalloc char[emote.Length + 2];
+        separator[0] = ' ';
+        separator[^1] = ' ';
+        emote.CopyTo(separator[1..]);
+
         Span<char> joinBuffer = stackalloc char[500];
-        int bufferLength = StringHelper.Join(chatters, $" {emote} ", joinBuffer);
-        Response->Append(joinBuffer[..bufferLength]);
+        int joinBufferLength = StringHelper.Join(chatters.WrittenSpan, separator, joinBuffer);
+        Response->Append(joinBuffer[..joinBufferLength]);
     }
 
-    private static string[] GetChatters(string channel)
+    private static void GetChatters(string channel, PoolBufferWriter<string> chatters)
     {
         HttpGet request = new($"https://tmi.twitch.tv/group/user/{channel}/chatters");
         if (request.Result is null)
         {
-            return Array.Empty<string>();
+            return;
         }
 
         JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
-        List<string> result = new();
-        JsonElement chatters = json.GetProperty("chatters");
+        JsonElement jsonChatters = json.GetProperty("chatters");
         foreach (string role in _chatRoles)
         {
-            JsonElement chatterList = chatters.GetProperty(role);
+            JsonElement chatterList = jsonChatters.GetProperty(role);
             int chatterLength = chatterList.GetArrayLength();
+            Span<string> channelDestination = chatters.GetSpan(chatterLength);
             for (int i = 0; i < chatterLength; i++)
             {
-                result.Add(chatterList[i].GetString()!);
+                channelDestination[i] = chatterList[i].GetString()!;
             }
-        }
 
-        return result.ToArray();
+            chatters.Advance(chatterLength);
+        }
     }
 }

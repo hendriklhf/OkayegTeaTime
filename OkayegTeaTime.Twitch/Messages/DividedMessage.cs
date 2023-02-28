@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using HLE;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Twitch.Messages;
 

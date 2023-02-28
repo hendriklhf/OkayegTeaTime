@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 #nullable disable
 
@@ -31,7 +31,7 @@ public class OkayegTeaTimeContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseMySQL(AppSettings.DbConnection.ConnectionString);
+            optionsBuilder.UseMySQL(AppSettings.DatabaseConnection.ConnectionString);
         }
     }
 

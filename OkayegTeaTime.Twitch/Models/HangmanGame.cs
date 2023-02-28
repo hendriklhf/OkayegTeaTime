@@ -21,22 +21,20 @@ public sealed class HangmanGame : IDisposable
     private readonly char[] _wrongChars;
     private int _wrongCharLength;
 
-    private static readonly ArrayPool<char> _charArrayPool = ArrayPool<char>.Create();
-
     public const int MaxWrongGuesses = 10;
 
     public HangmanGame(string solution)
     {
         Solution = solution;
-        _discoveredWord = _charArrayPool.Rent(solution.Length);
+        _discoveredWord = ArrayPool<char>.Shared.Rent(solution.Length);
         ((Span<char>)_discoveredWord).Fill('_');
-        _wrongChars = _charArrayPool.Rent(26);
+        _wrongChars = ArrayPool<char>.Shared.Rent(26);
     }
 
     ~HangmanGame()
     {
-        _charArrayPool.Return(_discoveredWord);
-        _charArrayPool.Return(_wrongChars);
+        ArrayPool<char>.Shared.Return(_discoveredWord);
+        ArrayPool<char>.Shared.Return(_wrongChars);
     }
 
     public int Guess(char guess)
@@ -89,7 +87,7 @@ public sealed class HangmanGame : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        _charArrayPool.Return(_discoveredWord);
-        _charArrayPool.Return(_wrongChars);
+        ArrayPool<char>.Shared.Return(_discoveredWord);
+        ArrayPool<char>.Shared.Return(_wrongChars);
     }
 }

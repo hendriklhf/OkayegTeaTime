@@ -1,7 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public abstract class PajaHandler : Handler
 {
     private protected const int _pajaAlertUserId = 82008718;

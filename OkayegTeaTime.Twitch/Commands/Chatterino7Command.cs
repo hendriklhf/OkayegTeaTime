@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -10,7 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 public readonly unsafe ref struct Chatterino7Command
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -20,7 +21,7 @@ public readonly unsafe ref struct Chatterino7Command
 
     private const string _response = "Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
 
-    public Chatterino7Command(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public Chatterino7Command(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

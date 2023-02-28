@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
+using HLE.Memory;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -12,7 +15,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Slots)]
 public readonly unsafe ref struct SlotsCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -22,7 +25,7 @@ public readonly unsafe ref struct SlotsCommand
 
     private const byte _emoteSlotCount = 3;
 
-    public SlotsCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -39,7 +42,8 @@ public readonly unsafe ref struct SlotsCommand
         {
             try
             {
-                emotePattern = new(ChatMessage.Split[1], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                using ChatMessageExtension messageExtension = new(ChatMessage);
+                emotePattern = new(new(messageExtension.Split[1]), RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             }
             catch (ArgumentException)
             {
@@ -70,17 +74,16 @@ public readonly unsafe ref struct SlotsCommand
             return;
         }
 
-        string[] randomEmotes = new string[_emoteSlotCount];
+        using RentedArray<string> randomEmotes = ArrayPool<string>.Shared.Rent(_emoteSlotCount);
         for (int i = 0; i < _emoteSlotCount; i++)
         {
             randomEmotes[i] = emotes.Random()!;
         }
 
         Span<char> joinBuffer = stackalloc char[500];
-        int bufferLength = StringHelper.Join(randomEmotes, ' ', joinBuffer);
-        Span<char> lengthChars = stackalloc char[30];
-        emotes.Length.TryFormat(lengthChars, out int lengthLength);
-        lengthChars = lengthChars[..lengthLength];
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "[ ", joinBuffer[..bufferLength], " ] (", lengthChars, " emote", emotes.Length > 1 ? "s" : string.Empty, ")");
+        int bufferLength = StringHelper.Join(randomEmotes[.._emoteSlotCount], ' ', joinBuffer);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, "[ ", joinBuffer[..bufferLength], " ] (");
+        Response->Append(emotes.Length);
+        Response->Append(" emote", emotes.Length > 1 ? "s" : string.Empty, ")");
     }
 }

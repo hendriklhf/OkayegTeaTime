@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using HLE;
 using HLE.Emojis;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using Random = HLE.Random;
@@ -13,7 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 public readonly unsafe ref struct CoinflipCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -21,13 +21,7 @@ public readonly unsafe ref struct CoinflipCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    private static readonly string[] _answers =
-    {
-        "no/tails",
-        "yes/heads"
-    };
-
-    public CoinflipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public CoinflipCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -39,7 +33,7 @@ public readonly unsafe ref struct CoinflipCommand
     public void Handle()
     {
         bool result = Random.StrongBool();
-        string answer = _answers[Unsafe.As<bool, byte>(ref result)];
+        string answer = result ? "yes/heads" : "no/tails";
         Response->Append(ChatMessage.Username, Messages.CommaSpace, answer, StringHelper.Whitespace, Emoji.Coin);
     }
 }

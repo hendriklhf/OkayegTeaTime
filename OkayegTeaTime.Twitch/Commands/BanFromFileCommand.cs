@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -13,7 +14,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.BanFromFile)]
 public readonly unsafe ref struct BanFromFileCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -23,7 +24,7 @@ public readonly unsafe ref struct BanFromFileCommand
 
     private static readonly Regex _banPattern = new(@"^[\./]ban\s\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    public BanFromFileCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public BanFromFileCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -40,13 +41,14 @@ public readonly unsafe ref struct BanFromFileCommand
             Response->Append(ChatMessage.Username, Messages.CommaSpace);
             try
             {
-                if (!ChatMessage.IsBotModerator)
+                using ChatMessageExtension messageExtension = new(ChatMessage);
+                if (!messageExtension.IsBotModerator)
                 {
                     Response->Append(Messages.YouArentAModeratorOfTheBot);
                     return;
                 }
 
-                HttpGet request = new(ChatMessage.Split[1]);
+                HttpGet request = new(new(messageExtension.Split[1]));
                 if (request.Result is null)
                 {
                     Response->Append("an error occurred while requesting the file content");
@@ -54,9 +56,9 @@ public readonly unsafe ref struct BanFromFileCommand
                 }
 
                 string[] fileContent = request.Result.Replace("\r", string.Empty).Split("\n");
-                Regex regex = new(ChatMessage.Split[2], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                Regex regex = new(new(messageExtension.Split[2]), RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
                 TwitchBot twitchBot = _twitchBot;
-                TwitchChatMessage chatMessage = ChatMessage;
+                ChatMessage chatMessage = ChatMessage;
                 fileContent.Where(f => regex.IsMatch(f)).ForEach(f => twitchBot.Send(chatMessage.Channel, _banPattern.IsMatch(f) ? f : $"/ban {f}", false, false, false));
                 Response->Append("done :)");
             }

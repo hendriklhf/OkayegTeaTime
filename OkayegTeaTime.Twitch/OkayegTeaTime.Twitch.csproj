@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="HLE" Version="2.0.10" />
+      <PackageReference Include="HLE" Version="2.1.1" />
       <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
       <PackageReference Include="TwitchLib.Api" Version="3.8.0" />
       <PackageReference Include="TwitchLib.Api.Core" Version="3.8.0" />
@@ -28,16 +28,11 @@
       <PackageReference Include="TwitchLib.Api.Interfaces" Version="1.0.0" />
       <PackageReference Include="TwitchLib.Api.Models" Version="1.0.0" />
       <PackageReference Include="TwitchLib.Api.V5" Version="3.3.0" />
-      <PackageReference Include="TwitchLib.Client" Version="3.3.1" />
-      <PackageReference Include="TwitchLib.EventSub.Webhooks" Version="2.3.0" />
-      <PackageReference Include="TwitchLib.Extension" Version="1.3.0" />
-      <PackageReference Include="TwitchLib.Extension.Core" Version="1.3.0" />
-      <PackageReference Include="TwitchLib.PubSub" Version="3.2.6" />
   </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj" />
-        <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj" />
+        <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj" />
         <ProjectReference Include="..\OkayegTeaTime.Spotify\OkayegTeaTime.Spotify.csproj" />
         <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj" />
     </ItemGroup>

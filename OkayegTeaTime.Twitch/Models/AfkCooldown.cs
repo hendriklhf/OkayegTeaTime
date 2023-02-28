@@ -1,5 +1,5 @@
 ﻿using System;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 #pragma warning disable CS0659
 

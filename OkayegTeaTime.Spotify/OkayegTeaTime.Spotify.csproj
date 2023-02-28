@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -16,13 +16,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpotifyAPI.Web" Version="7.0.0"/>
+    <PackageReference Include="SpotifyAPI.Web" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj"/>
-    <ProjectReference Include="..\OkayegTeaTime.Files\OkayegTeaTime.Files.csproj"/>
-    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
+    <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj" />
+    <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj" />
+    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj" />
   </ItemGroup>
 
 </Project>

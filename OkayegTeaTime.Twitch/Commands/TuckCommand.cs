@@ -1,7 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using HLE;
 using HLE.Emojis;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using StringHelper = HLE.StringHelper;
@@ -11,7 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Tuck)]
 public readonly unsafe ref struct TuckCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -21,7 +23,7 @@ public readonly unsafe ref struct TuckCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public TuckCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -35,11 +37,12 @@ public readonly unsafe ref struct TuckCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+(\s\S+)?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string target = ChatMessage.LowerSplit[1];
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            ReadOnlySpan<char> target = messageExtension.LowerSplit[1];
             Response->Append(Emoji.PointRight, StringHelper.Whitespace, Emoji.Bed, StringHelper.Whitespace, ChatMessage.Username);
             Response->Append(" tucked ", target, " to bed");
-            string emote = ChatMessage.LowerSplit.Length > 2 ? ChatMessage.Split[2] : string.Empty;
-            if (!string.IsNullOrWhiteSpace(emote))
+            ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2] : string.Empty;
+            if (emote.Length > 0)
             {
                 Response->Append(StringHelper.Whitespace, emote);
             }

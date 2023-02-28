@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
@@ -17,7 +17,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Spotify)]
 public readonly unsafe ref struct SpotifyCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -27,9 +27,7 @@ public readonly unsafe ref struct SpotifyCommand
     [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    private static readonly Regex _urlPattern = new(@"^(-l)|(--url)$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-
-    public SpotifyCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SpotifyCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -40,8 +38,8 @@ public readonly unsafe ref struct SpotifyCommand
 
     public void Handle()
     {
-        string username = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] == "me" ? ChatMessage.Username : ChatMessage.LowerSplit[1] : ChatMessage.Channel;
-        bool returnUrl = ChatMessage.LowerSplit.Any(s => _urlPattern.IsMatch(s));
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        string username = new(messageExtension.LowerSplit.Length > 1 ? messageExtension.LowerSplit[1] == "me" ? ChatMessage.Username : messageExtension.LowerSplit[1] : ChatMessage.Channel);
         bool targetIsSender = username == ChatMessage.Username;
         SpotifyUser? user = _twitchBot.SpotifyUsers[username];
         if (user is null)
@@ -91,12 +89,12 @@ public readonly unsafe ref struct SpotifyCommand
                 string[] artists = track.Artists.Select(a => a.Name).ToArray();
                 Span<char> joinBuffer = stackalloc char[250];
                 int bufferLength = StringHelper.Join(artists, Messages.CommaSpace, joinBuffer);
-                Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : returnUrl ? track.Url : track.Uri);
+                Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
                 return;
             }
             case SpotifyEpisode episode:
             {
-                Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : returnUrl ? episode.Url : episode.Uri);
+                Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
                 return;
             }
             default:

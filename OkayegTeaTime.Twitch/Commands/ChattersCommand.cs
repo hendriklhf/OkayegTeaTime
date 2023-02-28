@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -10,7 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Chatters)]
 public readonly unsafe ref struct ChattersCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -18,7 +19,7 @@ public readonly unsafe ref struct ChattersCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public ChattersCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public ChattersCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -32,7 +33,8 @@ public readonly unsafe ref struct ChattersCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string channel = ChatMessage.LowerSplit.Length > 1 ? ChatMessage.LowerSplit[1] : ChatMessage.Channel;
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            string channel = messageExtension.LowerSplit.Length > 1 ? new(messageExtension.LowerSplit[1]) : ChatMessage.Channel;
             int chatterCount = GetChatterCount(channel);
 
             Response->Append(ChatMessage.Username, Messages.CommaSpace);

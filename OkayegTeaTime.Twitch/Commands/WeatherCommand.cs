@@ -1,7 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
@@ -11,7 +12,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Weather)]
 public readonly unsafe ref struct WeatherCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -19,7 +20,7 @@ public readonly unsafe ref struct WeatherCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public WeatherCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public WeatherCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -36,7 +37,8 @@ public readonly unsafe ref struct WeatherCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            city = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            city = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
             isPrivateLocation = false;
         }
         else
@@ -51,7 +53,7 @@ public readonly unsafe ref struct WeatherCommand
             }
         }
 
-        OwmWeatherData? weatherData = _twitchBot.WeatherController.GetWeather(city);
+        WeatherData? weatherData = _twitchBot.WeatherController.GetWeather(city);
         if (weatherData is null)
         {
             Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);

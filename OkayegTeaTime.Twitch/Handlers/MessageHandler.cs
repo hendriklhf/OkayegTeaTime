@@ -1,17 +1,17 @@
 ﻿using System;
 #if RELEASE
 using System.Linq;
+using HLE.Memory;
 using OkayegTeaTime.Database;
 #endif
 using System.Text.RegularExpressions;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files;
-#if RELEASE
-using OkayegTeaTime.Spotify;
-#endif
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Models;
 #if RELEASE
+using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Utils;
 #endif
 
@@ -30,11 +30,12 @@ public sealed class MessageHandler : Handler
         _pajaAlertHandler = new(twitchBot);
     }
 
-    public override void Handle(TwitchChatMessage chatMessage)
+    public override void Handle(ChatMessage chatMessage)
     {
         _pajaAlertHandler.Handle(chatMessage);
 
-        if (chatMessage.IsIgnoredUser)
+        using ChatMessageExtension messageExtension = new(chatMessage);
+        if (messageExtension.IsIgnoredUser)
         {
             return;
         }
@@ -48,7 +49,7 @@ public sealed class MessageHandler : Handler
         HandleSpecificMessages(chatMessage);
     }
 
-    private void HandleSpecificMessages(TwitchChatMessage chatMessage)
+    private void HandleSpecificMessages(ChatMessage chatMessage)
     {
 #if RELEASE
         CheckForSpotifyUri(chatMessage);
@@ -56,7 +57,7 @@ public sealed class MessageHandler : Handler
         CheckForForgottenPrefix(chatMessage);
     }
 
-    private void CheckForAfk(TwitchChatMessage chatMessage)
+    private void CheckForAfk(ChatMessage chatMessage)
     {
         User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user?.IsAfk != true)
@@ -78,7 +79,7 @@ public sealed class MessageHandler : Handler
     }
 
 #if RELEASE
-    private void CheckForSpotifyUri(TwitchChatMessage chatMessage)
+    private void CheckForSpotifyUri(ChatMessage chatMessage)
     {
         if (chatMessage.Channel != AppSettings.OfflineChatChannel)
         {
@@ -97,7 +98,9 @@ public sealed class MessageHandler : Handler
             return;
         }
 
-        string[] songs = chatMessage.Split.Where(s => Pattern.SpotifyLink.IsMatch(s) || Pattern.SpotifyUri.IsMatch(s)).Select(s => SpotifyController.ParseSongToUri(s)!).ToArray();
+        using ChatMessageExtension messageExtension = new(chatMessage);
+        using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.Split.GetSplits();
+        string[] songs = splits.Where(s => Pattern.SpotifyLink.IsMatch(s.Span) || Pattern.SpotifyUri.IsMatch(s.Span)).Select(s => SpotifyController.ParseSongToUri(s.Span)!).ToArray();
         try
         {
             SpotifyController.AddToPlaylist(playlistUser, songs);
@@ -109,7 +112,7 @@ public sealed class MessageHandler : Handler
     }
 #endif
 
-    private void CheckForForgottenPrefix(TwitchChatMessage chatMessage)
+    private void CheckForForgottenPrefix(ChatMessage chatMessage)
     {
         if (!_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {

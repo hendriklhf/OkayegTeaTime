@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -10,7 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Rafk)]
 public readonly unsafe ref struct RafkCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -22,7 +23,7 @@ public readonly unsafe ref struct RafkCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public RafkCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;

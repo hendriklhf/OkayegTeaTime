@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -10,7 +11,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 public readonly unsafe ref struct InvalidateCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -18,7 +19,7 @@ public readonly unsafe ref struct InvalidateCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public InvalidateCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public InvalidateCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -29,7 +30,8 @@ public readonly unsafe ref struct InvalidateCommand
 
     public void Handle()
     {
-        if (!ChatMessage.IsBotModerator)
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        if (!messageExtension.IsBotModerator)
         {
             Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
             return;

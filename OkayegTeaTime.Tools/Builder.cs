@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Tools;
 
@@ -16,12 +16,11 @@ public sealed class Builder
     private readonly Dictionary<Runtime, Regex> _runtimes = new[]
     {
         (Runtime.Windows64Bit, NewRegex("^win(dows)?(-?x?64)?$")),
-        (Runtime.LinuxArm, NewRegex("^((linux-?)?arm)|((raspberry-?)?pi)$")),
+        (Runtime.LinuxArm, NewRegex("^((linux-?)?arm(64)?)|((raspberry-?)?pi)$")),
         (Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
         (Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
     }.ToDictionary();
 
-    private const string _apiProjectPath = "./OkayegTeaTime.Api/OkayegTeaTime.Api.csproj";
     private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
     private const string _commitIdSourcePath = "./.git/logs/HEAD";
     private const string _commitIdFile = "./OkayegTeaTime.Resources/LastCommit";
@@ -44,13 +43,12 @@ public sealed class Builder
 
         foreach (Runtime runtime in runtimes)
         {
-            string outputDir = $"./Build/{runtime.Identifier}/";
-            DeleteDirectory(outputDir);
+            string outputDirectory = $"./Build/{runtime.Identifier}/";
+            DeleteDirectory(outputDirectory);
             CreateLastCommitFile();
             CreateCodeFilesFile();
             Console.WriteLine($"Starting builds for {runtime.Name} runtime.");
-            BuildApi(outputDir, runtime);
-            BuildBot(outputDir, runtime);
+            BuildBot(outputDirectory, runtime);
         }
     }
 
@@ -60,14 +58,9 @@ public sealed class Builder
         return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
     }
 
-    private static void BuildApi(string outputDir, Runtime runtime)
+    private static void BuildBot(string outputDirectory, Runtime runtime)
     {
-        StartBuildProcess(outputDir, runtime, _apiProjectPath, _apiProjectPath[16..19]);
-    }
-
-    private static void BuildBot(string outputDir, Runtime runtime)
-    {
-        StartBuildProcess(outputDir, runtime, _botProjectPath, _botProjectPath[2..15]);
+        StartBuildProcess(outputDirectory, runtime, _botProjectPath, "OkayegTeaTime");
     }
 
     private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)

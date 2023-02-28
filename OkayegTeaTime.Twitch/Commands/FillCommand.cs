@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using HLE;
-using HLE.Collections;
-using OkayegTeaTime.Files;
+using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
+using Random = HLE.Random;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Fill)]
 public readonly unsafe ref struct FillCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -19,7 +20,7 @@ public readonly unsafe ref struct FillCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public FillCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public FillCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -33,15 +34,15 @@ public readonly unsafe ref struct FillCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Span<string> split = ChatMessage.Split;
-            Span<string> fillParts = split[1..];
+            using ChatMessageExtension messageExtension = new(ChatMessage);
             string emote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
-            string nextMessagePart = fillParts.Random()!;
+            int maxSplitIndex = messageExtension.Split.Length - 1;
+            ReadOnlySpan<char> nextMessagePart = messageExtension.Split[Random.Int(1, maxSplitIndex)];
             for (int currentMessageLength = 0; currentMessageLength + nextMessagePart.Length + 1 < maxLength; currentMessageLength += nextMessagePart.Length + 1)
             {
                 Response->Append(nextMessagePart, StringHelper.Whitespace);
-                nextMessagePart = fillParts.Random()!;
+                nextMessagePart = messageExtension.Split[Random.Int(1, maxSplitIndex)];
             }
         }
     }

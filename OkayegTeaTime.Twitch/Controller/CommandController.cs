@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
@@ -28,8 +28,8 @@ public sealed class CommandController
     public CommandController(TwitchBot? twitchBot)
     {
         _twitchBot = twitchBot;
-        Commands = JsonController.GetCommandList().Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
-        AfkCommands = JsonController.GetCommandList().AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
+        Commands = AppSettings.CommandList.Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
+        AfkCommands = AppSettings.CommandList.AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
         _afkCommandAliases = AfkCommands.SelectMany(c => c.Aliases).ToArray();
     }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
 using SpotifyAPI.Web;
 
@@ -100,20 +100,20 @@ public static class SpotifyController
         }
     }
 
-    public static string? ParseSongToUri(string input)
+    public static string? ParseSongToUri(ReadOnlySpan<char> input)
     {
         if (Pattern.SpotifyUri.IsMatch(input))
         {
-            return input;
+            return new(input);
         }
 
         if (Pattern.SpotifyLink.IsMatch(input))
         {
-            string uriCode = Regex.Match(input, @"track/\w+").Value[6..];
+            string uriCode = Regex.Match(new(input), @"track/\w+").Value[6..];
             return $"spotify:track:{uriCode}";
         }
 
-        return Regex.IsMatch(input, @"^\w{22}$") ? $"spotify:track:{input}" : null;
+        return Regex.IsMatch(input, @"^\w{22}$") ? $"spotify:track:{new string(input)}" : null;
     }
 
     private static bool IsAccessTokenExpired(SpotifyUser user)

@@ -4,9 +4,10 @@ using System.Text.RegularExpressions;
 using System.Web;
 using HLE;
 using HLE.Emojis;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Files;
 using OkayegTeaTime.Resources;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -16,7 +17,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.CSharp)]
 public readonly unsafe ref struct CSharpCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -24,7 +25,7 @@ public readonly unsafe ref struct CSharpCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public CSharpCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public CSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -38,7 +39,8 @@ public readonly unsafe ref struct CSharpCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            string code = ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..];
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            string code = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
             string result = GetProgramOutput(code);
             Response->Append(ChatMessage.Username, Messages.CommaSpace, result);
         }

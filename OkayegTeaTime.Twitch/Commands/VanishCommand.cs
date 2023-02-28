@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -8,7 +9,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Vanish)]
 public readonly unsafe ref struct VanishCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -20,7 +21,7 @@ public readonly unsafe ref struct VanishCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public VanishCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public VanishCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -31,7 +32,8 @@ public readonly unsafe ref struct VanishCommand
 
     public void Handle()
     {
-        if (ChatMessage is { IsModerator: false, IsBroadcaster: false, IsStaff: false })
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
             _twitchBot.Send(ChatMessage.Channel, $"/timeout {ChatMessage.Username} 1", false, false, false);
         }

@@ -7,7 +7,7 @@ public static class Messages
     public const string Comma = ",";
     public const string QuotationMark = "\"";
     public const string Dot = ".";
-    public const string YouArentAModOrTheBroadcaster = "you aren't a mod or the broadcaster";
+    public const string YouArentAModeratorOrTheBroadcaster = "you aren't a moderator or the broadcaster";
     public const string TwitchUserDoesntExist = "Twitch user doesn't exist";
     public const string ThatUserHasTooManyRemindersSetForThem = "that user has too many reminders set for them";
     public const string CouldNotFindAnyMatchingUser = "could not find any matching user";

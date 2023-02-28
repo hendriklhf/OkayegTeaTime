@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
@@ -26,7 +27,7 @@ public sealed class CommandHandler : Handler
         _commandExecutor = new(twitchBot);
     }
 
-    public override void Handle(TwitchChatMessage chatMessage)
+    public override void Handle(ChatMessage chatMessage)
     {
         bool handled = HandleCommand(chatMessage);
         if (!handled)
@@ -35,7 +36,7 @@ public sealed class CommandHandler : Handler
         }
     }
 
-    private bool HandleCommand(TwitchChatMessage chatMessage)
+    private bool HandleCommand(ChatMessage chatMessage)
     {
         string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         Span<CommandType> commandTypes = _commandTypes;
@@ -69,7 +70,7 @@ public sealed class CommandHandler : Handler
         return false;
     }
 
-    private void HandleAfkCommand(TwitchChatMessage chatMessage)
+    private void HandleAfkCommand(ChatMessage chatMessage)
     {
         string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         Span<AfkType> afkTypes = _afkTypes;

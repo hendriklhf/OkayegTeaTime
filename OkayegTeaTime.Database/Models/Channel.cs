@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Database.Models;
 

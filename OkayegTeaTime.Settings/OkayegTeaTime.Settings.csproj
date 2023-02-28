@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <DebugType>embedded</DebugType>
+    <Nullable>enable</Nullable>
+    <RootNamespace>OkayegTeaTime.Files</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HLE" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Models\OkayegTeaTime.Models.csproj" />
+    <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj" />
+  </ItemGroup>
+
+</Project>

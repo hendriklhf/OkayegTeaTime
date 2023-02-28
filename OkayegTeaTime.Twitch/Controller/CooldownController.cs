@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 #if DEBUG
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 #endif
 using OkayegTeaTime.Twitch.Models;
 

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE;
+using HLE.Memory;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
@@ -17,7 +19,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.SongRequest)]
 public readonly unsafe ref struct SongRequestCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -27,7 +29,7 @@ public readonly unsafe ref struct SongRequestCommand
 
     private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    public SongRequestCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SongRequestCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -126,10 +128,12 @@ public readonly unsafe ref struct SongRequestCommand
                 return;
             }
 
-            SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.LowerSplit[2]];
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            string targetName = new(messageExtension.LowerSplit[2]);
+            SpotifyUser? target = _twitchBot.SpotifyUsers[targetName];
             if (target is null)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, ChatMessage.LowerSplit[2].Antiping(), " isn't registered yet, they have to register first");
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, targetName.Antiping(), " isn't registered yet, they have to register first");
                 return;
             }
 
@@ -161,7 +165,7 @@ public readonly unsafe ref struct SongRequestCommand
 
             if (item is null or not SpotifyTrack)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, ChatMessage.LowerSplit[2].Antiping(), " isn't listening to a track");
+                Response->Append(ChatMessage.Username, Messages.CommaSpace, targetName.Antiping(), " isn't listening to a track");
                 return;
             }
 
@@ -360,7 +364,8 @@ public readonly unsafe ref struct SongRequestCommand
 
             try
             {
-                Task<SpotifyTrack> task = SpotifyController.AddToQueueAsync(target, ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]);
+                using ChatMessageExtension messageExtension = new(ChatMessage);
+                Task<SpotifyTrack> task = SpotifyController.AddToQueueAsync(target, ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
                 task.Wait();
                 SpotifyTrack track = task.Result;
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
@@ -389,7 +394,13 @@ public readonly unsafe ref struct SongRequestCommand
 
     private SpotifyUser[] GetTargets()
     {
-        Match match = Pattern.MultipleTargets.Match(string.Join(' ', ChatMessage.LowerSplit, 1, ChatMessage.LowerSplit.Length - 2));
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.GetSplits();
+        Span<char> targetBuffer = stackalloc char[500];
+        int targetBufferLength = StringHelper.Join(splits[1..^1], ' ', targetBuffer);
+        string targetString = new(targetBuffer[..targetBufferLength]);
+
+        Match match = Pattern.MultipleTargets.Match(targetString);
         string[] targets = match.Value.Split(',');
         TwitchBot twitchBot = _twitchBot;
         return targets.Select(t => t.TrimAll()).Distinct().Select(t => twitchBot.SpotifyUsers[t]).Where(t => t is not null).Take(5).ToArray()!;

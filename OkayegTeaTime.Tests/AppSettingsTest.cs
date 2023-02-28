@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Tests;
 

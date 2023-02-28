@@ -4,11 +4,10 @@ using System.Reflection;
 using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
-using JCommand = OkayegTeaTime.Files.Models.Command;
 
 namespace OkayegTeaTime.Tests;
 
@@ -24,7 +23,7 @@ public sealed class CommandTest
     {
         foreach (CommandType type in _commandTypes)
         {
-            JCommand command = _commandController[type];
+            Command command = _commandController[type];
             Assert.IsNotNull(command);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch;
 using OkayegTeaTime.Utils;
 
@@ -12,6 +13,8 @@ public static class Program
     {
         Console.Title = "OkayegTeaTime";
         Console.OutputEncoding = Encoding.Unicode;
+
+        AppSettings.Initialize();
 
         ArgsResolver argsResolver = new(args);
         TwitchBot twitchBot = new(argsResolver.Channels);

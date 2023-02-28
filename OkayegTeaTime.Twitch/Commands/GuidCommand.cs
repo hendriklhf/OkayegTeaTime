@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -11,7 +12,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 public readonly unsafe ref struct GuidCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -21,7 +22,7 @@ public readonly unsafe ref struct GuidCommand
 
     private const string _guidFormat = "D";
 
-    public GuidCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public GuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -33,9 +34,8 @@ public readonly unsafe ref struct GuidCommand
     public void Handle()
     {
         Guid guid = Guid.NewGuid();
-        Span<char> chars = stackalloc char[50];
-        guid.TryFormat(chars, out int guidLength, _guidFormat);
-        chars = chars[..guidLength];
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, chars);
+        Span<char> guidChars = stackalloc char[50];
+        guid.TryFormat(guidChars, out int guidLength, _guidFormat);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace, guidChars[..guidLength]);
     }
 }

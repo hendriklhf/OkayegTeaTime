@@ -1,3 +1,5 @@
+using System;
+
 namespace OkayegTeaTime.Tools;
 
 public sealed record Runtime
@@ -29,4 +31,9 @@ public sealed record Runtime
         Name = "macOS 64-bit",
         Identifier = "osx-x64"
     };
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name, Identifier);
+    }
 }

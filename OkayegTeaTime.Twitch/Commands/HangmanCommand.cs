@@ -3,8 +3,9 @@ using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
 using HLE.Emojis;
-using OkayegTeaTime.Files;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -13,7 +14,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Hangman)]
 public readonly unsafe ref struct HangmanCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -23,7 +24,7 @@ public readonly unsafe ref struct HangmanCommand
 
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
 
-    public HangmanCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -37,110 +38,125 @@ public readonly unsafe ref struct HangmanCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s[a-z]");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
-            {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoGameRunningYouHaveToStartOneFirst);
-                return;
-            }
-
-            char guess = ChatMessage.Message[_alias.Length + (_prefix?.Length ?? AppSettings.Suffix.Length) + 1];
-            guess = char.ToLowerInvariant(guess);
-            int correctPlacesCount = game.Guess(guess);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
-            if (game.IsSolved)
-            {
-                Response->Append(Messages.TheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace, StringHelper.Whitespace);
-                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
-                game.Dispose();
-            }
-            else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
-            {
-                Response->Append('\'', guess, '\'', ' ');
-                Span<char> buffer = stackalloc char[10];
-                correctPlacesCount.TryFormat(buffer, out int bufferLength);
-                Response->Append(Messages.IsCorrectIn, StringHelper.Whitespace, buffer[..bufferLength]);
-                Response->Append(StringHelper.Whitespace, correctPlacesCount == 1 ? Messages.Places[..^1] : Messages.Places);
-                Response->Append(correctPlacesCount > 0 ? Emoji.Grinning : Emoji.Cry, StringHelper.Whitespace);
-            }
-            else
-            {
-                Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
-                Response->Append(StringHelper.Whitespace, Emoji.Cry, StringHelper.Whitespace);
-                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
-                game.Dispose();
-                return;
-            }
-
-            AppendWordStatus(game);
-            Response->Append(Messages.CommaSpace);
-            AppendWrongCharStatus(game);
-            Response->Append(Messages.CommaSpace);
-            AppendGuessStatus(game);
+            GuessChar();
             return;
         }
 
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s[a-z]{2,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
-            {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoGameRunningYouHaveToStartOneFirst);
-                return;
-            }
-
-            string guess = ChatMessage.LowerSplit[1];
-            bool correct = game.Guess(guess);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
-            if (correct)
-            {
-                Response->Append(Messages.QuotationMark, game.Solution, Messages.QuotationMark);
-                Response->Append(StringHelper.Whitespace, Messages.IsCorrectTheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace, StringHelper.Whitespace);
-                AppendWordStatus(game);
-                Response->Append(Messages.CommaSpace);
-                AppendWrongCharStatus(game);
-                Response->Append(Messages.CommaSpace);
-                AppendGuessStatus(game);
-                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
-                game.Dispose();
-            }
-            else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
-            {
-                Response->Append(Messages.QuotationMark, guess, Messages.QuotationMark, StringHelper.Whitespace, Messages.IsNotCorrect, StringHelper.Whitespace, Emoji.Cry);
-                AppendWordStatus(game);
-                Response->Append(Messages.CommaSpace);
-                AppendWrongCharStatus(game);
-                Response->Append(Messages.CommaSpace);
-                AppendGuessStatus(game);
-            }
-            else
-            {
-                Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
-                Response->Append(StringHelper.Whitespace, Emoji.Cry);
-                _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
-                game.Dispose();
-            }
-
+            GuessWord();
             return;
         }
 
         pattern = _twitchBot.RegexCreator.Create(_alias, _prefix);
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
-            if (_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
-            {
-                Response->Append(Messages.ThereIsAlreadyAGameRunning);
-            }
-            else
-            {
-                Response->Append(Messages.NewGameStarted);
-                game = new(_hangmanWords.Random()!);
-            }
-
-            Response->Append(Messages.Colon, StringHelper.Whitespace);
-            AppendWordStatus(game);
-            _twitchBot.HangmanGames.Add(ChatMessage.ChannelId, game);
+            StartNewGame();
         }
+    }
+
+    private void StartNewGame()
+    {
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
+        if (_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
+        {
+            Response->Append(Messages.ThereIsAlreadyAGameRunning);
+        }
+        else
+        {
+            Response->Append(Messages.NewGameStarted);
+            game = new(_hangmanWords.Random()!);
+        }
+
+        Response->Append(Messages.Colon, StringHelper.Whitespace);
+        AppendWordStatus(game);
+        _twitchBot.HangmanGames.Add(ChatMessage.ChannelId, game);
+    }
+
+    private void GuessWord()
+    {
+        if (!_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
+        {
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoGameRunningYouHaveToStartOneFirst);
+            return;
+        }
+
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        ReadOnlySpan<char> guess = messageExtension.LowerSplit[1];
+        bool isWordCorrect = game.Guess(guess);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
+        if (isWordCorrect)
+        {
+            Response->Append(Messages.QuotationMark, game.Solution, Messages.QuotationMark);
+            Response->Append(StringHelper.Whitespace, Messages.IsCorrectTheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace, StringHelper.Whitespace);
+            AppendWordStatus(game);
+            Response->Append(Messages.CommaSpace);
+            AppendWrongCharStatus(game);
+            Response->Append(Messages.CommaSpace);
+            AppendGuessStatus(game);
+            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            game.Dispose();
+        }
+        else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
+        {
+            Response->Append(Messages.QuotationMark, guess, Messages.QuotationMark, StringHelper.Whitespace, Messages.IsNotCorrect, StringHelper.Whitespace, Emoji.Cry);
+            AppendWordStatus(game);
+            Response->Append(Messages.CommaSpace);
+            AppendWrongCharStatus(game);
+            Response->Append(Messages.CommaSpace);
+            AppendGuessStatus(game);
+        }
+        else
+        {
+            Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
+            Response->Append(StringHelper.Whitespace, Emoji.Cry);
+            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            game.Dispose();
+        }
+    }
+
+    private void GuessChar()
+    {
+        if (!_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out HangmanGame? game))
+        {
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoGameRunningYouHaveToStartOneFirst);
+            return;
+        }
+
+        char guess = ChatMessage.Message[_alias.Length + (_prefix?.Length ?? AppSettings.Suffix.Length) + 1];
+        guess = char.ToLowerInvariant(guess);
+        int correctPlacesCount = game.Guess(guess);
+        Response->Append(ChatMessage.Username, Messages.CommaSpace);
+        if (game.IsSolved)
+        {
+            Response->Append(Messages.TheGameHasBeenSolved, StringHelper.Whitespace, Emoji.PartyingFace, StringHelper.Whitespace);
+            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            game.Dispose();
+        }
+        else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
+        {
+            Response->Append('\'', guess, '\'', ' ');
+            Span<char> buffer = stackalloc char[10];
+            correctPlacesCount.TryFormat(buffer, out int bufferLength);
+            Response->Append(Messages.IsCorrectIn, StringHelper.Whitespace, buffer[..bufferLength]);
+            Response->Append(StringHelper.Whitespace, correctPlacesCount == 1 ? Messages.Places[..^1] : Messages.Places);
+            Response->Append(correctPlacesCount > 0 ? Emoji.Grinning : Emoji.Cry, StringHelper.Whitespace);
+        }
+        else
+        {
+            Response->Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, StringHelper.Whitespace, Messages.QuotationMark, game.Solution, Messages.QuotationMark);
+            Response->Append(StringHelper.Whitespace, Emoji.Cry, StringHelper.Whitespace);
+            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            game.Dispose();
+            return;
+        }
+
+        AppendWordStatus(game);
+        Response->Append(Messages.CommaSpace);
+        AppendWrongCharStatus(game);
+        Response->Append(Messages.CommaSpace);
+        AppendGuessStatus(game);
     }
 
     private void AppendWordStatus(HangmanGame game)

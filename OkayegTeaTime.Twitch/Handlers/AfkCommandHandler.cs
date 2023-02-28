@@ -1,7 +1,8 @@
 ﻿using System;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
@@ -15,7 +16,7 @@ public sealed class AfkCommandHandler
         _twitchBot = twitchBot;
     }
 
-    public void Handle(TwitchChatMessage chatMessage, AfkType type)
+    public void Handle(ChatMessage chatMessage, AfkType type)
     {
         User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user is null)
@@ -24,7 +25,8 @@ public sealed class AfkCommandHandler
             _twitchBot.Users.Add(user);
         }
 
-        string? message = chatMessage.Split.Length > 1 ? chatMessage.Message[(chatMessage.Split[0].Length + 1)..] : null;
+        using ChatMessageExtension messageExtension = new(chatMessage);
+        string? message = messageExtension.Split.Length > 1 ? chatMessage.Message[(messageExtension.Split[0].Length + 1)..] : null;
         user.AfkMessage = message;
         user.AfkType = type;
         user.AfkTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

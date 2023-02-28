@@ -3,7 +3,7 @@ using System.Linq;
 using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Files;
+using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Database.Cache;
 

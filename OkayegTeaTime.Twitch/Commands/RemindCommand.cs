@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HLE;
+using HLE.Memory;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -17,7 +19,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public readonly unsafe ref struct RemindCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -56,7 +58,7 @@ public readonly unsafe ref struct RemindCommand
 
     private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public RemindCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -121,7 +123,7 @@ public readonly unsafe ref struct RemindCommand
         else
         {
             Dictionary<string, bool> exist = _twitchBot.TwitchApi.DoUsersExist(targets);
-            TwitchChatMessage chatMessage = ChatMessage;
+            ChatMessage chatMessage = ChatMessage;
             Reminder[] reminders = targets.Where(t => exist[t]).Select(t => new Reminder(chatMessage.Username, t, message, chatMessage.Channel, toTime)).ToArray();
             if (reminders.Length == 0)
             {
@@ -160,8 +162,14 @@ public readonly unsafe ref struct RemindCommand
     private long GetToTime()
     {
         long result = 0;
-        int timeStartIndex = GetTimeStartIdx();
-        string times = string.Join(' ', ChatMessage.Split, timeStartIndex, ChatMessage.Split.Length - timeStartIndex);
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        int timeStartIndex = GetTimeStartIdx(in messageExtension);
+
+        using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.GetSplits();
+        Span<char> timesBuffer = stackalloc char[500];
+        int timesBufferLength = StringHelper.Join(splits[timeStartIndex..], ' ', timesBuffer);
+        string times = new(timesBuffer[..timesBufferLength]);
+
         string[] matches = _timeConversions.Select(t => t.Regex).Select(r => r.Matches(times).Select(m => m.Value)).SelectMany(m => m).ToArray();
         foreach (string match in matches)
         {
@@ -222,11 +230,11 @@ public readonly unsafe ref struct RemindCommand
         }).ToArray();
     }
 
-    private int GetTimeStartIdx()
+    private static int GetTimeStartIdx(in ChatMessageExtension messageExtension)
     {
-        for (int i = 2; i < ChatMessage.LowerSplit.Length; i++)
+        for (int i = 2; i < messageExtension.LowerSplit.Length; i++)
         {
-            if (ChatMessage.LowerSplit[i] == _timeIdentificator)
+            if (messageExtension.LowerSplit[i].Equals(_timeIdentificator, StringComparison.Ordinal))
             {
                 return i + 1;
             }

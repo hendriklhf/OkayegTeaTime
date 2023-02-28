@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Spotify;
@@ -14,7 +15,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Skip)]
 public readonly unsafe ref struct SkipCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -26,7 +27,7 @@ public readonly unsafe ref struct SkipCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public SkipCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -37,9 +38,10 @@ public readonly unsafe ref struct SkipCommand
 
     public void Handle()
     {
-        if (ChatMessage is { IsModerator: false, IsBroadcaster: false })
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModOrTheBroadcaster);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 

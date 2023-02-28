@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using StringHelper = OkayegTeaTime.Utils.StringHelper;
@@ -9,7 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Join)]
 public readonly unsafe ref struct JoinCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -17,7 +18,7 @@ public readonly unsafe ref struct JoinCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public JoinCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public JoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -31,13 +32,14 @@ public readonly unsafe ref struct JoinCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s#?\w{3,25}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            if (!ChatMessage.IsBotModerator)
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            if (!messageExtension.IsBotModerator)
             {
                 Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
                 return;
             }
 
-            string channel = ChatMessage.LowerSplit[1];
+            string channel = new(messageExtension.LowerSplit[1]);
             bool isValidChannel = StringHelper.FormatChannel(ref channel);
             if (!isValidChannel)
             {

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Web;
 using HLE;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -11,7 +12,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Math)]
 public readonly unsafe ref struct MathCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -21,7 +22,7 @@ public readonly unsafe ref struct MathCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public MathCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public MathCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -35,7 +36,9 @@ public readonly unsafe ref struct MathCommand
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, GetMathResult(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..]));
+            using ChatMessageExtension messageExtension = new(ChatMessage);
+            string mathResult = GetMathResult(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
+            Response->Append(ChatMessage.Username, Messages.CommaSpace, mathResult);
         }
     }
 

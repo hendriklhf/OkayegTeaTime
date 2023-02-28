@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE;
-using OkayegTeaTime.Files;
+using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
@@ -12,7 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Code)]
 public readonly unsafe ref struct CodeCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
@@ -22,7 +23,7 @@ public readonly unsafe ref struct CodeCommand
 
     private static string[]? _codeFiles;
 
-    public CodeCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -46,7 +47,8 @@ public readonly unsafe ref struct CodeCommand
             Regex? filePattern;
             try
             {
-                filePattern = new(ChatMessage.Message[(ChatMessage.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                using ChatMessageExtension messageExtension = new(ChatMessage);
+                filePattern = new(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             }
             catch (ArgumentException)
             {

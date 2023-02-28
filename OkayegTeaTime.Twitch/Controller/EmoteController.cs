@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text.Json;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
-using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Models;
-using OkayegTeaTime.Files.Models.SevenTv;
+using OkayegTeaTime.Models.Bttv;
+using OkayegTeaTime.Models.Ffz;
+using OkayegTeaTime.Models.SevenTv;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Controller;
@@ -196,7 +196,7 @@ public sealed class EmoteController
 
             JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
             int setId = json.GetProperty("room").GetProperty("set").GetInt32();
-            string result = request.Result.Replace($"\"{setId}\":", $"\"{AppSettings.FfzSetIdReplacement}\":");
+            string result = request.Result.Replace($"\"{setId}\":", "\"mainSet\":");
             return JsonSerializer.Deserialize<FfzRequest>(result);
         }
         catch (Exception ex)
@@ -218,9 +218,9 @@ public sealed class EmoteController
 
             JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
             int setId = json.GetProperty("default_sets")[0].GetInt32();
-            string result = request.Result.Replace($"\"{setId}\":", $"\"{AppSettings.FfzSetIdReplacement}\":");
+            string result = request.Result.Replace($"\"{setId}\":", "\"mainSet\":");
             json = JsonSerializer.Deserialize<JsonElement>(result);
-            string firstSet = json.GetProperty("sets").GetProperty(AppSettings.FfzSetIdReplacement).GetProperty("emoticons").GetRawText();
+            string firstSet = json.GetProperty("sets").GetProperty("mainSet").GetProperty("emoticons").GetRawText();
             string secondSet = json.GetProperty("sets").GetProperty("4330").GetProperty("emoticons").GetRawText();
             FfzEmote[] firstEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(firstSet) ?? Array.Empty<FfzEmote>();
             FfzEmote[] secondEmoteSet = JsonSerializer.Deserialize<FfzEmote[]>(secondSet) ?? Array.Empty<FfzEmote>();

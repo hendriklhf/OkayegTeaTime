@@ -2,8 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Controller;
 
 namespace OkayegTeaTime.Tools;
@@ -36,7 +35,7 @@ public sealed class ReadMeGenerator
     private const string _header1 = "Commands";
     private const string _header2 = "Afk-Commands";
 
-    private readonly string _readMePath = FileLocator.Find("README.md");
+    private const string _readMePath = "./README.md";
 
     public void Generate()
     {

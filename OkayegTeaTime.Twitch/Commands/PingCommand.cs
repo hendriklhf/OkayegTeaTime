@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using HLE;
 using HLE.Maths;
+#if DEBUG
+using HLE.Memory;
+#endif
+using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -13,19 +16,19 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Ping)]
 public readonly unsafe ref struct PingCommand
 {
-    public TwitchChatMessage ChatMessage { get; }
+    public ChatMessage ChatMessage { get; }
 
     public StringBuilder* Response { get; }
 
     private readonly TwitchBot _twitchBot;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    // ReSharper disable once NotAccessedField.Local
     private readonly string? _prefix;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")] [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+    // ReSharper disable once NotAccessedField.Local
     private readonly string _alias;
 
     private const string _uptimeFormat = "g";
 
-    public PingCommand(TwitchBot twitchBot, TwitchChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
         Response = response;
@@ -53,7 +56,8 @@ public readonly unsafe ref struct PingCommand
         Response->Append(" || Memory usage: ", buffer[..bufferLength], "MB || Executed commands: ");
 
         Response->Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ");
-        long latency = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - ChatMessage.TmiSentTs - 5;
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        long latency = now - ChatMessage.TmiSentTs - 5;
         Response->Append(latency);
 
         Environment.Version.TryFormat(buffer, out bufferLength);
@@ -62,8 +66,9 @@ public readonly unsafe ref struct PingCommand
 
     private static double GetMemoryUsage()
     {
-        double memory = Process.GetCurrentProcess().PrivateMemorySize64 / UnitPrefix.Mega;
-        return Math.Round(memory, 3);
+        double memory = Process.GetCurrentProcess().PrivateMemorySize64;
+        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.Null, UnitPrefix.Mega);
+        return Math.Round(memoryInMegaByte, 3);
     }
 
 #if DEBUG

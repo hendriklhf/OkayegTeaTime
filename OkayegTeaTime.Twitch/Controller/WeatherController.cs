@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 using HLE.Emojis;
-using OkayegTeaTime.Files;
-using OkayegTeaTime.Files.Models;
+using OkayegTeaTime.Models.OpenWeatherMap;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
 
 #pragma warning disable CS0659
@@ -13,12 +13,12 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class WeatherController
 {
-    private readonly Dictionary<WeatherDataKey, OwmWeatherData> _weatherCache = new();
-    private readonly Dictionary<WeatherDataKey, OwmForecastData> _forecastCache = new();
+    private readonly Dictionary<WeatherDataKey, WeatherData> _weatherCache = new();
+    private readonly Dictionary<WeatherDataKey, ForecastData> _forecastCache = new();
     private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(30);
     private readonly TimeSpan _forecastCacheTime = TimeSpan.FromDays(1);
 
-    public OwmWeatherData? GetWeather(string city, bool loadFromCache = true)
+    public WeatherData? GetWeather(string city, bool loadFromCache = true)
     {
         city = city.ToLower();
         WeatherDataKey key = new()
@@ -26,7 +26,7 @@ public sealed class WeatherController
             City = city
         };
 
-        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -37,7 +37,7 @@ public sealed class WeatherController
             return null;
         }
 
-        data = JsonSerializer.Deserialize<OwmWeatherData>(request.Result);
+        data = JsonSerializer.Deserialize<WeatherData>(request.Result);
         if (data is null)
         {
             return null;
@@ -51,7 +51,7 @@ public sealed class WeatherController
         return data;
     }
 
-    public OwmWeatherData? GetWeather(int latitude, int longitude, bool loadFromCache = true)
+    public WeatherData? GetWeather(int latitude, int longitude, bool loadFromCache = true)
     {
         WeatherDataKey key = new()
         {
@@ -59,7 +59,7 @@ public sealed class WeatherController
             Longitude = longitude
         };
 
-        if (loadFromCache && _weatherCache.TryGetValue(key, out OwmWeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -70,7 +70,7 @@ public sealed class WeatherController
             return null;
         }
 
-        data = JsonSerializer.Deserialize<OwmWeatherData>(request.Result);
+        data = JsonSerializer.Deserialize<WeatherData>(request.Result);
         if (data is null)
         {
             return null;
@@ -85,7 +85,7 @@ public sealed class WeatherController
     }
 
     // ReSharper disable once UnusedMember.Global
-    public OwmForecastData? GetForecast(string city, bool loadFromCache = true)
+    public ForecastData? GetForecast(string city, bool loadFromCache = true)
     {
         city = city.ToLower();
         WeatherDataKey key = new()
@@ -93,7 +93,7 @@ public sealed class WeatherController
             City = city
         };
 
-        if (loadFromCache && _forecastCache.TryGetValue(key, out OwmForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
+        if (loadFromCache && _forecastCache.TryGetValue(key, out ForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -104,7 +104,7 @@ public sealed class WeatherController
             return null;
         }
 
-        data = JsonSerializer.Deserialize<OwmForecastData>(request.Result);
+        data = JsonSerializer.Deserialize<ForecastData>(request.Result);
         if (data is null)
         {
             return null;
@@ -118,7 +118,7 @@ public sealed class WeatherController
         return data;
     }
 
-    public static string CreateResponse(OwmWeatherData weatherData, bool isPrivateLocation)
+    public static string CreateResponse(WeatherData weatherData, bool isPrivateLocation)
     {
         string location;
         if (isPrivateLocation)
