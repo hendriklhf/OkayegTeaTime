@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
@@ -10,20 +10,19 @@ using Random = HLE.Random;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Fill)]
-public readonly unsafe ref struct FillCommand
+public readonly ref struct FillCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public FillCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public FillCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -41,7 +40,7 @@ public readonly unsafe ref struct FillCommand
             ReadOnlySpan<char> nextMessagePart = messageExtension.Split[Random.Int(1, maxSplitIndex)];
             for (int currentMessageLength = 0; currentMessageLength + nextMessagePart.Length + 1 < maxLength; currentMessageLength += nextMessagePart.Length + 1)
             {
-                Response->Append(nextMessagePart, StringHelper.Whitespace);
+                _response.Append(nextMessagePart, " ");
                 nextMessagePart = messageExtension.Split[Random.Int(1, maxSplitIndex)];
             }
         }

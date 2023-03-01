@@ -11,10 +11,10 @@ public static class BotActions
 {
     private const string _yourself = "yourself";
     private const string _reminderFromSpace = "reminder from ";
-    private const string _spaceParentheses = " (";
-    private const string _spaceAgoParentheses = " ago)";
-    private const string _colonSpace = ": ";
-    private const string _spaceBarBarSpace = " || ";
+    // private const string _spaceParentheses = " (";
+    // private const string _spaceAgoParentheses = " ago)";
+    // private const string _colonSpace = ": ";
+    // private const string _spaceBarBarSpace = " || ";
 
     public static void SendComingBack(this TwitchBot twitchBot, long userId, string channel)
     {
@@ -47,11 +47,11 @@ public static class BotActions
         int spanLength = span.Format(spanBuffer);
 
         StringBuilder builder = stackalloc char[2048];
-        builder.Append(reminders[0].Target, Commands.Messages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+        builder.Append(reminders[0].Target, ", ", _reminderFromSpace, creator, " (", spanBuffer[..spanLength], " ago)");
         twitchBot.Reminders.Remove(reminders[0].Id);
         if (reminders[0].Message?.Length > 0)
         {
-            builder.Append(_colonSpace, reminders[0].Message);
+            builder.Append(": ", reminders[0].Message);
         }
 
         foreach (Reminder r in reminders[1..])
@@ -60,10 +60,10 @@ public static class BotActions
             creator = r.Creator == r.Target ? _yourself : r.Creator;
             span = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(r.Time);
             spanLength = span.Format(spanBuffer);
-            builder.Append(_spaceBarBarSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+            builder.Append(" || ", creator, " (", spanBuffer[..spanLength], " ago)");
             if (r.Message?.Length > 0)
             {
-                builder.Append(_colonSpace, r.Message);
+                builder.Append(": ", r.Message);
             }
         }
 
@@ -78,10 +78,10 @@ public static class BotActions
         int spanLength = span.Format(spanBuffer);
 
         StringBuilder builder = stackalloc char[500];
-        builder.Append(reminder.Target, Commands.Messages.CommaSpace, _reminderFromSpace, creator, _spaceParentheses, spanBuffer[..spanLength], _spaceAgoParentheses);
+        builder.Append(reminder.Target, ", ", _reminderFromSpace, creator, " (", spanBuffer[..spanLength], " ago)");
         if (!string.IsNullOrWhiteSpace(reminder.Message))
         {
-            builder.Append(_colonSpace, reminder.Message);
+            builder.Append(": ", reminder.Message);
         }
 
         twitchBot.Reminders.Remove(reminder.Id);

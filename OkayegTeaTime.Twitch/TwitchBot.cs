@@ -89,6 +89,11 @@ public sealed class TwitchBot
         _twitchClient.DisconnectAsync().Wait();
     }
 
+    public void Send(long channelId, MessageBuilder messageBuilder)
+    {
+        _twitchClient.SendAsync(channelId, messageBuilder, false).Wait();
+    }
+
     public void Send(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
     {
         if (addEmote)

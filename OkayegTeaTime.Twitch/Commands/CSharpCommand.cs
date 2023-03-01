@@ -2,8 +2,9 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
-using HLE;
 using HLE.Emojis;
+using HLE.Memory;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
@@ -15,20 +16,19 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.CSharp)]
-public readonly unsafe ref struct CSharpCommand
+public readonly ref struct CSharpCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public CSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public CSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -41,12 +41,12 @@ public readonly unsafe ref struct CSharpCommand
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string code = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
-            string result = GetProgramOutput(code);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, result);
+            ReadOnlySpan<char> result = GetProgramOutput(code);
+            _response.Append(ChatMessage.Username, ", ", result);
         }
     }
 
-    private static string GetProgramOutput(string input)
+    private static ReadOnlySpan<char> GetProgramOutput(string input)
     {
         try
         {
@@ -66,31 +66,28 @@ public readonly unsafe ref struct CSharpCommand
             });
             if (request.Result is null)
             {
-                throw new ArgumentNullException(nameof(request.Result));
+                throw new NullReferenceException("API result is null");
             }
 
             JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
-            string output = json.GetProperty("ConsoleOutput").GetString()!.NewLinesToSpaces();
-            if (string.IsNullOrWhiteSpace(output))
+            ReadOnlySpan<char> output = json.GetProperty("ConsoleOutput").GetString()!.NewLinesToSpaces();
+            switch (output.Length)
             {
-                return "executed successfully";
+                case 0:
+                    return "executed successfully";
+                case < 453:
+                    return output;
             }
 
-            if (output.Length <= 450)
-            {
-                return output;
-            }
-
-            StringBuilder outputBuilder = stackalloc char[500];
-            ReadOnlySpan<char> outputSpan = output;
-            outputBuilder.Append(outputSpan[..450], "...");
-            return outputBuilder.ToString();
+            Span<char> mutableOutput = output.AsMutableSpan()[..450];
+            "...".CopyTo(mutableOutput[^3..]);
+            return output[..450];
         }
         catch (Exception ex)
         {
             if (input.Contains('\''))
             {
-                return $"for some reason the API doesn't like the char \"'\". Please try to avoid it. {Emoji.SlightlySmilingFace}";
+                return "for some reason the API doesn't like the char \"'\". Please try to avoid it. " + Emoji.SlightlySmilingFace;
             }
 
             DbController.LogException(ex);

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -16,20 +16,20 @@ using StringHelper = HLE.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Listen)]
-public readonly unsafe ref struct ListenCommand
+public readonly ref struct ListenCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public ListenCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public ListenCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -39,7 +39,7 @@ public readonly unsafe ref struct ListenCommand
     {
         if (!AppSettings.UserLists.SecretUsers.Contains(ChatMessage.UserId))
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, "this command is still being tested, you aren't allowed to use this command");
+            _response.Append(ChatMessage.Username, ", ", "this command is still being tested, you aren't allowed to use this command");
             return;
         }
 
@@ -69,7 +69,7 @@ public readonly unsafe ref struct ListenCommand
         SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (listener is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouCantListenToOtherUsersYouHaveToRegisterFirst);
+            _response.Append(ChatMessage.Username, ", ", Messages.YouCantListenToOtherUsersYouHaveToRegisterFirst);
             return;
         }
 
@@ -78,7 +78,7 @@ public readonly unsafe ref struct ListenCommand
         SpotifyUser? host = _twitchBot.SpotifyUsers[hostUsername];
         if (host is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, "you can't listen to ", hostUsername, "'s music , they have to register first");
+            _response.Append(ChatMessage.Username, ", ", "you can't listen to ", hostUsername, "'s music , they have to register first");
             return;
         }
 
@@ -91,42 +91,42 @@ public readonly unsafe ref struct ListenCommand
         }
         catch (SpotifyException ex)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
+            _response.Append(ChatMessage.Username, ", ", ex.Message);
             return;
         }
         catch (AggregateException ex)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
+            _response.Append(ChatMessage.Username, ", ");
             if (ex.InnerException is null)
             {
                 DbController.LogException(ex);
-                Response->Append(Messages.ApiError);
+                _response.Append(Messages.ApiError);
                 return;
             }
 
-            Response->Append(ex.InnerException.Message);
+            _response.Append(ex.InnerException.Message);
             return;
         }
 
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "now listening along with ", host.Username.Antiping(), " and playing ");
+        _response.Append(ChatMessage.Username, ", ", "now listening along with ", host.Username.Antiping(), " and playing ");
         switch (item)
         {
             case SpotifyTrack track:
             {
                 string[] artists = track.Artists.Select(a => a.Name).ToArray();
                 Span<char> joinBuffer = stackalloc char[250];
-                int bufferLength = StringHelper.Join(artists, Messages.CommaSpace, joinBuffer);
-                Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
+                int bufferLength = StringHelper.Join(artists, ", ", joinBuffer);
+                _response.Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
                 break;
             }
             case SpotifyEpisode episode:
             {
-                Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
+                _response.Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
                 break;
             }
             default:
             {
-                Response->Append("an unknown item type monkaS");
+                _response.Append("an unknown item type monkaS");
                 break;
             }
         }
@@ -137,14 +137,14 @@ public readonly unsafe ref struct ListenCommand
         SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (listener is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouCantSyncYouHaveToRegisterFirst);
+            _response.Append(ChatMessage.Username, ", ", Messages.YouCantSyncYouHaveToRegisterFirst);
             return;
         }
 
         SpotifyUser? host = SpotifyController.GetListeningTo(listener);
         if (host is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouCantSyncBecauseYouArentListeningAlongWithAnybody);
+            _response.Append(ChatMessage.Username, ", ", Messages.YouCantSyncBecauseYouArentListeningAlongWithAnybody);
             return;
         }
 
@@ -157,37 +157,37 @@ public readonly unsafe ref struct ListenCommand
         }
         catch (SpotifyException ex)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
+            _response.Append(ChatMessage.Username, ", ", ex.Message);
             return;
         }
         catch (AggregateException ex)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
+            _response.Append(ChatMessage.Username, ", ");
             if (ex.InnerException is null)
             {
                 DbController.LogException(ex);
-                Response->Append(Messages.ApiError);
+                _response.Append(Messages.ApiError);
                 return;
             }
 
-            Response->Append(ex.InnerException.Message);
+            _response.Append(ex.InnerException.Message);
             return;
         }
 
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "synced with ", host.Username.Antiping(), " and playing ");
+        _response.Append(ChatMessage.Username, ", ", "synced with ", host.Username.Antiping(), " and playing ");
         switch (item)
         {
             case SpotifyTrack track:
                 string[] artists = track.Artists.Select(a => a.Name).ToArray();
                 Span<char> joinBuffer = stackalloc char[250];
-                int bufferLength = StringHelper.Join(artists, Messages.CommaSpace, joinBuffer);
-                Response->Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
+                int bufferLength = StringHelper.Join(artists, ", ", joinBuffer);
+                _response.Append(track.Name, " by ", joinBuffer[..bufferLength], " || ", track.IsLocal ? "local file" : track.Uri);
                 break;
             case SpotifyEpisode episode:
-                Response->Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
+                _response.Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
                 break;
             default:
-                Response->Append("an unknown item type monkaS");
+                _response.Append("an unknown item type monkaS");
                 break;
         }
     }
@@ -197,19 +197,19 @@ public readonly unsafe ref struct ListenCommand
         SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (listener is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentRegisteredYouHaveToRegisterFirst);
+            _response.Append(ChatMessage.Username, ", ", Messages.YouArentRegisteredYouHaveToRegisterFirst);
             return;
         }
 
         SpotifyUser? host = SpotifyController.GetListeningTo(listener);
         if (host is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentListeningAlongWithAnybody);
+            _response.Append(ChatMessage.Username, ", ", Messages.YouArentListeningAlongWithAnybody);
             return;
         }
 
         ListeningSession? listeningSession = SpotifyController.GetListeningSession(host);
         listeningSession?.Listeners.Remove(listener);
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "stopped listening along with ", host.Username.Antiping());
+        _response.Append(ChatMessage.Username, ", ", "stopped listening along with ", host.Username.Antiping());
     }
 }

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using HLE;
 using HLE.Collections;
 using HLE.Memory;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -13,11 +14,11 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Slots)]
-public readonly unsafe ref struct SlotsCommand
+public readonly ref struct SlotsCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -25,10 +26,10 @@ public readonly unsafe ref struct SlotsCommand
 
     private const byte _emoteSlotCount = 3;
 
-    public SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -47,7 +48,7 @@ public readonly unsafe ref struct SlotsCommand
             }
             catch (ArgumentException)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.TheGivenPatternIsInvalid);
+                _response.Append(ChatMessage.Username, ", ", Messages.TheGivenPatternIsInvalid);
                 return;
             }
         }
@@ -59,7 +60,7 @@ public readonly unsafe ref struct SlotsCommand
 
         if (emotes.Length == 0)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
+            _response.Append(ChatMessage.Username, ", ", Messages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
             return;
         }
 
@@ -70,7 +71,7 @@ public readonly unsafe ref struct SlotsCommand
 
         if (emotes.Length == 0)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoEmoteMatchingYourProvidedPattern);
+            _response.Append(ChatMessage.Username, ", ", Messages.ThereIsNoEmoteMatchingYourProvidedPattern);
             return;
         }
 
@@ -82,8 +83,8 @@ public readonly unsafe ref struct SlotsCommand
 
         Span<char> joinBuffer = stackalloc char[500];
         int bufferLength = StringHelper.Join(randomEmotes[.._emoteSlotCount], ' ', joinBuffer);
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, "[ ", joinBuffer[..bufferLength], " ] (");
-        Response->Append(emotes.Length);
-        Response->Append(" emote", emotes.Length > 1 ? "s" : string.Empty, ")");
+        _response.Append(ChatMessage.Username, ", ", "[ ", joinBuffer[..bufferLength], " ] (");
+        _response.Append(emotes.Length);
+        _response.Append(" emote", emotes.Length > 1 ? "s" : string.Empty, ")");
     }
 }

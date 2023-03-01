@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.Json;
@@ -13,20 +13,20 @@ using StringHelper = HLE.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Check)]
-public readonly unsafe ref struct CheckCommand
+public readonly ref struct CheckCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public CheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public CheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -50,13 +50,13 @@ public readonly unsafe ref struct CheckCommand
 
     private void CheckReminder()
     {
-        Response->Append(ChatMessage.Username, Messages.CommaSpace);
+        _response.Append(ChatMessage.Username, ", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         int id = int.Parse(messageExtension.Split[2]);
         Reminder? reminder = _twitchBot.Reminders[id];
         if (reminder is null)
         {
-            Response->Append(Messages.CouldNotFindAnyMatchingReminder);
+            _response.Append(Messages.CouldNotFindAnyMatchingReminder);
             return;
         }
 
@@ -80,45 +80,45 @@ public readonly unsafe ref struct CheckCommand
 
         Span<char> joinBuffer = stackalloc char[250];
         int bufferLength = StringHelper.Join(reminderProps.AsSpan(), " || ", joinBuffer);
-        Response->Append(joinBuffer[..bufferLength]);
+        _response.Append(joinBuffer[..bufferLength]);
     }
 
     private void CheckAfkStatus()
     {
-        Response->Append(ChatMessage.Username, Messages.CommaSpace);
+        _response.Append(ChatMessage.Username, ", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         string username = new(messageExtension.LowerSplit[2]);
         long userId = _twitchBot.TwitchApi.GetUserId(username);
         if (userId == -1)
         {
-            Response->Append(Messages.CouldNotFindAnyMatchingUser);
+            _response.Append(Messages.CouldNotFindAnyMatchingUser);
             return;
         }
 
         User? user = _twitchBot.Users.Get(userId, username);
         if (user is null)
         {
-            Response->Append(Messages.CouldNotFindAnyMatchingUser);
+            _response.Append(Messages.CouldNotFindAnyMatchingUser);
             return;
         }
 
         if (!user.IsAfk)
         {
-            Response->Append(username, " is not afk");
+            _response.Append(username, " is not afk");
             return;
         }
 
         AfkCommand afkCommand = _twitchBot.CommandController[user.AfkType];
-        Response->Append(new AfkMessage(user, afkCommand).GoingAway);
+        _response.Append(new AfkMessage(user, afkCommand).GoingAway);
         string? message = user.AfkMessage;
         if (!string.IsNullOrWhiteSpace(message))
         {
-            Response->Append(": ", message);
+            _response.Append(": ", message);
         }
 
         TimeSpan timeSinceBeingAfk = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
         Span<char> spanChars = stackalloc char[100];
         int spanCharsLength = timeSinceBeingAfk.Format(spanChars);
-        Response->Append(" (", spanChars[..spanCharsLength], " ago)");
+        _response.Append(" (", spanChars[..spanCharsLength], " ago)");
     }
 }

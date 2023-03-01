@@ -9,7 +9,7 @@ public sealed class HangmanGame : IDisposable
 {
     public string Solution { get; }
 
-    public ReadOnlySpan<char> DiscoveredWord => _discoveredWord;
+    public ReadOnlySpan<char> DiscoveredWord => ((ReadOnlySpan<char>)_discoveredWord)[..Solution.Length];
 
     public ReadOnlySpan<char> WrongChars => ((ReadOnlySpan<char>)_wrongChars)[.._wrongCharLength];
 

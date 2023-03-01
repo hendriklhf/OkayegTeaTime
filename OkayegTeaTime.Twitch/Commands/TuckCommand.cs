@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Emojis;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Tuck)]
-public readonly unsafe ref struct TuckCommand
+public readonly ref struct TuckCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
@@ -23,10 +22,10 @@ public readonly unsafe ref struct TuckCommand
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -39,12 +38,12 @@ public readonly unsafe ref struct TuckCommand
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             ReadOnlySpan<char> target = messageExtension.LowerSplit[1];
-            Response->Append(Emoji.PointRight, StringHelper.Whitespace, Emoji.Bed, StringHelper.Whitespace, ChatMessage.Username);
-            Response->Append(" tucked ", target, " to bed");
+            _response.Append(Emoji.PointRight, " ", Emoji.Bed, " ", ChatMessage.Username);
+            _response.Append(" tucked ", target, " to bed");
             ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2] : string.Empty;
             if (emote.Length > 0)
             {
-                Response->Append(StringHelper.Whitespace, emote);
+                _response.Append(" ", emote);
             }
         }
     }

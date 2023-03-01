@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
@@ -16,11 +17,11 @@ using StringBuilder = HLE.StringBuilder;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Kotlin)]
-public readonly unsafe ref struct KotlinCommand
+public readonly ref struct KotlinCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -37,10 +38,10 @@ public readonly unsafe ref struct KotlinCommand
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -54,7 +55,7 @@ public readonly unsafe ref struct KotlinCommand
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string code = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
             string result = GetProgramOutput(code);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, result);
+            _response.Append(ChatMessage.Username, ", ", result);
         }
     }
 
@@ -106,7 +107,7 @@ public readonly unsafe ref struct KotlinCommand
                     errorTexts.Add($"{severity} at ch{start - _mainFunLength}: {message}");
                 }
 
-                return string.Join(Messages.CommaSpace, errorTexts);
+                return string.Join(", ", errorTexts);
             }
 
             string? result = json.GetProperty("text").GetString();
@@ -120,6 +121,7 @@ public readonly unsafe ref struct KotlinCommand
                 return "executed successfully";
             }
 
+            // TODO: change this length check to the one used in CSharpCommand
             ReadOnlySpan<char> resultSpan = result;
             resultSpan = resultSpan[_outStreamLabelLength..^(_outStreamLabelLength + 1)];
             if (resultSpan.Length <= 450)

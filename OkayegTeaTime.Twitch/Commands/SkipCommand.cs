@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -13,11 +13,11 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Skip)]
-public readonly unsafe ref struct SkipCommand
+public readonly ref struct SkipCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
@@ -27,10 +27,10 @@ public readonly unsafe ref struct SkipCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -41,38 +41,38 @@ public readonly unsafe ref struct SkipCommand
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOrTheBroadcaster);
+            _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
         if (user is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
+            _response.Append(ChatMessage.Username, ", ", "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
             return;
         }
 
         try
         {
             SpotifyController.SkipAsync(user).Wait();
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
+            _response.Append(ChatMessage.Username, ", ", "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
         }
         catch (SpotifyException ex)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, ex.Message);
+            _response.Append(ChatMessage.Username, ", ", ex.Message);
             return;
         }
         catch (AggregateException ex)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
+            _response.Append(ChatMessage.Username, ", ");
             if (ex.InnerException is null)
             {
                 DbController.LogException(ex);
-                Response->Append(Messages.ApiError);
+                _response.Append(Messages.ApiError);
                 return;
             }
 
-            Response->Append(ex.InnerException.Message);
+            _response.Append(ex.InnerException.Message);
             return;
         }
 

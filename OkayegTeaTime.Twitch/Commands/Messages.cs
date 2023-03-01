@@ -2,11 +2,6 @@
 
 public static class Messages
 {
-    public const string CommaSpace = ", ";
-    public const string Colon = ":";
-    public const string Comma = ",";
-    public const string QuotationMark = "\"";
-    public const string Dot = ".";
     public const string YouArentAModeratorOrTheBroadcaster = "you aren't a moderator or the broadcaster";
     public const string TwitchUserDoesntExist = "Twitch user doesn't exist";
     public const string ThatUserHasTooManyRemindersSetForThem = "that user has too many reminders set for them";

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
@@ -11,22 +12,21 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Code)]
-public readonly unsafe ref struct CodeCommand
+public readonly ref struct CodeCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
     private static string[]? _codeFiles;
 
-    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -52,31 +52,31 @@ public readonly unsafe ref struct CodeCommand
             }
             catch (ArgumentException)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.TheGivenPatternIsInvalid);
+                _response.Append(ChatMessage.Username, ", ", Messages.TheGivenPatternIsInvalid);
                 return;
             }
 
             string[] matchingFiles = _codeFiles!.Where(f => filePattern.IsMatch(f)).ToArray();
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
+            _response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Length)
             {
                 case 0:
-                    Response->Append(Messages.YourPatternMatchedNoSourceCodeFiles);
+                    _response.Append(Messages.YourPatternMatchedNoSourceCodeFiles);
                     break;
                 case 1:
-                    Response->Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
+                    _response.Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
                     Span<char> joinBuffer = stackalloc char[500];
-                    int bufferLength = StringHelper.Join(matchingFiles, Messages.CommaSpace, joinBuffer);
-                    Response->Append("your pattern matched ");
-                    Response->Append(matchingFiles.Length);
-                    Response->Append(" files: ", joinBuffer[..bufferLength], ". Please specify");
+                    int bufferLength = StringHelper.Join(matchingFiles, ", ", joinBuffer);
+                    _response.Append("your pattern matched ");
+                    _response.Append(matchingFiles.Length);
+                    _response.Append(" files: ", joinBuffer[..bufferLength], ". Please specify");
                     break;
                 default:
-                    Response->Append("your pattern matched too many (");
-                    Response->Append(matchingFiles.Length);
-                    Response->Append(") files. Please specify");
+                    _response.Append("your pattern matched too many (");
+                    _response.Append(matchingFiles.Length);
+                    _response.Append(") files. Please specify");
                     break;
             }
         }

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -8,20 +8,20 @@ using StringHelper = OkayegTeaTime.Utils.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Join)]
-public readonly unsafe ref struct JoinCommand
+public readonly ref struct JoinCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public JoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public JoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -35,7 +35,7 @@ public readonly unsafe ref struct JoinCommand
             using ChatMessageExtension messageExtension = new(ChatMessage);
             if (!messageExtension.IsBotModerator)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
+                _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOfTheBot);
                 return;
             }
 
@@ -43,26 +43,26 @@ public readonly unsafe ref struct JoinCommand
             bool isValidChannel = StringHelper.FormatChannel(ref channel);
             if (!isValidChannel)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.GivenChannelIsInvalid);
+                _response.Append(ChatMessage.Username, ", ", Messages.GivenChannelIsInvalid);
                 return;
             }
 
             bool isJoined = _twitchBot.Channels[channel] is not null;
             if (isJoined)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, "the bot is already connected to #", channel);
+                _response.Append(ChatMessage.Username, ", ", "the bot is already connected to #", channel);
                 return;
             }
 
             bool channelExists = _twitchBot.TwitchApi.DoesUserExist(channel);
             if (!channelExists)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.GivenChannelDoesNotExist);
+                _response.Append(ChatMessage.Username, ", ", Messages.GivenChannelDoesNotExist);
                 return;
             }
 
             bool success = _twitchBot.JoinChannel(channel);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, success ? "successfully joined" : "failed to join", " #", channel);
+            _response.Append(ChatMessage.Username, ", ", success ? "successfully joined" : "failed to join", " #", channel);
         }
     }
 }

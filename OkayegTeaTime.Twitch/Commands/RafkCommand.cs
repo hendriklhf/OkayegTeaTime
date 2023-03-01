@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.Json;
@@ -9,11 +9,11 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Rafk)]
-public readonly unsafe ref struct RafkCommand
+public readonly ref struct RafkCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
@@ -23,10 +23,10 @@ public readonly unsafe ref struct RafkCommand
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly string _alias;
 
-    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -37,12 +37,12 @@ public readonly unsafe ref struct RafkCommand
         User? user = _twitchBot.Users.Get(ChatMessage.UserId, ChatMessage.Username);
         if (user is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore);
+            _response.Append(ChatMessage.Username, ", ", Messages.CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore);
             return;
         }
 
         user.IsAfk = true;
         AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
-        Response->Append(new AfkMessage(user, cmd).Resuming);
+        _response.Append(new AfkMessage(user, cmd).Resuming);
     }
 }

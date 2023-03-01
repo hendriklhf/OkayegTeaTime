@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using HLE;
 using HLE.Emojis;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
@@ -12,20 +12,19 @@ namespace OkayegTeaTime.Twitch.Commands;
 [HandledCommand(CommandType.Help)]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
 [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-public readonly unsafe ref struct HelpCommand
+public readonly ref struct HelpCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public HelpCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public HelpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -35,6 +34,6 @@ public readonly unsafe ref struct HelpCommand
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         ReadOnlySpan<char> username = messageExtension.Split.Length > 1 ? messageExtension.LowerSplit[1] : ChatMessage.Username;
-        Response->Append(Emoji.PointRight, StringHelper.Whitespace, username, Messages.CommaSpace, "here you can find a list of commands and the repository: ", AppSettings.RepositoryUrl);
+        _response.Append(Emoji.PointRight, " ", username, ", ", "here you can find a list of commands and the repository: ", AppSettings.RepositoryUrl);
     }
 }

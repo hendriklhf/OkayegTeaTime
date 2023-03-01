@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -8,20 +8,19 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Id)]
-public readonly unsafe ref struct IdCommand
+public readonly ref struct IdCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public IdCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public IdCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -29,7 +28,7 @@ public readonly unsafe ref struct IdCommand
 
     public void Handle()
     {
-        Response->Append(ChatMessage.Username, Messages.CommaSpace);
+        _response.Append(ChatMessage.Username, ", ");
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
         long userId;
         if (pattern.IsMatch(ChatMessage.Message))
@@ -39,7 +38,7 @@ public readonly unsafe ref struct IdCommand
             userId = _twitchBot.TwitchApi.GetUserId(new(username));
             if (userId == -1)
             {
-                Response->Append(Messages.TwitchUserDoesntExist);
+                _response.Append(Messages.TwitchUserDoesntExist);
                 return;
             }
         }
@@ -48,6 +47,6 @@ public readonly unsafe ref struct IdCommand
             userId = ChatMessage.UserId;
         }
 
-        Response->Append(userId);
+        _response.Append(userId);
     }
 }

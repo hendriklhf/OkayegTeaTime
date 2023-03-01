@@ -1,27 +1,27 @@
 ﻿using System.Text.RegularExpressions;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using StringHelper = OkayegTeaTime.Utils.StringHelper;
+using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Leave)]
-public readonly unsafe ref struct LeaveCommand
+public readonly ref struct LeaveCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public LeaveCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public LeaveCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -35,7 +35,7 @@ public readonly unsafe ref struct LeaveCommand
             using ChatMessageExtension messageExtension = new(ChatMessage);
             if (!messageExtension.IsBotModerator)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.YouArentAModeratorOfTheBot);
+                _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOfTheBot);
                 return;
             }
 
@@ -43,19 +43,19 @@ public readonly unsafe ref struct LeaveCommand
             bool isValidChannel = StringHelper.FormatChannel(ref channel);
             if (!isValidChannel)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.GivenChannelIsInvalid);
+                _response.Append(ChatMessage.Username, ", ", Messages.GivenChannelIsInvalid);
                 return;
             }
 
             bool isJoined = _twitchBot.Channels[channel] is not null;
             if (!isJoined)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, "the bot is not connected to #", channel);
+                _response.Append(ChatMessage.Username, ", ", "the bot is not connected to #", channel);
                 return;
             }
 
             bool success = _twitchBot.LeaveChannel(channel);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, success ? "successfully left" : "failed to leave", " #", channel);
+            _response.Append(ChatMessage.Username, ", ", success ? "successfully left" : "failed to leave", " #", channel);
         }
     }
 }

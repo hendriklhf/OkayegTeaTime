@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Emojis;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Models.Formula1;
@@ -13,18 +13,16 @@ using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Formula1)]
-public readonly unsafe ref struct Formula1Command
+public readonly ref struct Formula1Command
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
@@ -32,10 +30,10 @@ public readonly unsafe ref struct Formula1Command
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -46,14 +44,14 @@ public readonly unsafe ref struct Formula1Command
     {
         if (_races is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
+            _response.Append(ChatMessage.Username, ", ", Messages.ApiError);
             return;
         }
 
         Race? race = GetNextOrCurrentRace(_races);
         if (race is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereIsNoNextRace);
+            _response.Append(ChatMessage.Username, ", ", Messages.ThereIsNoNextRace);
             return;
         }
 
@@ -70,18 +68,18 @@ public readonly unsafe ref struct Formula1Command
 
     private void SendRaceInformation(Race race)
     {
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, race.RaceSession.Start > DateTime.UtcNow ? "Next" : "Current", "race: ", race.Name);
-        Response->Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, Messages.CommaSpace, race.Circuit.Location.Country, ". ");
-        Response->Append(Emoji.RacingCar, StringHelper.Whitespace);
+        _response.Append(ChatMessage.Username, ", ", race.RaceSession.Start > DateTime.UtcNow ? "Next" : "Current", "race: ", race.Name);
+        _response.Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, ", ", race.Circuit.Location.Country, ". ");
+        _response.Append(Emoji.RacingCar, " ");
         if (race.RaceSession.Start > DateTime.UtcNow)
         {
             TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - DateTime.UtcNow;
-            Response->Append("The ", race.RaceSession.Name, " will start on ", race.RaceSession.Start.ToString("R"));
-            Response->Append(" (in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], "). ", Emoji.CheckeredFlag);
+            _response.Append("The ", race.RaceSession.Name, " will start on ", race.RaceSession.Start.ToString("R"));
+            _response.Append(" (in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], "). ", Emoji.CheckeredFlag);
         }
         else
         {
-            Response->Append("The ", race.RaceSession.Name, " started ", race.RaceSession.Start.ToString("t"), " GMT. ", Emoji.CheckeredFlag);
+            _response.Append("The ", race.RaceSession.Name, " started ", race.RaceSession.Start.ToString("t"), " GMT. ", Emoji.CheckeredFlag);
         }
 
         Session session = GetNextOrCurrentSession(race);
@@ -93,11 +91,11 @@ public readonly unsafe ref struct Formula1Command
         if (session.Start > DateTime.UtcNow)
         {
             TimeSpan timeBetweenNowAndRaceStart = session.Start - DateTime.UtcNow;
-            Response->Append("Next session: ", session.Name, ", starting on ", session.Start.ToString("R"), "(in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], ").");
+            _response.Append("Next session: ", session.Name, ", starting on ", session.Start.ToString("R"), "(in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], ").");
         }
         else if (session.Start + _nonRaceLength > DateTime.UtcNow)
         {
-            Response->Append("Current session: ", session.Name, ", started ", session.Start.ToString("t"));
+            _response.Append("Current session: ", session.Name, ", started ", session.Start.ToString("t"));
         }
     }
 
@@ -108,13 +106,13 @@ public readonly unsafe ref struct Formula1Command
         WeatherData? weatherData = _twitchBot.WeatherController.GetWeather(latitude, longitude, false);
         if (weatherData is null)
         {
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
+            _response.Append(ChatMessage.Username, ", ", Messages.ApiError);
             return;
         }
 
         weatherData.CityName = race.Circuit.Location.Name;
         weatherData.Location.Country = race.Circuit.Location.Country;
-        Response->Append(ChatMessage.Username, Messages.CommaSpace, WeatherController.CreateResponse(weatherData, false));
+        _response.Append(ChatMessage.Username, ", ", WeatherController.CreateResponse(weatherData, false));
     }
 
     private static Race? GetNextOrCurrentRace(IEnumerable<Race> races)

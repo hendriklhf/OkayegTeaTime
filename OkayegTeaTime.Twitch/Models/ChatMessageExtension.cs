@@ -26,7 +26,7 @@ public readonly struct ChatMessageExtension : IDisposable
         Split = new(_chatMessage.Message.AsMemory());
         _lowerCaseMessage = ArrayPool<char>.Shared.Rent(_chatMessage.Message.Length);
         _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
-        LowerSplit = new(_lowerCaseMessage.AsMemory());
+        LowerSplit = new(_lowerCaseMessage.AsMemory()[.._chatMessage.Message.Length]);
     }
 
     private bool CheckIfIsBotModerator()

@@ -3,25 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
 using HLE.Emojis;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Reddit)]
-public readonly unsafe ref struct RedditCommand
+public readonly ref struct RedditCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
+    private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly string? _prefix;
@@ -31,10 +30,10 @@ public readonly unsafe ref struct RedditCommand
     private static readonly TimeSpan _cacheTime = TimeSpan.FromHours(1);
     private static readonly Func<RedditPost, bool> _postFilter = rp => rp is { Pinned: false, IsNsfw: false };
 
-    public RedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public RedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -49,23 +48,21 @@ public readonly unsafe ref struct RedditCommand
             RedditPost[]? posts = GetRedditPosts(new(messageExtension.LowerSplit[1]));
             if (posts is null)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ApiError);
+                _response.Append(ChatMessage.Username, ", ", Messages.ApiError);
                 return;
             }
 
             RedditPost? post = posts.Random();
             if (post is null)
             {
-                Response->Append(ChatMessage.Username, Messages.CommaSpace, Messages.ThereAreNoPostsAvailable);
+                _response.Append(ChatMessage.Username, ", ", Messages.ThereAreNoPostsAvailable);
                 return;
             }
 
-            Response->Append(ChatMessage.Username, Messages.CommaSpace);
+            _response.Append(ChatMessage.Username, ", ");
             CheckForNsfwAndSpoiler(post);
-            Span<char> scoreChars = stackalloc char[30];
-            post.Score.TryFormat(scoreChars, out int scoreLength);
-            scoreChars = scoreChars[..scoreLength];
-            Response->Append(post.Title, StringHelper.Whitespace, post.Url, " Score: ", scoreChars);
+            _response.Append(post.Title, " ", post.Url, " Score: ");
+            _response.Append(post.Score);
         }
     }
 
@@ -78,7 +75,7 @@ public readonly unsafe ref struct RedditCommand
                 return redditPosts;
             }
 
-            HttpGet request = new($"https://www.reddit.com/r/{subReddit}/hot.json?limit=50");
+            HttpGet request = new("https://www.reddit.com/r/" + subReddit + "/hot.json?limit=50");
             if (request.Result is null)
             {
                 return null;
@@ -116,17 +113,17 @@ public readonly unsafe ref struct RedditCommand
     {
         if (post.IsNsfw)
         {
-            Response->Append(Emoji.Warning, " NSFW 18+ ");
+            _response.Append(Emoji.Warning, " NSFW 18+ ");
             if (post.IsSpoiler)
             {
-                Response->Append(Emoji.Warning, " Spoiler ");
+                _response.Append(Emoji.Warning, " Spoiler ");
             }
 
-            Response->Append(Emoji.Warning, StringHelper.Whitespace);
+            _response.Append(Emoji.Warning, " ");
         }
         else if (post.IsSpoiler)
         {
-            Response->Append(Emoji.Warning, " Spoiler ", Emoji.Warning);
+            _response.Append(Emoji.Warning, " Spoiler ", Emoji.Warning);
         }
     }
 }

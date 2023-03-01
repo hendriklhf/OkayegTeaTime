@@ -1,7 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Web;
-using HLE;
+using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -10,22 +9,19 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Math)]
-public readonly unsafe ref struct MathCommand
+public readonly ref struct MathCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    public StringBuilder* Response { get; }
-
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
+    private readonly ref MessageBuilder _response;
     private readonly string? _prefix;
     private readonly string _alias;
 
-    public MathCommand(TwitchBot twitchBot, ChatMessage chatMessage, StringBuilder* response, string? prefix, string alias)
+    public MathCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
     {
         ChatMessage = chatMessage;
-        Response = response;
+        _response = ref response;
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -38,7 +34,7 @@ public readonly unsafe ref struct MathCommand
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string mathResult = GetMathResult(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
-            Response->Append(ChatMessage.Username, Messages.CommaSpace, mathResult);
+            _response.Append(ChatMessage.Username, ", ", mathResult);
         }
     }
 

@@ -18,7 +18,7 @@ public static class StringHelper
 
     public static string NewLinesToSpaces(this string value)
     {
-        return value.ReplaceLineEndings(HLE.StringHelper.Whitespace);
+        return value.ReplaceLineEndings(" ");
     }
 
     public static bool FormatChannel(ref string channel, bool withHashTag = false)
