@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
@@ -6,9 +7,12 @@ using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
+#pragma warning disable IDE0052
+
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Rafk)]
+[SuppressMessage("ReSharper", "NotAccessedField.Local")]
 public readonly ref struct RafkCommand
 {
     public ChatMessage ChatMessage { get; }
@@ -16,14 +20,10 @@ public readonly ref struct RafkCommand
     private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-    private readonly string? _prefix;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
-    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

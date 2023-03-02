@@ -23,14 +23,14 @@ public readonly ref struct Formula1Command
 
     private readonly TwitchBot _twitchBot;
     private readonly ref MessageBuilder _response;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
     private static Race[]? _races;
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

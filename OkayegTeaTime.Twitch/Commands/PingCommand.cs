@@ -22,13 +22,13 @@ public readonly ref struct PingCommand
     private readonly TwitchBot _twitchBot;
     private readonly ref MessageBuilder _response;
     // ReSharper disable once NotAccessedField.Local
-    private readonly string? _prefix;
+    private readonly ReadOnlySpan<char> _prefix;
     // ReSharper disable once NotAccessedField.Local
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _alias;
 
     private const string _uptimeFormat = "g";
 
-    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

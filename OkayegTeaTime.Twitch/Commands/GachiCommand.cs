@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using HLE.Collections;
 using HLE.Emojis;
 using HLE.Twitch;
@@ -21,10 +22,10 @@ public readonly ref struct GachiCommand
     private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
-    public GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

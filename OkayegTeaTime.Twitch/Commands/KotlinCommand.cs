@@ -24,8 +24,8 @@ public readonly ref struct KotlinCommand
     private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
     private const string _kotlinFileName = "File.kt";
     /// <summary>
@@ -38,7 +38,7 @@ public readonly ref struct KotlinCommand
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

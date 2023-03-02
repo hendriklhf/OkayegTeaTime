@@ -64,7 +64,6 @@ public sealed class TwitchBot
         channels ??= Channels.Select(c => c.Name);
         _twitchClient.JoinChannels(channels.ToArray());
 
-        //_twitchClient.OnLog += Client_OnLog!;
         _twitchClient.OnConnected += Client_OnConnected!;
         _twitchClient.OnJoinedChannel += Client_OnJoinedChannel!;
         _twitchClient.OnChatMessageReceived += Client_OnMessageReceived!;
@@ -162,11 +161,6 @@ public sealed class TwitchBot
     }
 
     #region Bot_On
-
-    /*private void Client_OnLog(object sender, OnLogArgs e)
-    {
-        ConsoleOut($"[TWITCH] {e.Data}", ConsoleColor.Blue);
-    }*/
 
     private static void Client_OnConnected(object sender, EventArgs e)
     {

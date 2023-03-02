@@ -18,26 +18,12 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
         }
 
         SpotifyUser user = new(id.Value, username, accessToken, refreshToken);
-        _items.Add(user);
+        _items.Add(user.Id, user);
     }
 
     private SpotifyUser? Get(string username)
     {
-        SpotifyUser? user = this.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
-        if (user is not null)
-        {
-            return user;
-        }
-
-        EntityFrameworkModels.Spotify? efUser = DbController.GetSpotifyUser(username);
-        if (efUser is null)
-        {
-            return null;
-        }
-
-        user = new(efUser);
-        _items.Add(user);
-        return user;
+        return this.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
     }
 
     private protected override void GetAllItemsFromDatabase()
@@ -47,7 +33,7 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
             return;
         }
 
-        DbController.GetSpotifyUsers().Where(u => _items.All(i => i.Id != u.Id)).ForEach(u => _items.Add(new(u)));
+        DbController.GetSpotifyUsers().Where(u => _items.All(i => i.Value.Id != u.Id)).ForEach(u => _items.Add(u.Id, new(u)));
         _containsAll = true;
     }
 }

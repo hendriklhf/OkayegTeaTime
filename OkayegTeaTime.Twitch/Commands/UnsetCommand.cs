@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
@@ -16,10 +17,10 @@ public readonly ref struct UnsetCommand
     private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
-    public UnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public UnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

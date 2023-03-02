@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using HLE.Twitch;
 using HLE.Twitch.Models;
@@ -18,10 +19,10 @@ public readonly ref struct SuggestCommand
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
-    public SuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public SuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

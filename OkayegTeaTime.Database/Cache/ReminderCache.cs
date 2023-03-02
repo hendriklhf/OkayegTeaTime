@@ -9,7 +9,7 @@ namespace OkayegTeaTime.Database.Cache;
 
 public sealed class ReminderCache : DbCache<Reminder>
 {
-    public Reminder? this[int id] => GetReminder(id);
+    public Reminder? this[int id] => Get(id);
 
     public int Add(Reminder reminder)
     {
@@ -25,7 +25,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         }
 
         reminder.Id = id;
-        _items.Add(reminder);
+        _items.Add(id, reminder);
         return id;
     }
 
@@ -47,7 +47,7 @@ public sealed class ReminderCache : DbCache<Reminder>
             }
 
             reminders[i].Id = ids[i];
-            _items.Add(reminders[i]);
+            _items.Add(ids[i], reminders[i]);
         }
 
         return ids;
@@ -64,10 +64,9 @@ public sealed class ReminderCache : DbCache<Reminder>
         Reminder? reminder = this[reminderId];
         if (reminder is null)
         {
-            return removed;
+            return false;
         }
 
-        //wasn't sent, but basically equals deletion from the memory cache
         reminder.HasBeenSent = true;
         return true;
     }
@@ -118,22 +117,9 @@ public sealed class ReminderCache : DbCache<Reminder>
         return this.Where(r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
     }
 
-    private Reminder? GetReminder(int id)
+    private Reminder? Get(int id)
     {
-        Reminder? reminder = this.FirstOrDefault(r => r.Id == id);
-        if (reminder is not null)
-        {
-            return reminder;
-        }
-
-        EntityFrameworkModels.Reminder? efReminder = DbController.GetReminder(id);
-        if (efReminder is null)
-        {
-            return null;
-        }
-
-        reminder = new(efReminder);
-        _items.Add(reminder);
+        _items.TryGetValue(id, out Reminder? reminder);
         return reminder;
     }
 
@@ -155,7 +141,7 @@ public sealed class ReminderCache : DbCache<Reminder>
             return;
         }
 
-        DbController.GetReminders().Where(r => _items.All(i => i.Id != r.Id)).ForEach(r => _items.Add(new(r)));
+        DbController.GetReminders().Where(r => _items.All(i => i.Value.Id != r.Id)).ForEach(r => _items.Add(r.Id, new(r)));
         _containsAll = true;
     }
 }

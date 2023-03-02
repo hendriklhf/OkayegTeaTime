@@ -19,12 +19,12 @@ public readonly ref struct HangmanCommand
 
     private readonly TwitchBot _twitchBot;
     private readonly ref MessageBuilder _response;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
 
-    public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -124,7 +124,7 @@ public readonly ref struct HangmanCommand
             return;
         }
 
-        char guess = ChatMessage.Message[_alias.Length + (_prefix?.Length ?? AppSettings.Suffix.Length) + 1];
+        char guess = ChatMessage.Message[_alias.Length + (_prefix.Length == 0 ? AppSettings.Suffix.Length : _prefix.Length) + 1];
         guess = char.ToLowerInvariant(guess);
         int correctPlacesCount = game.Guess(guess);
         _response.Append(ChatMessage.Username, ", ");

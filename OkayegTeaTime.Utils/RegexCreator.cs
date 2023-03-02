@@ -14,14 +14,14 @@ public sealed class RegexCreator
 
     private const string _patternEnding = @"(\s|$)";
 
-    public Regex Create(string alias, string? prefix, [StringSyntax(StringSyntaxAttribute.Regex)] string? addition = null)
+    public Regex Create(ReadOnlySpan<char> alias, ReadOnlySpan<char> prefix, [StringSyntax(StringSyntaxAttribute.Regex)] ReadOnlySpan<char> addition = default)
     {
         StringBuilder builder = stackalloc char[512];
         builder.Append('^');
 
         Span<char> escapedItem = stackalloc char[100];
         int escapedItemLength;
-        if (string.IsNullOrEmpty(prefix))
+        if (prefix.Length == 0)
         {
             escapedItemLength = HLE.StringHelper.RegexEscape(alias, escapedItem);
             builder.Append(escapedItem[..escapedItemLength]);

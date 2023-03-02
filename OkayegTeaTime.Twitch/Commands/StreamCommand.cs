@@ -18,8 +18,8 @@ public readonly ref struct StreamCommand
     private readonly ref MessageBuilder _response;
 
     private readonly TwitchBot _twitchBot;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
     private static readonly FrozenSet<long> _noViewerCountChannelIds = new long[]
     {
@@ -27,7 +27,7 @@ public readonly ref struct StreamCommand
         35933008
     }.ToFrozenSet();
 
-    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

@@ -24,8 +24,8 @@ public readonly unsafe ref struct RemindCommand
 
     private readonly TwitchBot _twitchBot;
     private readonly ref MessageBuilder _response;
-    private readonly string? _prefix;
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _prefix;
+    private readonly ReadOnlySpan<char> _alias;
 
     private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -58,7 +58,7 @@ public readonly unsafe ref struct RemindCommand
 
     private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

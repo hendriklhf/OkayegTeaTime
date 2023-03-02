@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -50,10 +49,7 @@ public sealed class Channel : CacheModel
     {
         Id = channel.Id;
         Name = channel.Name;
-
-        string? emote = channel.EmoteInFront;
-        _emote = string.IsNullOrWhiteSpace(emote) ? AppSettings.DefaultEmote : emote;
-
+        _emote = channel.EmoteInFront;
         _prefix = channel.Prefix;
     }
 

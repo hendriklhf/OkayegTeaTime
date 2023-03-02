@@ -10,8 +10,8 @@ public sealed class SolutionCleaner
     {
         "Build/",
         "OkayegTeaTime/bin/",
-        "OkayegTeaTime.Api/bin/",
         "OkayegTeaTime.Database/bin/",
+        "OkayegTeaTime.Models/bin/",
         "OkayegTeaTime.Settings/bin/",
         "OkayegTeaTime.Resources/bin/",
         "OkayegTeaTime.Spotify/bin/",

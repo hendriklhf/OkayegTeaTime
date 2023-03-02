@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Frozen;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
+using OkayegTeaTime.Models.Json;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
@@ -16,14 +21,14 @@ public sealed class CommandHandler : Handler
     private readonly AfkCommandHandler _afkCommandHandler;
     private readonly CooldownController _cooldownController;
 
-    private readonly CommandType[] _commandTypes;
+    private readonly FrozenDictionary<int, CommandType> _commandTypes;
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
         _cooldownController = new(twitchBot.CommandController);
-        _commandTypes = GetHandledCommandTypes();
+        _commandTypes = CreateCommandAliasDictionary(twitchBot);
         _commandExecutor = new(twitchBot);
     }
 
@@ -38,40 +43,29 @@ public sealed class CommandHandler : Handler
 
     private bool HandleCommand(ChatMessage chatMessage)
     {
-        string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        Span<CommandType> commandTypes = _commandTypes;
-        int commandTypesLength = _commandTypes.Length;
-        for (int i = 0; i < commandTypesLength; i++)
+        ReadOnlySpan<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
+        ReadOnlyMemory<char> alias = ExtractAlias(chatMessage.Message.AsMemory(), prefix);
+
+        int aliasHashCode = string.GetHashCode(alias.Span, StringComparison.OrdinalIgnoreCase);
+        if (!_commandTypes.TryGetValue(aliasHashCode, out CommandType type))
         {
-            CommandType type = commandTypes[i];
-            Span<string> aliases = _twitchBot.CommandController[type].Aliases;
-            int aliasesLength = aliases.Length;
-            for (int j = 0; j < aliasesLength; j++)
-            {
-                string alias = aliases[j];
-                Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix);
-                if (!pattern.IsMatch(chatMessage.Message))
-                {
-                    continue;
-                }
-
-                if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
-                {
-                    return false;
-                }
-
-                _twitchBot.CommandCount++;
-                _commandExecutor.Execute(type, chatMessage, prefix, alias);
-                _cooldownController.AddCooldown(chatMessage.UserId, type);
-                return true;
-            }
+            return false;
         }
 
-        return false;
+        if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
+        {
+            return false;
+        }
+
+        _twitchBot.CommandCount++;
+        _commandExecutor.Execute(type, chatMessage, prefix, alias.Span);
+        _cooldownController.AddCooldown(chatMessage.UserId, type);
+        return true;
     }
 
     private void HandleAfkCommand(ChatMessage chatMessage)
     {
+        // TODO: change to handling like normal command
         string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         Span<AfkType> afkTypes = _afkTypes;
         int afkTypesLength = _afkTypes.Length;
@@ -102,15 +96,40 @@ public sealed class CommandHandler : Handler
         }
     }
 
-    private static CommandType[] GetHandledCommandTypes()
+    private static FrozenDictionary<int, CommandType> CreateCommandAliasDictionary(TwitchBot twitchBot)
     {
-        Span<Type> commands = Assembly.GetCallingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null).ToArray();
-        CommandType[] commandTypes = new CommandType[commands.Length];
-        for (int i = 0; i < commandTypes.Length; i++)
+        Dictionary<int, CommandType> result = new();
+        CommandType[] handledCommands = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(c => c.GetCustomAttribute<HandledCommandAttribute>() is not null)
+            .Select(c => c.GetCustomAttribute<HandledCommandAttribute>()!.CommandType).ToArray();
+        foreach (Command command in twitchBot.CommandController.Commands)
         {
-            commandTypes[i] = commands[i].GetCustomAttribute<HandledCommandAttribute>()!.CommandType;
+            CommandType type = Enum.Parse<CommandType>(command.Name);
+            if (!handledCommands.Contains(type))
+            {
+                continue;
+            }
+
+            foreach (string alias in command.Aliases)
+            {
+                int aliasHashCode = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
+                result.Add(aliasHashCode, type);
+            }
         }
 
-        return commandTypes;
+        return result.ToFrozenDictionary();
+    }
+
+    private static ReadOnlyMemory<char> ExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> prefix)
+    {
+        ReadOnlySpan<char> messageSpan = message.Span;
+        if (messageSpan.Length <= AppSettings.Suffix.Length || messageSpan.Length <= prefix.Length)
+        {
+            return ReadOnlyMemory<char>.Empty;
+        }
+
+        int indexOfWhitespace = messageSpan.IndexOf(' ');
+        ReadOnlyMemory<char> firstWord = message[..Unsafe.As<int, Index>(ref indexOfWhitespace)];
+        return prefix.Length == 0 ? firstWord[..^AppSettings.Suffix.Length] : firstWord[prefix.Length..];
     }
 }

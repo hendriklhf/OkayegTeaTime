@@ -22,12 +22,12 @@ public readonly ref struct SkipCommand
     private readonly TwitchBot _twitchBot;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-    private readonly string? _prefix;
+    private readonly ReadOnlySpan<char> _prefix;
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-    private readonly string _alias;
+    private readonly ReadOnlySpan<char> _alias;
 
-    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, string? prefix, string alias)
+    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
