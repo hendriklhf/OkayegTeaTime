@@ -72,7 +72,6 @@ public sealed class CommandHandler : Handler
 
     private void HandleAfkCommand(ChatMessage chatMessage)
     {
-        // TODO: change to handling like normal command
         string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         Span<AfkType> afkTypes = _afkTypes;
         int afkTypesLength = _afkTypes.Length;
