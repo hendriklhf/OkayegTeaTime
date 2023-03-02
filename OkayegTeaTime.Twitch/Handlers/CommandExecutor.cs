@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using JetBrains.Annotations;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
@@ -70,273 +71,585 @@ public sealed unsafe class CommandExecutor : IDisposable
     [UsedImplicitly]
     private static void ExecuteBanFromFileCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        BanFromFileCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            BanFromFileCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteChatterino7Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        Chatterino7Command command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            Chatterino7Command command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteChatterinoCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        ChatterinoCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            ChatterinoCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteChattersCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        ChattersCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            ChattersCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteCheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        CheckCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            CheckCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteCodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        CodeCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            CodeCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteCoinFlipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        CoinflipCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            CoinflipCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteCSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        CSharpCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            CSharpCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteFillCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        FillCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            FillCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteFormula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        Formula1Command command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            Formula1Command command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteFuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        FuckCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            FuckCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteGachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        GachiCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            GachiCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteGuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        GuidCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            GuidCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteHangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        HangmanCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            HangmanCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteHelpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        HelpCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            HelpCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteIdCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        IdCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            IdCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteInvalidateCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        InvalidateCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            InvalidateCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteJoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        JoinCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            JoinCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteKotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        KotlinCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            KotlinCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteLeaveCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        LeaveCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            LeaveCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteListenCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        ListenCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            ListenCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteMasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        MasspingCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            MasspingCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteMathCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        MathCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            MathCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecutePickCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        PickCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            PickCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecutePingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        PingCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            PingCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteRafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        RafkCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            RafkCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteRedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        RedditCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            RedditCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteRemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        RemindCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            RemindCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteSetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        SetCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            SetCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteSkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        SkipCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            SkipCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteSlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        SlotsCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            SlotsCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteSongRequestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        SongRequestCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            SongRequestCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteSpotifyCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        SpotifyCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            SpotifyCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteStreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        StreamCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            StreamCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteSuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        SuggestCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            SuggestCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteTuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        TuckCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            TuckCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteUnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        UnsetCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            UnsetCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteVanishCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        VanishCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            VanishCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 
     [UsedImplicitly]
     private static void ExecuteWeatherCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        WeatherCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
-        command.Handle();
+        try
+        {
+            WeatherCommand command = new(twitchBot, chatMessage, ref response, prefix, alias);
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            response.Clear();
+            DbController.LogException(ex);
+        }
     }
 }
