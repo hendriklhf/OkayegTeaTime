@@ -28,7 +28,7 @@ public sealed class CommandHandler : Handler
     {
         _afkCommandHandler = new(twitchBot);
         _cooldownController = new(twitchBot.CommandController);
-        _commandTypes = CreateCommandAliasDictionary(twitchBot);
+        _commandTypes = CreateCommandTypeDictionary(twitchBot);
         _commandExecutor = new(twitchBot);
     }
 
@@ -96,7 +96,7 @@ public sealed class CommandHandler : Handler
         }
     }
 
-    private static FrozenDictionary<int, CommandType> CreateCommandAliasDictionary(TwitchBot twitchBot)
+    private static FrozenDictionary<int, CommandType> CreateCommandTypeDictionary(TwitchBot twitchBot)
     {
         Dictionary<int, CommandType> result = new();
         CommandType[] handledCommands = Assembly.GetExecutingAssembly().GetTypes()
@@ -123,13 +123,13 @@ public sealed class CommandHandler : Handler
     private static ReadOnlyMemory<char> ExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> prefix)
     {
         ReadOnlySpan<char> messageSpan = message.Span;
-        if (messageSpan.Length <= AppSettings.Suffix.Length || messageSpan.Length <= prefix.Length)
+        int indexOfWhitespace = messageSpan.IndexOf(' ');
+        ReadOnlyMemory<char> firstWord = message[..Unsafe.As<int, Index>(ref indexOfWhitespace)];
+        if (firstWord.Length <= (prefix.Length == 0 ? AppSettings.Suffix.Length : prefix.Length))
         {
             return ReadOnlyMemory<char>.Empty;
         }
 
-        int indexOfWhitespace = messageSpan.IndexOf(' ');
-        ReadOnlyMemory<char> firstWord = message[..Unsafe.As<int, Index>(ref indexOfWhitespace)];
         return prefix.Length == 0 ? firstWord[..^AppSettings.Suffix.Length] : firstWord[prefix.Length..];
     }
 }
