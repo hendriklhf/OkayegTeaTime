@@ -7,6 +7,8 @@ using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
+#pragma warning disable IDE0052
+
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Help)]

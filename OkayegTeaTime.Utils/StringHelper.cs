@@ -8,12 +8,11 @@ public static class StringHelper
 {
     private static readonly Regex _channelPattern = new(@"^#?\w{3,25}$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    private const string _commaSpace = ", ";
     private const string _spanFormatDefault = "<1s";
 
     public static string Antiping(this string value)
     {
-        return value.Insert(value.Length >> 1, "󠀀");
+        return value.Insert(value.Length >> 1, HLE.StringHelper.AntipingChar);
     }
 
     public static string NewLinesToSpaces(this string value)
@@ -52,8 +51,8 @@ public static class StringHelper
         {
             if (resultLength > 0)
             {
-                _commaSpace.CopyTo(buffer[resultLength..]);
-                resultLength += _commaSpace.Length;
+                ", ".CopyTo(buffer[resultLength..]);
+                resultLength += ", ".Length;
             }
 
             string hours = span.Hours.ToString(CultureInfo.InvariantCulture);
@@ -66,8 +65,8 @@ public static class StringHelper
         {
             if (resultLength > 0)
             {
-                _commaSpace.CopyTo(buffer[resultLength..]);
-                resultLength += _commaSpace.Length;
+                ", ".CopyTo(buffer[resultLength..]);
+                resultLength += ", ".Length;
             }
 
             string minutes = span.Minutes.ToString(CultureInfo.InvariantCulture);
@@ -82,8 +81,8 @@ public static class StringHelper
         {
             if (resultLength > 0)
             {
-                _commaSpace.CopyTo(buffer[resultLength..]);
-                resultLength += _commaSpace.Length;
+                ", ".CopyTo(buffer[resultLength..]);
+                resultLength += ", ".Length;
             }
 
             string seconds = span.Seconds.ToString(CultureInfo.InvariantCulture);

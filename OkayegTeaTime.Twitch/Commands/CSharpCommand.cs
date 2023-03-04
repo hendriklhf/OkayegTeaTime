@@ -12,6 +12,7 @@ using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
+using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -40,17 +41,21 @@ public readonly ref struct CSharpCommand
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            string code = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
-            ReadOnlySpan<char> result = GetProgramOutput(code);
+            ReadOnlySpan<char> message = ChatMessage.Message;
+            message = message[(messageExtension.Split[0].Length + 1)..];
+            Span<char> code = stackalloc char[message.Length];
+            message.CopyTo(code);
+            ReplaceSpecialChars(ref code);
+            ReadOnlySpan<char> result = GetProgramOutput(new(code));
             _response.Append(ChatMessage.Username, ", ", result);
         }
     }
 
-    private static ReadOnlySpan<char> GetProgramOutput(string input)
+    private static ReadOnlySpan<char> GetProgramOutput(string code)
     {
         try
         {
-            string codeBlock = HttpUtility.HtmlEncode(ResourceController.CSharpTemplate.Replace("{code}", input));
+            string codeBlock = HttpUtility.HtmlEncode(ResourceController.CSharpTemplate.Replace("{code}", code));
             HttpPost request = new("https://dotnetfiddle.net/home/run", new[]
             {
                 ("CodeBlock", codeBlock),
@@ -85,7 +90,7 @@ public readonly ref struct CSharpCommand
         }
         catch (Exception ex)
         {
-            if (input.Contains('\''))
+            if (code.Contains('\''))
             {
                 return "for some reason the API doesn't like the char \"'\". Please try to avoid it. " + Emoji.SlightlySmilingFace;
             }
@@ -93,5 +98,16 @@ public readonly ref struct CSharpCommand
             DbController.LogException(ex);
             return "an unexpected error occurred. The API might not be available.";
         }
+    }
+
+    private static void ReplaceSpecialChars(ref Span<char> code)
+    {
+        ReadOnlySpan<char> charsToReplace = StringHelper.AntipingChar;
+        for (int i = 0; i < charsToReplace.Length; i++)
+        {
+            code.Replace(charsToReplace[i], ' ');
+        }
+
+        code = code.TrimEnd();
     }
 }
