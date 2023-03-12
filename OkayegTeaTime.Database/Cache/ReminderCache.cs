@@ -87,7 +87,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         reminder.HasBeenSent = true;
     }
 
-    public Reminder[] GetRemindersFor(string username, ReminderType type)
+    public Span<Reminder> GetRemindersFor(string username, ReminderType type)
     {
         static bool EvaluateReminderType(Reminder r, ReminderType t)
         {
@@ -112,7 +112,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         return this.Where(r => !r.HasBeenSent && username == r.Target && EvaluateReminderType(r, type)).ToArray();
     }
 
-    public Reminder[] GetExpiredReminders()
+    public Span<Reminder> GetExpiredReminders()
     {
         return this.Where(r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
     }

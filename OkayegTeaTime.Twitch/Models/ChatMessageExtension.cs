@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using HLE.Memory;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 
@@ -18,7 +19,7 @@ public readonly struct ChatMessageExtension : IDisposable
     public bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
 
     private readonly ChatMessage _chatMessage;
-    private readonly char[] _lowerCaseMessage;
+    private readonly RentedArray<char> _lowerCaseMessage;
 
     public ChatMessageExtension(ChatMessage chatMessage)
     {
@@ -26,7 +27,7 @@ public readonly struct ChatMessageExtension : IDisposable
         Split = new(_chatMessage.Message.AsMemory());
         _lowerCaseMessage = ArrayPool<char>.Shared.Rent(_chatMessage.Message.Length);
         _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
-        LowerSplit = new(_lowerCaseMessage.AsMemory()[.._chatMessage.Message.Length]);
+        LowerSplit = new(_lowerCaseMessage.Memory[.._chatMessage.Message.Length]);
     }
 
     private bool CheckIfIsBotModerator()
@@ -41,7 +42,7 @@ public readonly struct ChatMessageExtension : IDisposable
 
     public void Dispose()
     {
-        ArrayPool<char>.Shared.Return(_lowerCaseMessage);
+        _lowerCaseMessage.Dispose();
         Split.Dispose();
         LowerSplit.Dispose();
     }

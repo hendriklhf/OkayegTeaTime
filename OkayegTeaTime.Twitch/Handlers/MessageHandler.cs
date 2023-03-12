@@ -74,7 +74,7 @@ public sealed class MessageHandler : Handler
 
     private void CheckForReminder(string username, string channel)
     {
-        Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
+        Span<Reminder> reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
         _twitchBot.SendReminder(channel, reminders);
     }
 

@@ -542,12 +542,7 @@ public static class SpotifyController
 
     public static async Task<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
     {
-        SpotifyClient? client = await GetClient(user);
-        if (client is null)
-        {
-            throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-        }
-
+        SpotifyClient client = await GetClient(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         if (track.Artists.Count == 1)
         {
             FullArtist artist = await client.Artists.Get(track.Artists[0].Id);

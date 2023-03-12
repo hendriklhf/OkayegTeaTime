@@ -9,12 +9,10 @@ public readonly struct SmartSplit : IDisposable
 {
     public ReadOnlySpan<char> this[int index] => _message.Span[_ranges[index]];
 
-    public ReadOnlySpan<ReadOnlyMemory<char>> Splits => GetSplits();
-
     public int Length => _length;
 
     private readonly ReadOnlyMemory<char> _message;
-    private readonly Range[] _ranges = ArrayPool<Range>.Shared.Rent(255);
+    private readonly RentedArray<Range> _ranges = ArrayPool<Range>.Shared.Rent(255);
     private readonly int _length;
 
     public SmartSplit(ReadOnlyMemory<char> message)
@@ -25,7 +23,7 @@ public readonly struct SmartSplit : IDisposable
 
     public RentedArray<ReadOnlyMemory<char>> GetSplits()
     {
-        ReadOnlyMemory<char>[] splits = ArrayPool<ReadOnlyMemory<char>>.Shared.Rent(_length);
+        RentedArray<ReadOnlyMemory<char>> splits = ArrayPool<ReadOnlyMemory<char>>.Shared.Rent(_length);
         for (int i = 0; i < _length; i++)
         {
             splits[i] = _message[_ranges[i]];

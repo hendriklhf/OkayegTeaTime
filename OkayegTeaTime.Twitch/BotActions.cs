@@ -11,10 +11,6 @@ public static class BotActions
 {
     private const string _yourself = "yourself";
     private const string _reminderFromSpace = "reminder from ";
-    // private const string _spaceParentheses = " (";
-    // private const string _spaceAgoParentheses = " ago)";
-    // private const string _colonSpace = ": ";
-    // private const string _spaceBarBarSpace = " || ";
 
     public static void SendComingBack(this TwitchBot twitchBot, long userId, string channel)
     {

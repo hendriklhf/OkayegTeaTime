@@ -25,7 +25,7 @@ public sealed class CommandController
     private readonly TwitchBot? _twitchBot;
     private readonly string[] _afkCommandAliases;
 
-    public CommandController(TwitchBot? twitchBot)
+    public CommandController(TwitchBot? twitchBot = null)
     {
         _twitchBot = twitchBot;
         Commands = AppSettings.CommandList.Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();

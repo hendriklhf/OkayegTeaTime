@@ -47,7 +47,7 @@ public sealed class ReadMeGenerator
     private string CreateReadMe()
     {
         StringBuilder builder = new();
-        CommandController commandController = new(null);
+        CommandController commandController = new();
 
         builder.Append($"<h1>{_title}</h1><h2>{_header1}</h2>");
         foreach (string headerText in _header1Text)
