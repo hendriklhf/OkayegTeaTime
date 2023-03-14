@@ -59,27 +59,32 @@ public readonly ref struct Formula1Command
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SendWeatherInformation(race);
+            return;
         }
-        else
-        {
-            SendRaceInformation(race);
-        }
+
+        SendRaceInformation(race);
     }
 
     private void SendRaceInformation(Race race)
     {
-        _response.Append(ChatMessage.Username, ", ", race.RaceSession.Start > DateTime.UtcNow ? "Next" : "Current", "race: ", race.Name);
+        Span<char> charBuffer = stackalloc char[250];
+        _response.Append(ChatMessage.Username, ", ", race.RaceSession.Start > DateTime.UtcNow ? "Next" : "Current", " race: ", race.Name);
         _response.Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, ", ", race.Circuit.Location.Country, ". ");
         _response.Append(Emoji.RacingCar, " ");
         if (race.RaceSession.Start > DateTime.UtcNow)
         {
+            race.RaceSession.Start.TryFormat(charBuffer, out int length, "R");
+            _response.Append("The ", race.RaceSession.Name, " will start ", charBuffer[..length]);
+
             TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - DateTime.UtcNow;
-            _response.Append("The ", race.RaceSession.Name, " will start on ", race.RaceSession.Start.ToString("R"));
-            _response.Append(" (in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], "). ", Emoji.CheckeredFlag);
+            timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
+            int indexOfDot = charBuffer.IndexOf('.');
+            _response.Append(" (in ", charBuffer[..indexOfDot], "). ", Emoji.CheckeredFlag);
         }
         else
         {
-            _response.Append("The ", race.RaceSession.Name, " started ", race.RaceSession.Start.ToString("t"), " GMT. ", Emoji.CheckeredFlag);
+            race.RaceSession.Start.TryFormat(charBuffer, out int length, "t");
+            _response.Append("The ", race.RaceSession.Name, " started ", charBuffer[..length], " GMT. ", Emoji.CheckeredFlag);
         }
 
         Session session = GetNextOrCurrentSession(race);
@@ -90,12 +95,18 @@ public readonly ref struct Formula1Command
 
         if (session.Start > DateTime.UtcNow)
         {
+            session.Start.TryFormat(charBuffer, out int length, "R");
+            _response.Append("Next session: ", session.Name, ", starting ", charBuffer[..length], " (in ");
+
             TimeSpan timeBetweenNowAndRaceStart = session.Start - DateTime.UtcNow;
-            _response.Append("Next session: ", session.Name, ", starting on ", session.Start.ToString("R"), "(in ", timeBetweenNowAndRaceStart.ToString("g").Split('.')[0], ").");
+            timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
+            int indexOfDot = charBuffer.IndexOf('.');
+            _response.Append(charBuffer[..indexOfDot], ").");
         }
         else if (session.Start + _nonRaceLength > DateTime.UtcNow)
         {
-            _response.Append("Current session: ", session.Name, ", started ", session.Start.ToString("t"));
+            session.Start.TryFormat(charBuffer, out int length, "t");
+            _response.Append("Current session: ", session.Name, ", started ", charBuffer[..length], " GMT.");
         }
     }
 
@@ -173,7 +184,7 @@ public readonly ref struct Formula1Command
         }
     }
 
-    private static void CreateSessionStartTimes(Race[] races, JsonElement jRaces)
+    private static void CreateSessionStartTimes(ReadOnlySpan<Race> races, JsonElement jRaces)
     {
         try
         {
