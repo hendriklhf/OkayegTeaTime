@@ -110,7 +110,7 @@ public readonly ref struct HangmanCommand
         else
         {
             _response.Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, " ", "\"", game.Solution, "\"");
-            _response.Append(" ", Emoji.Cry);
+            _response.Append(". ", Emoji.Cry);
             _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
             game.Dispose();
         }

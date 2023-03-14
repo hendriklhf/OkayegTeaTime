@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -109,11 +108,11 @@ public static class SpotifyController
 
         if (Pattern.SpotifyLink.IsMatch(input))
         {
-            string uriCode = Regex.Match(new(input), @"track/\w+").Value[6..];
+            string uriCode = Pattern.SpotifyTrackSlash.Match(new(input)).Value[6..];
             return $"spotify:track:{uriCode}";
         }
 
-        return Regex.IsMatch(input, @"^\w{22}$") ? $"spotify:track:{new string(input)}" : null;
+        return Pattern.SpotifyId.IsMatch(input) ? $"spotify:track:{new string(input)}" : null;
     }
 
     private static bool IsAccessTokenExpired(SpotifyUser user)

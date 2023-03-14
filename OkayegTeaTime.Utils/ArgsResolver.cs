@@ -4,19 +4,22 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Utils;
 
-public readonly ref struct ArgsResolver
+public readonly ref partial struct ArgsResolver
 {
     public string[]? Channels { get; }
 
     private readonly Span<string> _args;
 
-    private static readonly Regex _channelListPattern = new(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled);
+    private readonly Regex _channelListPattern = GetChannelListPattern();
 
     public ArgsResolver(Span<string> args)
     {
         _args = args;
         Channels = GetChannels();
     }
+
+    [GeneratedRegex(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled)]
+    private static partial Regex GetChannelListPattern();
 
     private string[]? GetChannels()
     {

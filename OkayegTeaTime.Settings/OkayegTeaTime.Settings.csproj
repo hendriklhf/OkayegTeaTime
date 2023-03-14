@@ -9,8 +9,6 @@
     <NoWin32Manifest>true</NoWin32Manifest>
     <DebugType>embedded</DebugType>
     <Nullable>enable</Nullable>
-    <RootNamespace>OkayegTeaTime.Files</RootNamespace>
-    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>

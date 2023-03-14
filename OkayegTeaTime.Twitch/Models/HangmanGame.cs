@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using HLE.Memory;
 
 namespace OkayegTeaTime.Twitch.Models;
 
@@ -9,16 +10,16 @@ public sealed class HangmanGame : IDisposable
 {
     public string Solution { get; }
 
-    public ReadOnlySpan<char> DiscoveredWord => ((ReadOnlySpan<char>)_discoveredWord)[..Solution.Length];
+    public ReadOnlySpan<char> DiscoveredWord => _discoveredWord[..Solution.Length];
 
-    public ReadOnlySpan<char> WrongChars => ((ReadOnlySpan<char>)_wrongChars)[.._wrongCharLength];
+    public ReadOnlySpan<char> WrongChars => _wrongChars[.._wrongCharLength];
 
     public int WrongGuesses { get; private set; }
 
     public bool IsSolved => DiscoveredWord.Equals(Solution, StringComparison.OrdinalIgnoreCase);
 
-    private readonly char[] _discoveredWord;
-    private readonly char[] _wrongChars;
+    private readonly RentedArray<char> _discoveredWord;
+    private readonly RentedArray<char> _wrongChars;
     private int _wrongCharLength;
 
     public const int MaxWrongGuesses = 10;
@@ -27,14 +28,14 @@ public sealed class HangmanGame : IDisposable
     {
         Solution = solution;
         _discoveredWord = ArrayPool<char>.Shared.Rent(solution.Length);
-        ((Span<char>)_discoveredWord).Fill('_');
+        _discoveredWord.Span.Fill('_');
         _wrongChars = ArrayPool<char>.Shared.Rent(26);
     }
 
     ~HangmanGame()
     {
-        ArrayPool<char>.Shared.Return(_discoveredWord);
-        ArrayPool<char>.Shared.Return(_wrongChars);
+        _discoveredWord.Dispose();
+        _wrongChars.Dispose();
     }
 
     public int Guess(char guess)
@@ -61,14 +62,13 @@ public sealed class HangmanGame : IDisposable
         }
 
         WrongGuesses++;
-        Span<char> wrongChars = _wrongChars;
-        if (wrongChars[.._wrongCharLength].Contains(guess))
+        if (_wrongChars[.._wrongCharLength].Contains(guess))
         {
             return 0;
         }
 
-        wrongChars[_wrongCharLength++] = guess;
-        Array.Sort(_wrongChars, 0, _wrongCharLength);
+        _wrongChars[_wrongCharLength++] = guess;
+        _wrongChars[.._wrongCharLength].Sort();
         return 0;
     }
 
@@ -87,7 +87,7 @@ public sealed class HangmanGame : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        ArrayPool<char>.Shared.Return(_discoveredWord);
-        ArrayPool<char>.Shared.Return(_wrongChars);
+        _discoveredWord.Dispose();
+        _wrongChars.Dispose();
     }
 }

@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Utils;
 
 public sealed class RegexCreator
 {
-    private readonly IDictionary<string, Regex> _cachedPatterns = new ConcurrentDictionary<string, Regex>();
+    private readonly IDictionary<int, Regex> _cachedPatterns = new ConcurrentDictionary<int, Regex>();
 
     private const string _patternEnding = @"(\s|$)";
 
@@ -37,15 +37,14 @@ public sealed class RegexCreator
         }
 
         builder.Append(addition, _patternEnding);
-        string pattern = builder.ToString();
-
-        if (_cachedPatterns.TryGetValue(pattern, out Regex? cachedPattern))
+        int patternHashCode = string.GetHashCode(builder.WrittenSpan);
+        if (_cachedPatterns.TryGetValue(patternHashCode, out Regex? cachedPattern))
         {
             return cachedPattern;
         }
 
-        Regex compiledRegex = new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
-        _cachedPatterns.Add(pattern, compiledRegex);
+        Regex compiledRegex = new(builder.ToString(), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+        _cachedPatterns.Add(patternHashCode, compiledRegex);
         return compiledRegex;
     }
 }

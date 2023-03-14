@@ -7,7 +7,7 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public sealed class PajaAlertHandler : PajaHandler
 {
-    protected override Regex Pattern { get; } = new($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled);
+    protected override Regex Pattern { get; } = Utils.Pattern.PajaAlert;
 
     protected override string Message => $"/me pajaStare {Emoji.RotatingLight} OBACHT";
 

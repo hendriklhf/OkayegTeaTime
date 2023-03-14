@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.Versioning;
 using HLE;
 using HLE.Maths;
 using HLE.Twitch;
-#if DEBUG
 using HLE.Memory;
-#endif
+using OkayegTeaTime.Database;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
@@ -15,15 +16,14 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Ping)]
+[SuppressMessage("ReSharper", "NotAccessedField.Local")]
 public readonly ref struct PingCommand
 {
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
     private readonly ref MessageBuilder _response;
-    // ReSharper disable once NotAccessedField.Local
     private readonly ReadOnlySpan<char> _prefix;
-    // ReSharper disable once NotAccessedField.Local
     private readonly ReadOnlySpan<char> _alias;
 
     private const string _uptimeFormat = "g";
@@ -44,13 +44,14 @@ public readonly ref struct PingCommand
         _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, _uptimeFormat, CultureInfo.InvariantCulture);
         _response.Append("Pingeg, I'm here! Uptime: ", buffer[..bufferLength]);
 
-#if DEBUG
-        ReadOnlySpan<char> temperature = GetTemperature();
-        if (temperature.Length > 0)
+        if (OperatingSystem.IsLinux())
         {
-            _response.Append(" || Temperature: ", temperature);
+            ReadOnlySpan<char> temperature = GetTemperature();
+            if (temperature.Length > 0)
+            {
+                _response.Append(" || Temperature: ", temperature);
+            }
         }
-#endif
 
         GetMemoryUsage().TryFormat(buffer, out bufferLength, default, CultureInfo.InvariantCulture);
         _response.Append(" || Memory usage: ", buffer[..bufferLength], "MB || Executed commands: ");
@@ -71,7 +72,7 @@ public readonly ref struct PingCommand
         return Math.Round(memoryInMegaByte, 3);
     }
 
-#if DEBUG
+    [SupportedOSPlatform("linux")]
     private static ReadOnlySpan<char> GetTemperature()
     {
         try
@@ -86,16 +87,15 @@ public readonly ref struct PingCommand
             temperatureProcess.Start();
             temperatureProcess.WaitForExit();
             ReadOnlySpan<char> output = temperatureProcess.StandardOutput.ReadToEnd();
-            Span<Range> ranges = stackalloc Range[output.Length];
-            output.GetRangesOfSplit('=', ranges);
-            Span<char> temperature = output[ranges[1]].AsMutableSpan();
+            int indexOfEqualsSign = output.IndexOf('=');
+            Span<char> temperature = output[(indexOfEqualsSign + 1)..].AsMutableSpan();
             temperature[4] = '°';
             return temperature;
         }
-        catch
+        catch (Exception ex)
         {
+            DbController.LogException(ex);
             return null;
         }
     }
-#endif
 }
