@@ -5,11 +5,11 @@ namespace OkayegTeaTime.Models.OpenWeatherMap;
 public sealed class Wind
 {
     [JsonPropertyName("speed")]
-    public required double Speed { get; init; }
+    public double Speed { get; init; }
 
     [JsonPropertyName("deg")]
-    public required double Direction { get; init; }
+    public double Direction { get; init; }
 
     [JsonPropertyName("gust")]
-    public required double Gust { get; init; }
+    public double Gust { get; init; }
 }
