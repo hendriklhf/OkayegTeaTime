@@ -162,7 +162,7 @@ public readonly ref struct SetCommand
         using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.Split.GetSplits();
 
         Span<char> cityBuffer = stackalloc char[500];
-        int cityBufferLength = StringHelper.Join(splits, ' ', cityBuffer);
+        int cityBufferLength = StringHelper.Join(splits[3..messageExtension.Split.Length], ' ', cityBuffer);
         string city = new(cityBuffer[..cityBufferLength]);
 
         bool isPrivate = messageExtension.LowerSplit[2][1] == 'r';
