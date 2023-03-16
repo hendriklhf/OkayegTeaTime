@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using HLE.Collections;
+using OkayegTeaTime.Database.EntityFrameworkModels;
 using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
@@ -33,7 +33,11 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
             return;
         }
 
-        DbController.GetSpotifyUsers().Where(u => _items.All(i => i.Value.Id != u.Id)).ForEach(u => _items.Add(u.Id, new(u)));
+        foreach (Spotify user in DbController.GetSpotifyUsers().Where(u => _items.All(i => i.Value.Id != u.Id)))
+        {
+            _items.Add(user.Id, new(user));
+        }
+
         _containsAll = true;
     }
 }

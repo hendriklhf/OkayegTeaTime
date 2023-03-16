@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
@@ -40,7 +39,11 @@ public sealed class UserCache : DbCache<User>
             return;
         }
 
-        DbController.GetUsers().Where(u => _items.All(i => i.Value.Id != u.Id)).ForEach(u => _items.Add(u.Id, new(u)));
+        foreach (EntityFrameworkModels.User user in DbController.GetUsers().Where(u => _items.All(i => i.Value.Id != u.Id)))
+        {
+            _items.Add(user.Id, new(user));
+        }
+
         _containsAll = true;
     }
 }

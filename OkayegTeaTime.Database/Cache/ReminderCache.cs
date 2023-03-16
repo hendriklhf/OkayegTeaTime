@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
@@ -141,7 +140,11 @@ public sealed class ReminderCache : DbCache<Reminder>
             return;
         }
 
-        DbController.GetReminders().Where(r => _items.All(i => i.Value.Id != r.Id)).ForEach(r => _items.Add(r.Id, new(r)));
+        foreach (EntityFrameworkModels.Reminder reminder in DbController.GetReminders().Where(r => _items.All(i => i.Value.Id != r.Id)))
+        {
+            _items.Add(reminder.Id, new(reminder));
+        }
+
         _containsAll = true;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
@@ -31,17 +30,19 @@ public sealed class CommandTest
     [TestMethod]
     public void CommandCompletenessTestFromJson()
     {
-        _commandController.Commands.ForEach(cmd =>
+        foreach (Command command in _commandController.Commands)
         {
-            CommandType type = _commandTypes.SingleOrDefault(c => string.Equals(c.ToString(), cmd.Name, StringComparison.OrdinalIgnoreCase));
+            CommandType type = _commandTypes.SingleOrDefault(c => string.Equals(c.ToString(), command.Name, StringComparison.OrdinalIgnoreCase));
             Assert.IsNotNull(type);
-        });
+        }
     }
 
     [TestMethod]
     public void CommandCompletenessFromHandledCommands()
     {
-        HandledCommandAttribute[]? handles = Assembly.GetAssembly(typeof(HandledCommandAttribute))?.GetTypes().Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null).Select(t => t.GetCustomAttribute<HandledCommandAttribute>()!)
+        HandledCommandAttribute[]? handles = Assembly.GetAssembly(typeof(HandledCommandAttribute))?.GetTypes()
+            .Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null)
+            .Select(t => t.GetCustomAttribute<HandledCommandAttribute>()!)
             .ToArray();
         Assert.IsNotNull(handles);
         Assert.IsTrue(handles.Length == _commandTypes.Length);
@@ -66,10 +67,10 @@ public sealed class CommandTest
     [TestMethod]
     public void AfkCommandCompletenessTestFromJson()
     {
-        _commandController.AfkCommands.ForEach(cmd =>
+        foreach (AfkCommand command in _commandController.AfkCommands)
         {
-            AfkType type = _afkTypes.SingleOrDefault(c => string.Equals(c.ToString(), cmd.Name, StringComparison.OrdinalIgnoreCase));
+            AfkType type = _afkTypes.SingleOrDefault(c => string.Equals(c.ToString(), command.Name, StringComparison.OrdinalIgnoreCase));
             Assert.IsNotNull(type);
-        });
+        }
     }
 }

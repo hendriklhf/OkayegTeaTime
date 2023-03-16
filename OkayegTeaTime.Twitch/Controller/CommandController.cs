@@ -3,7 +3,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
@@ -28,8 +27,18 @@ public sealed class CommandController
     public CommandController(TwitchBot? twitchBot = null)
     {
         _twitchBot = twitchBot;
-        Commands = AppSettings.CommandList.Commands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
-        AfkCommands = AppSettings.CommandList.AfkCommands.OrderBy(c => c.Name).ForEach(c => c.Aliases = c.Aliases.Order().ToArray()).ToArray();
+        Commands = AppSettings.CommandList.Commands.OrderBy(c => c.Name).ToArray();
+        foreach (Command command in Commands)
+        {
+            Array.Sort(command.Aliases);
+        }
+
+        AfkCommands = AppSettings.CommandList.AfkCommands.OrderBy(c => c.Name).ToArray();
+        foreach (AfkCommand command in AfkCommands)
+        {
+            Array.Sort(command.Aliases);
+        }
+
         _afkCommandAliases = AfkCommands.SelectMany(c => c.Aliases).ToArray();
     }
 

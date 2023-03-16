@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using HLE.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Settings;
 
@@ -18,6 +17,9 @@ public sealed class AppSettingsTest
     {
         PropertyInfo[] properties = typeof(AppSettings).GetProperties();
         Assert.IsTrue(properties.Length > 0);
-        properties.ForEach(p => Assert.IsTrue(p.GetValue(null, null) != default));
+        foreach (PropertyInfo property in properties)
+        {
+            Assert.IsTrue(property.GetValue(null) != default);
+        }
     }
 }

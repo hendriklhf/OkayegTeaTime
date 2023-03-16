@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
-using HLE.Collections;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
 using TwitchLib.Api;
@@ -106,11 +105,12 @@ public sealed class TwitchApi
 
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(logins: notCachedUsernames).Result;
         Dictionary<string, User?> users = notCachedUsernames.ToDictionary(u => u, u => response.Users.FirstOrDefault(uu => uu.Login == u));
-        users.Where(p => p.Value is not null).ForEach(p =>
+        foreach (var p in users.Where(p => p.Value is not null))
         {
             UserKey key = new(long.Parse(p.Value!.Id), p.Key);
             _users.Add((key, p.Value!));
-        });
+        }
+
         return result.Concat(users).ToDictionary(u => u.Key, u => u.Value);
     }
 
@@ -151,11 +151,12 @@ public sealed class TwitchApi
 
         GetUsersResponse response = _api.Helix.Users.GetUsersAsync(notCachedIds.Select(i => i.ToString()).ToList()).Result;
         Dictionary<long, User?> users = notCachedIds.ToDictionary(id => id, id => response.Users.FirstOrDefault(u => long.Parse(u.Id) == id));
-        users.Where(p => p.Value is not null).ForEach(p =>
+        foreach (var p in users.Where(p => p.Value is not null))
         {
             UserKey key = new(p.Key, p.Value!.Login);
             _users.Add((key, p.Value!));
-        });
+        }
+
         return result.Concat(users).ToDictionary(u => u.Key, u => u.Value);
     }
 

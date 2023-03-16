@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HLE.Collections;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
@@ -58,7 +57,11 @@ public readonly ref struct BanFromFileCommand
                 Regex regex = new(new(messageExtension.Split[2]), RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
                 TwitchBot twitchBot = _twitchBot;
                 ChatMessage chatMessage = ChatMessage;
-                fileContent.Where(f => regex.IsMatch(f)).ForEach(f => twitchBot.Send(chatMessage.Channel, _banPattern.IsMatch(f) ? f : $"/ban {f}", false, false, false));
+                foreach (string user in fileContent.Where(f => regex.IsMatch(f)))
+                {
+                    twitchBot.Send(chatMessage.Channel, _banPattern.IsMatch(user) ? user : $"/ban {user}", false, false, false);
+                }
+
                 _response.Append("done :)");
             }
             catch (Exception ex)

@@ -26,8 +26,6 @@ public readonly ref struct PingCommand
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    private const string _uptimeFormat = "g";
-
     public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
@@ -41,8 +39,9 @@ public readonly ref struct PingCommand
     {
         _response.Append(ChatMessage.Username, ", ");
         Span<char> buffer = stackalloc char[50];
-        _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, _uptimeFormat, CultureInfo.InvariantCulture);
-        _response.Append("Pingeg, I'm here! Uptime: ", buffer[..bufferLength]);
+        _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, "g", CultureInfo.InvariantCulture);
+        int indexOfDot = buffer.IndexOf('.');
+        _response.Append("Pingeg, I'm here! Uptime: ", buffer[..indexOfDot]);
 
         if (OperatingSystem.IsLinux())
         {
@@ -95,7 +94,7 @@ public readonly ref struct PingCommand
         catch (Exception ex)
         {
             DbController.LogException(ex);
-            return null;
+            return ReadOnlySpan<char>.Empty;
         }
     }
 }
