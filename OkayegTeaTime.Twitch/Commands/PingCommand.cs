@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using HLE;
 using HLE.Maths;
@@ -37,11 +37,25 @@ public readonly ref struct PingCommand
 
     public void Handle()
     {
-        _response.Append(ChatMessage.Username, ", ");
         Span<char> buffer = stackalloc char[50];
-        _twitchBot.Uptime.TryFormat(buffer, out int bufferLength, "g", CultureInfo.InvariantCulture);
+
+        _response.Append(ChatMessage.Username, ", ");
+        TimeSpan uptime = DateTime.Now - Process.GetCurrentProcess().StartTime;
+        uptime.TryFormat(buffer, out _, "g");
         int indexOfDot = buffer.IndexOf('.');
         _response.Append("Pingeg, I'm here! Uptime: ", buffer[..indexOfDot]);
+
+        _response.Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ");
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        long latency = now - ChatMessage.TmiSentTs - 5;
+        _response.Append(latency);
+        _response.Append("ms");
+
+        _response.Append(" || Total process memory: ");
+        _response.Append(GetProcessMemory());
+        _response.Append("MB || Managed memory: ");
+        _response.Append(GetManagedMemory());
+        _response.Append("MB");
 
         if (OperatingSystem.IsLinux())
         {
@@ -52,22 +66,22 @@ public readonly ref struct PingCommand
             }
         }
 
-        _response.Append(" || Memory usage: ");
-        _response.Append(GetMemoryUsage());
-        _response.Append("MB || Executed commands: ");
+        _response.Append(" || Executed commands: ");
+        _response.Append(NumberHelper.InsertKDots(_twitchBot.CommandCount));
 
-        _response.Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ");
-        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        long latency = now - ChatMessage.TmiSentTs - 5;
-        _response.Append(latency);
-
-        Environment.Version.TryFormat(buffer, out bufferLength);
-        _response.Append("ms || Running on .NET ", buffer[..bufferLength], " || Commit: ", ResourceController.LastCommit);
+        _response.Append(" || Running on ", RuntimeInformation.FrameworkDescription, " || Commit: ", ResourceController.LastCommit);
     }
 
-    private static double GetMemoryUsage()
+    private static double GetProcessMemory()
     {
         double memory = Process.GetCurrentProcess().PrivateMemorySize64;
+        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.Null, UnitPrefix.Mega);
+        return Math.Round(memoryInMegaByte, 3);
+    }
+
+    private static double GetManagedMemory()
+    {
+        double memory = GC.GetTotalMemory(false);
         double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.Null, UnitPrefix.Mega);
         return Math.Round(memoryInMegaByte, 3);
     }

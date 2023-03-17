@@ -45,10 +45,6 @@ public sealed class TwitchBot
 
     public uint CommandCount { get; set; }
 
-    public DateTime StartTime { get; } = DateTime.UtcNow;
-
-    public TimeSpan Uptime => DateTime.UtcNow - StartTime;
-
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
     private readonly TimerCollection _timerCollection = new();
