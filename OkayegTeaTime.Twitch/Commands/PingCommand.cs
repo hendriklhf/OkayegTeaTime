@@ -52,8 +52,9 @@ public readonly ref struct PingCommand
             }
         }
 
-        GetMemoryUsage().TryFormat(buffer, out bufferLength, default, CultureInfo.InvariantCulture);
-        _response.Append(" || Memory usage: ", buffer[..bufferLength], "MB || Executed commands: ");
+        _response.Append(" || Memory usage: ");
+        _response.Append(GetMemoryUsage());
+        _response.Append("MB || Executed commands: ");
 
         _response.Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ");
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

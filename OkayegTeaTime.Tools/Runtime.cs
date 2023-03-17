@@ -23,7 +23,7 @@ public sealed record Runtime
     public static Runtime LinuxArm { get; } = new()
     {
         Name = "Linux Arm",
-        Identifier = "linux-arm"
+        Identifier = "linux-arm64"
     };
 
     public static Runtime MacOs64Bit { get; } = new()
