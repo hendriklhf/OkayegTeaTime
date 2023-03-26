@@ -66,7 +66,7 @@ public sealed class TwitchBot
         _twitchClient.OnDisconnected += Client_OnDisconnect!;
 
         CommandController = new(this);
-        EmoteController = new(Channels);
+        EmoteController = new();
         LastMessages = new(Channels);
         _messageHandler = new(this);
         InitializeTimers();

@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using HLE.Collections;
 using HLE.Memory;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using Ffz = OkayegTeaTime.Models.Ffz;
@@ -60,8 +59,6 @@ public sealed class EmoteController
         }
     }
 
-    private readonly ChannelCache? _channels;
-
     private EmoteEntry<Ffz.Emote> _ffzGlobalEmotes = EmoteEntry<Ffz.Emote>.Empty;
     private EmoteEntry<Bttv.Emote> _bttvGlobalEmotes = EmoteEntry<Bttv.Emote>.Empty;
     private EmoteEntry<SevenTv.Emote> _sevenTvGlobalEmotes = EmoteEntry<SevenTv.Emote>.Empty;
@@ -72,11 +69,6 @@ public sealed class EmoteController
 
     private static readonly TimeSpan _channelEmoteCacheTime = TimeSpan.FromHours(3);
     private static readonly TimeSpan _globalEmoteCacheTime = TimeSpan.FromDays(1);
-
-    public EmoteController(ChannelCache? channels = null)
-    {
-        _channels = channels;
-    }
 
     public string GetEmote(long channelId, string fallback, params string[] emotes)
     {
@@ -267,13 +259,7 @@ public sealed class EmoteController
     {
         try
         {
-            string? channelName = _channels is null ? DbController.GetChannel(channelId)?.Name : _channels[channelId]?.Name;
-            if (channelName is null)
-            {
-                return null;
-            }
-
-            HttpGet request = new($"https://api.frankerfacez.com/v1/room/{channelName}");
+            HttpGet request = new($"https://api.frankerfacez.com/v1/room/id/{channelId}");
             if (request.Result is null)
             {
                 return null;

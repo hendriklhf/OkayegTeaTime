@@ -22,6 +22,10 @@ public readonly ref struct HangmanCommand
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
+    private readonly ReadOnlySpan<char> _happyEmote;
+    private readonly ReadOnlySpan<char> _sadEmote;
+    private readonly ReadOnlySpan<char> _partyEmote;
+
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
 
     public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
@@ -31,6 +35,10 @@ public readonly ref struct HangmanCommand
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
+
+        _happyEmote = _twitchBot.EmoteController.GetEmote(chatMessage.ChannelId, Emoji.Grinning, "happy", "good");
+        _sadEmote = _twitchBot.EmoteController.GetEmote(chatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
+        _partyEmote = _twitchBot.EmoteController.GetEmote(chatMessage.ChannelId, Emoji.PartyingFace, "cheer", "happy", "good");
     }
 
     public void Handle()
@@ -89,7 +97,7 @@ public readonly ref struct HangmanCommand
         if (isWordCorrect)
         {
             _response.Append("\"", game.Solution, "\"");
-            _response.Append(" ", Messages.IsCorrectTheGameHasBeenSolved, " ", Emoji.PartyingFace, " ");
+            _response.Append(" ", Messages.IsCorrectTheGameHasBeenSolved, " ", _partyEmote, " ");
             AppendWordStatus(game);
             _response.Append(", ");
             AppendWrongCharStatus(game);
@@ -100,7 +108,7 @@ public readonly ref struct HangmanCommand
         }
         else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
         {
-            _response.Append("\"", guess, "\" ", Messages.IsNotCorrect, " ", Emoji.Cry);
+            _response.Append("\"", guess, "\" ", Messages.IsNotCorrect, " ", _sadEmote);
             AppendWordStatus(game);
             _response.Append(", ");
             AppendWrongCharStatus(game);
@@ -110,7 +118,7 @@ public readonly ref struct HangmanCommand
         else
         {
             _response.Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, " ", "\"", game.Solution, "\"");
-            _response.Append(". ", Emoji.Cry);
+            _response.Append(". ", _sadEmote);
             _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
             game.Dispose();
         }
@@ -130,7 +138,7 @@ public readonly ref struct HangmanCommand
         _response.Append(ChatMessage.Username, ", ");
         if (game.IsSolved)
         {
-            _response.Append(Messages.TheGameHasBeenSolved, " ", Emoji.PartyingFace, " ");
+            _response.Append(Messages.TheGameHasBeenSolved, " ", _partyEmote, " ");
             _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
             game.Dispose();
         }
@@ -141,12 +149,12 @@ public readonly ref struct HangmanCommand
             correctPlacesCount.TryFormat(buffer, out int bufferLength);
             _response.Append(Messages.IsCorrectIn, " ", buffer[..bufferLength]);
             _response.Append(" ", correctPlacesCount == 1 ? Messages.Places[..^1] : Messages.Places);
-            _response.Append(correctPlacesCount > 0 ? Emoji.Grinning : Emoji.Cry, " ");
+            _response.Append(" ", correctPlacesCount > 0 ? _happyEmote : _sadEmote, " ");
         }
         else
         {
             _response.Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, " ", "\"", game.Solution, "\"");
-            _response.Append(" ", Emoji.Cry, " ");
+            _response.Append(" ", _sadEmote, " ");
             _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
             game.Dispose();
             return;
