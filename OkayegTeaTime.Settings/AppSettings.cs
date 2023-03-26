@@ -43,7 +43,7 @@ public static class AppSettings
     public const string Suffix = "eg";
     public const string SettingsFileName = "Settings.json";
     public const string ChatterinoChar = "\uDB40\uDC00";
-    public const string HleNugetVersionId = "107874";
+    public const string HleNugetVersionId = "111893";
 
     public static void Initialize()
     {

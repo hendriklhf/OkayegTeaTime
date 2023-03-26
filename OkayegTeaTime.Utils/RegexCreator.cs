@@ -16,34 +16,33 @@ public sealed class RegexCreator
 
     public Regex Create(ReadOnlySpan<char> alias, ReadOnlySpan<char> prefix, [StringSyntax(StringSyntaxAttribute.Regex)] ReadOnlySpan<char> addition = default)
     {
-        StringBuilder builder = stackalloc char[512];
-        builder.Append('^');
+        StringBuilder patternBuilder = stackalloc char[512];
+        patternBuilder.Append('^');
 
-        Span<char> escapedItem = stackalloc char[100];
         int escapedItemLength;
         if (prefix.Length == 0)
         {
-            escapedItemLength = HLE.StringHelper.RegexEscape(alias, escapedItem);
-            builder.Append(escapedItem[..escapedItemLength]);
-            escapedItemLength = HLE.StringHelper.RegexEscape(AppSettings.Suffix, escapedItem);
-            builder.Append(escapedItem[..escapedItemLength]);
+            escapedItemLength = HLE.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
+            patternBuilder.Advance(escapedItemLength);
+            escapedItemLength = HLE.StringHelper.RegexEscape(AppSettings.Suffix, patternBuilder.FreeBuffer);
+            patternBuilder.Advance(escapedItemLength);
         }
         else
         {
-            escapedItemLength = HLE.StringHelper.RegexEscape(prefix, escapedItem);
-            builder.Append(escapedItem[..escapedItemLength]);
-            escapedItemLength = HLE.StringHelper.RegexEscape(alias, escapedItem);
-            builder.Append(escapedItem[..escapedItemLength]);
+            escapedItemLength = HLE.StringHelper.RegexEscape(prefix, patternBuilder.FreeBuffer);
+            patternBuilder.Advance(escapedItemLength);
+            escapedItemLength = HLE.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
+            patternBuilder.Advance(escapedItemLength);
         }
 
-        builder.Append(addition, _patternEnding);
-        int patternHashCode = string.GetHashCode(builder.WrittenSpan);
+        patternBuilder.Append(addition, _patternEnding);
+        int patternHashCode = string.GetHashCode(patternBuilder.WrittenSpan);
         if (_cachedPatterns.TryGetValue(patternHashCode, out Regex? cachedPattern))
         {
             return cachedPattern;
         }
 
-        Regex compiledRegex = new(builder.ToString(), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+        Regex compiledRegex = new(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
         _cachedPatterns.Add(patternHashCode, compiledRegex);
         return compiledRegex;
     }

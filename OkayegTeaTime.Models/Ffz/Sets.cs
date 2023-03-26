@@ -4,8 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.Ffz;
 
-public sealed class FfzSets
+public sealed class Sets
 {
     [JsonPropertyName("mainSet")]
-    public FfzMainSet EmoteSet { get; set; }
+    public MainSet EmoteSet { get; set; }
 }

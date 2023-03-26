@@ -4,7 +4,7 @@
 
 namespace OkayegTeaTime.Models.Ffz;
 
-public sealed class FfzUrls
+public sealed class Urls
 {
     [JsonPropertyName("1")]
     public string One { get; init; }

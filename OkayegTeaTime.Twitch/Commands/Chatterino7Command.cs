@@ -5,11 +5,12 @@ using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
+#pragma warning disable IDE0052
+
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Chatterino7)]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 public readonly ref struct Chatterino7Command
 {
     public ChatMessage ChatMessage { get; }

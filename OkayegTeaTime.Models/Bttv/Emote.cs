@@ -1,16 +1,11 @@
-﻿#nullable disable
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
+#nullable disable
 #pragma warning disable CS0659
-
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
-// ReSharper disable NonReadonlyMemberInGetHashCode
 
 namespace OkayegTeaTime.Models.Bttv;
 
-public sealed class BttvEmote
+public sealed class Emote
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
@@ -22,12 +17,12 @@ public sealed class BttvEmote
     public string ImageType { get; set; }
 
     [JsonPropertyName("user")]
-    public BttvUser User { get; set; }
+    public User User { get; set; }
 
 #nullable enable
     public override bool Equals(object? obj)
     {
-        return obj is BttvEmote emote && emote.Id == Id;
+        return obj is Emote emote && emote.Id == Id;
     }
 
     public override string ToString()

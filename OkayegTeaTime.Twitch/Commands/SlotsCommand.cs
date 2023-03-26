@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
 using HLE.Memory;
 using HLE.Twitch;
@@ -23,8 +20,6 @@ public readonly ref struct SlotsCommand
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
-
-    private const byte _emoteSlotCount = 3;
 
     public SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
@@ -53,10 +48,10 @@ public readonly ref struct SlotsCommand
             }
         }
 
-        IEnumerable<string> ffzEmotes = _twitchBot.EmoteController.GetFfzEmotes(ChatMessage.ChannelId).Concat(_twitchBot.EmoteController.FfzGlobalEmotes).Select(e => e.Name);
-        IEnumerable<string> bttvEmotes = _twitchBot.EmoteController.GetBttvEmotes(ChatMessage.ChannelId).Concat(_twitchBot.EmoteController.BttvGlobalEmotes).Select(e => e.Name);
-        IEnumerable<string> sevenTvEmotes = _twitchBot.EmoteController.GetSevenTvEmotes(ChatMessage.ChannelId).Select(e => e.Name).Concat(_twitchBot.EmoteController.SevenTvGlobalEmotes.Select(e => e.Name));
-        string[] emotes = ffzEmotes.Concat(bttvEmotes).Concat(sevenTvEmotes).ToArray();
+        int emoteCount = _twitchBot.EmoteController.GetEmoteCount(ChatMessage.ChannelId);
+        using RentedArray<string> emoteBuffer = ArrayPool<string>.Shared.Rent(emoteCount);
+        _twitchBot.EmoteController.GetAllEmoteNames(ChatMessage.ChannelId, emoteBuffer);
+        Span<string> emotes = emoteBuffer[..emoteCount];
 
         if (emotes.Length == 0)
         {
@@ -66,7 +61,7 @@ public readonly ref struct SlotsCommand
 
         if (emotePattern is not null)
         {
-            emotes = emotes.Where(e => emotePattern.IsMatch(e)).ToArray();
+            WhereRegexIsMatch(ref emotes, emotePattern);
         }
 
         if (emotes.Length == 0)
@@ -75,16 +70,23 @@ public readonly ref struct SlotsCommand
             return;
         }
 
-        using RentedArray<string> randomEmotes = ArrayPool<string>.Shared.Rent(_emoteSlotCount);
-        for (int i = 0; i < _emoteSlotCount; i++)
-        {
-            randomEmotes[i] = emotes.Random()!;
-        }
-
-        Span<char> joinBuffer = stackalloc char[500];
-        int bufferLength = StringHelper.Join(randomEmotes[.._emoteSlotCount], ' ', joinBuffer);
-        _response.Append(ChatMessage.Username, ", ", "[ ", joinBuffer[..bufferLength], " ] (");
+        _response.Append(ChatMessage.Username, ", [ ", emotes.Random(), " ", emotes.Random(), " ", emotes.Random(), " ] (");
         _response.Append(emotes.Length);
         _response.Append(" emote", emotes.Length > 1 ? "s" : string.Empty, ")");
+    }
+
+    private static void WhereRegexIsMatch(ref Span<string> emotes, Regex regex)
+    {
+        int resultLength = 0;
+        for (int i = 0; i < emotes.Length; i++)
+        {
+            string emote = emotes[i];
+            if (regex.IsMatch(emote))
+            {
+                emotes[resultLength++] = emote;
+            }
+        }
+
+        emotes = emotes[..resultLength];
     }
 }

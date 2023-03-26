@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Twitch.Controller;
 
@@ -12,36 +11,36 @@ public sealed class ApiTest
     [TestMethod]
     public void GetSevenTvEmotesTest()
     {
-        Assert.IsTrue(new EmoteController().GetSevenTvEmotes(_testChannel).Any());
+        Assert.IsTrue(new EmoteController().GetSevenTvEmotes(_testChannel).Length > 0);
     }
 
     [TestMethod]
     public void GetBttvEmotesTest()
     {
-        Assert.IsTrue(new EmoteController().GetBttvEmotes(_testChannel).Any());
+        Assert.IsTrue(new EmoteController().GetBttvEmotes(_testChannel).Length > 0);
     }
 
     [TestMethod]
     public void GetFfzEmotesTest()
     {
-        Assert.IsTrue(new EmoteController().GetFfzEmotes(_testChannel).Any());
+        Assert.IsTrue(new EmoteController().GetFfzEmotes(_testChannel).Length > 0);
     }
 
     [TestMethod]
     public void GetSevenTvGlobalEmotes()
     {
-        Assert.IsTrue(new EmoteController().SevenTvGlobalEmotes.Any());
+        Assert.IsTrue(new EmoteController().SevenTvGlobalEmotes.Length > 0);
     }
 
     [TestMethod]
     public void GetBttvGlobalEmotesTest()
     {
-        Assert.IsTrue(new EmoteController().BttvGlobalEmotes.Any());
+        Assert.IsTrue(new EmoteController().BttvGlobalEmotes.Length > 0);
     }
 
     [TestMethod]
     public void GetFfzGlobalEmotesTest()
     {
-        Assert.IsTrue(new EmoteController().FfzGlobalEmotes.Any());
+        Assert.IsTrue(new EmoteController().FfzGlobalEmotes.Length > 0);
     }
 }

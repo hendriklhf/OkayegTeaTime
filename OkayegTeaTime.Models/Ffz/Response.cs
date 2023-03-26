@@ -4,11 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.Ffz;
 
-public sealed class FfzRequest
+public sealed class Response
 {
     [JsonPropertyName("room")]
-    public FfzRoom Room { get; set; }
+    public Room Room { get; set; }
 
     [JsonPropertyName("sets")]
-    public FfzSets Set { get; set; }
+    public Sets Set { get; set; }
 }

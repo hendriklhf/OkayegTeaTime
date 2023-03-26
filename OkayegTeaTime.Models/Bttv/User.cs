@@ -1,10 +1,10 @@
-﻿#nullable disable
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+#nullable disable
 
 namespace OkayegTeaTime.Models.Bttv;
 
-public sealed class BttvUser
+public sealed class User
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
