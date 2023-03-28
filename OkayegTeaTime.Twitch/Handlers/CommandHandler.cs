@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
@@ -22,13 +21,14 @@ public sealed class CommandHandler : Handler
     private readonly CooldownController _cooldownController;
 
     private readonly FrozenDictionary<int, CommandType> _commandTypes;
-    private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
+    private readonly FrozenDictionary<int, AfkType> _afkTypes;
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
         _cooldownController = new(twitchBot.CommandController);
         _commandTypes = CreateCommandTypeDictionary(twitchBot);
+        _afkTypes = CreateAfkTypeDictionary(twitchBot);
         _commandExecutor = new(twitchBot);
     }
 
@@ -71,35 +71,29 @@ public sealed class CommandHandler : Handler
 
     private void HandleAfkCommand(ChatMessage chatMessage)
     {
-        // TODO: change to handling like normal command
-        string? prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        Span<AfkType> afkTypes = _afkTypes;
-        int afkTypesLength = _afkTypes.Length;
-        for (int i = 0; i < afkTypesLength; i++)
+        ReadOnlySpan<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
+        ReadOnlySpan<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix : prefix;
+        ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
+
+        if (!prefixOrSuffix.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {
-            AfkType type = afkTypes[i];
-            Span<string> aliases = _twitchBot.CommandController[type].Aliases;
-            int aliasesLength = aliases.Length;
-            for (int j = 0; j < aliasesLength; j++)
-            {
-                string alias = aliases[j];
-                Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix);
-                if (!pattern.IsMatch(chatMessage.Message))
-                {
-                    continue;
-                }
-
-                if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
-                {
-                    return;
-                }
-
-                _twitchBot.CommandCount++;
-                _afkCommandHandler.Handle(chatMessage, type);
-                _cooldownController.AddAfkCooldown(chatMessage.UserId);
-                return;
-            }
+            return;
         }
+
+        int aliasHashCode = string.GetHashCode(usedAlias.Span, StringComparison.OrdinalIgnoreCase);
+        if (!_afkTypes.TryGetValue(aliasHashCode, out AfkType type))
+        {
+            return;
+        }
+
+        if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
+        {
+            return;
+        }
+
+        _twitchBot.CommandCount++;
+        _afkCommandHandler.Handle(chatMessage, type);
+        _cooldownController.AddAfkCooldown(chatMessage.UserId);
     }
 
     private static FrozenDictionary<int, CommandType> CreateCommandTypeDictionary(TwitchBot twitchBot)
@@ -117,6 +111,22 @@ public sealed class CommandHandler : Handler
             }
 
             foreach (string alias in command.Aliases)
+            {
+                int aliasHashCode = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
+                result.Add(aliasHashCode, type);
+            }
+        }
+
+        return result.ToFrozenDictionary();
+    }
+
+    private static FrozenDictionary<int, AfkType> CreateAfkTypeDictionary(TwitchBot twitchBot)
+    {
+        Dictionary<int, AfkType> result = new();
+        foreach (AfkCommand afkCommand in twitchBot.CommandController.AfkCommands)
+        {
+            AfkType type = Enum.Parse<AfkType>(afkCommand.Name, true);
+            foreach (string alias in afkCommand.Aliases)
             {
                 int aliasHashCode = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
                 result.Add(aliasHashCode, type);

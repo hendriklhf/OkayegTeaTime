@@ -197,7 +197,6 @@ public sealed class TwitchBot
     private static void Client_OnDisconnect(object sender, EventArgs e)
     {
         ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
-        Restart();
     }
 
     #endregion Bot_On

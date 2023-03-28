@@ -9,7 +9,7 @@ namespace OkayegTeaTime.Settings;
 
 public static class AppSettings
 {
-    public static string AssemblyName { get; } = Assembly.GetEntryAssembly()?.GetName().Name ?? throw new ArgumentNullException($"{nameof(AssemblyName)} can not be null.");
+    public static string AssemblyName { get; } = Assembly.GetEntryAssembly()?.GetName().Name ?? throw new ArgumentNullException(nameof(AssemblyName), $"{nameof(AssemblyName)} can not be null.");
 
     public static DatabaseConnection DatabaseConnection { get; private set; }
 
