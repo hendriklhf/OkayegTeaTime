@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using OkayegTeaTime.Database.Cache.Enums;
+using OkayegTeaTime.Database.EntityFrameworkModels;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -15,14 +16,22 @@ public sealed class User : CacheModel
         set
         {
             _afkMessage = value;
-            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
-            if (efUser is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
 
-            efUser.AfkMessage = value;
-            EditedProperty();
+                efUser.AfkMessage = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -32,14 +41,22 @@ public sealed class User : CacheModel
         set
         {
             _afkType = value;
-            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
-            if (efUser is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
 
-            efUser.AfkType = (int)value;
-            EditedProperty();
+                efUser.AfkType = (int)value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -49,14 +66,22 @@ public sealed class User : CacheModel
         set
         {
             _afkTime = value;
-            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
-            if (efUser is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
 
-            efUser.AfkTime = value;
-            EditedProperty();
+                efUser.AfkTime = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -66,14 +91,22 @@ public sealed class User : CacheModel
         set
         {
             _isAfk = value;
-            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
-            if (efUser is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
 
-            efUser.IsAfk = value;
-            EditedProperty();
+                efUser.IsAfk = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -83,14 +116,22 @@ public sealed class User : CacheModel
         set
         {
             _location = value;
-            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
-            if (efUser is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
 
-            efUser.Location = value;
-            EditedProperty();
+                efUser.Location = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -100,14 +141,22 @@ public sealed class User : CacheModel
         set
         {
             _isPrivateLocation = value;
-            EntityFrameworkModels.User? efUser = DbContext.Users.FirstOrDefault(u => u.Id == Id);
-            if (efUser is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
 
-            efUser.IsPrivateLocation = value;
-            EditedProperty();
+                efUser.IsPrivateLocation = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using OkayegTeaTime.Database.EntityFrameworkModels;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -14,14 +15,22 @@ public sealed class Channel : CacheModel
         set
         {
             _emote = value;
-            EntityFrameworkModels.Channel? efChannel = DbContext.Channels.FirstOrDefault(c => c.Id == Id);
-            if (efChannel is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.Channel? efChannel = db.Channels.FirstOrDefault(c => c.Id == Id);
+                if (efChannel is null)
+                {
+                    return;
+                }
 
-            efChannel.EmoteInFront = value;
-            EditedProperty();
+                efChannel.EmoteInFront = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -31,14 +40,22 @@ public sealed class Channel : CacheModel
         set
         {
             _prefix = value;
-            EntityFrameworkModels.Channel? efChannel = DbContext.Channels.FirstOrDefault(c => c.Id == Id);
-            if (efChannel is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                EntityFrameworkModels.Channel? efChannel = db.Channels.FirstOrDefault(c => c.Id == Id);
+                if (efChannel is null)
+                {
+                    return;
+                }
 
-            efChannel.Prefix = value;
-            EditedProperty();
+                efChannel.Prefix = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 

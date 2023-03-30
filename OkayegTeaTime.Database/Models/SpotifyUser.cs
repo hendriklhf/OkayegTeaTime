@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using OkayegTeaTime.Database.EntityFrameworkModels;
 
 namespace OkayegTeaTime.Database.Models;
 
@@ -16,16 +17,22 @@ public sealed class SpotifyUser : CacheModel
         set
         {
             _accessToken = value;
-            _mutex.WaitOne();
-            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
-            _mutex.ReleaseMutex();
-            if (user is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                Spotify? user = db.Spotify.FirstOrDefault(s => s.Id == Id);
+                if (user is null)
+                {
+                    return;
+                }
 
-            user.AccessToken = value;
-            EditedProperty();
+                user.AccessToken = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -37,16 +44,22 @@ public sealed class SpotifyUser : CacheModel
         set
         {
             _time = value;
-            _mutex.WaitOne();
-            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
-            _mutex.ReleaseMutex();
-            if (user is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                Spotify? user = db.Spotify.FirstOrDefault(s => s.Id == Id);
+                if (user is null)
+                {
+                    return;
+                }
 
-            user.Time = value;
-            EditedProperty();
+                user.Time = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -56,16 +69,22 @@ public sealed class SpotifyUser : CacheModel
         set
         {
             _areSongRequestsEnabled = value;
-            _mutex.WaitOne();
-            EntityFrameworkModels.Spotify? user = DbContext.Spotify.FirstOrDefault(s => s.Id == Id);
-            _mutex.ReleaseMutex();
-            if (user is null)
+            OkayegTeaTimeContext db = GetContext();
+            try
             {
-                return;
-            }
+                Spotify? user = db.Spotify.FirstOrDefault(s => s.Id == Id);
+                if (user is null)
+                {
+                    return;
+                }
 
-            user.SongRequestEnabled = value;
-            EditedProperty();
+                user.SongRequestEnabled = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
         }
     }
 
@@ -73,7 +92,7 @@ public sealed class SpotifyUser : CacheModel
     private long _time;
     private bool _areSongRequestsEnabled;
 
-    public SpotifyUser(EntityFrameworkModels.Spotify spotifyUser)
+    public SpotifyUser(Spotify spotifyUser)
     {
         Id = spotifyUser.Id;
         Username = spotifyUser.Username;

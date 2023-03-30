@@ -7,8 +7,6 @@ namespace OkayegTeaTime.Database.Models;
 
 public abstract class CacheModel
 {
-    private protected OkayegTeaTimeContext DbContext => _db ??= new();
-
     private OkayegTeaTimeContext? _db;
     private readonly Timer _timer = new(1000);
     private protected readonly Mutex _mutex = new();
@@ -17,15 +15,18 @@ public abstract class CacheModel
     {
         _timer.Elapsed += (_, _) =>
         {
+            OkayegTeaTimeContext db = GetContext();
             try
             {
-                _mutex.WaitOne();
-                _db?.SaveChanges();
-                _mutex.ReleaseMutex();
+                db.SaveChanges();
             }
             catch (Exception ex)
             {
                 DbController.LogException(ex);
+            }
+            finally
+            {
+                ReturnContext();
             }
         };
     }
@@ -45,6 +46,17 @@ public abstract class CacheModel
         {
             DbController.LogException(ex);
         }
+    }
+
+    private protected OkayegTeaTimeContext GetContext()
+    {
+        _mutex.WaitOne();
+        return _db ??= new();
+    }
+
+    private protected void ReturnContext()
+    {
+        _mutex.ReleaseMutex();
     }
 
     private protected void EditedProperty()
