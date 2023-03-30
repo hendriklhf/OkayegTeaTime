@@ -66,7 +66,7 @@ public sealed class MessageHandler : Handler
         }
 
         _twitchBot.SendComingBack(user, chatMessage.Channel);
-        if (!_twitchBot.CommandController.IsAfkCommand(_twitchBot.Channels[chatMessage.ChannelId]?.Prefix, chatMessage.Message))
+        if (!_twitchBot.CommandController.IsAfkCommand(_twitchBot.Channels[chatMessage.ChannelId]?.Prefix, chatMessage.Message) || _twitchBot.CooldownController.IsOnAfkCooldown(chatMessage.UserId))
         {
             user.IsAfk = false;
         }

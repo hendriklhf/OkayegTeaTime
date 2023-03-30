@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-#if DEBUG
+using System.Collections.Concurrent;
 using OkayegTeaTime.Settings;
-#endif
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class CooldownController
 {
-    private readonly List<Cooldown> _cooldowns = new();
-    private readonly List<AfkCooldown> _afkCooldowns = new();
+    private readonly ConcurrentDictionary<CooldownHash, DateTime> _cooldowns = new();
+    private readonly ConcurrentDictionary<CooldownHash, DateTime> _afkCooldowns = new();
 
     private readonly CommandController _commandController;
 
@@ -30,14 +26,14 @@ public sealed class CooldownController
         }
 #endif
 
-        Cooldown? cooldown = _cooldowns.FirstOrDefault(c => c.UserId == userId && c.Type == type);
-        if (cooldown is not null)
-        {
-            _cooldowns.Remove(cooldown);
-        }
+        CooldownHash cooldownHash = new(userId, type);
+        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(_commandController[type].Cooldown);
+        DateTime cooldownUntil = DateTime.UtcNow + cooldownTime;
 
-        int cmdCooldown = _commandController[type].Cooldown;
-        _cooldowns.Add(new(userId, cmdCooldown, type));
+        if (!_cooldowns.TryAdd(cooldownHash, cooldownUntil))
+        {
+            _cooldowns[cooldownHash] = cooldownUntil;
+        }
     }
 
     public void AddAfkCooldown(long userId)
@@ -49,46 +45,25 @@ public sealed class CooldownController
         }
 #endif
 
-        AfkCooldown? cooldown = _afkCooldowns.FirstOrDefault(c => c.UserId == userId);
-        if (cooldown is not null)
-        {
-            _afkCooldowns.Remove(cooldown);
-        }
+        CooldownHash cooldownHash = new(userId);
+        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(AppSettings.AfkCooldown);
+        DateTime cooldownUntil = DateTime.UtcNow + cooldownTime;
 
-        _afkCooldowns.Add(new(userId));
+        if (!_afkCooldowns.TryAdd(cooldownHash, cooldownUntil))
+        {
+            _afkCooldowns[cooldownHash] = cooldownUntil;
+        }
     }
 
     public bool IsOnCooldown(long userId, CommandType type)
     {
-        Span<Cooldown> cooldowns = CollectionsMarshal.AsSpan(_cooldowns);
-        int cooldownsLength = cooldowns.Length;
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        for (int i = 0; i < cooldownsLength; i++)
-        {
-            Cooldown cooldown = cooldowns[i];
-            if (cooldown.UserId == userId && cooldown.Type == type && cooldown.Until > now)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        CooldownHash cooldownHash = new(userId, type);
+        return _cooldowns.TryGetValue(cooldownHash, out DateTime cooldownUntil) && cooldownUntil > DateTime.UtcNow;
     }
 
     public bool IsOnAfkCooldown(long userId)
     {
-        Span<AfkCooldown> cooldowns = CollectionsMarshal.AsSpan(_afkCooldowns);
-        int cooldownsLength = cooldowns.Length;
-        DateTimeOffset now = DateTimeOffset.UtcNow;
-        for (int i = 0; i < cooldownsLength; i++)
-        {
-            AfkCooldown cooldown = cooldowns[i];
-            if (cooldown.UserId == userId && cooldown.Until > now)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        CooldownHash cooldownHash = new(userId);
+        return _afkCooldowns.TryGetValue(cooldownHash, out DateTime cooldownUntil) && cooldownUntil > DateTime.UtcNow;
     }
 }

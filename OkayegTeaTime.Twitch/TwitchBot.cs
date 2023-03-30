@@ -29,11 +29,13 @@ public sealed class TwitchBot
 
     public SpotifyUserCache SpotifyUsers { get; } = new();
 
-    public EmoteController EmoteController { get; }
+    public EmoteController EmoteController { get; } = new();
 
-    public CommandController CommandController { get; }
+    public CommandController CommandController { get; } = new();
 
     public WeatherController WeatherController { get; } = new();
+
+    public CooldownController CooldownController { get; }
 
     public TwitchApi TwitchApi { get; } = new();
 
@@ -65,8 +67,7 @@ public sealed class TwitchBot
         _twitchClient.OnChatMessageReceived += Client_OnMessageReceived!;
         _twitchClient.OnDisconnected += Client_OnDisconnect!;
 
-        CommandController = new(this);
-        EmoteController = new();
+        CooldownController = new(CommandController);
         LastMessages = new(Channels);
         _messageHandler = new(this);
         InitializeTimers();
