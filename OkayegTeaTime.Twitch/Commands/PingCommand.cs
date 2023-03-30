@@ -45,7 +45,7 @@ public readonly ref struct PingCommand
         int indexOfDot = buffer.IndexOf('.');
         _response.Append("Pingeg, I'm here! Uptime: ", buffer[..indexOfDot]);
 
-        _response.Append(NumberHelper.InsertKDots(_twitchBot.CommandCount), " || Ping: ");
+        _response.Append(" || Ping: ");
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         long latency = now - ChatMessage.TmiSentTs - 5;
         _response.Append(latency);

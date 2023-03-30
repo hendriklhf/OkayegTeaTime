@@ -31,12 +31,7 @@ public readonly ref struct CodeCommand
         _prefix = prefix;
         _alias = alias;
 
-        _codeFiles ??= ResourceController.CodeFiles.Split(new[]
-        {
-            "\r\n",
-            "\n",
-            "\r"
-        }, StringSplitOptions.RemoveEmptyEntries);
+        _codeFiles ??= ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
     }
 
     public void Handle()
@@ -56,7 +51,7 @@ public readonly ref struct CodeCommand
                 return;
             }
 
-            string[] matchingFiles = _codeFiles!.Where(f => filePattern.IsMatch(f)).ToArray();
+            ReadOnlySpan<string> matchingFiles = _codeFiles!.Where(f => filePattern.IsMatch(f)).ToArray();
             _response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Length)
             {
@@ -67,16 +62,19 @@ public readonly ref struct CodeCommand
                     _response.Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
-                    Span<char> joinBuffer = stackalloc char[500];
-                    int bufferLength = StringHelper.Join(matchingFiles, ", ", joinBuffer);
                     _response.Append("your pattern matched ");
                     _response.Append(matchingFiles.Length);
-                    _response.Append(" files: ", joinBuffer[..bufferLength], ". Please specify");
+                    _response.Append(" files: ");
+
+                    int joinLength = StringHelper.Join(matchingFiles, ", ", _response.FreeBuffer);
+                    _response.Advance(joinLength);
+
+                    _response.Append(". Please specify.");
                     break;
                 default:
                     _response.Append("your pattern matched too many (");
                     _response.Append(matchingFiles.Length);
-                    _response.Append(") files. Please specify");
+                    _response.Append(") files. Please specify.");
                     break;
             }
         }
