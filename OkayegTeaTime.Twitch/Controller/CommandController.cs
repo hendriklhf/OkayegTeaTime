@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Collections.Frozen;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
+using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
@@ -21,74 +20,35 @@ public sealed class CommandController
 
     public AfkCommand[] AfkCommands { get; }
 
-    private readonly TwitchBot? _twitchBot;
-    private readonly string[] _afkCommandAliases;
+    private readonly FrozenSet<AliasHash> _afkCommandAliasHashes;
 
-    public CommandController(TwitchBot? twitchBot = null)
+    public CommandController()
     {
-        _twitchBot = twitchBot;
         Commands = AppSettings.CommandList.Commands.OrderBy(c => c.Name).ToArray();
-        foreach (Command command in Commands)
-        {
-            Array.Sort(command.Aliases);
-        }
 
-        AfkCommands = AppSettings.CommandList.AfkCommands.OrderBy(c => c.Name).ToArray();
-        foreach (AfkCommand command in AfkCommands)
-        {
-            Array.Sort(command.Aliases);
-        }
-
-        _afkCommandAliases = AfkCommands.SelectMany(c => c.Aliases).ToArray();
+        AfkCommands = AppSettings.CommandList.AfkCommands;
+        _afkCommandAliasHashes = AfkCommands.SelectMany(c => c.Aliases).Select(a => new AliasHash(a)).ToFrozenSet();
     }
 
     public bool IsAfkCommand(string? prefix, string message)
     {
-        RegexCreator regexCreator = _twitchBot?.RegexCreator ?? new();
-        ref string firstAlias = ref MemoryMarshal.GetArrayDataReference(_afkCommandAliases);
-        for (int i = 0; i < firstAlias.Length; i++)
-        {
-            string alias = Unsafe.Add(ref firstAlias, i);
-            Regex pattern = regexCreator.Create(alias, prefix);
-            if (pattern.IsMatch(message))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        MessageHelper.ExtractAlias(message.AsMemory(), prefix, out var alias, out _);
+        return _afkCommandAliasHashes.Contains(new(alias.Span));
     }
 
     private Command GetCommand(CommandType type)
     {
-        string typeName = type.ToString();
-        ref Command firstCommand = ref MemoryMarshal.GetArrayDataReference(Commands);
-        for (int i = 0; i < Commands.Length; i++)
-        {
-            Command command = Unsafe.Add(ref firstCommand, i);
-            if (command.Name == typeName)
-            {
-                return command;
-            }
-        }
+        // asserting the enum and the commands are both in the same order so commands can be accessed by index of the enum value
+        Debug.Assert(Enum.GetNames<CommandType>().Select(c => c.ToLower()).SequenceEqual(Commands.Select(c => c.Name.ToLower())));
 
-        throw new InvalidOperationException("Command not found. This should not happen.");
+        return Commands[(int)type];
     }
 
     private AfkCommand GetAfkCommand(AfkType type)
     {
-        string typeName = type.ToString().ToLower();
-        Span<AfkCommand> afkCommands = AfkCommands;
-        ref AfkCommand firstAfkCommands = ref afkCommands[0];
-        for (int i = 0; i < afkCommands.Length; i++)
-        {
-            AfkCommand afkCommand = Unsafe.Add(ref firstAfkCommands, i);
-            if (afkCommand.Name == typeName)
-            {
-                return afkCommand;
-            }
-        }
+        // asserting the enum and the commands are both in the same order so commands can be accessed by index of the enum value
+        Debug.Assert(Enum.GetNames<AfkType>().Select(a => a.ToLower()).SequenceEqual(AfkCommands.Select(a => a.Name.ToLower())));
 
-        throw new InvalidOperationException("AfkCommand not found. This should not happen.");
+        return AfkCommands[(int)type];
     }
 }

@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
@@ -15,7 +16,13 @@ public sealed class CommandTest
 {
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
-    private readonly CommandController _commandController = new();
+    private readonly CommandController _commandController;
+
+    public CommandTest()
+    {
+        AppSettings.Initialize();
+        _commandController = new();
+    }
 
     [TestMethod]
     public void CommandCompletenessTestFromEnum()
@@ -32,7 +39,7 @@ public sealed class CommandTest
     {
         foreach (Command command in _commandController.Commands)
         {
-            CommandType type = _commandTypes.SingleOrDefault(c => string.Equals(c.ToString(), command.Name, StringComparison.OrdinalIgnoreCase));
+            CommandType type = Enum.Parse<CommandType>(command.Name, true);
             Assert.IsNotNull(type);
         }
     }
@@ -55,6 +62,17 @@ public sealed class CommandTest
     }
 
     [TestMethod]
+    public void CommandAccessibleByEnumIndexTest()
+    {
+        foreach (CommandType type in _commandTypes)
+        {
+            Command command = _commandController.Commands[(int)type];
+            CommandType parsedType = Enum.Parse<CommandType>(command.Name, true);
+            Assert.AreEqual(type, parsedType);
+        }
+    }
+
+    [TestMethod]
     public void AfkCommandCompletenessTestFromEnum()
     {
         foreach (AfkType type in _afkTypes)
@@ -69,8 +87,19 @@ public sealed class CommandTest
     {
         foreach (AfkCommand command in _commandController.AfkCommands)
         {
-            AfkType type = _afkTypes.SingleOrDefault(c => string.Equals(c.ToString(), command.Name, StringComparison.OrdinalIgnoreCase));
+            AfkType type = Enum.Parse<AfkType>(command.Name, true);
             Assert.IsNotNull(type);
+        }
+    }
+
+    [TestMethod]
+    public void AfkCommandAccessibleByEnumIndexTest()
+    {
+        foreach (AfkType type in _afkTypes)
+        {
+            AfkCommand command = _commandController.AfkCommands[(int)type];
+            AfkType parsedType = Enum.Parse<AfkType>(command.Name, true);
+            Assert.AreEqual(type, parsedType);
         }
     }
 }

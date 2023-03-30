@@ -3,13 +3,12 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
-using OkayegTeaTime.Twitch.Controller;
+using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
@@ -18,15 +17,13 @@ public sealed class CommandHandler : Handler
 {
     private readonly CommandExecutor _commandExecutor;
     private readonly AfkCommandHandler _afkCommandHandler;
-    private readonly CooldownController _cooldownController;
 
-    private readonly FrozenDictionary<int, CommandType> _commandTypes;
-    private readonly FrozenDictionary<int, AfkType> _afkTypes;
+    private readonly FrozenDictionary<AliasHash, CommandType> _commandTypes;
+    private readonly FrozenDictionary<AliasHash, AfkType> _afkTypes;
 
     public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
     {
         _afkCommandHandler = new(twitchBot);
-        _cooldownController = new(twitchBot.CommandController);
         _commandTypes = CreateCommandTypeDictionary(twitchBot);
         _afkTypes = CreateAfkTypeDictionary(twitchBot);
         _commandExecutor = new(twitchBot);
@@ -45,27 +42,27 @@ public sealed class CommandHandler : Handler
     {
         ReadOnlySpan<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         ReadOnlySpan<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix : prefix;
-        ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
+        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
 
         if (!prefixOrSuffix.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
 
-        int aliasHashCode = string.GetHashCode(usedAlias.Span, StringComparison.OrdinalIgnoreCase);
+        AliasHash aliasHashCode = new(usedAlias.Span);
         if (!_commandTypes.TryGetValue(aliasHashCode, out CommandType type))
         {
             return false;
         }
 
-        if (_cooldownController.IsOnCooldown(chatMessage.UserId, type))
+        if (_twitchBot.CooldownController.IsOnCooldown(chatMessage.UserId, type))
         {
             return false;
         }
 
         _twitchBot.CommandCount++;
         _commandExecutor.Execute(type, chatMessage, prefix, usedAlias.Span);
-        _cooldownController.AddCooldown(chatMessage.UserId, type);
+        _twitchBot.CooldownController.AddCooldown(chatMessage.UserId, type);
         return true;
     }
 
@@ -73,32 +70,32 @@ public sealed class CommandHandler : Handler
     {
         ReadOnlySpan<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
         ReadOnlySpan<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix : prefix;
-        ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
+        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
 
         if (!prefixOrSuffix.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        int aliasHashCode = string.GetHashCode(usedAlias.Span, StringComparison.OrdinalIgnoreCase);
+        AliasHash aliasHashCode = new(usedAlias.Span);
         if (!_afkTypes.TryGetValue(aliasHashCode, out AfkType type))
         {
             return;
         }
 
-        if (_cooldownController.IsOnAfkCooldown(chatMessage.UserId))
+        if (_twitchBot.CooldownController.IsOnAfkCooldown(chatMessage.UserId))
         {
             return;
         }
 
         _twitchBot.CommandCount++;
         _afkCommandHandler.Handle(chatMessage, type);
-        _cooldownController.AddAfkCooldown(chatMessage.UserId);
+        _twitchBot.CooldownController.AddAfkCooldown(chatMessage.UserId);
     }
 
-    private static FrozenDictionary<int, CommandType> CreateCommandTypeDictionary(TwitchBot twitchBot)
+    private static FrozenDictionary<AliasHash, CommandType> CreateCommandTypeDictionary(TwitchBot twitchBot)
     {
-        Dictionary<int, CommandType> result = new();
+        Dictionary<AliasHash, CommandType> result = new();
         CommandType[] handledCommands = Assembly.GetExecutingAssembly().GetTypes()
             .Where(c => c.GetCustomAttribute<HandledCommandAttribute>() is not null)
             .Select(c => c.GetCustomAttribute<HandledCommandAttribute>()!.CommandType).ToArray();
@@ -112,7 +109,7 @@ public sealed class CommandHandler : Handler
 
             foreach (string alias in command.Aliases)
             {
-                int aliasHashCode = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
+                AliasHash aliasHashCode = new(alias);
                 result.Add(aliasHashCode, type);
             }
         }
@@ -120,42 +117,19 @@ public sealed class CommandHandler : Handler
         return result.ToFrozenDictionary();
     }
 
-    private static FrozenDictionary<int, AfkType> CreateAfkTypeDictionary(TwitchBot twitchBot)
+    private static FrozenDictionary<AliasHash, AfkType> CreateAfkTypeDictionary(TwitchBot twitchBot)
     {
-        Dictionary<int, AfkType> result = new();
+        Dictionary<AliasHash, AfkType> result = new();
         foreach (AfkCommand afkCommand in twitchBot.CommandController.AfkCommands)
         {
             AfkType type = Enum.Parse<AfkType>(afkCommand.Name, true);
             foreach (string alias in afkCommand.Aliases)
             {
-                int aliasHashCode = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
+                AliasHash aliasHashCode = new(alias);
                 result.Add(aliasHashCode, type);
             }
         }
 
         return result.ToFrozenDictionary();
-    }
-
-    private static void ExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> prefix, out ReadOnlyMemory<char> usedAlias, out ReadOnlyMemory<char> usedPrefix)
-    {
-        ReadOnlySpan<char> messageSpan = message.Span;
-        int indexOfWhitespace = messageSpan.IndexOf(' ');
-        ReadOnlyMemory<char> firstWord = message[..Unsafe.As<int, Index>(ref indexOfWhitespace)];
-        if (firstWord.Length <= (prefix.Length == 0 ? AppSettings.Suffix.Length : prefix.Length))
-        {
-            usedAlias = ReadOnlyMemory<char>.Empty;
-            usedPrefix = ReadOnlyMemory<char>.Empty;
-            return;
-        }
-
-        if (prefix.Length == 0)
-        {
-            usedAlias = firstWord[..^AppSettings.Suffix.Length];
-            usedPrefix = firstWord[^AppSettings.Suffix.Length..];
-            return;
-        }
-
-        usedAlias = firstWord[prefix.Length..];
-        usedPrefix = firstWord[..prefix.Length];
     }
 }

@@ -660,23 +660,6 @@
   ],
   "AfkCommands": [
     {
-      "Name": "gn",
-      "ComingBack": "{username} just woke up: {message} ({time})",
-      "GoingAway": "{username} is now sleeping",
-      "Resuming": "{username} fell asleep again",
-      "Aliases": [
-        "gn",
-        "sleep"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"sleeping\""
-      ],
-      "Document": true
-    },
-    {
       "Name": "afk",
       "ComingBack": "{username} just came back: {message} ({time})",
       "GoingAway": "{username} is now afk",
@@ -726,6 +709,40 @@
       "Document": true
     },
     {
+      "Name": "game",
+      "ComingBack": "{username} stopped gaming: {message} ({time})",
+      "GoingAway": "{username} is now gaming",
+      "Resuming": "{username} went back to gaming",
+      "Aliases": [
+        "game",
+        "gaming"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"gaming\""
+      ],
+      "Document": true
+    },
+    {
+      "Name": "gn",
+      "ComingBack": "{username} just woke up: {message} ({time})",
+      "GoingAway": "{username} is now sleeping",
+      "Resuming": "{username} fell asleep again",
+      "Aliases": [
+        "gn",
+        "sleep"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"sleeping\""
+      ],
+      "Document": true
+    },
+    {
       "Name": "lurk",
       "ComingBack": "{username} stopped lurking: {message} ({time})",
       "GoingAway": "{username} is now lurking",
@@ -742,18 +759,19 @@
       "Document": true
     },
     {
-      "Name": "shower",
-      "ComingBack": "{username} is now clean: {message} ({time})",
-      "GoingAway": "{username} went for a shower",
-      "Resuming": "{username} went back into the shower",
+      "Name": "movie",
+      "ComingBack": "{username} finished a movie: {message} ({time})",
+      "GoingAway": "{username} is now watching a movie",
+      "Resuming": "{username} went back to watching a movie",
       "Aliases": [
-        "shower"
+        "movie",
+        "film"
       ],
       "Parameters": [
         "[message]"
       ],
       "ParameterDescriptions": [
-        "Sets your status to \"showering\""
+        "Sets your status to \"watching a movie\""
       ],
       "Document": true
     },
@@ -770,6 +788,88 @@
       ],
       "ParameterDescriptions": [
         "Sets your status to \"napping\""
+      ],
+      "Document": true
+    },
+    {
+      "Name": "piss",
+      "ComingBack": "{username} emptied their bladder: {message} ({time})",
+      "GoingAway": "{username} needs to empty their bladder",
+      "Resuming": "{username} ran back to the toilet",
+      "Aliases": [
+        "piss",
+        "pee"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"peeing\""
+      ],
+      "Document": true
+    },
+    {
+      "Name": "poof",
+      "ComingBack": "{username} fooped back: {message} ({time})",
+      "GoingAway": "{username} poofed away",
+      "Resuming": "{username} poofed again ppPoof",
+      "Aliases": [
+        "poof"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"poofed away\""
+      ],
+      "Document": true
+    },
+    {
+      "Name": "poop",
+      "ComingBack": "{username} took a big shit: {message} ({time})",
+      "GoingAway": "{username} needs to take a shit",
+      "Resuming": "{username} ran back to the toilet",
+      "Aliases": [
+        "poop",
+        "shit"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"pooping\""
+      ],
+      "Document": true
+    },
+    {
+      "Name": "school",
+      "ComingBack": "{username} came back from school: {message} ({time})",
+      "GoingAway": "{username} went to school",
+      "Resuming": "{username} went back to school",
+      "Aliases": [
+        "school"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"at school\""
+      ],
+      "Document": true
+    },
+    {
+      "Name": "shower",
+      "ComingBack": "{username} is now clean: {message} ({time})",
+      "GoingAway": "{username} went for a shower",
+      "Resuming": "{username} went back into the shower",
+      "Aliases": [
+        "shower"
+      ],
+      "Parameters": [
+        "[message]"
+      ],
+      "ParameterDescriptions": [
+        "Sets your status to \"showering\""
       ],
       "Document": true
     },
@@ -802,106 +902,6 @@
       ],
       "ParameterDescriptions": [
         "Sets your status to \"working\""
-      ],
-      "Document": true
-    },
-    {
-      "Name": "school",
-      "ComingBack": "{username} came back from school: {message} ({time})",
-      "GoingAway": "{username} went to school",
-      "Resuming": "{username} went back to school",
-      "Aliases": [
-        "school"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"at school\""
-      ],
-      "Document": true
-    },
-    {
-      "Name": "poof",
-      "ComingBack": "{username} fooped back: {message} ({time})",
-      "GoingAway": "{username} poofed away",
-      "Resuming": "{username} poofed again ppPoof",
-      "Aliases": [
-        "poof"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"poofed away\""
-      ],
-      "Document": true
-    },
-    {
-      "Name": "game",
-      "ComingBack": "{username} stopped gaming: {message} ({time})",
-      "GoingAway": "{username} is now gaming",
-      "Resuming": "{username} went back to gaming",
-      "Aliases": [
-        "game",
-        "gaming"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"gaming\""
-      ],
-      "Document": true
-    },
-    {
-      "Name": "movie",
-      "ComingBack": "{username} finished a movie: {message} ({time})",
-      "GoingAway": "{username} is now watching a movie",
-      "Resuming": "{username} went back to watching a movie",
-      "Aliases": [
-        "movie",
-        "film"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"watching a movie\""
-      ],
-      "Document": true
-    },
-    {
-      "Name": "piss",
-      "ComingBack": "{username} emptied their bladder: {message} ({time})",
-      "GoingAway": "{username} needs to empty their bladder",
-      "Resuming": "{username} ran back to the toilet",
-      "Aliases": [
-        "piss",
-        "pee"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"peeing\""
-      ],
-      "Document": true
-    },
-    {
-      "Name": "poop",
-      "ComingBack": "{username} took a big shit: {message} ({time})",
-      "GoingAway": "{username} needs to take a shit",
-      "Resuming": "{username} ran back to the toilet",
-      "Aliases": [
-        "poop",
-        "shit"
-      ],
-      "Parameters": [
-        "[message]"
-      ],
-      "ParameterDescriptions": [
-        "Sets your status to \"pooping\""
       ],
       "Document": true
     },
