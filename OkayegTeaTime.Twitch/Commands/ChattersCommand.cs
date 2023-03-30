@@ -4,13 +4,11 @@ using System.Text.RegularExpressions;
 using HLE;
 using HLE.Twitch;
 using HLE.Twitch.Models;
-using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Chatters)]
 public readonly ref struct ChattersCommand
 {
     public ChatMessage ChatMessage { get; }
