@@ -38,9 +38,10 @@ public readonly ref struct PingCommand
     public void Handle()
     {
         Span<char> buffer = stackalloc char[50];
+        using Process currentProcess = Process.GetCurrentProcess();
 
         _response.Append(ChatMessage.Username, ", ");
-        TimeSpan uptime = DateTime.Now - Process.GetCurrentProcess().StartTime;
+        TimeSpan uptime = DateTime.Now - currentProcess.StartTime;
         uptime.TryFormat(buffer, out _, "g");
         int indexOfDot = buffer.IndexOf('.');
         _response.Append("Pingeg, I'm here! Uptime: ", buffer[..indexOfDot]);
@@ -52,7 +53,7 @@ public readonly ref struct PingCommand
         _response.Append("ms");
 
         _response.Append(" || Total process memory: ");
-        _response.Append(GetProcessMemory());
+        _response.Append(GetProcessMemory(currentProcess));
         _response.Append("MB || Managed memory: ");
         _response.Append(GetManagedMemory());
         _response.Append("MB");
@@ -72,17 +73,17 @@ public readonly ref struct PingCommand
         _response.Append(" || Running on ", RuntimeInformation.FrameworkDescription, " || Commit: ", ResourceController.LastCommit);
     }
 
-    private static double GetProcessMemory()
+    private static double GetProcessMemory(Process process)
     {
-        double memory = Process.GetCurrentProcess().PrivateMemorySize64;
-        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.Null, UnitPrefix.Mega);
+        double memory = process.PrivateMemorySize64;
+        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.None, UnitPrefix.Mega);
         return Math.Round(memoryInMegaByte, 3);
     }
 
     private static double GetManagedMemory()
     {
         double memory = GC.GetTotalMemory(false);
-        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.Null, UnitPrefix.Mega);
+        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.None, UnitPrefix.Mega);
         return Math.Round(memoryInMegaByte, 3);
     }
 

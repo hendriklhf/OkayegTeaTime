@@ -32,14 +32,14 @@ public readonly ref struct WeatherCommand
 
     public void Handle()
     {
-        string? city;
+        ReadOnlySpan<char> city;
         bool isPrivateLocation;
 
         Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            city = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
+            city = ChatMessage.Message.AsSpan()[(messageExtension.Split[0].Length + 1)..];
             isPrivateLocation = false;
         }
         else
@@ -47,7 +47,7 @@ public readonly ref struct WeatherCommand
             User? user = _twitchBot.Users[ChatMessage.UserId];
             city = user?.Location;
             isPrivateLocation = user?.IsPrivateLocation == true;
-            if (city is null)
+            if (city.Length == 0)
             {
                 _response.Append(ChatMessage.Username, ", ", Messages.YouHaventSetYourLocationYet);
                 return;
@@ -67,6 +67,7 @@ public readonly ref struct WeatherCommand
             return;
         }
 
-        _response.Append(ChatMessage.Username, ", ", WeatherController.CreateResponse(weatherData, isPrivateLocation));
+        _response.Append(ChatMessage.Username, ", ");
+        WeatherController.WriteResponse(weatherData, ref _response, isPrivateLocation);
     }
 }

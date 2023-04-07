@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
+using HLE.Collections;
 using HLE.Emojis;
+using HLE.Twitch;
 using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
@@ -13,20 +15,15 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class WeatherController
 {
-    private readonly Dictionary<WeatherDataKey, WeatherData> _weatherCache = new();
-    private readonly Dictionary<WeatherDataKey, ForecastData> _forecastCache = new();
+    private readonly DoubleDictionary<int, (double, double), WeatherData> _weatherCache = new();
+    private readonly Dictionary<int, ForecastData> _forecastCache = new();
     private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(30);
-    private readonly TimeSpan _forecastCacheTime = TimeSpan.FromDays(1);
+    private readonly TimeSpan _forecastCacheTime = TimeSpan.FromHours(1);
 
-    public WeatherData? GetWeather(string city, bool loadFromCache = true)
+    public WeatherData? GetWeather(ReadOnlySpan<char> city, bool loadFromCache = true)
     {
-        city = city.ToLower();
-        WeatherDataKey key = new()
-        {
-            City = city
-        };
-
-        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        int key = string.GetHashCode(city, StringComparison.OrdinalIgnoreCase);
+        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data!.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -43,9 +40,10 @@ public sealed class WeatherController
             return null;
         }
 
-        if (!_weatherCache.TryAdd(key, data))
+        var coordinates = (data.Coordinates.Latitude, data.Coordinates.Longitude);
+        if (!_weatherCache.TryAdd(key, coordinates, data))
         {
-            _weatherCache[key] = data;
+            _weatherCache[key, coordinates] = data;
         }
 
         return data;
@@ -53,13 +51,8 @@ public sealed class WeatherController
 
     public WeatherData? GetWeather(int latitude, int longitude, bool loadFromCache = true)
     {
-        WeatherDataKey key = new()
-        {
-            Latitude = latitude,
-            Longitude = longitude
-        };
-
-        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        var key = ((double)latitude, (double)longitude);
+        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data!.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -76,23 +69,19 @@ public sealed class WeatherController
             return null;
         }
 
-        if (!_weatherCache.TryAdd(key, data))
+        int locationHash = string.GetHashCode(data.CityName);
+        if (!_weatherCache.TryAdd(locationHash, key, data))
         {
-            _weatherCache[key] = data;
+            _weatherCache[locationHash, key] = data;
         }
 
         return data;
     }
 
     // ReSharper disable once UnusedMember.Global
-    public ForecastData? GetForecast(string city, bool loadFromCache = true)
+    public ForecastData? GetForecast(ReadOnlySpan<char> city, bool loadFromCache = true)
     {
-        city = city.ToLower();
-        WeatherDataKey key = new()
-        {
-            City = city
-        };
-
+        int key = string.GetHashCode(city, StringComparison.OrdinalIgnoreCase);
         if (loadFromCache && _forecastCache.TryGetValue(key, out ForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
         {
             return data;
@@ -118,26 +107,37 @@ public sealed class WeatherController
         return data;
     }
 
-    public static string CreateResponse(WeatherData weatherData, bool isPrivateLocation)
+    public static void WriteResponse(WeatherData weatherData, ref MessageBuilder response, bool isPrivateLocation)
     {
-        string location;
         if (isPrivateLocation)
         {
-            location = "(private location)";
+            response.Append("(private location)");
         }
         else if (weatherData.Location.Country.Length == 2)
         {
             string country = new RegionInfo(weatherData.Location.Country).EnglishName;
-            location = $"{weatherData.CityName}, {country}";
+            response.Append(weatherData.CityName, ", ", country);
         }
         else
         {
-            location = $"{weatherData.CityName}, {weatherData.Location.Country}";
+            response.Append(weatherData.CityName, ", ", weatherData.Location.Country);
         }
 
-        return $"{location}: {weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, {weatherData.Weather.Temperature}°C, " +
-               $"min. {weatherData.Weather.MinTemperature}°C, max. {weatherData.Weather.MaxTemperature}°C, {GetDirection(weatherData.Wind.Direction)} wind speed: {weatherData.Wind.Speed} m/s, " +
-               $"cloud cover: {weatherData.Clouds.Percentage}%, humidity: {weatherData.Weather.Humidity}%, air pressure: {weatherData.Weather.Pressure} hPa";
+        response.Append(": ", weatherData.WeatherConditions[0].Description, " ", GetWeatherEmoji(weatherData.WeatherConditions[0].Id), ", ");
+        response.Append(weatherData.Weather.Temperature);
+        response.Append("°C, min. ");
+        response.Append(weatherData.Weather.MinTemperature);
+        response.Append("°C, max. ");
+        response.Append(weatherData.Weather.MaxTemperature);
+        response.Append("°C, ", GetDirection(weatherData.Wind.Direction), "wind speed: ");
+        response.Append(weatherData.Wind.Speed);
+        response.Append(" m/s, cloud cover: ");
+        response.Append(weatherData.Clouds.Percentage);
+        response.Append("%, humidity: ");
+        response.Append(weatherData.Weather.Humidity);
+        response.Append("%, air pressure: ");
+        response.Append(weatherData.Weather.Pressure);
+        response.Append(" hPa");
     }
 
     private static string GetWeatherEmoji(int weatherId)
@@ -161,9 +161,9 @@ public sealed class WeatherController
         };
     }
 
-    private static string GetDirection(double deg)
+    private static string GetDirection(double degrees)
     {
-        return deg switch
+        return degrees switch
         {
             < 0 => Emoji.Question,
             < 11.25 => "N",
@@ -185,23 +185,5 @@ public sealed class WeatherController
             <= 360 => "N",
             _ => Emoji.Question
         };
-    }
-
-    private sealed class WeatherDataKey
-    {
-        public string? City { get; init; }
-
-        public int Longitude { get; init; }
-
-        public int Latitude { get; init; }
-
-        // ReSharper disable once MemberCanBePrivate.Local
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        public byte ForecastDay { get; init; }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is WeatherDataKey k && (k.City is not null && City is not null && k.City == City || k.Longitude == Longitude && k.Latitude == Latitude) && k.ForecastDay == ForecastDay;
-        }
     }
 }

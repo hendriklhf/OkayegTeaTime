@@ -1,9 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Buffers;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE.Emojis;
+using HLE.Memory;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
@@ -68,18 +70,20 @@ public readonly ref struct Formula1Command
     private void SendRaceInformation(Race race)
     {
         Span<char> charBuffer = stackalloc char[250];
-        _response.Append(ChatMessage.Username, ", ", race.RaceSession.Start > DateTime.UtcNow ? "Next" : "Current", " race: ", race.Name);
+        DateTime now = DateTime.UtcNow;
+
+        _response.Append(ChatMessage.Username, ", ", race.RaceSession.Start > now ? "Next" : "Current", " race: ", race.Name);
         _response.Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, ", ", race.Circuit.Location.Country, ". ");
         _response.Append(Emoji.RacingCar, " ");
-        if (race.RaceSession.Start > DateTime.UtcNow)
+        if (race.RaceSession.Start > now)
         {
             race.RaceSession.Start.TryFormat(charBuffer, out int length, "R");
             _response.Append("The ", race.RaceSession.Name, " will start ", charBuffer[..length]);
 
-            TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - DateTime.UtcNow;
+            TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
             int indexOfDot = charBuffer.IndexOf('.');
-            _response.Append(" (in ", charBuffer[..indexOfDot], "). ", Emoji.CheckeredFlag);
+            _response.Append(" (in ", charBuffer[..Unsafe.As<int, Index>(ref indexOfDot)], "). ", Emoji.CheckeredFlag);
         }
         else
         {
@@ -93,17 +97,17 @@ public readonly ref struct Formula1Command
             return;
         }
 
-        if (session.Start > DateTime.UtcNow)
+        if (session.Start > now)
         {
             session.Start.TryFormat(charBuffer, out int length, "R");
             _response.Append("Next session: ", session.Name, ", starting ", charBuffer[..length], " (in ");
 
-            TimeSpan timeBetweenNowAndRaceStart = session.Start - DateTime.UtcNow;
+            TimeSpan timeBetweenNowAndRaceStart = session.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
             int indexOfDot = charBuffer.IndexOf('.');
             _response.Append(charBuffer[..indexOfDot], ").");
         }
-        else if (session.Start + _nonRaceLength > DateTime.UtcNow)
+        else if (session.Start + _nonRaceLength > now)
         {
             session.Start.TryFormat(charBuffer, out int length, "t");
             _response.Append("Current session: ", session.Name, ", started ", charBuffer[..length], " GMT.");
@@ -123,37 +127,55 @@ public readonly ref struct Formula1Command
 
         weatherData.CityName = race.Circuit.Location.Name;
         weatherData.Location.Country = race.Circuit.Location.Country;
-        _response.Append(ChatMessage.Username, ", ", WeatherController.CreateResponse(weatherData, false));
+        _response.Append(ChatMessage.Username, ", ");
+        WeatherController.WriteResponse(weatherData, ref _response, false);
     }
 
-    private static Race? GetNextOrCurrentRace(IEnumerable<Race> races)
+    private static Race? GetNextOrCurrentRace(ReadOnlySpan<Race> races)
     {
-        return races.FirstOrDefault(r => r.RaceSession.Start + _raceLength > DateTime.UtcNow);
+        for (int i = 0; i < races.Length; i++)
+        {
+            Race race = races[i];
+            if (race.RaceSession.Start + _raceLength > DateTime.UtcNow)
+            {
+                return race;
+            }
+        }
+
+        return null;
     }
 
     private static Session GetNextOrCurrentSession(Race race)
     {
-        Session[] sessions = race.HasSprintRace switch
+        using RentedArray<Session> sessions = ArrayPool<Session>.Shared.Rent(5);
+        if (race.HasSprintRace)
         {
-            true => new[]
-            {
-                race.PracticeOneSession,
-                race.QualifyingSession,
-                race.PracticeTwoSession,
-                race.SprintSession,
-                race.RaceSession
-            },
-            _ => new[]
-            {
-                race.PracticeOneSession,
-                race.PracticeTwoSession,
-                race.PracticeThreeSession,
-                race.QualifyingSession,
-                race.RaceSession
-            }
-        };
+            sessions[0] = race.PracticeOneSession;
+            sessions[1] = race.QualifyingSession;
+            sessions[2] = race.PracticeTwoSession;
+            sessions[3] = race.SprintSession;
+            sessions[4] = race.RaceSession;
+        }
+        else
+        {
+            sessions[0] = race.PracticeOneSession;
+            sessions[1] = race.PracticeTwoSession;
+            sessions[2] = race.PracticeThreeSession;
+            sessions[3] = race.QualifyingSession;
+            sessions[4] = race.RaceSession;
+        }
 
-        return sessions.First(s => (ReferenceEquals(s, race.RaceSession) ? s.Start + _raceLength : s.Start + _nonRaceLength) > DateTime.UtcNow);
+        for (int i = 0; i < 5; i++)
+        {
+            Session session = sessions[i];
+            DateTime sessionEnd = ReferenceEquals(session, race.RaceSession) ? session.Start + _raceLength : session.Start + _nonRaceLength;
+            if (sessionEnd > DateTime.UtcNow)
+            {
+                return session;
+            }
+        }
+
+        throw new UnreachableException("There has to be a current or next session if this has been called");
     }
 
     private static Race[]? GetRaces()

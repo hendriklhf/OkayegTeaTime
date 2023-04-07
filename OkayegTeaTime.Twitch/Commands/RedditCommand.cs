@@ -75,7 +75,7 @@ public readonly ref struct RedditCommand
                 return redditPosts;
             }
 
-            HttpGet request = new("https://www.reddit.com/r/" + subReddit + "/hot.json?limit=50");
+            HttpGet request = new($"https://www.reddit.com/r/{subReddit}/hot.json?limit=50");
             if (request.Result is null)
             {
                 return null;

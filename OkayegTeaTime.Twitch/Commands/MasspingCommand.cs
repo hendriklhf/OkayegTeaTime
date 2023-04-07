@@ -6,14 +6,12 @@ using HLE.Collections;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
-using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using StringHelper = HLE.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Massping)]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
 public readonly ref struct MasspingCommand
 {
@@ -89,9 +87,8 @@ public readonly ref struct MasspingCommand
         separator[^1] = ' ';
         emote.CopyTo(separator[1..]);
 
-        Span<char> joinBuffer = stackalloc char[500];
-        int joinBufferLength = StringHelper.Join(chatters.AsSpan(), separator, joinBuffer);
-        _response.Append(joinBuffer[..joinBufferLength]);
+        int joinLength = StringHelper.Join(chatters.AsSpan(), separator, _response.FreeBuffer);
+        _response.Advance(joinLength);
     }
 
     private static void GetChatters(string channel, PoolBufferList<string> chatters)
