@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using HLE;
-using HLE.Twitch;
+using HLE.Numerics;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -14,11 +14,11 @@ public readonly ref struct ChattersCommand
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public ChattersCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public ChattersCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -40,10 +40,14 @@ public readonly ref struct ChattersCommand
             switch (chatterCount)
             {
                 case > 1:
-                    _response.Append("there are ", NumberHelper.InsertKDots(chatterCount), " chatters in the channel of ", channel.Antiping());
+                    _response.Append("there are ");
+                    _response.Advance(NumberHelper.InsertThousandSeparators(chatterCount, '.', _response.FreeBufferSpan));
+                    _response.Append(" chatters in the channel of ", channel.Antiping());
                     break;
                 case 1:
-                    _response.Append("there is ", NumberHelper.InsertKDots(chatterCount), " chatter in the channel of ", channel.Antiping());
+                    _response.Append("there is ");
+                    _response.Append(chatterCount);
+                    _response.Append(" chatter in the channel of ", channel.Antiping());
                     break;
                 case 0:
                     _response.Append("there are no chatters in the channel of ", channel.Antiping());

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.Json;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.Twitch;
+using HLE.Strings;
 using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
@@ -23,7 +23,7 @@ public sealed class WeatherController
     public WeatherData? GetWeather(ReadOnlySpan<char> city, bool loadFromCache = true)
     {
         int key = string.GetHashCode(city, StringComparison.OrdinalIgnoreCase);
-        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data!.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -52,7 +52,7 @@ public sealed class WeatherController
     public WeatherData? GetWeather(int latitude, int longitude, bool loadFromCache = true)
     {
         var key = ((double)latitude, (double)longitude);
-        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data!.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -107,7 +107,7 @@ public sealed class WeatherController
         return data;
     }
 
-    public static void WriteResponse(WeatherData weatherData, ref MessageBuilder response, bool isPrivateLocation)
+    public static void WriteResponse(WeatherData weatherData, ref PoolBufferStringBuilder response, bool isPrivateLocation)
     {
         if (isPrivateLocation)
         {

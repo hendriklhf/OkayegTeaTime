@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -13,13 +13,13 @@ public readonly ref struct PickCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public PickCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public PickCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

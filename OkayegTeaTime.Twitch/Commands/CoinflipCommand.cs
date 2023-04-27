@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using HLE.Emojis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -18,11 +18,11 @@ public readonly ref struct CoinflipCommand
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public CoinflipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public CoinflipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

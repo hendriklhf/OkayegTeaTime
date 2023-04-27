@@ -19,7 +19,7 @@ public sealed class Builder
         (Runtime.LinuxArm, NewRegex("^((linux-?)?arm(64)?)|((raspberry-?)?pi)$")),
         (Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
         (Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
-    }.ToDictionary();
+    }.ToDictionary<(Runtime, Regex)[], Runtime, Regex>();
 
     private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
     private const string _commitIdSourcePath = "./.git/logs/HEAD";
@@ -37,7 +37,7 @@ public sealed class Builder
         if (runtimes.Length == 0)
         {
             Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
-            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.Select(r => r.Identifier).JoinToString(", ")}");
+            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.Select(r => r.Identifier).JoinToString<IEnumerable<string>, string>(", ")}");
             return;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.Json;
@@ -17,13 +17,13 @@ public readonly ref struct RafkCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

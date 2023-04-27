@@ -11,7 +11,6 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Handlers;
-using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 using static OkayegTeaTime.Utils.ProcessUtils;
@@ -85,9 +84,9 @@ public sealed class TwitchBot
         _twitchClient.DisconnectAsync().Wait();
     }
 
-    public void Send(long channelId, MessageBuilder messageBuilder)
+    public void Send(long channelId, ReadOnlyMemory<char> message)
     {
-        _twitchClient.SendAsync(channelId, messageBuilder, false).Wait();
+        _twitchClient.SendAsync(channelId, message).Wait();
     }
 
     public void Send(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
@@ -103,16 +102,12 @@ public sealed class TwitchBot
             message = message + ' ' + AppSettings.ChatterinoChar;
         }
 
-        if (checkLength && message.Length >= AppSettings.MaxMessageLength)
+        if (checkLength && message.Length > AppSettings.MaxMessageLength)
         {
-            DividedMessage dividedMessage = new(this, channel, message);
-            dividedMessage.Send();
-        }
-        else
-        {
-            _twitchClient.Send(_twitchClient.Channels[channel]!.Id, message);
+            message = message[..AppSettings.MaxMessageLength];
         }
 
+        _twitchClient.Send(_twitchClient.Channels[channel]!.Id, message);
         LastMessages[channel] = message;
     }
 

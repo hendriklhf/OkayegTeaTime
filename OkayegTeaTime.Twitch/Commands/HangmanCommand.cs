@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
@@ -18,7 +17,7 @@ public readonly ref struct HangmanCommand
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
@@ -28,7 +27,7 @@ public readonly ref struct HangmanCommand
 
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
 
-    public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

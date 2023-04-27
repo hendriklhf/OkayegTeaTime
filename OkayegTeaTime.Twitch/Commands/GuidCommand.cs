@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -8,19 +8,20 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Guid)]
+[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
 public readonly ref struct GuidCommand
 {
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
     private const string _guidFormat = "D";
 
-    public GuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public GuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -32,8 +33,8 @@ public readonly ref struct GuidCommand
     public void Handle()
     {
         Guid guid = Guid.NewGuid();
-        Span<char> guidChars = stackalloc char[50];
-        guid.TryFormat(guidChars, out int guidLength, _guidFormat);
-        _response.Append(ChatMessage.Username, ", ", guidChars[..guidLength]);
+        _response.Append(ChatMessage.Username, ", ");
+        guid.TryFormat(_response.FreeBufferSpan, out int guidLength, _guidFormat);
+        _response.Advance(guidLength);
     }
 }

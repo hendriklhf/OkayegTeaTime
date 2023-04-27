@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE.Emojis;
 using HLE.Memory;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Models.Formula1;
@@ -24,7 +24,7 @@ public readonly ref struct Formula1Command
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
@@ -32,7 +32,7 @@ public readonly ref struct Formula1Command
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -175,7 +175,7 @@ public readonly ref struct Formula1Command
             }
         }
 
-        throw new UnreachableException("There has to be a current or next session if this has been called");
+        throw new UnreachableException("There has to be a current or next session, if this has been called");
     }
 
     private static Race[]? GetRaces()

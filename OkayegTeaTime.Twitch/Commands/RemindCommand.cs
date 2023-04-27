@@ -4,15 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Memory;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.StringHelper;
+using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -23,7 +22,7 @@ public readonly unsafe ref struct RemindCommand
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
@@ -58,7 +57,7 @@ public readonly unsafe ref struct RemindCommand
 
     private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -170,7 +169,7 @@ public readonly unsafe ref struct RemindCommand
         int timesBufferLength = StringHelper.Join(splits[timeStartIndex..], ' ', timesBuffer);
         string times = new(timesBuffer[..timesBufferLength]);
 
-        string[] matches = _timeConversions.Select(t => t.Regex).Select(r => r.Matches(times).Select(m => m.Value)).SelectMany(m => m).ToArray();
+        string[] matches = _timeConversions.Select(t => t.Regex.Matches(times).Select(m => m.Value)).SelectMany(m => m).ToArray();
         foreach (string match in matches)
         {
             foreach (TimeConversionMethod timeConversion in _timeConversions)

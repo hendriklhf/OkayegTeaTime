@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
@@ -19,13 +19,13 @@ public readonly ref struct GachiCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

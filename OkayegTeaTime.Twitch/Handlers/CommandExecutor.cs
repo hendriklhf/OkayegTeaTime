@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using JetBrains.Annotations;
 using OkayegTeaTime.Database;
@@ -16,7 +16,7 @@ namespace OkayegTeaTime.Twitch.Handlers;
 public sealed unsafe class CommandExecutor : IDisposable
 {
     private readonly TwitchBot _twitchBot;
-    private readonly delegate*<TwitchBot, ChatMessage, ref MessageBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>* _executionMethods;
+    private readonly delegate*<TwitchBot, ChatMessage, ref PoolBufferStringBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>* _executionMethods;
 
     private const ushort _responseBufferSize = 2048;
 
@@ -29,16 +29,16 @@ public sealed unsafe class CommandExecutor : IDisposable
             .Where(m => m.GetCustomAttribute<ExecutionMethodAttribute>() is not null)
             .OrderBy(m => m.GetCustomAttribute<ExecutionMethodAttribute>()!.CommandType).ToArray();
         nuint elementCount = (nuint)commandTypes.Length;
-        nuint elementSize = (nuint)sizeof(delegate*<TwitchBot, ChatMessage, ref MessageBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>);
+        nuint elementSize = (nuint)sizeof(delegate*<TwitchBot, ChatMessage, ref PoolBufferStringBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>);
         void* executionMethodsPointer = NativeMemory.Alloc(elementCount, elementSize);
-        _executionMethods = (delegate*<TwitchBot, ChatMessage, ref MessageBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>*)executionMethodsPointer;
+        _executionMethods = (delegate*<TwitchBot, ChatMessage, ref PoolBufferStringBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>*)executionMethodsPointer;
 
         for (int i = 0; i < executionMethods.Length; i++)
         {
             MethodInfo executionMethod = executionMethods[i];
             CommandType commandType = executionMethod.GetCustomAttribute<ExecutionMethodAttribute>()!.CommandType;
             nint functionPtr = executionMethod.MethodHandle.GetFunctionPointer();
-            _executionMethods[(int)commandType] = (delegate*<TwitchBot, ChatMessage, ref MessageBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>)functionPtr;
+            _executionMethods[(int)commandType] = (delegate*<TwitchBot, ChatMessage, ref PoolBufferStringBuilder, ReadOnlySpan<char>, ReadOnlySpan<char>, void>)functionPtr;
         }
     }
 
@@ -55,7 +55,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     public void Execute(CommandType type, ChatMessage chatMessage, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
-        MessageBuilder response = new(_responseBufferSize);
+        PoolBufferStringBuilder response = new(_responseBufferSize);
         try
         {
             string emote = _twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
@@ -67,7 +67,7 @@ public sealed unsafe class CommandExecutor : IDisposable
                 return;
             }
 
-            _twitchBot.Send(chatMessage.ChannelId, response);
+            _twitchBot.Send(chatMessage.ChannelId, response.WrittenMemory);
         }
         finally
         {
@@ -77,7 +77,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.BanFromFile)]
-    private static void ExecuteBanFromFileCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteBanFromFileCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -93,7 +93,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Chatterino)]
-    private static void ExecuteChatterinoCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteChatterinoCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -109,7 +109,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Chatterino7)]
-    private static void ExecuteChatterino7Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteChatterino7Command(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -125,7 +125,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Chatters)]
-    private static void ExecuteChattersCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteChattersCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -141,7 +141,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Check)]
-    private static void ExecuteCheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteCheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -157,7 +157,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Code)]
-    private static void ExecuteCodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteCodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -173,7 +173,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Coinflip)]
-    private static void ExecuteCoinFlipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteCoinFlipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -189,7 +189,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.CSharp)]
-    private static void ExecuteCSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteCSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -205,7 +205,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Fill)]
-    private static void ExecuteFillCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteFillCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -221,7 +221,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Formula1)]
-    private static void ExecuteFormula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteFormula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -237,7 +237,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Fuck)]
-    private static void ExecuteFuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteFuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -253,7 +253,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Gachi)]
-    private static void ExecuteGachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteGachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -269,7 +269,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Guid)]
-    private static void ExecuteGuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteGuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -285,7 +285,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Hangman)]
-    private static void ExecuteHangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteHangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -301,7 +301,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Help)]
-    private static void ExecuteHelpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteHelpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -317,7 +317,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Id)]
-    private static void ExecuteIdCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteIdCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -333,7 +333,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Invalidate)]
-    private static void ExecuteInvalidateCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteInvalidateCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -349,7 +349,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Join)]
-    private static void ExecuteJoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteJoinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -365,7 +365,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Kotlin)]
-    private static void ExecuteKotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteKotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -381,7 +381,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Leave)]
-    private static void ExecuteLeaveCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteLeaveCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -397,7 +397,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Listen)]
-    private static void ExecuteListenCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteListenCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -413,7 +413,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Massping)]
-    private static void ExecuteMasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteMasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -429,7 +429,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Math)]
-    private static void ExecuteMathCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteMathCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -445,7 +445,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Pick)]
-    private static void ExecutePickCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecutePickCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -461,7 +461,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Ping)]
-    private static void ExecutePingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecutePingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -477,7 +477,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Rafk)]
-    private static void ExecuteRafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteRafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -493,7 +493,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Reddit)]
-    private static void ExecuteRedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteRedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -509,7 +509,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Remind)]
-    private static void ExecuteRemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteRemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -525,7 +525,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Set)]
-    private static void ExecuteSetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteSetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -541,7 +541,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Skip)]
-    private static void ExecuteSkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteSkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -557,7 +557,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Slots)]
-    private static void ExecuteSlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteSlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -573,7 +573,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.SongRequest)]
-    private static void ExecuteSongRequestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteSongRequestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -589,7 +589,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Spotify)]
-    private static void ExecuteSpotifyCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteSpotifyCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -605,7 +605,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Stream)]
-    private static void ExecuteStreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteStreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -621,7 +621,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Suggest)]
-    private static void ExecuteSuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteSuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -637,7 +637,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Tuck)]
-    private static void ExecuteTuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteTuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -653,7 +653,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Unset)]
-    private static void ExecuteUnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteUnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -669,7 +669,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Vanish)]
-    private static void ExecuteVanishCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteVanishCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {
@@ -685,7 +685,7 @@ public sealed unsafe class CommandExecutor : IDisposable
 
     [UsedImplicitly]
     [ExecutionMethod(CommandType.Weather)]
-    private static void ExecuteWeatherCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private static void ExecuteWeatherCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         try
         {

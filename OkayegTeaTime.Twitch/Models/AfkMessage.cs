@@ -1,5 +1,5 @@
 ﻿using System;
-using HLE;
+using HLE.Strings;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Utils;

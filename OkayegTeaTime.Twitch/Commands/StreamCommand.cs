@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Frozen;
 using System.Text.RegularExpressions;
-using HLE;
-using HLE.Twitch;
+using HLE.Numerics;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -15,7 +15,7 @@ public readonly ref struct StreamCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
@@ -27,7 +27,7 @@ public readonly ref struct StreamCommand
         35933008
     }.ToFrozenSet();
 
-    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -53,7 +53,9 @@ public readonly ref struct StreamCommand
         long streamUserId = long.Parse(stream.UserId);
         if (ChatMessage.ChannelId != streamUserId || !_noViewerCountChannelIds.Contains(streamUserId))
         {
-            _response.Append(" with ", NumberHelper.InsertKDots(stream.ViewerCount), " viewer", stream.ViewerCount != 1 ? "s" : string.Empty);
+            _response.Append(" with ");
+            _response.Advance(NumberHelper.InsertThousandSeparators(stream.ViewerCount, '.', _response.FreeBufferSpan));
+            _response.Append(" viewer", stream.ViewerCount != 1 ? "s" : string.Empty);
         }
 
         TimeSpan streamTime = DateTime.UtcNow - stream.StartedAt;

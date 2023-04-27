@@ -5,14 +5,13 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringBuilder = HLE.StringBuilder;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -21,7 +20,7 @@ public readonly ref struct KotlinCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
@@ -38,7 +37,7 @@ public readonly ref struct KotlinCommand
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -129,7 +128,7 @@ public readonly ref struct KotlinCommand
                 return result[_outStreamLabelLength..^(_outStreamLabelLength + 1)].NewLinesToSpaces();
             }
 
-            StringBuilder resultBuilder = stackalloc char[500];
+            ValueStringBuilder resultBuilder = stackalloc char[500];
             resultBuilder.Append(resultSpan, "...");
             return resultBuilder.ToString().NewLinesToSpaces();
         }

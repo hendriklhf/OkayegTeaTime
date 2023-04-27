@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE;
 using HLE.Collections;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
@@ -17,13 +16,13 @@ public readonly ref struct CodeCommand
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
     private static string[]? _codeFiles;
 
-    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -67,7 +66,7 @@ public readonly ref struct CodeCommand
                     _response.Append(matchingFiles.Count);
                     _response.Append(" files: ");
 
-                    int joinLength = StringHelper.Join(matchingFiles.AsSpan(), ", ", _response.FreeBuffer);
+                    int joinLength = StringHelper.Join(matchingFiles.AsSpan(), ", ", _response.FreeBufferSpan);
                     _response.Advance(joinLength);
 
                     _response.Append(". Please specify.");

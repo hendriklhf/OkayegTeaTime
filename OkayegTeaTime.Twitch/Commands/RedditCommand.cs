@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using HLE.Collections;
 using HLE.Emojis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Models.Json;
@@ -20,7 +20,7 @@ public readonly ref struct RedditCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlySpan<char> _prefix;
@@ -30,7 +30,7 @@ public readonly ref struct RedditCommand
     private static readonly TimeSpan _cacheTime = TimeSpan.FromHours(1);
     private static readonly Func<RedditPost, bool> _postFilter = rp => rp is { Pinned: false, IsNsfw: false };
 
-    public RedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public RedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -89,7 +89,7 @@ public readonly ref struct RedditCommand
                 rawPosts.Add(posts[i].GetProperty("data").GetRawText());
             }
 
-            redditPosts = JsonSerializer.Deserialize<RedditPost[]>('[' + rawPosts.JoinToString(',') + ']')?.Where(_postFilter).ToArray();
+            redditPosts = JsonSerializer.Deserialize<RedditPost[]>('[' + rawPosts.JoinToString<List<string>, string>(',') + ']')?.Where(_postFilter).ToArray();
             if (redditPosts is null)
             {
                 return null;

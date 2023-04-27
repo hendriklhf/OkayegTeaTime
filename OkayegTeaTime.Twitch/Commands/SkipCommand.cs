@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -13,21 +13,19 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Skip)]
+[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
+[SuppressMessage("ReSharper", "NotAccessedField.Local")]
 public readonly ref struct SkipCommand
 {
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
 
     private readonly TwitchBot _twitchBot;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly ReadOnlySpan<char> _prefix;
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly ReadOnlySpan<char> _alias;
 
-    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;

@@ -3,10 +3,9 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using HLE;
-using HLE.Maths;
-using HLE.Twitch;
 using HLE.Memory;
+using HLE.Numerics;
+using HLE.Strings;
 using OkayegTeaTime.Database;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Resources;
@@ -22,11 +21,11 @@ public readonly ref struct PingCommand
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -68,7 +67,7 @@ public readonly ref struct PingCommand
         }
 
         _response.Append(" || Executed commands: ");
-        _response.Append(NumberHelper.InsertKDots(_twitchBot.CommandCount));
+        _response.Advance(NumberHelper.InsertThousandSeparators(_twitchBot.CommandCount, '.', _response.FreeBufferSpan));
 
         _response.Append(" || Running on ", RuntimeInformation.FrameworkDescription, " || Commit: ", ResourceController.LastCommit);
     }

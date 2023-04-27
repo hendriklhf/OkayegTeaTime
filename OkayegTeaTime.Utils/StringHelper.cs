@@ -12,7 +12,7 @@ public static class StringHelper
 
     public static string Antiping(this string value)
     {
-        return value.Insert(value.Length >> 1, HLE.StringHelper.AntipingChar);
+        return value.Insert(value.Length >> 1, HLE.Strings.StringHelper.AntipingChar);
     }
 
     public static string NewLinesToSpaces(this string value)

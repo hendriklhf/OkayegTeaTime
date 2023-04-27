@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using HLE;
+using HLE.Strings;
 using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Utils;
@@ -16,22 +16,22 @@ public sealed class RegexCreator
 
     public Regex Create(ReadOnlySpan<char> alias, ReadOnlySpan<char> prefix, [StringSyntax(StringSyntaxAttribute.Regex)] ReadOnlySpan<char> addition = default)
     {
-        StringBuilder patternBuilder = stackalloc char[512];
+        ValueStringBuilder patternBuilder = stackalloc char[512];
         patternBuilder.Append('^');
 
         int escapedItemLength;
         if (prefix.Length == 0)
         {
-            escapedItemLength = HLE.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
+            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
-            escapedItemLength = HLE.StringHelper.RegexEscape(AppSettings.Suffix, patternBuilder.FreeBuffer);
+            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(AppSettings.Suffix, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
         }
         else
         {
-            escapedItemLength = HLE.StringHelper.RegexEscape(prefix, patternBuilder.FreeBuffer);
+            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(prefix, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
-            escapedItemLength = HLE.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
+            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
         }
 

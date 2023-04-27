@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HLE" Version="2.1.4" />
+    <PackageReference Include="HLE" Version="2.1.5" />
   </ItemGroup>
 
 </Project>

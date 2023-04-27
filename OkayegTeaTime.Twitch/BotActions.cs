@@ -1,5 +1,5 @@
 ﻿using System;
-using HLE;
+using HLE.Strings;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Models;
@@ -42,7 +42,7 @@ public static class BotActions
         Span<char> spanBuffer = stackalloc char[100];
         int spanLength = span.Format(spanBuffer);
 
-        StringBuilder builder = stackalloc char[2048];
+        ValueStringBuilder builder = stackalloc char[2048];
         builder.Append(reminders[0].Target, ", ", _reminderFromSpace, creator, " (", spanBuffer[..spanLength], " ago)");
         twitchBot.Reminders.Remove(reminders[0].Id);
         if (reminders[0].Message?.Length > 0)
@@ -73,7 +73,7 @@ public static class BotActions
         Span<char> spanBuffer = stackalloc char[100];
         int spanLength = span.Format(spanBuffer);
 
-        StringBuilder builder = stackalloc char[500];
+        ValueStringBuilder builder = stackalloc char[500];
         builder.Append(reminder.Target, ", ", _reminderFromSpace, creator, " (", spanBuffer[..spanLength], " ago)");
         if (!string.IsNullOrWhiteSpace(reminder.Message))
         {

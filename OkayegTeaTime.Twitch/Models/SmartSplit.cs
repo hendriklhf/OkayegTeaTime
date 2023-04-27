@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using HLE;
 using HLE.Memory;
+using HLE.Strings;
 
 namespace OkayegTeaTime.Twitch.Models;
 

@@ -14,7 +14,7 @@ public readonly struct HttpPost
         try
         {
             using HttpClient httpClient = new();
-            using FormUrlEncodedContent encodedContent = new(content.ToDictionary());
+            using FormUrlEncodedContent encodedContent = new(content.ToDictionary<IEnumerable<(string, string)>, string, string>());
             Task<HttpResponseMessage> postTask = httpClient.PostAsync(url, encodedContent);
             postTask.Wait();
             HttpResponseMessage result = postTask.Result;

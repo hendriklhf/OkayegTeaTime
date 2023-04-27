@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using HLE.Collections;
-using HLE.Twitch;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.StringHelper;
+using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -19,11 +19,11 @@ public readonly ref struct CheckCommand
 
     private readonly TwitchBot _twitchBot;
 
-    private readonly ref MessageBuilder _response;
+    private readonly ref PoolBufferStringBuilder _response;
     private readonly ReadOnlySpan<char> _prefix;
     private readonly ReadOnlySpan<char> _alias;
 
-    public CheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref MessageBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public CheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
     {
         ChatMessage = chatMessage;
         _response = ref response;
@@ -78,9 +78,8 @@ public readonly ref struct CheckCommand
             reminderProps.Add($"Message: {reminder.Message}");
         }
 
-        Span<char> joinBuffer = stackalloc char[250];
-        int bufferLength = StringHelper.Join(reminderProps.AsSpan(), " || ", joinBuffer);
-        _response.Append(joinBuffer[..bufferLength]);
+        int joinLength = StringHelper.Join(reminderProps.AsSpan(), " || ", _response.FreeBufferSpan);
+        _response.Advance(joinLength);
     }
 
     private void CheckAfkStatus()
