@@ -4,10 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Memory;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
@@ -15,16 +17,17 @@ using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Remind)]
+[HandledCommand(CommandType.Remind, typeof(RemindCommand))]
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public readonly unsafe ref struct RemindCommand
+public readonly struct RemindCommand : IChatCommand<RemindCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref PoolBufferStringBuilder _response;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
     private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -57,29 +60,34 @@ public readonly unsafe ref struct RemindCommand
 
     private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
+    {
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public async ValueTask Handle()
     {
         string[] targets;
         string message;
         long toTime = 0;
 
-        Regex timedReminderPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
-        Regex normalReminderPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
+        Regex timedReminderPattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
+        Regex normalReminderPattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
         if (timedReminderPattern.IsMatch(ChatMessage.Message))
         {
             toTime = GetToTime();
             if (toTime < _minimumTimedReminderTime + _now)
             {
-                _response.Append(ChatMessage.Username, ", ", Messages.TheMinimumTimeForATimedReminderIs30S);
+                Response.Append(ChatMessage.Username, ", ", Messages.TheMinimumTimeForATimedReminderIs30S);
                 return;
             }
 
@@ -96,13 +104,13 @@ public readonly unsafe ref struct RemindCommand
             return;
         }
 
-        _response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username, ", ");
         if (targets.Length == 1)
         {
-            bool targetExists = _twitchBot.TwitchApi.DoesUserExist(targets[0]);
-            if (!targetExists)
+            var targetUser = await _twitchBot.TwitchApi.GetUserAsync(targets[0]);
+            if (targetUser is null)
             {
-                _response.Append(Messages.TheTargetUserDoesNotExist);
+                Response.Append(Messages.TheTargetUserDoesNotExist);
                 return;
             }
 
@@ -110,47 +118,50 @@ public readonly unsafe ref struct RemindCommand
             int id = _twitchBot.Reminders.Add(reminder);
             if (id == -1)
             {
-                _response.Append(Messages.ThatUserHasTooManyRemindersSetForThem);
+                Response.Append(Messages.ThatUserHasTooManyRemindersSetForThem);
                 return;
             }
 
-            _response.Append("set a ", toTime == 0 ? string.Empty : "timed ", "reminder for ", targets[0] == ChatMessage.Username ? "yourself" : targets[0]);
-            _response.Append(" (ID: ");
-            _response.Append(id);
-            _response.Append(')');
+            Response.Append("set a ", toTime == 0 ? string.Empty : "timed ", "reminder for ", targets[0] == ChatMessage.Username ? "yourself" : targets[0]);
+            Response.Append(" (ID: ");
+            Response.Append(id);
+            Response.Append(')');
+            return;
         }
-        else
+
+        var targetUsers = await _twitchBot.TwitchApi.GetUsersAsync(targets);
+        Reminder[] reminders = new Reminder[targetUsers.Length];
+        for (int i = 0; i < targetUsers.Length; i++)
         {
-            Dictionary<string, bool> exist = _twitchBot.TwitchApi.DoUsersExist(targets);
-            ChatMessage chatMessage = ChatMessage;
-            Reminder[] reminders = targets.Where(t => exist[t]).Select(t => new Reminder(chatMessage.Username, t, message, chatMessage.Channel, toTime)).ToArray();
-            if (reminders.Length == 0)
-            {
-                _response.Append(Messages.AllTargetUsersDoNotExist);
-                return;
-            }
-
-            int[] ids = _twitchBot.Reminders.AddRange(reminders);
-            int count = ids.Count(i => i != -1);
-            if (count == 0)
-            {
-                _response.Append(Messages.AllTargetUsersHaveTooManyRemindersSetForThem);
-                return;
-            }
-
-            bool multi = count > 1;
-            _response.Append("set", multi ? string.Empty : " a", " ", toTime == 0 ? string.Empty : "timed ");
-            _response.Append("reminder", multi ? "s" : string.Empty, " for ");
-            string[] responses = ids.Select(i =>
-            {
-                Reminder? reminder = reminders.FirstOrDefault(r => r.Id == i);
-                return reminder is null ? null : $"{reminder.Target} ({reminder.Id})";
-            }).Where(r => r is not null).ToArray()!;
-
-            Span<char> joinBuffer = stackalloc char[500];
-            int bufferLength = StringHelper.Join(responses, ", ", joinBuffer);
-            _response.Append(joinBuffer[..bufferLength]);
+            var targetUser = targetUsers[i];
+            reminders[i] = new(ChatMessage.Username, targetUser.Username, message, ChatMessage.Channel, toTime);
         }
+
+        if (reminders.Length == 0)
+        {
+            Response.Append(Messages.AllTargetUsersDoNotExist);
+            return;
+        }
+
+        int[] ids = _twitchBot.Reminders.AddRange(reminders);
+        int count = ids.Count(i => i > 0);
+        if (count == 0)
+        {
+            Response.Append(Messages.AllTargetUsersHaveTooManyRemindersSetForThem);
+            return;
+        }
+
+        bool multi = count > 1;
+        Response.Append("set", multi ? string.Empty : " a", " ", toTime == 0 ? string.Empty : "timed ");
+        Response.Append("reminder", multi ? "s" : string.Empty, " for ");
+        string[] responses = ids.Select(i =>
+        {
+            Reminder? reminder = reminders.FirstOrDefault(r => r.Id == i);
+            return reminder is null ? null : $"{reminder.Target} ({reminder.Id})";
+        }).Where(r => r is not null).ToArray()!;
+
+        int joinLength = StringHelper.Join(responses, ", ", Response.FreeBufferSpan);
+        Response.Advance(joinLength);
     }
 
     private string GetMessage()
@@ -225,7 +236,7 @@ public readonly unsafe ref struct RemindCommand
             TimePatternAttribute attr = f.GetCustomAttribute<TimePatternAttribute>()!;
             Regex regex = (Regex)f.GetValue(null)!;
             MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod);
-            return new TimeConversionMethod(regex, (delegate*<double, TimeSpan>)method.MethodHandle.GetFunctionPointer(), attr.Factor);
+            return new TimeConversionMethod(regex, method.CreateDelegate<Func<double, TimeSpan>>(), attr.Factor);
         }).ToArray();
     }
 
@@ -233,12 +244,17 @@ public readonly unsafe ref struct RemindCommand
     {
         for (int i = 2; i < messageExtension.LowerSplit.Length; i++)
         {
-            if (messageExtension.LowerSplit[i].Equals(_timeIdentificator, StringComparison.Ordinal))
+            if (messageExtension.LowerSplit[i].Span.Equals(_timeIdentificator, StringComparison.Ordinal))
             {
                 return i + 1;
             }
         }
 
         return -1;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

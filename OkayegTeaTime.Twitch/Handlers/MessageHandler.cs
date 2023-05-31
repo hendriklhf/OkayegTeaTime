@@ -5,6 +5,7 @@ using HLE.Memory;
 using OkayegTeaTime.Database;
 #endif
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
@@ -30,9 +31,9 @@ public sealed class MessageHandler : Handler
         _pajaAlertHandler = new(twitchBot);
     }
 
-    public override void Handle(ChatMessage chatMessage)
+    public override async ValueTask Handle(ChatMessage chatMessage)
     {
-        _pajaAlertHandler.Handle(chatMessage);
+        await _pajaAlertHandler.Handle(chatMessage);
 
         using ChatMessageExtension messageExtension = new(chatMessage);
         if (messageExtension.IsIgnoredUser)
@@ -40,24 +41,21 @@ public sealed class MessageHandler : Handler
             return;
         }
 
-        CheckForAfk(chatMessage);
-
-        CheckForReminder(chatMessage.Username, chatMessage.Channel);
-
-        _commandHandler.Handle(chatMessage);
-
-        HandleSpecificMessages(chatMessage);
+        await CheckForAfk(chatMessage);
+        await CheckForReminder(chatMessage.Username, chatMessage.Channel);
+        await _commandHandler.Handle(chatMessage);
+        await HandleSpecificMessages(chatMessage);
     }
 
-    private void HandleSpecificMessages(ChatMessage chatMessage)
+    private async ValueTask HandleSpecificMessages(ChatMessage chatMessage)
     {
 #if RELEASE
-        CheckForSpotifyUri(chatMessage);
+        await CheckForSpotifyUri(chatMessage);
 #endif
-        CheckForForgottenPrefix(chatMessage);
+        await CheckForForgottenPrefix(chatMessage);
     }
 
-    private void CheckForAfk(ChatMessage chatMessage)
+    private async ValueTask CheckForAfk(ChatMessage chatMessage)
     {
         User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user?.IsAfk != true)
@@ -65,21 +63,21 @@ public sealed class MessageHandler : Handler
             return;
         }
 
-        _twitchBot.SendComingBack(user, chatMessage.Channel);
+        await _twitchBot.SendComingBack(user, chatMessage.Channel);
         if (!_twitchBot.CommandController.IsAfkCommand(_twitchBot.Channels[chatMessage.ChannelId]?.Prefix, chatMessage.Message) || _twitchBot.CooldownController.IsOnAfkCooldown(chatMessage.UserId))
         {
             user.IsAfk = false;
         }
     }
 
-    private void CheckForReminder(string username, string channel)
+    private async ValueTask CheckForReminder(string username, string channel)
     {
-        Span<Reminder> reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
-        _twitchBot.SendReminder(channel, reminders);
+        Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
+        await _twitchBot.SendReminder(channel, reminders);
     }
 
 #if RELEASE
-    private void CheckForSpotifyUri(ChatMessage chatMessage)
+    private async ValueTask CheckForSpotifyUri(ChatMessage chatMessage)
     {
         if (chatMessage.Channel != AppSettings.OfflineChatChannel)
         {
@@ -103,16 +101,16 @@ public sealed class MessageHandler : Handler
         string[] songs = splits.Where(s => Pattern.SpotifyLink.IsMatch(s.Span) || Pattern.SpotifyUri.IsMatch(s.Span)).Select(s => SpotifyController.ParseSongToUri(s.Span)!).ToArray();
         try
         {
-            SpotifyController.AddToPlaylist(playlistUser, songs);
+            await SpotifyController.AddToPlaylist(playlistUser, songs);
         }
         catch (SpotifyException ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
         }
     }
 #endif
 
-    private void CheckForForgottenPrefix(ChatMessage chatMessage)
+    private async ValueTask CheckForForgottenPrefix(ChatMessage chatMessage)
     {
         if (!_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {
@@ -121,6 +119,6 @@ public sealed class MessageHandler : Handler
 
         string? prefix = _twitchBot.Channels[chatMessage.Channel]?.Prefix;
         string message = string.IsNullOrWhiteSpace(prefix) ? $"{chatMessage.Username}, Suffix: {AppSettings.Suffix}" : $"{chatMessage.Username}, Prefix: {prefix}";
-        _twitchBot.Send(chatMessage.Channel, message);
+        await _twitchBot.SendAsync(chatMessage.Channel, message);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
@@ -29,22 +30,22 @@ public sealed class CommandHandler : Handler
         _commandExecutor = new(twitchBot);
     }
 
-    public override void Handle(ChatMessage chatMessage)
+    public override async ValueTask Handle(ChatMessage chatMessage)
     {
-        bool handled = HandleCommand(chatMessage);
+        bool handled = await HandleCommand(chatMessage);
         if (!handled)
         {
-            HandleAfkCommand(chatMessage);
+            await HandleAfkCommand(chatMessage);
         }
     }
 
-    private bool HandleCommand(ChatMessage chatMessage)
+    private async ValueTask<bool> HandleCommand(ChatMessage chatMessage)
     {
-        ReadOnlySpan<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        ReadOnlySpan<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix : prefix;
-        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
+        ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+        ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
+        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix);
 
-        if (!prefixOrSuffix.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
+        if (!prefixOrSuffix.Span.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
@@ -61,18 +62,18 @@ public sealed class CommandHandler : Handler
         }
 
         _twitchBot.CommandCount++;
-        _commandExecutor.Execute(type, chatMessage, prefix, usedAlias.Span);
+        await _commandExecutor.Execute(type, chatMessage, prefix, usedAlias);
         _twitchBot.CooldownController.AddCooldown(chatMessage.UserId, type);
         return true;
     }
 
-    private void HandleAfkCommand(ChatMessage chatMessage)
+    private async ValueTask HandleAfkCommand(ChatMessage chatMessage)
     {
-        ReadOnlySpan<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        ReadOnlySpan<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix : prefix;
-        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix, out var usedAlias, out var usedPrefix);
+        ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+        ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
+        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix);
 
-        if (!prefixOrSuffix.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
+        if (!prefixOrSuffix.Span.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -89,7 +90,7 @@ public sealed class CommandHandler : Handler
         }
 
         _twitchBot.CommandCount++;
-        _afkCommandHandler.Handle(chatMessage, type);
+        await _afkCommandHandler.Handle(chatMessage, type);
         _twitchBot.CooldownController.AddAfkCooldown(chatMessage.UserId);
     }
 
@@ -114,7 +115,7 @@ public sealed class CommandHandler : Handler
             }
         }
 
-        return result.ToFrozenDictionary();
+        return result.ToFrozenDictionary(true);
     }
 
     private static FrozenDictionary<AliasHash, AfkType> CreateAfkTypeDictionary(TwitchBot twitchBot)
@@ -130,6 +131,6 @@ public sealed class CommandHandler : Handler
             }
         }
 
-        return result.ToFrozenDictionary();
+        return result.ToFrozenDictionary(true);
     }
 }

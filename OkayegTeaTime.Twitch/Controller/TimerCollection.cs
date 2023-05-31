@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -12,7 +13,7 @@ public sealed class TimerCollection : IEnumerable<Timer>
 {
     private readonly List<Timer> _timers = new();
 
-    public void Add(Action<object?, ElapsedEventArgs> action, double interval, bool autoReset = true, bool startDirectly = true)
+    public void Add(Func<object?, ElapsedEventArgs, ValueTask> action, double interval, bool autoReset = true, bool startDirectly = true)
     {
         Timer? timer = _timers.FirstOrDefault(t => Math.Abs(t.Interval - interval) <= 0 && t.AutoReset == autoReset);
         if (timer is null)
@@ -25,7 +26,7 @@ public sealed class TimerCollection : IEnumerable<Timer>
             _timers.Add(timer);
         }
 
-        timer.Elapsed += (sender, e) => action(sender, e);
+        timer.Elapsed += async (sender, e) => await action(sender, e);
         if (!timer.Enabled)
         {
             timer.Start();

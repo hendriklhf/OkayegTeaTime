@@ -1,62 +1,72 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Strings;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using Channel = OkayegTeaTime.Database.Models.Channel;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Unset)]
-public readonly ref struct UnsetCommand
+[HandledCommand(CommandType.Unset, typeof(UnsetCommand))]
+public readonly struct UnsetCommand : IChatCommand<UnsetCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public UnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public UnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out UnsetCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sprefix");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        ReadOnlySpan<char> alias = _alias.Span;
+        ReadOnlySpan<char> prefix = _prefix.Span;
+        Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\sprefix");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetPrefix();
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sreminder\s\d+");
+        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetReminder();
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\semote");
+        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\semote");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetEmote();
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\slocation");
+        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\slocation");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetLocation();
         }
+
+        return ValueTask.CompletedTask;
     }
 
     private void UnsetPrefix()
@@ -64,49 +74,49 @@ public readonly ref struct UnsetCommand
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
+            Response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
         if (channel is null)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.AnErrorOccurredWhileTryingToSetThePrefix);
+            Response.Append(ChatMessage.Username, ", ", Messages.AnErrorOccurredWhileTryingToSetThePrefix);
             return;
         }
 
         channel.Prefix = null;
-        _response.Append(ChatMessage.Username, ", ", Messages.ThePrefixHasBeenUnset);
+        Response.Append(ChatMessage.Username, ", ", Messages.ThePrefixHasBeenUnset);
     }
 
     private void UnsetReminder()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        _response.Append(ChatMessage.Username, ", ");
-        int reminderId = int.Parse(messageExtension.Split[2]);
+        Response.Append(ChatMessage.Username, ", ");
+        int reminderId = int.Parse(messageExtension.Split[2].Span);
         bool removed = _twitchBot.Reminders.Remove(ChatMessage.UserId, ChatMessage.Username, reminderId);
-        _response.Append(removed ? Messages.TheReminderHasBeenUnset : Messages.TheReminderCouldntBeUnset);
+        Response.Append(removed ? Messages.TheReminderHasBeenUnset : Messages.TheReminderCouldntBeUnset);
     }
 
     private void UnsetEmote()
     {
-        _response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username, ", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(Messages.YouArentAModeratorOrTheBroadcaster);
+            Response.Append(Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
         if (channel is null)
         {
-            _response.Append(Messages.AnErrorOccurredWhileTryingToSetTheEmote);
+            Response.Append(Messages.AnErrorOccurredWhileTryingToSetTheEmote);
             return;
         }
 
         channel.Emote = null;
-        _response.Append(Messages.TheEmoteHasBeenUnset);
+        Response.Append(Messages.TheEmoteHasBeenUnset);
     }
 
     private void UnsetLocation()
@@ -114,11 +124,16 @@ public readonly ref struct UnsetCommand
         User? user = _twitchBot.Users[ChatMessage.UserId];
         if (user is null)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.YouHaventSetYourLocationYet);
+            Response.Append(ChatMessage.Username, ", ", Messages.YouHaventSetYourLocationYet);
             return;
         }
 
         user.Location = null;
-        _response.Append(ChatMessage.Username, ", ", Messages.YourLocationHasBeenUnset);
+        Response.Append(ChatMessage.Username, ", ", Messages.YourLocationHasBeenUnset);
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

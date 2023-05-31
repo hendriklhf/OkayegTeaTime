@@ -30,9 +30,9 @@ public sealed class CommandController
         _afkCommandAliasHashes = AfkCommands.SelectMany(c => c.Aliases).Select(a => new AliasHash(a)).ToFrozenSet();
     }
 
-    public bool IsAfkCommand(string? prefix, string message)
+    public bool IsAfkCommand(string? channelPrefix, string message)
     {
-        MessageHelper.ExtractAlias(message.AsMemory(), prefix, out var alias, out _);
+        MessageHelper.ExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _);
         return _afkCommandAliasHashes.Contains(new(alias.Span));
     }
 

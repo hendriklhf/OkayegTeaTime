@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Strings;
 using HLE.Twitch.Models;
@@ -9,43 +10,48 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly ref struct MasspingCommand
+public readonly struct MasspingCommand : IChatCommand<MasspingCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public MasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public MasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MasspingCommand command)
+    {
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
     {
         if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
-            return;
+            Response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
+            return ValueTask.CompletedTask;
         }
 
         string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
-        ReadOnlySpan<char> emote = messageExtension.Split.Length > 1 ? messageExtension.Split[1] : channelEmote;
+        ReadOnlySpan<char> emote = messageExtension.Split.Length > 1 ? messageExtension.Split[1].Span : channelEmote;
         using PoolBufferList<string> chatters = new(50, 50);
-        _response.Append("OkayegTeaTime", " ", emote, " ");
+        Response.Append("OkayegTeaTime", " ", emote, " ");
         chatters.AddRange(AppSettings.OfflineChatEmotes);
 
         Span<char> separator = stackalloc char[emote.Length + 2];
@@ -53,7 +59,13 @@ public readonly ref struct MasspingCommand
         separator[^1] = ' ';
         emote.CopyTo(separator[1..]);
 
-        int joinLength = StringHelper.Join(chatters.AsSpan(), separator, _response.FreeBufferSpan);
-        _response.Advance(joinLength);
+        int joinLength = StringHelper.Join(chatters.AsSpan(), separator, Response.FreeBufferSpan);
+        Response.Advance(joinLength);
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

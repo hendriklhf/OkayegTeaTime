@@ -1,45 +1,55 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using HLE.Strings;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Suggest)]
-public readonly ref struct SuggestCommand
+[HandledCommand(CommandType.Suggest, typeof(SuggestCommand))]
+public readonly struct SuggestCommand : IChatCommand<SuggestCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public SuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private SuggestCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SuggestCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S{3,}");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S{3,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string suggestion = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
             DbController.AddSuggestion(ChatMessage.Username, ChatMessage.Channel, suggestion);
-            _response.Append(ChatMessage.Username, ", ", Messages.YourSuggestionHasBeenNoted);
+            Response.Append(ChatMessage.Username, ", ", Messages.YourSuggestionHasBeenNoted);
         }
+
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

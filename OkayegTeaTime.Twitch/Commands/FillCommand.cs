@@ -1,48 +1,59 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Strings;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using Random = HLE.Random;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Fill)]
-public readonly ref struct FillCommand
+[HandledCommand(CommandType.Fill, typeof(FillCommand))]
+public readonly struct FillCommand : IChatCommand<FillCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref PoolBufferStringBuilder _response;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public FillCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public FillCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out FillCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string emote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
             int maxLength = AppSettings.MaxMessageLength - (emote.Length + 1);
-            int maxSplitIndex = messageExtension.Split.Length - 1;
-            ReadOnlySpan<char> nextMessagePart = messageExtension.Split[Random.Int(1, maxSplitIndex)];
+            ReadOnlyMemory<char> nextMessagePart = messageExtension.Split[Random.Shared.Next(1, messageExtension.Split.Length)];
             for (int currentMessageLength = 0; currentMessageLength + nextMessagePart.Length + 1 < maxLength; currentMessageLength += nextMessagePart.Length + 1)
             {
-                _response.Append(nextMessagePart, " ");
-                nextMessagePart = messageExtension.Split[Random.Int(1, maxSplitIndex)];
+                Response.Append(nextMessagePart.Span, " ");
+                nextMessagePart = messageExtension.Split[Random.Shared.Next(1, messageExtension.Split.Length)];
             }
         }
+
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

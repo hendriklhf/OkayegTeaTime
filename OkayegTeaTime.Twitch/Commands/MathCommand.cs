@@ -1,47 +1,59 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
-using HLE.Strings;
 using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Math)]
-public readonly ref struct MathCommand
+[HandledCommand(CommandType.Math, typeof(MathCommand))]
+public readonly struct MathCommand : IChatCommand<MathCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref PoolBufferStringBuilder _response;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public MathCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public MathCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MathCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s.+");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public async ValueTask Handle()
+    {
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            string mathResult = GetMathResult(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
-            _response.Append(ChatMessage.Username, ", ", mathResult);
+            string? mathResult = await GetMathResult(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
+            Response.Append(ChatMessage.Username, ", ", mathResult);
         }
     }
 
-    private static string GetMathResult(string expression)
+    private static async ValueTask<string?> GetMathResult(string expression)
     {
-        HttpGet request = new($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
-        return request.Result ?? Messages.ApiError;
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
+        return request.Result;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

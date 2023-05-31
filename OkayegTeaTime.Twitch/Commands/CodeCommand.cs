@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Strings;
 using HLE.Twitch.Models;
@@ -10,22 +12,23 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Code)]
-public readonly ref struct CodeCommand
+[HandledCommand(CommandType.Code, typeof(CodeCommand))]
+public readonly struct CodeCommand : IChatCommand<CodeCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref PoolBufferStringBuilder _response;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
     private static string[]? _codeFiles;
 
-    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
@@ -33,9 +36,14 @@ public readonly ref struct CodeCommand
         _codeFiles ??= ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CodeCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Regex? filePattern;
@@ -46,41 +54,43 @@ public readonly ref struct CodeCommand
             }
             catch (ArgumentException)
             {
-                _response.Append(ChatMessage.Username, ", ", Messages.TheGivenPatternIsInvalid);
-                return;
+                Response.Append(ChatMessage.Username, ", ", Messages.TheGivenPatternIsInvalid);
+                return ValueTask.CompletedTask;
             }
 
             using PoolBufferList<string> matchingFiles = new(5);
             GetMatchingFiles(filePattern, matchingFiles);
-            _response.Append(ChatMessage.Username, ", ");
+            Response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Count)
             {
                 case 0:
-                    _response.Append(Messages.YourPatternMatchedNoSourceCodeFiles);
+                    Response.Append(Messages.YourPatternMatchedNoSourceCodeFiles);
                     break;
                 case 1:
-                    _response.Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
+                    Response.Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
-                    _response.Append("your pattern matched ");
-                    _response.Append(matchingFiles.Count);
-                    _response.Append(" files: ");
+                    Response.Append("your pattern matched ");
+                    Response.Append(matchingFiles.Count);
+                    Response.Append(" files: ");
 
-                    int joinLength = StringHelper.Join(matchingFiles.AsSpan(), ", ", _response.FreeBufferSpan);
-                    _response.Advance(joinLength);
+                    int joinLength = StringHelper.Join(matchingFiles.AsSpan(), ", ", Response.FreeBufferSpan);
+                    Response.Advance(joinLength);
 
-                    _response.Append(". Please specify.");
+                    Response.Append(". Please specify.");
                     break;
                 default:
-                    _response.Append("your pattern matched too many (");
-                    _response.Append(matchingFiles.Count);
-                    _response.Append(") files. Please specify.");
+                    Response.Append("your pattern matched too many (");
+                    Response.Append(matchingFiles.Count);
+                    Response.Append(") files. Please specify.");
                     break;
             }
         }
+
+        return ValueTask.CompletedTask;
     }
 
-    private static void GetMatchingFiles(Regex filePattern, PoolBufferList<string> files)
+    private static void GetMatchingFiles<TCollection>(Regex filePattern, TCollection files) where TCollection : ICollection<string>
     {
         for (int i = 0; i < _codeFiles!.Length; i++)
         {
@@ -90,5 +100,10 @@ public readonly ref struct CodeCommand
                 files.Add(file);
             }
         }
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

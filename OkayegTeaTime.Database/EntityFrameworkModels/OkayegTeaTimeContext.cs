@@ -1,17 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using OkayegTeaTime.Settings;
 
 #nullable disable
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
+[SuppressMessage("ReSharper", "AnnotateNotNullParameter")]
 public class OkayegTeaTimeContext : DbContext
 {
     public OkayegTeaTimeContext()
     {
     }
 
-    public OkayegTeaTimeContext(DbContextOptions<OkayegTeaTimeContext> options) : base(options)
+    public OkayegTeaTimeContext([JetBrains.Annotations.NotNull] DbContextOptions<OkayegTeaTimeContext> options) : base(options)
     {
     }
 

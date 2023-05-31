@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using OkayegTeaTime.Database;
@@ -71,7 +70,7 @@ public static class SpotifyController
         return HttpUtility.UrlDecode(login.ToUri().AbsoluteUri).Replace(" ", "%20");
     }
 
-    private static async Task<string?> GetNewAccessTokenAsync(string refreshToken)
+    private static async ValueTask<string?> GetNewAccessTokenAsync(string refreshToken)
     {
         try
         {
@@ -80,12 +79,12 @@ public static class SpotifyController
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             return null;
         }
     }
 
-    public static async Task<(string AccessToken, string RefreshToken)?> GetNewAuthTokensAsync(string code)
+    public static async ValueTask<(string AccessToken, string RefreshToken)?> GetNewAuthTokensAsync(string code)
     {
         try
         {
@@ -94,7 +93,7 @@ public static class SpotifyController
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             return null;
         }
     }
@@ -120,7 +119,7 @@ public static class SpotifyController
         return user.Time + TimeSpan.FromHours(1).TotalMilliseconds <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + TimeSpan.FromSeconds(30).TotalMilliseconds;
     }
 
-    private static async Task<SpotifyClient?> GetClient(SpotifyUser user)
+    private static async ValueTask<SpotifyClient?> GetClientAsync(SpotifyUser user)
     {
         if (!IsAccessTokenExpired(user))
         {
@@ -144,53 +143,37 @@ public static class SpotifyController
     /// <param name="user">The user privileged to add songs to the playlist.</param>
     /// <param name="songs">The songs that will be added to the playlist.</param>
     /// <exception cref="SpotifyException">Will be thrown if it was unable to add a song to the playlist.</exception>
-    public static void AddToPlaylist(SpotifyUser user, params string[] songs)
+    public static async ValueTask AddToPlaylist(SpotifyUser user, params string[] songs)
     {
-        async Task AddToChatPlaylistLocal()
+        string[] uris = songs.Select(s => ParseSongToUri(s) ?? string.Empty).Where(u => !string.IsNullOrWhiteSpace(u)).ToArray();
+        if (uris.Length == 0)
         {
-            string[] uris = songs.Select(s => ParseSongToUri(s) ?? string.Empty).Where(u => !string.IsNullOrWhiteSpace(u)).ToArray();
+            return;
+        }
+
+        SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
+        try
+        {
+            uris = uris.Where(u => !ChatPlaylistUris.Contains(u)).ToArray();
             if (uris.Length == 0)
             {
                 return;
             }
 
-            SpotifyClient? client = await GetClient(user);
-            if (client is null)
-            {
-                throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-            }
-
-            try
-            {
-                uris = uris.Where(u => !ChatPlaylistUris.Contains(u)).ToArray();
-                if (uris.Length == 0)
-                {
-                    return;
-                }
-
-                await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
-                ChatPlaylistUris.AddRange(uris);
-            }
-            catch (Exception ex)
-            {
-                DbController.LogException(ex);
-                throw new SpotifyException("Something went wrong trying to add the song to the playlist");
-            }
+            await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
+            ChatPlaylistUris.AddRange(uris);
         }
-
-        Thread thread = new(() => AddToChatPlaylistLocal().Wait());
-        thread.Start();
+        catch (Exception ex)
+        {
+            await DbController.LogExceptionAsync(ex);
+            throw new SpotifyException("Something went wrong trying to add the song to the playlist");
+        }
     }
 
-    private static async Task<SpotifyTrack[]> GetPlaylistItemsAsync(SpotifyUser user, string playlistUri)
+    private static async ValueTask<SpotifyTrack[]> GetPlaylistItemsAsync(SpotifyUser user, string playlistUri)
     {
-        SpotifyClient? client = await GetClient(user);
-        if (client is null)
-        {
-            throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-        }
-
-        List<SpotifyTrack> result = new();
+        SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
+        List<SpotifyTrack> result = new(1000);
         int offset = 0;
         do
         {
@@ -217,7 +200,7 @@ public static class SpotifyController
             }
             catch (Exception ex)
             {
-                DbController.LogException(ex);
+                await DbController.LogExceptionAsync(ex);
                 break;
             }
         } while (true);
@@ -225,7 +208,7 @@ public static class SpotifyController
         return result.ToArray();
     }
 
-    public static async Task<SpotifyTrack> AddToQueueAsync(SpotifyUser user, string song)
+    public static async ValueTask<SpotifyTrack> AddToQueueAsync(SpotifyUser user, string song)
     {
         if (!user.AreSongRequestsEnabled)
         {
@@ -246,29 +229,24 @@ public static class SpotifyController
 
         try
         {
-            SpotifyClient? client = await GetClient(user);
-            if (client is null)
-            {
-                throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-            }
-
+            SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             await client.Player.AddToQueue(new(uri));
             FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..]);
             return new(item);
         }
         catch (APIException ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException($"an error occurred, {user.Username.Antiping()} probably has to start their playback first");
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException($"an error occurred, it might not be possible to add songs to {user.Username.Antiping()}'s queue");
         }
     }
 
-    public static async Task SkipAsync(SpotifyUser user)
+    public static async ValueTask SkipAsync(SpotifyUser user)
     {
         if (!user.AreSongRequestsEnabled)
         {
@@ -277,17 +255,12 @@ public static class SpotifyController
 
         try
         {
-            SpotifyClient? client = await GetClient(user);
-            if (client is null)
-            {
-                throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-            }
-
+            SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             await client.Player.SkipNext();
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException($"an error occurred, it might not be possible to skip songs of {user.Username.Antiping()}'s queue");
         }
     }
@@ -310,19 +283,14 @@ public static class SpotifyController
         return session;
     }
 
-    public static async Task<SpotifyItem> ListenAlongWithAsync(SpotifyUser listener, SpotifyUser host)
+    public static async ValueTask<SpotifyItem> ListenAlongWithAsync(SpotifyUser listener, SpotifyUser host)
     {
         if (string.Equals(host.Username, listener.Username, StringComparison.OrdinalIgnoreCase))
         {
             throw new SpotifyException("you can't listen to yourself :)");
         }
 
-        CurrentlyPlayingContext? playback = await GetCurrentlyPlayingContextAsync(host);
-        if (playback is null)
-        {
-            throw new SpotifyException($"{host.Username.Antiping()} isn't listening to anything at the moment");
-        }
-
+        CurrentlyPlayingContext playback = await GetCurrentlyPlayingContextAsync(host) ?? throw new SpotifyException($"{host.Username.Antiping()} isn't listening to anything at the moment");
         SpotifyItem item = playback.Item switch
         {
             FullTrack track => new SpotifyTrack(track),
@@ -351,37 +319,27 @@ public static class SpotifyController
         return item;
     }
 
-    public static async Task ListenToAsync(SpotifyUser user, SpotifyItem item, int seekToMs = 0)
+    public static async ValueTask ListenToAsync(SpotifyUser user, SpotifyItem item, int seekToMs = 0)
     {
         try
         {
-            SpotifyClient? client = await GetClient(user);
-            if (client is null)
-            {
-                throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-            }
-
+            SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             await client.Player.AddToQueue(new(item.Uri));
         }
         catch (APIException ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException($"an error occurred, {user.Username.Antiping()} probably has to start their playback first");
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException("an error occurred, it might not be possible to listen to other people's songs");
         }
 
         try
         {
-            SpotifyClient? client = await GetClient(user);
-            if (client is null)
-            {
-                throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-            }
-
+            SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             await client.Player.SkipNext();
             if (seekToMs > 0)
             {
@@ -390,22 +348,17 @@ public static class SpotifyController
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException($"an error occured while trying to play the song {user.Username.Antiping()} wanted to listen to");
         }
     }
 
-    public static async Task<SpotifyItem?> GetCurrentlyPlayingItemAsync(SpotifyUser user)
+    public static async ValueTask<SpotifyItem?> GetCurrentlyPlayingItemAsync(SpotifyUser user)
     {
         CurrentlyPlaying? currentlyPlaying;
         try
         {
-            SpotifyClient? client = await GetClient(user);
-            if (client is null)
-            {
-                throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-            }
-
+            SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             currentlyPlaying = await client.Player.GetCurrentlyPlaying(new());
 
             // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
@@ -416,7 +369,7 @@ public static class SpotifyController
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             throw new SpotifyException($"an error occurred, it might not be possible to retrieve {user.Username.Antiping()}'s currently playing song");
         }
 
@@ -453,11 +406,11 @@ public static class SpotifyController
                 SpotifyUser playlistUser = new(efUser);
                 try
                 {
-                    AddToPlaylist(playlistUser, item.Uri);
+                    await AddToPlaylist(playlistUser, item.Uri);
                 }
                 catch (SpotifyException ex)
                 {
-                    DbController.LogException(ex);
+                    await DbController.LogExceptionAsync(ex);
                 }
 #endif
                 break;
@@ -472,14 +425,9 @@ public static class SpotifyController
         return item;
     }
 
-    public static async Task<SpotifyTrack?> SearchTrackAsync(SpotifyUser user, string query)
+    public static async ValueTask<SpotifyTrack?> SearchTrackAsync(SpotifyUser user, string query)
     {
-        SpotifyClient? client = await GetClient(user);
-        if (client is null)
-        {
-            throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-        }
-
+        SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         string? uri = ParseSongToUri(query);
         if (uri is not null)
         {
@@ -494,7 +442,7 @@ public static class SpotifyController
             }
             catch (Exception ex)
             {
-                DbController.LogException(ex);
+                await DbController.LogExceptionAsync(ex);
             }
         }
 
@@ -511,19 +459,14 @@ public static class SpotifyController
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            await DbController.LogExceptionAsync(ex);
             return null;
         }
     }
 
-    private static async Task<CurrentlyPlayingContext?> GetCurrentlyPlayingContextAsync(SpotifyUser user)
+    private static async ValueTask<CurrentlyPlayingContext?> GetCurrentlyPlayingContextAsync(SpotifyUser user)
     {
-        SpotifyClient? client = await GetClient(user);
-        if (client is null)
-        {
-            throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-        }
-
+        SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         CurrentlyPlayingContext? playback = await client.Player.GetCurrentPlayback();
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (playback is null || !playback.IsPlaying)
@@ -539,9 +482,9 @@ public static class SpotifyController
         return _listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
     }
 
-    public static async Task<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
+    public static async ValueTask<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
     {
-        SpotifyClient client = await GetClient(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
+        SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         if (track.Artists.Count == 1)
         {
             FullArtist artist = await client.Artists.Get(track.Artists[0].Id);

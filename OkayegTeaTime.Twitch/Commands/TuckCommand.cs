@@ -1,50 +1,60 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Emojis;
-using HLE.Strings;
 using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Tuck)]
-public readonly ref struct TuckCommand
+[HandledCommand(CommandType.Tuck, typeof(TuckCommand))]
+public readonly struct TuckCommand : IChatCommand<TuckCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
-    [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-    [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out TuckCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+(\s\S+)?");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+(\s\S+)?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            ReadOnlySpan<char> target = messageExtension.LowerSplit[1];
-            _response.Append(Emoji.PointRight, " ", Emoji.Bed, " ", ChatMessage.Username);
-            _response.Append(" tucked ", target, " to bed");
-            ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2] : string.Empty;
+            var target = messageExtension.LowerSplit[1].Span;
+            Response.Append(Emoji.PointRight, " ", Emoji.Bed, " ", ChatMessage.Username);
+            Response.Append(" tucked ", target, " to bed");
+            ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2].Span : ReadOnlySpan<char>.Empty;
             if (emote.Length > 0)
             {
-                _response.Append(" ", emote);
+                Response.Append(" ", emote);
             }
         }
+
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

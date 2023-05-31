@@ -3,73 +3,81 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using HLE.Memory;
 using HLE.Numerics;
-using HLE.Strings;
-using OkayegTeaTime.Database;
 using HLE.Twitch.Models;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
+#pragma warning disable IDE0052
+
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Ping)]
+[HandledCommand(CommandType.Ping, typeof(PingCommand))]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly ref struct PingCommand
+public readonly struct PingCommand : IChatCommand<PingCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref PoolBufferStringBuilder _response;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PingCommand command)
     {
-        Span<char> buffer = stackalloc char[50];
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public async ValueTask Handle()
+    {
+        using RentedArray<char> buffer = new(50);
         using Process currentProcess = Process.GetCurrentProcess();
 
-        _response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username, ", ");
         TimeSpan uptime = DateTime.Now - currentProcess.StartTime;
-        uptime.TryFormat(buffer, out _, "g");
-        int indexOfDot = buffer.IndexOf('.');
-        _response.Append("Pingeg, I'm here! Uptime: ", buffer[..indexOfDot]);
+        Response.Append("Pingeg, I'm here! Uptime: ");
+        Response.Append(uptime, "g");
 
-        _response.Append(" || Ping: ");
+        Response.Append(" || Ping: ");
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        long latency = now - ChatMessage.TmiSentTs - 5;
-        _response.Append(latency);
-        _response.Append("ms");
+        long latency = now - ChatMessage.TmiSentTs;
+        Response.Append(latency);
+        Response.Append("ms");
 
-        _response.Append(" || Total process memory: ");
-        _response.Append(GetProcessMemory(currentProcess));
-        _response.Append("MB || Managed memory: ");
-        _response.Append(GetManagedMemory());
-        _response.Append("MB");
+        Response.Append(" || Total process memory: ");
+        Response.Append(GetProcessMemory(currentProcess));
+        Response.Append("MB || Managed memory: ");
+        Response.Append(GetManagedMemory());
+        Response.Append("MB");
 
         if (OperatingSystem.IsLinux())
         {
-            ReadOnlySpan<char> temperature = GetTemperature();
+            ReadOnlyMemory<char> temperature = await GetTemperature();
             if (temperature.Length > 0)
             {
-                _response.Append(" || Temperature: ", temperature);
+                Response.Append(" || Temperature: ", temperature.Span);
             }
         }
 
-        _response.Append(" || Executed commands: ");
-        _response.Advance(NumberHelper.InsertThousandSeparators(_twitchBot.CommandCount, '.', _response.FreeBufferSpan));
+        Response.Append(" || Executed commands: ");
+        Response.Advance(NumberHelper.InsertThousandSeparators(_twitchBot.CommandCount, '.', Response.FreeBufferSpan));
 
-        _response.Append(" || Running on ", RuntimeInformation.FrameworkDescription, " || Commit: ", ResourceController.LastCommit);
+        Response.Append(" || Running on ", RuntimeInformation.FrameworkDescription, " || Commit: ", ResourceController.LastCommit);
     }
 
     private static double GetProcessMemory(Process process)
@@ -87,7 +95,7 @@ public readonly ref struct PingCommand
     }
 
     [SupportedOSPlatform("linux")]
-    private static ReadOnlySpan<char> GetTemperature()
+    private static async ValueTask<ReadOnlyMemory<char>> GetTemperature()
     {
         try
         {
@@ -98,18 +106,24 @@ public readonly ref struct PingCommand
                     RedirectStandardOutput = true
                 }
             };
+
             temperatureProcess.Start();
-            temperatureProcess.WaitForExit();
-            ReadOnlySpan<char> output = temperatureProcess.StandardOutput.ReadToEnd();
+            await temperatureProcess.WaitForExitAsync();
+            string output = await temperatureProcess.StandardOutput.ReadToEndAsync();
             int indexOfEqualsSign = output.IndexOf('=');
-            Span<char> temperature = output[(indexOfEqualsSign + 1)..].AsMutableSpan();
-            temperature[4] = '°';
+            Memory<char> temperature = output.AsMemory(indexOfEqualsSign + 1).AsMutableMemory();
+            temperature.Span[4] = '°';
             return temperature;
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
-            return ReadOnlySpan<char>.Empty;
+            await DbController.LogExceptionAsync(ex);
+            return ReadOnlyMemory<char>.Empty;
         }
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

@@ -1,64 +1,76 @@
 ﻿using System;
 using System.Collections.Frozen;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Numerics;
-using HLE.Strings;
 using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
+using OkayegTeaTime.Twitch.Api.Helix.Models;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using Stream = TwitchLib.Api.Helix.Models.Streams.GetStreams.Stream;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Stream)]
-public readonly ref struct StreamCommand
+[HandledCommand(CommandType.Stream, typeof(StreamCommand))]
+public readonly struct StreamCommand : IChatCommand<StreamCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
     private static readonly FrozenSet<long> _noViewerCountChannelIds = new long[]
     {
         149489313,
         35933008
-    }.ToFrozenSet();
+    }.ToFrozenSet(true);
 
-    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out StreamCommand command)
     {
-        Regex channelPattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\w+");
-        _response.Append(ChatMessage.Username, ", ");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public async ValueTask Handle()
+    {
+        Regex channelPattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
+        Response.Append(ChatMessage.Username, ", ");
 
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        Stream? stream = channelPattern.IsMatch(ChatMessage.Message) ? _twitchBot.TwitchApi.GetStream(new string(messageExtension.Split[1])) : _twitchBot.TwitchApi.GetStream(ChatMessage.ChannelId);
+        string channel = channelPattern.IsMatch(ChatMessage.Message) ? new(messageExtension.Split[1].Span) : ChatMessage.Username;
+
+        Stream? stream = await _twitchBot.TwitchApi.GetStreamAsync(channel);
         if (stream is null)
         {
-            _response.Append(Messages.ThisChannelIsCurrentlyNotStreaming);
+            Response.Append(Messages.ThisChannelIsCurrentlyNotStreaming);
             return;
         }
 
-        _response.Append(stream.UserName, " is currently streaming ", stream.GameName);
-        long streamUserId = long.Parse(stream.UserId);
-        if (ChatMessage.ChannelId != streamUserId || !_noViewerCountChannelIds.Contains(streamUserId))
+        Response.Append(stream.Username, " is currently streaming ", stream.GameName);
+        if (ChatMessage.ChannelId != stream.UserId || !_noViewerCountChannelIds.Contains(stream.UserId))
         {
-            _response.Append(" with ");
-            _response.Advance(NumberHelper.InsertThousandSeparators(stream.ViewerCount, '.', _response.FreeBufferSpan));
-            _response.Append(" viewer", stream.ViewerCount != 1 ? "s" : string.Empty);
+            Response.Append(" with ");
+            Response.Advance(NumberHelper.InsertThousandSeparators(stream.ViewerCount, '.', Response.FreeBufferSpan));
+            Response.Append(" viewer", stream.ViewerCount != 1 ? "s" : string.Empty);
         }
 
         TimeSpan streamTime = DateTime.UtcNow - stream.StartedAt;
-        _response.Append(" for ", streamTime.ToString("g").Split('.')[0]);
+        Response.Append(" for ", streamTime.ToString("g").Split('.')[0]);
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

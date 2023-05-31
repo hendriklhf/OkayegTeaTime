@@ -4,6 +4,7 @@ using System.IO;
 #endif
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 #if DEBUG
 using System.Text.Json;
 #endif
@@ -149,18 +150,18 @@ public static class DbController
         return database.Users.ToArray();
     }
 
-    public static void LogException(Exception ex)
+    public static async ValueTask LogExceptionAsync(Exception ex)
     {
         ExceptionLog log = new(ex);
 #if DEBUG
-        File.WriteAllText($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, new JsonSerializerOptions
+        await File.WriteAllTextAsync($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, new JsonSerializerOptions
         {
             WriteIndented = true
         }));
 #else
-        using OkayegTeaTimeContext database = new();
-        database.ExceptionLogs.Add(log);
-        database.SaveChanges();
+        await using OkayegTeaTimeContext database = new();
+        await database.ExceptionLogs.AddAsync(log);
+        await database.SaveChangesAsync();
 #endif
     }
 

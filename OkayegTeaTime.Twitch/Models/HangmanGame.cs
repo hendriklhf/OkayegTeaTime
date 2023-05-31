@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using HLE.Memory;
@@ -27,9 +26,9 @@ public sealed class HangmanGame : IDisposable
     public HangmanGame(string solution)
     {
         Solution = solution;
-        _discoveredWord = ArrayPool<char>.Shared.Rent(solution.Length);
+        _discoveredWord = new(solution.Length);
         _discoveredWord.Span.Fill('_');
-        _wrongChars = ArrayPool<char>.Shared.Rent(26);
+        _wrongChars = new(26);
     }
 
     ~HangmanGame()

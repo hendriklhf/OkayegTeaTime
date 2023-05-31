@@ -7,24 +7,37 @@ namespace OkayegTeaTime.Utils;
 
 public readonly struct HttpPost
 {
-    public string? Result { get; }
+    public string? Result { get; } = null;
 
-    public HttpPost(string url, IEnumerable<(string, string)> content)
+    public static HttpPost Empty => new();
+
+    public HttpPost()
+    {
+    }
+
+    private HttpPost(string? result)
+    {
+        Result = result;
+    }
+
+    public static HttpPost FromResult(string? result)
+    {
+        return new(result);
+    }
+
+    public static async ValueTask<HttpPost> GetStringAsync(string url, IEnumerable<(string, string)> content)
     {
         try
         {
             using HttpClient httpClient = new();
-            using FormUrlEncodedContent encodedContent = new(content.ToDictionary<IEnumerable<(string, string)>, string, string>());
-            Task<HttpResponseMessage> postTask = httpClient.PostAsync(url, encodedContent);
-            postTask.Wait();
-            HttpResponseMessage result = postTask.Result;
-            Task<string> readTask = result.Content.ReadAsStringAsync();
-            readTask.Wait();
-            Result = readTask.Result;
+            using FormUrlEncodedContent encodedContent = new(content.ToDictionary());
+            using HttpResponseMessage response = await httpClient.PostAsync(url, encodedContent);
+            string result = await response.Content.ReadAsStringAsync();
+            return new(result);
         }
         catch
         {
-            Result = null;
+            return Empty;
         }
     }
 }

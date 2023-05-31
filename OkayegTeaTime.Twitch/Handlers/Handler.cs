@@ -1,4 +1,5 @@
-﻿using HLE.Twitch.Models;
+﻿using System.Threading.Tasks;
+using HLE.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
@@ -11,5 +12,5 @@ public abstract class Handler
         _twitchBot = twitchBot;
     }
 
-    public abstract void Handle(ChatMessage chatMessage);
+    public abstract ValueTask Handle(ChatMessage chatMessage);
 }

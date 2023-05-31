@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
+using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Emojis;
 using HLE.Strings;
@@ -20,15 +21,15 @@ public sealed class WeatherController
     private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(30);
     private readonly TimeSpan _forecastCacheTime = TimeSpan.FromHours(1);
 
-    public WeatherData? GetWeather(ReadOnlySpan<char> city, bool loadFromCache = true)
+    public async ValueTask<WeatherData?> GetWeather(string location, bool loadFromCache = true)
     {
-        int key = string.GetHashCode(city, StringComparison.OrdinalIgnoreCase);
+        int key = string.GetHashCode(location, StringComparison.OrdinalIgnoreCase);
         if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
 
-        HttpGet request = new($"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
         if (request.Result is null)
         {
             return null;
@@ -49,15 +50,15 @@ public sealed class WeatherController
         return data;
     }
 
-    public WeatherData? GetWeather(int latitude, int longitude, bool loadFromCache = true)
+    public async ValueTask<WeatherData?> GetWeather(double latitude, double longitude, bool loadFromCache = true)
     {
-        var key = ((double)latitude, (double)longitude);
+        var key = (latitude, longitude);
         if (loadFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
 
-        HttpGet request = new($"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
         if (request.Result is null)
         {
             return null;
@@ -69,17 +70,13 @@ public sealed class WeatherController
             return null;
         }
 
-        int locationHash = string.GetHashCode(data.CityName);
-        if (!_weatherCache.TryAdd(locationHash, key, data))
-        {
-            _weatherCache[locationHash, key] = data;
-        }
-
+        int locationHash = string.GetHashCode(data.CityName, StringComparison.OrdinalIgnoreCase);
+        _weatherCache.AddOrSet(locationHash, key, data);
         return data;
     }
 
     // ReSharper disable once UnusedMember.Global
-    public ForecastData? GetForecast(ReadOnlySpan<char> city, bool loadFromCache = true)
+    public async ValueTask<ForecastData?> GetForecast(string city, bool loadFromCache = true)
     {
         int key = string.GetHashCode(city, StringComparison.OrdinalIgnoreCase);
         if (loadFromCache && _forecastCache.TryGetValue(key, out ForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
@@ -87,7 +84,7 @@ public sealed class WeatherController
             return data;
         }
 
-        HttpGet request = new($"https://api.openweathermap.org/data/2.5/forecast/daily?q={city}&cnt=16&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/forecast/daily?q={city}&cnt=16&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
         if (request.Result is null)
         {
             return null;
@@ -107,8 +104,10 @@ public sealed class WeatherController
         return data;
     }
 
-    public static void WriteResponse(WeatherData weatherData, ref PoolBufferStringBuilder response, bool isPrivateLocation)
+    public static int WriteWeatherData(WeatherData weatherData, Span<char> responseBuffer, bool isPrivateLocation)
     {
+        ValueStringBuilder response = responseBuffer;
+
         if (isPrivateLocation)
         {
             response.Append("(private location)");
@@ -129,7 +128,7 @@ public sealed class WeatherController
         response.Append(weatherData.Weather.MinTemperature);
         response.Append("°C, max. ");
         response.Append(weatherData.Weather.MaxTemperature);
-        response.Append("°C, ", GetDirection(weatherData.Wind.Direction), "wind speed: ");
+        response.Append("°C, ", GetDirection(weatherData.Wind.Direction), " wind speed: ");
         response.Append(weatherData.Wind.Speed);
         response.Append(" m/s, cloud cover: ");
         response.Append(weatherData.Clouds.Percentage);
@@ -138,6 +137,7 @@ public sealed class WeatherController
         response.Append("%, air pressure: ");
         response.Append(weatherData.Weather.Pressure);
         response.Append(" hPa");
+        return response.Length;
     }
 
     private static string GetWeatherEmoji(int weatherId)

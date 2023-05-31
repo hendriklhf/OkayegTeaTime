@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using HLE.Strings;
@@ -10,9 +8,10 @@ namespace OkayegTeaTime.Utils;
 
 public sealed class RegexCreator
 {
-    private readonly IDictionary<int, Regex> _cachedPatterns = new ConcurrentDictionary<int, Regex>();
+    private readonly RegexPool _cachedPatterns = new();
 
     private const string _patternEnding = @"(\s|$)";
+    private const RegexOptions _regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase;
 
     public Regex Create(ReadOnlySpan<char> alias, ReadOnlySpan<char> prefix, [StringSyntax(StringSyntaxAttribute.Regex)] ReadOnlySpan<char> addition = default)
     {
@@ -36,14 +35,13 @@ public sealed class RegexCreator
         }
 
         patternBuilder.Append(addition, _patternEnding);
-        int patternHashCode = string.GetHashCode(patternBuilder.WrittenSpan);
-        if (_cachedPatterns.TryGetValue(patternHashCode, out Regex? cachedPattern))
+        if (_cachedPatterns.TryGet(patternBuilder.WrittenSpan, _regexOptions, TimeSpan.FromSeconds(1), out Regex? cachedPattern))
         {
             return cachedPattern;
         }
 
-        Regex compiledRegex = new(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
-        _cachedPatterns.Add(patternHashCode, compiledRegex);
+        Regex compiledRegex = new(patternBuilder.ToString(), _regexOptions, TimeSpan.FromSeconds(1));
+        _cachedPatterns.Add(compiledRegex);
         return compiledRegex;
     }
 }

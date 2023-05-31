@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using HLE.Strings;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -12,65 +13,70 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Skip)]
+[HandledCommand(CommandType.Skip, typeof(SkipCommand))]
 [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly ref struct SkipCommand
+public readonly struct SkipCommand : IChatCommand<SkipCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SkipCommand command)
+    {
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public async ValueTask Handle()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
+            Response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
         if (user is null)
         {
-            _response.Append(ChatMessage.Username, ", ", "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
+            Response.Append(ChatMessage.Username, ", ", "you can't skip songs of ", ChatMessage.Channel.Antiping(), ", they have to register first");
             return;
         }
 
         try
         {
-            SpotifyController.SkipAsync(user).Wait();
-            _response.Append(ChatMessage.Username, ", ", "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
+            await SpotifyController.SkipAsync(user);
+            Response.Append(ChatMessage.Username, ", ", "skipped to the next song in ", ChatMessage.Channel.Antiping(), "'s queue");
         }
         catch (SpotifyException ex)
         {
-            _response.Append(ChatMessage.Username, ", ", ex.Message);
+            Response.Append(ChatMessage.Username, ", ", ex.Message);
             return;
         }
         catch (AggregateException ex)
         {
-            _response.Append(ChatMessage.Username, ", ");
+            Response.Append(ChatMessage.Username, ", ");
             if (ex.InnerException is null)
             {
-                DbController.LogException(ex);
-                _response.Append(Messages.ApiError);
+                await DbController.LogExceptionAsync(ex);
+                Response.Append(Messages.ApiError);
                 return;
             }
 
-            _response.Append(ex.InnerException.Message);
+            Response.Append(ex.InnerException.Message);
             return;
         }
 
@@ -85,7 +91,7 @@ public readonly ref struct SkipCommand
         {
             try
             {
-                SpotifyController.ListenAlongWithAsync(listener, user).Wait();
+                await SpotifyController.ListenAlongWithAsync(listener, user);
             }
             catch (Exception)
             {
@@ -97,5 +103,10 @@ public readonly ref struct SkipCommand
         {
             listeningSession.Listeners.Remove(u);
         }
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

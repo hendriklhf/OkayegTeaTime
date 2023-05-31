@@ -7,7 +7,7 @@ namespace OkayegTeaTime.Twitch.Models;
 
 public readonly struct SmartSplit : IDisposable
 {
-    public ReadOnlySpan<char> this[int index] => _message.Span[_ranges[index]];
+    public ReadOnlyMemory<char> this[int index] => _message[_ranges[index]];
 
     public int Length => _length;
 

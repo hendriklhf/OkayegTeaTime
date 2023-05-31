@@ -4,14 +4,17 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Attributes;
 
-[AttributeUsage(AttributeTargets.Struct)]
 [MeansImplicitUse]
+[AttributeUsage(AttributeTargets.Struct)]
 public sealed class HandledCommandAttribute : Attribute
 {
     public CommandType CommandType { get; }
 
-    public HandledCommandAttribute(CommandType commandType)
+    public Type Command { get; }
+
+    public HandledCommandAttribute(CommandType commandType, Type command)
     {
         CommandType = commandType;
+        Command = command;
     }
 }

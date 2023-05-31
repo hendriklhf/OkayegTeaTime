@@ -14,8 +14,9 @@ public sealed class UserLists
 
     public UserLists(OkayegTeaTime.Models.Json.UserLists userLists)
     {
-        Moderators = userLists.Moderators.ToFrozenSet();
-        IgnoredUsers = userLists.IgnoredUsers.ToFrozenSet();
-        SecretUsers = userLists.SecretUsers.ToFrozenSet();
+        Owner = userLists.Owner;
+        Moderators = userLists.Moderators.ToFrozenSet(true);
+        IgnoredUsers = userLists.IgnoredUsers.ToFrozenSet(true);
+        SecretUsers = userLists.SecretUsers.ToFrozenSet(true);
     }
 }

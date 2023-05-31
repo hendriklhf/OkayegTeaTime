@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
@@ -16,7 +17,7 @@ public sealed class AfkCommandHandler
         _twitchBot = twitchBot;
     }
 
-    public void Handle(ChatMessage chatMessage, AfkType type)
+    public async ValueTask Handle(ChatMessage chatMessage, AfkType type)
     {
         User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user is null)
@@ -35,6 +36,6 @@ public sealed class AfkCommandHandler
         AfkCommand cmd = _twitchBot.CommandController[type];
         AfkMessage afkMessage = new(user, cmd);
 
-        _twitchBot.Send(chatMessage.Channel, afkMessage.GoingAway);
+        await _twitchBot.SendAsync(chatMessage.Channel, afkMessage.GoingAway);
     }
 }

@@ -16,18 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="HLE" Version="2.1.5" />
+      <PackageReference Include="HLE" Version="2.1.6" />
       <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
-      <PackageReference Include="TwitchLib.Api" Version="3.9.0" />
-      <PackageReference Include="TwitchLib.Api.Core" Version="3.9.0" />
-      <PackageReference Include="TwitchLib.Api.Core.Enums" Version="3.9.0" />
-      <PackageReference Include="TwitchLib.Api.Core.Interfaces" Version="3.9.0" />
-      <PackageReference Include="TwitchLib.Api.Core.Models" Version="3.9.0" />
-      <PackageReference Include="TwitchLib.Api.Enums" Version="1.0.0" />
-      <PackageReference Include="TwitchLib.Api.Helix.Models" Version="3.9.0" />
-      <PackageReference Include="TwitchLib.Api.Interfaces" Version="1.0.0" />
-      <PackageReference Include="TwitchLib.Api.Models" Version="1.0.0" />
-      <PackageReference Include="TwitchLib.Api.V5" Version="3.3.0" />
   </ItemGroup>
 
     <ItemGroup>

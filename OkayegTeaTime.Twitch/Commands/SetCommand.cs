@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Memory;
 using HLE.Strings;
 using HLE.Twitch.Models;
@@ -11,57 +12,66 @@ using Channel = OkayegTeaTime.Database.Models.Channel;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Set)]
-public readonly ref struct SetCommand
+[HandledCommand(CommandType.Set, typeof(SetCommand))]
+public readonly struct SetCommand : IChatCommand<SetCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
     private static readonly Regex _enabledPattern = new(@"(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
     private static readonly Regex _disabledPattern = new(@"(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public SetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public SetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\sprefix\s\S+");
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        ReadOnlySpan<char> alias = _alias.Span;
+        ReadOnlySpan<char> prefix = _prefix.Span;
+        Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetPrefix();
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\semote\s\S+");
+        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetEmote();
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
+        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetSongRequestState();
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\slocation\s((private)|(public))\s\S+");
+        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\slocation\s((private)|(public))\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetLocation();
         }
+
+        return ValueTask.CompletedTask;
     }
 
     private void SetPrefix()
@@ -69,18 +79,18 @@ public readonly ref struct SetCommand
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
+            Response.Append(ChatMessage.Username, ", ", Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
         if (channel is null)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.AnErrorOccurredWhileTryingToSetThePrefix);
+            Response.Append(ChatMessage.Username, ", ", Messages.AnErrorOccurredWhileTryingToSetThePrefix);
             return;
         }
 
-        ReadOnlySpan<char> prefixSpan = messageExtension.LowerSplit[2];
+        ReadOnlySpan<char> prefixSpan = messageExtension.LowerSplit[2].Span;
         if (prefixSpan.Length > AppSettings.MaxPrefixLength)
         {
             prefixSpan = prefixSpan[..AppSettings.MaxPrefixLength];
@@ -88,7 +98,7 @@ public readonly ref struct SetCommand
 
         string prefix = new(prefixSpan);
         channel.Prefix = prefix;
-        _response.Append(ChatMessage.Username, ", ", "prefix set to: ", prefix);
+        Response.Append(ChatMessage.Username, ", ", "prefix set to: ", prefix);
     }
 
     private void SetEmote()
@@ -96,18 +106,18 @@ public readonly ref struct SetCommand
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(ChatMessage.Username, Messages.YouArentAModeratorOrTheBroadcaster);
+            Response.Append(ChatMessage.Username, Messages.YouArentAModeratorOrTheBroadcaster);
             return;
         }
 
         Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
         if (channel is null)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.AnErrorOccurredWhileTryingToSetTheEmote);
+            Response.Append(ChatMessage.Username, ", ", Messages.AnErrorOccurredWhileTryingToSetTheEmote);
             return;
         }
 
-        ReadOnlySpan<char> emoteSpan = messageExtension.Split[2];
+        ReadOnlySpan<char> emoteSpan = messageExtension.Split[2].Span;
         if (emoteSpan.Length > AppSettings.MaxEmoteInFrontLength)
         {
             emoteSpan = emoteSpan[..AppSettings.MaxPrefixLength];
@@ -115,44 +125,44 @@ public readonly ref struct SetCommand
 
         string emote = new(emoteSpan);
         channel.Emote = emote;
-        _response.Append(ChatMessage.Username, ", ", "emote set to: ", emote);
+        Response.Append(ChatMessage.Username, ", ", "emote set to: ", emote);
     }
 
     private void SetSongRequestState()
     {
-        _response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username, ", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            _response.Append(Messages.YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings);
+            Response.Append(Messages.YouHaveToBeAModOrTheBroadcasterToSetSongRequestSettings);
             return;
         }
 
         bool? state = null;
-        if (_enabledPattern.IsMatch(messageExtension.Split[2]))
+        if (_enabledPattern.IsMatch(messageExtension.Split[2].Span))
         {
             state = true;
         }
-        else if (_disabledPattern.IsMatch(messageExtension.Split[2]))
+        else if (_disabledPattern.IsMatch(messageExtension.Split[2].Span))
         {
             state = false;
         }
 
         if (state is null)
         {
-            _response.Append(Messages.TheStateCanOnlyBeSetToEnabledOrDisabled);
+            Response.Append(Messages.TheStateCanOnlyBeSetToEnabledOrDisabled);
             return;
         }
 
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
         if (user is null)
         {
-            _response.Append("channel ", ChatMessage.Channel, " is not registered, they have to register first");
+            Response.Append("channel ", ChatMessage.Channel, " is not registered, they have to register first");
             return;
         }
 
         user.AreSongRequestsEnabled = state.Value;
-        _response.Append("song requests ", state.Value ? "enabled" : "disabled", " ", "for channel ", ChatMessage.Channel);
+        Response.Append("song requests ", state.Value ? "enabled" : "disabled", " ", "for channel ", ChatMessage.Channel);
     }
 
     private void SetLocation()
@@ -164,7 +174,7 @@ public readonly ref struct SetCommand
         int cityBufferLength = StringHelper.Join(splits[3..messageExtension.Split.Length], ' ', cityBuffer);
         string city = new(cityBuffer[..cityBufferLength]);
 
-        bool isPrivate = messageExtension.LowerSplit[2][1] == 'r';
+        bool isPrivate = messageExtension.LowerSplit[2].Span[1] == 'r';
         User? user = _twitchBot.Users[ChatMessage.UserId];
         if (user is null)
         {
@@ -181,6 +191,11 @@ public readonly ref struct SetCommand
             user.IsPrivateLocation = isPrivate;
         }
 
-        _response.Append(ChatMessage.Username, ", ", "your ", isPrivate ? "private" : "public", " location has been set");
+        Response.Append(ChatMessage.Username, ", ", "your ", isPrivate ? "private" : "public", " location has been set");
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

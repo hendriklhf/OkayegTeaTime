@@ -33,13 +33,13 @@ public static class AppSettings
 
     public static CommandList CommandList { get; private set; }
 
-    public const short AfkCooldown = 10000;
+    public const int AfkCooldown = 10000;
     public const string DefaultEmote = "Okayeg";
-    public const byte MaxEmoteInFrontLength = 20;
-    public const short MaxMessageLength = 500;
-    public const byte MaxPrefixLength = 10;
-    public const byte MaxReminders = 10;
-    public const short DelayBetweenSentMessages = 1300;
+    public const int MaxEmoteInFrontLength = 20;
+    public const int MaxMessageLength = 500;
+    public const int MaxPrefixLength = 10;
+    public const int MaxReminders = 10;
+    public const int DelayBetweenSentMessages = 1300;
     public const string Suffix = "eg";
     public const string SettingsFileName = "Settings.json";
     public const string ChatterinoChar = "\uDB40\uDC00";

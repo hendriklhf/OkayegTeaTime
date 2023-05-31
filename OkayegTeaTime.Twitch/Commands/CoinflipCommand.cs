@@ -1,40 +1,53 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using HLE;
 using HLE.Emojis;
-using HLE.Strings;
 using HLE.Twitch.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using Random = HLE.Random;
 
 #pragma warning disable IDE0052
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Coinflip)]
+[HandledCommand(CommandType.Coinflip, typeof(CoinflipCommand))]
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly ref struct CoinflipCommand
+public readonly struct CoinflipCommand : IChatCommand<CoinflipCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
     private readonly TwitchBot _twitchBot;
-    private readonly ref PoolBufferStringBuilder _response;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public CoinflipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    public CoinflipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CoinflipCommand command)
     {
-        bool result = Random.StrongBool();
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public ValueTask Handle()
+    {
+        bool result = Random.Shared.NextBool();
         string answer = result ? "yes/heads" : "no/tails";
-        _response.Append(ChatMessage.Username, ", ", answer, " ", Emoji.Coin);
+        Response.Append(ChatMessage.Username, ", ", answer, " ", Emoji.Coin);
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

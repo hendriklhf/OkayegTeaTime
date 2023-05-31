@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HLE.Emojis;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
@@ -15,14 +16,15 @@ public sealed class PajaAlertHandler : PajaHandler
     {
     }
 
-    public override void Handle(ChatMessage chatMessage)
+    public override async ValueTask Handle(ChatMessage chatMessage)
     {
         if (chatMessage.ChannelId != _pajaChannelId || chatMessage.UserId != _pajaAlertUserId || !Pattern.IsMatch(chatMessage.Message))
         {
             return;
         }
 
-        _twitchBot.Send(_pajaAlertChannel, Message, false, false, false);
-        _twitchBot.Send(AppSettings.OfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}", false, false, false);
+        Task sendAlertTask = _twitchBot.SendAsync(_pajaAlertChannel, Message, false, false, false).AsTask();
+        Task sendOtherAlertTask = _twitchBot.SendAsync(AppSettings.OfflineChatChannel, $"{AppSettings.DefaultEmote} {Emoji.RotatingLight}", false, false, false).AsTask();
+        await Task.WhenAll(sendAlertTask, sendOtherAlertTask);
     }
 }

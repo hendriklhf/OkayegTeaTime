@@ -9,7 +9,7 @@ namespace OkayegTeaTime;
 
 public static class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         Console.Title = "OkayegTeaTime";
         Console.OutputEncoding = Encoding.Unicode;
@@ -18,7 +18,7 @@ public static class Program
 
         ArgsResolver argsResolver = new(args);
         TwitchBot twitchBot = new(argsResolver.Channels);
-        twitchBot.Connect();
+        await twitchBot.ConnectAsync();
 
         while (true)
         {

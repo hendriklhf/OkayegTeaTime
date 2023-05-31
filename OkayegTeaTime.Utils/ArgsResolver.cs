@@ -4,15 +4,15 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Utils;
 
-public readonly ref partial struct ArgsResolver
+public readonly partial struct ArgsResolver
 {
     public string[]? Channels { get; }
 
-    private readonly Span<string> _args;
+    private readonly string[] _args;
 
     private readonly Regex _channelListPattern = GetChannelListPattern();
 
-    public ArgsResolver(Span<string> args)
+    public ArgsResolver(string[] args)
     {
         _args = args;
         Channels = GetChannels();

@@ -1,73 +1,86 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using HLE.Strings;
+using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.OpenWeatherMap;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Weather)]
-public readonly ref struct WeatherCommand
+[HandledCommand(CommandType.Weather, typeof(WeatherCommand))]
+public readonly struct WeatherCommand : IChatCommand<WeatherCommand>
 {
+    public ResponseBuilder Response { get; }
+
     public ChatMessage ChatMessage { get; }
 
-    private readonly ref PoolBufferStringBuilder _response;
-
     private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlySpan<char> _prefix;
-    private readonly ReadOnlySpan<char> _alias;
+    private readonly ReadOnlyMemory<char> _prefix;
+    private readonly ReadOnlyMemory<char> _alias;
 
-    public WeatherCommand(TwitchBot twitchBot, ChatMessage chatMessage, ref PoolBufferStringBuilder response, ReadOnlySpan<char> prefix, ReadOnlySpan<char> alias)
+    private WeatherCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ChatMessage = chatMessage;
-        _response = ref response;
+        Response = new(AppSettings.MaxMessageLength);
         _twitchBot = twitchBot;
         _prefix = prefix;
         _alias = alias;
     }
 
-    public void Handle()
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out WeatherCommand command)
     {
-        ReadOnlySpan<char> city;
+        command = new(twitchBot, chatMessage, prefix, alias);
+    }
+
+    public async ValueTask Handle()
+    {
+        string? city;
         bool isPrivateLocation;
 
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias, _prefix, @"\s\S+");
+        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            city = ChatMessage.Message.AsSpan()[(messageExtension.Split[0].Length + 1)..];
+            city = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
             isPrivateLocation = false;
         }
         else
         {
             User? user = _twitchBot.Users[ChatMessage.UserId];
             city = user?.Location;
-            isPrivateLocation = user?.IsPrivateLocation == true;
-            if (city.Length == 0)
+            if (user is null || city is null)
             {
-                _response.Append(ChatMessage.Username, ", ", Messages.YouHaventSetYourLocationYet);
+                Response.Append(ChatMessage.Username, ", ", Messages.YouHaventSetYourLocationYet);
                 return;
             }
+
+            isPrivateLocation = user.IsPrivateLocation;
         }
 
-        WeatherData? weatherData = _twitchBot.WeatherController.GetWeather(city);
+        WeatherData? weatherData = await _twitchBot.WeatherController.GetWeather(city);
         if (weatherData is null)
         {
-            _response.Append(ChatMessage.Username, ", ", Messages.ApiError);
+            Response.Append(ChatMessage.Username, ", ", Messages.ApiError);
             return;
         }
 
         if (weatherData.Message is not null)
         {
-            _response.Append(ChatMessage.Username, ", ", weatherData.Message);
+            Response.Append(ChatMessage.Username, ", ", weatherData.Message);
             return;
         }
 
-        _response.Append(ChatMessage.Username, ", ");
-        WeatherController.WriteResponse(weatherData, ref _response, isPrivateLocation);
+        Response.Append(ChatMessage.Username, ", ");
+        int charsWritten = WeatherController.WriteWeatherData(weatherData, Response.FreeBufferSpan, isPrivateLocation);
+        Response.Advance(charsWritten);
+    }
+
+    public void Dispose()
+    {
+        Response.Dispose();
     }
 }

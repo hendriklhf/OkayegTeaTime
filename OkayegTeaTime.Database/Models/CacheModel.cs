@@ -13,7 +13,7 @@ public abstract class CacheModel
 
     protected CacheModel()
     {
-        _timer.Elapsed += (_, _) =>
+        _timer.Elapsed += async (_, _) =>
         {
             OkayegTeaTimeContext db = GetContext();
             try
@@ -22,7 +22,7 @@ public abstract class CacheModel
             }
             catch (Exception ex)
             {
-                DbController.LogException(ex);
+                await DbController.LogExceptionAsync(ex);
             }
             finally
             {
@@ -44,7 +44,7 @@ public abstract class CacheModel
         }
         catch (Exception ex)
         {
-            DbController.LogException(ex);
+            DbController.LogExceptionAsync(ex).AsTask().Wait();
         }
     }
 

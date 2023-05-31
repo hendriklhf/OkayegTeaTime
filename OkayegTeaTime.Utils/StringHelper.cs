@@ -38,6 +38,7 @@ public static class StringHelper
 
     public static int Format(this TimeSpan span, Span<char> buffer)
     {
+        // TODO: use ValueStringBuilder
         int resultLength = 0;
         if (span.Days > 0)
         {
