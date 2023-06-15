@@ -13,7 +13,7 @@ public class OkayegTeaTimeContext : DbContext
     {
     }
 
-    public OkayegTeaTimeContext([JetBrains.Annotations.NotNull] DbContextOptions<OkayegTeaTimeContext> options) : base(options)
+    public OkayegTeaTimeContext(DbContextOptions<OkayegTeaTimeContext> options) : base(options)
     {
     }
 

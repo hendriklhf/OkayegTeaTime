@@ -29,7 +29,7 @@ public sealed class CommandTest
     {
         foreach (CommandType type in _commandTypes)
         {
-            Command command = _commandController[type];
+            Command command = _commandController.GetCommand(type);
             Assert.IsNotNull(command);
         }
     }
@@ -56,7 +56,7 @@ public sealed class CommandTest
 
         foreach (HandledCommandAttribute handle in handles)
         {
-            Assert.IsNotNull(_commandController[handle.CommandType]);
+            Assert.IsNotNull(_commandController.GetCommand(handle.CommandType));
             Assert.IsTrue(_commandTypes.Contains(handle.CommandType));
         }
     }
@@ -77,7 +77,7 @@ public sealed class CommandTest
     {
         foreach (AfkType type in _afkTypes)
         {
-            AfkCommand command = _commandController[type];
+            AfkCommand command = _commandController.GetAfkCommand(type);
             Assert.IsNotNull(command);
         }
     }

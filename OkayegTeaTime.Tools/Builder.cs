@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,13 +14,13 @@ public sealed class Builder
 {
     private readonly string[] _args;
 
-    private readonly Dictionary<Runtime, Regex> _runtimes = new[]
+    private readonly FrozenDictionary<Runtime, Regex> _runtimes = new Dictionary<Runtime, Regex>(new KeyValuePair<Runtime, Regex>[]
     {
-        (Runtime.Windows64Bit, NewRegex("^win(dows)?(-?x?64)?$")),
-        (Runtime.LinuxArm, NewRegex("^((linux-?)?arm(64)?)|((raspberry-?)?pi)$")),
-        (Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
-        (Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
-    }.ToDictionary();
+        new(Runtime.Windows64Bit, NewRegex("^win(dows)?(-?x?64)?$")),
+        new(Runtime.LinuxArm, NewRegex("^((linux-?)?arm(64)?)|((raspberry-?)?pi)$")),
+        new(Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
+        new(Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
+    }).ToFrozenDictionary();
 
     private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
     private const string _commitIdSourcePath = "./.git/logs/HEAD";
