@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -48,8 +47,9 @@ public readonly struct RafkCommand : IChatCommand<RafkCommand>
         }
 
         user.IsAfk = true;
-        AfkCommand cmd = _twitchBot.CommandController[user.AfkType];
-        Response.Append(new AfkMessage(user, cmd).Resuming);
+
+        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildResumingMessage(ChatMessage.Username, user.AfkType, Response.FreeBufferSpan);
+        Response.Advance(afkMessageLength);
         return ValueTask.CompletedTask;
     }
 

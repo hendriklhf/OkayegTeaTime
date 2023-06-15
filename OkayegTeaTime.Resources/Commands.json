@@ -661,9 +661,9 @@
   "AfkCommands": [
     {
       "Name": "afk",
-      "ComingBack": "{username} just came back: {message} ({time})",
-      "GoingAway": "{username} is now afk",
-      "Resuming": "{username} went afk again",
+      "ComingBack": "{} just came back: {} ({})",
+      "GoingAway": "{} is now afk",
+      "Resuming": "{} went afk again",
       "Aliases": [
         "afk"
       ],
@@ -677,9 +677,9 @@
     },
     {
       "Name": "brb",
-      "ComingBack": "{username} came right back: {message} ({time})",
-      "GoingAway": "{username} will be right back",
-      "Resuming": "{username} went away again",
+      "ComingBack": "{} came right back: {} ({})",
+      "GoingAway": "{} will be right back",
+      "Resuming": "{} went away again",
       "Aliases": [
         "brb"
       ],
@@ -693,9 +693,9 @@
     },
     {
       "Name": "fat",
-      "ComingBack": "{username} came back from eating: {message} ({time})",
-      "GoingAway": "{username} went eating",
-      "Resuming": "{username} went back to eating",
+      "ComingBack": "{} came back from eating: {} ({})",
+      "GoingAway": "{} went eating",
+      "Resuming": "{} went back to eating",
       "Aliases": [
         "fat",
         "food"
@@ -710,9 +710,9 @@
     },
     {
       "Name": "game",
-      "ComingBack": "{username} stopped gaming: {message} ({time})",
-      "GoingAway": "{username} is now gaming",
-      "Resuming": "{username} went back to gaming",
+      "ComingBack": "{} stopped gaming: {} ({})",
+      "GoingAway": "{} is now gaming",
+      "Resuming": "{} went back to gaming",
       "Aliases": [
         "game",
         "gaming"
@@ -727,9 +727,9 @@
     },
     {
       "Name": "gn",
-      "ComingBack": "{username} just woke up: {message} ({time})",
-      "GoingAway": "{username} is now sleeping",
-      "Resuming": "{username} fell asleep again",
+      "ComingBack": "{} just woke up: {} ({})",
+      "GoingAway": "{} is now sleeping",
+      "Resuming": "{} fell asleep again",
       "Aliases": [
         "gn",
         "sleep"
@@ -744,9 +744,9 @@
     },
     {
       "Name": "lurk",
-      "ComingBack": "{username} stopped lurking: {message} ({time})",
-      "GoingAway": "{username} is now lurking",
-      "Resuming": "{username} went back to lurking",
+      "ComingBack": "{} stopped lurking: {} ({})",
+      "GoingAway": "{} is now lurking",
+      "Resuming": "{} went back to lurking",
       "Aliases": [
         "lurk"
       ],
@@ -760,9 +760,9 @@
     },
     {
       "Name": "movie",
-      "ComingBack": "{username} finished a movie: {message} ({time})",
-      "GoingAway": "{username} is now watching a movie",
-      "Resuming": "{username} went back to watching a movie",
+      "ComingBack": "{} finished a movie: {} ({})",
+      "GoingAway": "{} is now watching a movie",
+      "Resuming": "{} went back to watching a movie",
       "Aliases": [
         "movie",
         "film"
@@ -777,9 +777,9 @@
     },
     {
       "Name": "nap",
-      "ComingBack": "{username} woke up from their nap: {message} ({time})",
-      "GoingAway": "{username} is taking a nap",
-      "Resuming": "{username} fell asleep again",
+      "ComingBack": "{} woke up from their nap: {} ({})",
+      "GoingAway": "{} is taking a nap",
+      "Resuming": "{} fell asleep again",
       "Aliases": [
         "nap"
       ],
@@ -793,9 +793,9 @@
     },
     {
       "Name": "piss",
-      "ComingBack": "{username} emptied their bladder: {message} ({time})",
-      "GoingAway": "{username} needs to empty their bladder",
-      "Resuming": "{username} ran back to the toilet",
+      "ComingBack": "{} emptied their bladder: {} ({})",
+      "GoingAway": "{} needs to empty their bladder",
+      "Resuming": "{} ran back to the toilet",
       "Aliases": [
         "piss",
         "pee"
@@ -810,9 +810,9 @@
     },
     {
       "Name": "poof",
-      "ComingBack": "{username} fooped back: {message} ({time})",
-      "GoingAway": "{username} poofed away",
-      "Resuming": "{username} poofed again ppPoof",
+      "ComingBack": "{} fooped back: {} ({})",
+      "GoingAway": "{} poofed away",
+      "Resuming": "{} poofed again ppPoof",
       "Aliases": [
         "poof"
       ],
@@ -826,9 +826,9 @@
     },
     {
       "Name": "poop",
-      "ComingBack": "{username} took a big shit: {message} ({time})",
-      "GoingAway": "{username} needs to take a shit",
-      "Resuming": "{username} ran back to the toilet",
+      "ComingBack": "{} took a big shit: {} ({})",
+      "GoingAway": "{} needs to take a shit",
+      "Resuming": "{} ran back to the toilet",
       "Aliases": [
         "poop",
         "shit"
@@ -843,9 +843,9 @@
     },
     {
       "Name": "school",
-      "ComingBack": "{username} came back from school: {message} ({time})",
-      "GoingAway": "{username} went to school",
-      "Resuming": "{username} went back to school",
+      "ComingBack": "{} came back from school: {} ({})",
+      "GoingAway": "{} went to school",
+      "Resuming": "{} went back to school",
       "Aliases": [
         "school"
       ],
@@ -859,9 +859,9 @@
     },
     {
       "Name": "shower",
-      "ComingBack": "{username} is now clean: {message} ({time})",
-      "GoingAway": "{username} went for a shower",
-      "Resuming": "{username} went back into the shower",
+      "ComingBack": "{} is now clean: {} ({})",
+      "GoingAway": "{} went for a shower",
+      "Resuming": "{} went back into the shower",
       "Aliases": [
         "shower"
       ],
@@ -875,9 +875,9 @@
     },
     {
       "Name": "study",
-      "ComingBack": "{username} stopped studying: {message} ({time})",
-      "GoingAway": "{username} is now studying",
-      "Resuming": "{username} went back to studying",
+      "ComingBack": "{} stopped studying: {} ({})",
+      "GoingAway": "{} is now studying",
+      "Resuming": "{} went back to studying",
       "Aliases": [
         "study"
       ],
@@ -891,9 +891,9 @@
     },
     {
       "Name": "work",
-      "ComingBack": "{username} came back from work: {message} ({time})",
-      "GoingAway": "{username} went to work",
-      "Resuming": "{username} went back to working",
+      "ComingBack": "{} came back from work: {} ({})",
+      "GoingAway": "{} went to work",
+      "Resuming": "{} went back to working",
       "Aliases": [
         "work"
       ],
@@ -907,9 +907,9 @@
     },
     {
       "Name": "music",
-      "ComingBack": "{username} stopped listening to music: {message} ({time})",
-      "GoingAway": "{username} is now listening to music",
-      "Resuming": "{username} is listening to music again",
+      "ComingBack": "{} stopped listening to music: {} ({})",
+      "GoingAway": "{} is now listening to music",
+      "Resuming": "{} is listening to music again",
       "Aliases": [
         "music"
       ],
@@ -923,9 +923,9 @@
     },
     {
       "Name": "fap",
-      "ComingBack": "{username} came back from fapping: {message} ({time})",
-      "GoingAway": "{username} went fapping",
-      "Resuming": "{username} went back to fapping",
+      "ComingBack": "{} came back from fapping: {} ({})",
+      "GoingAway": "{} went fapping",
+      "Resuming": "{} went back to fapping",
       "Aliases": [
         "fap"
       ],
@@ -939,9 +939,9 @@
     },
     {
       "Name": "gym",
-      "ComingBack": "{username} stopped working out: {message} ({time})",
-      "GoingAway": "{username} is now working out",
-      "Resuming": "{username} is working out again",
+      "ComingBack": "{} stopped working out: {} ({})",
+      "GoingAway": "{} is now working out",
+      "Resuming": "{} is working out again",
       "Aliases": [
         "gym",
         "workout"
