@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-using HLE.Emojis;
-using HLE.Memory;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
-using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -47,78 +40,32 @@ public readonly struct CSharpCommand : IChatCommand<CSharpCommand>
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            ReadOnlyMemory<char> message = ChatMessage.Message.AsMemory();
-            message = message[(messageExtension.Split[0].Length + 1)..];
+            ReadOnlyMemory<char> mainMethodContent = ChatMessage.Message.AsMemory();
+            mainMethodContent = mainMethodContent[(messageExtension.Split[0].Length + 1)..];
+            Response.Append(ChatMessage.Username, ", ");
 
-            using RentedArray<char> codeBuffer = new(message.Length);
-            codeBuffer.Span.Fill(' ');
-            message.CopyTo(codeBuffer);
-            Memory<char> code = ReplaceSpecialChars(codeBuffer);
-
-            ReadOnlyMemory<char> result = await GetProgramOutput(new(code.Span));
-            Response.Append(ChatMessage.Username, ", ", result.Span);
-        }
-    }
-
-    private static async ValueTask<ReadOnlyMemory<char>> GetProgramOutput(string code)
-    {
-        try
-        {
-            string codeBlock = HttpUtility.HtmlEncode(ResourceController.CSharpTemplate.Replace("{code}", code));
-            HttpPost request = await HttpPost.GetStringAsync("https://dotnetfiddle.net/home/run", new[]
+            try
             {
-                ("CodeBlock", codeBlock),
-                ("Compiler", "Net7"),
-                ("Language", "CSharp"),
-                ("MvcViewEngine", "Razor"),
-                ("NuGetPackageVersionIds", AppSettings.HleNugetVersionId),
-                ("OriginalCodeBlock", codeBlock),
-                ("OriginalFiddleId", "CsConsCore"),
-                ("ProjectType", "Console"),
-                ("TimeOffset", "1"),
-                ("UseResultCache", "false")
-            });
-            if (request.Result is null)
-            {
-                throw new NullReferenceException("API result is null");
+                DotNetFiddleResult dotNetFiddleResult = await _twitchBot.DotNetFiddleService.ExecuteCodeAsync(mainMethodContent);
+                ReadOnlyMemory<char> consoleOutput = dotNetFiddleResult.ConsoleOutput.AsMemory();
+                bool isConsoleOutputTooLong = consoleOutput.Length > 450;
+                if (isConsoleOutputTooLong)
+                {
+                    consoleOutput = consoleOutput[..450];
+                }
+
+                Response.Append(consoleOutput.Span);
+                if (isConsoleOutputTooLong)
+                {
+                    Response.Append("...");
+                }
             }
-
-            JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
-            ReadOnlyMemory<char> output = json.GetProperty("ConsoleOutput").GetString()!.NewLinesToSpaces().AsMemory();
-            switch (output.Length)
+            catch (Exception ex)
             {
-                case 0:
-                    return "executed successfully".AsMemory();
-                case < 453:
-                    return output;
+                await DbController.LogExceptionAsync(ex);
+                Response.Append(Messages.ApiError);
             }
-
-            Memory<char> mutableOutput = output.AsMutableMemory()[..450];
-            "...".CopyTo(mutableOutput[^3..].Span);
-            return output[..450];
         }
-        catch (Exception ex)
-        {
-            if (code.Contains('\''))
-            {
-                return ("for some reason the API doesn't like the char \"'\". Please try to avoid it. " + Emoji.SlightlySmilingFace).AsMemory();
-            }
-
-            await DbController.LogExceptionAsync(ex);
-            return "an unexpected error occurred. The API might not be available.".AsMemory();
-        }
-    }
-
-    private static Memory<char> ReplaceSpecialChars(Memory<char> code)
-    {
-        ReadOnlySpan<char> charsToReplace = StringHelper.AntipingChar;
-        Span<char> codeSpan = code.Span;
-        for (int i = 0; i < charsToReplace.Length; i++)
-        {
-            codeSpan.Replace(charsToReplace[i], ' ');
-        }
-
-        return code.TrimEnd();
     }
 
     public void Dispose()
