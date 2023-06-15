@@ -41,9 +41,13 @@ public sealed class CommandHandler : Handler
 
     private async ValueTask<bool> HandleCommand(ChatMessage chatMessage)
     {
-        ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+        ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
         ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
-        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix);
+
+        if (!MessageHelper.TryExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix))
+        {
+            return false;
+        }
 
         if (!prefixOrSuffix.Span.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {
@@ -62,16 +66,20 @@ public sealed class CommandHandler : Handler
         }
 
         _twitchBot.CommandCount++;
-        await _commandExecutor.Execute(type, chatMessage, prefix, usedAlias);
+        await _commandExecutor.ExecuteAsync(type, chatMessage, prefix, usedAlias);
         _twitchBot.CooldownController.AddCooldown(chatMessage.UserId, type);
         return true;
     }
 
     private async ValueTask HandleAfkCommand(ChatMessage chatMessage)
     {
-        ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+        ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
         ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
-        MessageHelper.ExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix);
+
+        if (!MessageHelper.TryExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix))
+        {
+            return;
+        }
 
         if (!prefixOrSuffix.Span.Equals(usedPrefix.Span, StringComparison.OrdinalIgnoreCase))
         {

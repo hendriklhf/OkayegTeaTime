@@ -45,7 +45,7 @@ public readonly struct PingCommand : IChatCommand<PingCommand>
 
     public async ValueTask Handle()
     {
-        using RentedArray<char> buffer = new(50);
+        long unixMillisecondsNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         using Process currentProcess = Process.GetCurrentProcess();
 
         Response.Append(ChatMessage.Username, ", ");
@@ -54,8 +54,7 @@ public readonly struct PingCommand : IChatCommand<PingCommand>
         Response.Append(uptime, "g");
 
         Response.Append(" || Ping: ");
-        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        long latency = now - ChatMessage.TmiSentTs;
+        long latency = unixMillisecondsNow - ChatMessage.TmiSentTs;
         Response.Append(latency);
         Response.Append("ms");
 

@@ -46,9 +46,9 @@ public struct HangmanCommand : IChatCommand<HangmanCommand>
 
     public async ValueTask Handle()
     {
-        _happyEmote = await _twitchBot.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Grinning, "happy", "good");
-        _sadEmote = await _twitchBot.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
-        _partyEmote = await _twitchBot.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.PartyingFace, "cheer", "happy", "good");
+        _happyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Grinning, "happy", "good");
+        _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
+        _partyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.PartyingFace, "cheer", "happy", "good");
 
         Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s[a-z]");
         if (pattern.IsMatch(ChatMessage.Message))

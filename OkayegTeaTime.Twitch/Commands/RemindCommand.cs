@@ -169,11 +169,11 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         return _exceptMessagePattern.Replace(ChatMessage.Message, string.Empty);
     }
 
-    private long GetToTime()
+    private unsafe long GetToTime()
     {
         long result = 0;
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        int timeStartIndex = GetTimeStartIdx(in messageExtension);
+        int timeStartIndex = GetTimeStartIdx(&messageExtension);
 
         using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.GetSplits();
         Span<char> timesBuffer = stackalloc char[500];
@@ -240,11 +240,12 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         }).ToArray();
     }
 
-    private static int GetTimeStartIdx(in ChatMessageExtension messageExtension)
+    private static unsafe int GetTimeStartIdx(ChatMessageExtension* messageExtension)
     {
-        for (int i = 2; i < messageExtension.LowerSplit.Length; i++)
+        SmartSplit lowerSplit = messageExtension->LowerSplit;
+        for (int i = 2; i < lowerSplit.Length; i++)
         {
-            if (messageExtension.LowerSplit[i].Span.Equals(_timeIdentificator, StringComparison.Ordinal))
+            if (lowerSplit[i].Span.Equals(_timeIdentificator, StringComparison.Ordinal))
             {
                 return i + 1;
             }

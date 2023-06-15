@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using System.Text.RegularExpressions;
+using HLE.Strings;
 
 namespace OkayegTeaTime.Utils;
 
@@ -38,68 +38,52 @@ public static class StringHelper
 
     public static int Format(this TimeSpan span, Span<char> buffer)
     {
-        // TODO: use ValueStringBuilder
-        int resultLength = 0;
+        ValueStringBuilder builder = buffer;
         if (span.Days > 0)
         {
-            string days = span.Days.ToString(CultureInfo.InvariantCulture);
-            days.CopyTo(buffer[resultLength..]);
-            resultLength += days.Length;
-            buffer[resultLength++] = 'd';
+            builder.Append(span.Days);
+            builder.Append('d');
         }
 
         if (span.Hours > 0)
         {
-            if (resultLength > 0)
+            if (builder.Length > 0)
             {
-                ", ".CopyTo(buffer[resultLength..]);
-                resultLength += ", ".Length;
+                builder.Append(", ");
             }
 
-            string hours = span.Hours.ToString(CultureInfo.InvariantCulture);
-            hours.CopyTo(buffer[resultLength..]);
-            resultLength += hours.Length;
-            buffer[resultLength++] = 'h';
+            builder.Append(span.Hours);
+            builder.Append('h');
         }
 
         if (span.Minutes > 0)
         {
-            if (resultLength > 0)
+            if (builder.Length > 0)
             {
-                ", ".CopyTo(buffer[resultLength..]);
-                resultLength += ", ".Length;
+                builder.Append(", ");
             }
 
-            string minutes = span.Minutes.ToString(CultureInfo.InvariantCulture);
-            minutes.CopyTo(buffer[resultLength..]);
-            resultLength += minutes.Length;
-            buffer[resultLength++] = 'm';
-            buffer[resultLength++] = 'i';
-            buffer[resultLength++] = 'n';
+            builder.Append(span.Minutes);
+            builder.Append("min");
         }
 
         if (span.Seconds > 0)
         {
-            if (resultLength > 0)
+            if (builder.Length > 0)
             {
-                ", ".CopyTo(buffer[resultLength..]);
-                resultLength += ", ".Length;
+                builder.Append(", ");
             }
 
-            string seconds = span.Seconds.ToString(CultureInfo.InvariantCulture);
-            seconds.CopyTo(buffer[resultLength..]);
-            resultLength += seconds.Length;
-            buffer[resultLength++] = 's';
+            builder.Append(span.Seconds);
+            builder.Append('s');
         }
 
-        if (resultLength != 0)
+        if (builder.Length == 0)
         {
-            return resultLength;
+            builder.Append(_spanFormatDefault);
         }
 
-        _spanFormatDefault.CopyTo(buffer);
-        resultLength += _spanFormatDefault.Length;
-        return resultLength;
+        return builder.Length;
     }
 
     public static string Format(this TimeSpan span)

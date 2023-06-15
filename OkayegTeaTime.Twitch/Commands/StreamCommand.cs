@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using HLE.Numerics;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
-using OkayegTeaTime.Twitch.Api.Helix.Models;
 using OkayegTeaTime.Twitch.Attributes;
+using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;

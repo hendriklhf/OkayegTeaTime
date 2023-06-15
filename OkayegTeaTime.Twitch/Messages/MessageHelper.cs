@@ -6,7 +6,7 @@ namespace OkayegTeaTime.Twitch.Messages;
 
 public static class MessageHelper
 {
-    public static void ExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> channelPrefix, out ReadOnlyMemory<char> usedAlias, out ReadOnlyMemory<char> usedPrefix)
+    public static bool TryExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> channelPrefix, out ReadOnlyMemory<char> usedAlias, out ReadOnlyMemory<char> usedPrefix)
     {
         ReadOnlySpan<char> messageSpan = message.Span;
         int indexOfWhitespace = messageSpan.IndexOf(' ');
@@ -15,17 +15,18 @@ public static class MessageHelper
         {
             usedAlias = ReadOnlyMemory<char>.Empty;
             usedPrefix = ReadOnlyMemory<char>.Empty;
-            return;
+            return false;
         }
 
         if (channelPrefix.Length == 0)
         {
             usedAlias = firstWord[..^AppSettings.Suffix.Length];
             usedPrefix = firstWord[^AppSettings.Suffix.Length..];
-            return;
+            return true;
         }
 
         usedAlias = firstWord[channelPrefix.Length..];
         usedPrefix = firstWord[..channelPrefix.Length];
+        return true;
     }
 }

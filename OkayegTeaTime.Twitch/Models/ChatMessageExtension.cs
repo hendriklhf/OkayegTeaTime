@@ -1,41 +1,68 @@
 ﻿using System;
-using System.Buffers;
 using HLE.Memory;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public readonly struct ChatMessageExtension : IDisposable
+public struct ChatMessageExtension : IDisposable
 {
-    public SmartSplit Split { get; }
+    public SmartSplit Split
+    {
+        get
+        {
+            if (_split == SmartSplit.Empty)
+            {
+                _split = new(_chatMessage.Message.AsMemory());
+            }
 
-    public SmartSplit LowerSplit { get; }
+            return _split;
+        }
+    }
 
-    public bool IsBotModerator => CheckIfIsBotModerator();
+    public SmartSplit LowerSplit
+    {
+        get
+        {
+            if (_lowerSplit != SmartSplit.Empty)
+            {
+                return _lowerSplit;
+            }
 
-    public bool IsIgnoredUser => CheckIfIsIgnoredUser();
+            if (_lowerCaseMessage == RentedArray<char>.Empty)
+            {
+                _lowerCaseMessage = new(_chatMessage.Message.Length);
+                _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
+            }
 
-    public bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
+            _lowerSplit = new(_lowerCaseMessage.Memory[.._chatMessage.Message.Length]);
+
+            return _lowerSplit;
+        }
+    }
+
+    public readonly bool IsBotModerator => CheckIfIsBotModerator();
+
+    public readonly bool IsIgnoredUser => CheckIfIsIgnoredUser();
+
+    public readonly bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
 
     private readonly ChatMessage _chatMessage;
-    private readonly RentedArray<char> _lowerCaseMessage;
+    private RentedArray<char> _lowerCaseMessage = RentedArray<char>.Empty;
+    private SmartSplit _split = SmartSplit.Empty;
+    private SmartSplit _lowerSplit = SmartSplit.Empty;
 
     public ChatMessageExtension(ChatMessage chatMessage)
     {
         _chatMessage = chatMessage;
-        Split = new(_chatMessage.Message.AsMemory());
-        _lowerCaseMessage = ArrayPool<char>.Shared.Rent(_chatMessage.Message.Length);
-        _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
-        LowerSplit = new(_lowerCaseMessage.Memory[.._chatMessage.Message.Length]);
     }
 
-    private bool CheckIfIsBotModerator()
+    private readonly bool CheckIfIsBotModerator()
     {
         return AppSettings.UserLists.Moderators.Contains(_chatMessage.UserId);
     }
 
-    private bool CheckIfIsIgnoredUser()
+    private readonly bool CheckIfIsIgnoredUser()
     {
         return AppSettings.UserLists.IgnoredUsers.Contains(_chatMessage.UserId);
     }

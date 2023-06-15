@@ -5,7 +5,7 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Attributes;
 
 [MeansImplicitUse]
-[AttributeUsage(AttributeTargets.Struct)]
+[AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class)]
 public sealed class HandledCommandAttribute : Attribute
 {
     public CommandType CommandType { get; }

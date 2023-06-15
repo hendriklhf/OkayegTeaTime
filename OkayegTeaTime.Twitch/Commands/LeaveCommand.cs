@@ -62,7 +62,7 @@ public readonly struct LeaveCommand : IChatCommand<LeaveCommand>
                 return;
             }
 
-            bool success = await _twitchBot.LeaveChannel(channel);
+            bool success = await _twitchBot.LeaveChannelAsync(channel);
             Response.Append(ChatMessage.Username, ", ", success ? "successfully left" : "failed to leave", " #", channel);
         }
     }

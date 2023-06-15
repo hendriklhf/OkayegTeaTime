@@ -40,7 +40,7 @@ public readonly struct FuckCommand : IChatCommand<FuckCommand>
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            Response.Append(Emoji.PointRight, " ", Emoji.OkHand, ChatMessage.Username, " fucked ", messageExtension.Split[1].Span);
+            Response.Append(Emoji.PointRight, Emoji.OkHand, ChatMessage.Username, " fucked ", messageExtension.Split[1].Span);
             if (messageExtension.Split.Length > 2)
             {
                 Response.Append(" ", messageExtension.Split[2].Span);

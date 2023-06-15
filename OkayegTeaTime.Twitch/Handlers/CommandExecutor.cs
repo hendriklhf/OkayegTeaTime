@@ -21,35 +21,35 @@ public sealed class CommandExecutor
     {
         _twitchBot = twitchBot;
 
-        MethodInfo executionMethod = typeof(CommandExecutor).GetMethod(nameof(ExecuteCommand), BindingFlags.Static | BindingFlags.NonPublic)!;
+        MethodInfo executionMethod = typeof(CommandExecutor).GetMethod(nameof(ExecuteCommandAsync), BindingFlags.Static | BindingFlags.NonPublic)!;
         HandledCommandAttribute[] handledCommandAttributes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null).Select(t => t.GetCustomAttribute<HandledCommandAttribute>()!).ToArray();
         Dictionary<CommandType, Type> handledCommandTypes = handledCommandAttributes.ToDictionary(a => a.CommandType, a => a.Command);
         int methodCount = (int)handledCommandTypes.Keys.Max() + 1;
         _executionMethods = new Func<TwitchBot, ChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>[methodCount];
-        Type methodType = typeof(Func<TwitchBot, ChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>);
         foreach (KeyValuePair<CommandType, Type> command in handledCommandTypes)
         {
-            Delegate executionDelegate = Delegate.CreateDelegate(methodType, executionMethod.MakeGenericMethod(command.Value));
-            var executionFunc = (Func<TwitchBot, ChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>)executionDelegate;
-            _executionMethods[(int)command.Key] = executionFunc;
+            var executionFunction = executionMethod.MakeGenericMethod(command.Value).CreateDelegate<Func<TwitchBot, ChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>>();
+            _executionMethods[(int)command.Key] = executionFunction;
         }
     }
 
-    public async ValueTask Execute(CommandType type, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    public async ValueTask ExecuteAsync(CommandType type, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         await _executionMethods[(int)type](_twitchBot, chatMessage, prefix, alias);
     }
 
-    private static async ValueTask ExecuteCommand<T>(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias) where T : IChatCommand<T>
+    private static async ValueTask ExecuteCommandAsync<T>(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias) where T : IChatCommand<T>
     {
         T.Create(twitchBot, chatMessage, prefix, alias, out T command);
         try
         {
             string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
-            command.Response.Append(emote, " ");
+            command.Response.Append(emote);
+            command.Response.Append(' ');
+            int responseLengthBeforeHandle = command.Response.Length;
 
             await command.Handle();
-            if (command.Response.Length <= emote.Length + 1)
+            if (command.Response.Length <= responseLengthBeforeHandle)
             {
                 return;
             }

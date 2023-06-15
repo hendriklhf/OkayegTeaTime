@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
+using HLE.Memory;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
@@ -19,6 +21,8 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
     private readonly TwitchBot _twitchBot;
     private readonly ReadOnlyMemory<char> _prefix;
     private readonly ReadOnlyMemory<char> _alias;
+
+    private static readonly RegexPool _emotePatternPool = new();
 
     public SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
@@ -43,7 +47,11 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
             try
             {
                 using ChatMessageExtension messageExtension = new(ChatMessage);
-                emotePattern = new(new(messageExtension.Split[1].Span), RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                if (!_emotePatternPool.TryGet(messageExtension.Split[1].Span, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1), out emotePattern))
+                {
+                    emotePattern = new(new(messageExtension.Split[1].Span), RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                    _emotePatternPool.Add(emotePattern);
+                }
             }
             catch (ArgumentException)
             {
@@ -52,44 +60,45 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
             }
         }
 
-        using PoolBufferList<string> emotesList = await _twitchBot.GetAllEmoteNames(ChatMessage.ChannelId);
-        if (emotesList.Count == 0)
+        string[] allEmotes = await _twitchBot.EmoteService.GetAllEmoteNamesAsync(ChatMessage.ChannelId);
+        if (allEmotes.Length == 0)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
             return;
         }
 
-        Memory<string> emotes = emotesList.AsMemory();
+        using RentedArray<string> matchingEmotesBuffer = new(allEmotes.Length);
+        ReadOnlyMemory<string> matchingEmotes = allEmotes;
         if (emotePattern is not null)
         {
-            WhereRegexIsMatch(ref emotes, emotePattern);
+            int matchingEmoteCount = GetMatchingEmotes(allEmotes, matchingEmotesBuffer, emotePattern);
+            matchingEmotes = matchingEmotesBuffer.Memory[..matchingEmoteCount];
         }
 
-        if (emotes.Length == 0)
+        if (matchingEmotes.Length == 0)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ThereIsNoEmoteMatchingYourProvidedPattern);
             return;
         }
 
-        Response.Append(ChatMessage.Username, ", [ ", emotes.Span.Random(), " ", emotes.Span.Random(), " ", emotes.Span.Random(), " ] (");
-        Response.Append(emotes.Length);
-        Response.Append(" emote", emotes.Length > 1 ? "s" : string.Empty, ")");
+        Response.Append(ChatMessage.Username, ", [ ", matchingEmotes.Span.Random(), " ", matchingEmotes.Span.Random(), " ", matchingEmotes.Span.Random(), " ] (");
+        Response.Append(matchingEmotes.Length);
+        Response.Append(" emote", matchingEmotes.Length > 1 ? "s" : string.Empty, ")");
     }
 
-    private static void WhereRegexIsMatch(ref Memory<string> emotes, Regex regex)
+    private static int GetMatchingEmotes(ReadOnlySpan<string> allEmotes, Span<string> matchingEmotes, Regex regex)
     {
-        int resultLength = 0;
-        Span<string> emoteSpan = emotes.Span;
-        for (int i = 0; i < emotes.Length; i++)
+        int matchingEmoteCount = 0;
+        for (int i = 0; i < allEmotes.Length; i++)
         {
-            string emote = emoteSpan[i];
+            string emote = allEmotes[i];
             if (regex.IsMatch(emote))
             {
-                emoteSpan[resultLength++] = emote;
+                matchingEmotes[matchingEmoteCount++] = emote;
             }
         }
 
-        emotes = emotes[..resultLength];
+        return matchingEmoteCount;
     }
 
     public void Dispose()

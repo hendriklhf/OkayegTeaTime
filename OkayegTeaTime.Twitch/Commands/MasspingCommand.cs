@@ -5,11 +5,13 @@ using HLE.Collections;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
+using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
 [SuppressMessage("ReSharper", "NotAccessedField.Local")]
+[HandledCommand(CommandType.Massping, typeof(MasspingCommand))]
 public readonly struct MasspingCommand : IChatCommand<MasspingCommand>
 {
     public ResponseBuilder Response { get; }

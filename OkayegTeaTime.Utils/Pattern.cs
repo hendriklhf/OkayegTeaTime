@@ -20,7 +20,7 @@ public static partial class Pattern
     [GeneratedRegex(@"\w+(,\s?\w+)*", RegexOptions.Compiled, 250)]
     private static partial Regex GetMultipleTargetsRegex();
 
-    [GeneratedRegex(@"(https?://)?open\.spotify\.\w+/track/\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled, 250)]
+    [GeneratedRegex(@"(https?://)?open\.spotify\.\w+(/.+)?/track/\w+", RegexOptions.IgnoreCase | RegexOptions.Compiled, 250)]
     private static partial Regex GetSpotifyLinkRegex();
 
     [GeneratedRegex(@"spotify:track:\w{22}", RegexOptions.IgnoreCase | RegexOptions.Compiled, 250)]

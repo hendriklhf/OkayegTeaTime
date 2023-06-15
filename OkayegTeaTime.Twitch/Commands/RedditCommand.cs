@@ -9,7 +9,6 @@ using HLE.Emojis;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -53,7 +52,7 @@ public readonly struct RedditCommand : IChatCommand<RedditCommand>
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string subReddit = StringPool.Shared.GetOrAdd(messageExtension.LowerSplit[1].Span);
-            RedditPost[]? posts = await GetRedditPosts(subReddit);
+            RedditPost[]? posts = await GetRedditPostsAsync(subReddit);
             if (posts is null)
             {
                 Response.Append(ChatMessage.Username, ", ", Messages.ApiError);
@@ -74,11 +73,11 @@ public readonly struct RedditCommand : IChatCommand<RedditCommand>
         }
     }
 
-    private static async ValueTask<RedditPost[]?> GetRedditPosts(string subReddit)
+    private static async ValueTask<RedditPost[]?> GetRedditPostsAsync(string subReddit)
     {
         try
         {
-            if (_redditPostCache.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].TimeOfRequest + _cacheTime > DateTime.UtcNow)
+            if (_redditPostCache.TryGetValue(subReddit, out RedditPost[]? redditPosts) && redditPosts[0].IsValid(_cacheTime))
             {
                 return redditPosts;
             }

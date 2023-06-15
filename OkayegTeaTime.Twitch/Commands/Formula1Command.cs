@@ -13,8 +13,8 @@ using OkayegTeaTime.Models.Formula1;
 using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
-using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -125,7 +125,7 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
     {
         double latitude = double.Parse(race.Circuit.Location.Latitude);
         double longitude = double.Parse(race.Circuit.Location.Longitude);
-        WeatherData? weatherData = await _twitchBot.WeatherController.GetWeather(latitude, longitude, false);
+        WeatherData? weatherData = await _twitchBot.WeatherService.GetWeatherAsync(latitude, longitude, false);
         if (weatherData is null)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ApiError);
@@ -135,7 +135,7 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
         weatherData.CityName = race.Circuit.Location.Name;
         weatherData.Location.Country = race.Circuit.Location.Country;
         Response.Append(ChatMessage.Username, ", ");
-        int charsWritten = WeatherController.WriteWeatherData(weatherData, Response.FreeBufferSpan, false);
+        int charsWritten = WeatherService.WriteWeatherData(weatherData, Response.FreeBufferSpan, false);
         Response.Advance(charsWritten);
     }
 

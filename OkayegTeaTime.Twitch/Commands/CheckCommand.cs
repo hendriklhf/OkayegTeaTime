@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -59,8 +58,8 @@ public readonly struct CheckCommand : IChatCommand<CheckCommand>
     {
         Response.Append(ChatMessage.Username, ", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        int id = int.Parse(messageExtension.Split[2].Span);
-        Reminder? reminder = _twitchBot.Reminders[id];
+        int reminderId = int.Parse(messageExtension.Split[2].Span);
+        Reminder? reminder = _twitchBot.Reminders[reminderId];
         if (reminder is null)
         {
             Response.Append(Messages.CouldNotFindAnyMatchingReminder);
@@ -115,12 +114,13 @@ public readonly struct CheckCommand : IChatCommand<CheckCommand>
             return;
         }
 
-        AfkCommand afkCommand = _twitchBot.CommandController[user.AfkType];
-        Response.Append(new AfkMessage(user, afkCommand).GoingAway);
-        string? message = user.AfkMessage;
-        if (!string.IsNullOrWhiteSpace(message))
+        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(username, user.AfkType, Response.FreeBufferSpan);
+        Response.Advance(afkMessageLength);
+
+        string? afkMessage = user.AfkMessage;
+        if (!string.IsNullOrWhiteSpace(afkMessage))
         {
-            Response.Append(": ", message);
+            Response.Append(": ", afkMessage);
         }
 
         TimeSpan timeSinceBeingAfk = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);

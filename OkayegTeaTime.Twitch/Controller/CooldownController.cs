@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using HLE.Collections;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Models;
 
@@ -27,13 +28,9 @@ public sealed class CooldownController
 #endif
 
         CooldownHash cooldownHash = new(userId, type);
-        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(_commandController[type].Cooldown);
+        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(_commandController.GetCommand(type).Cooldown);
         DateTime cooldownUntil = DateTime.UtcNow + cooldownTime;
-
-        if (!_cooldowns.TryAdd(cooldownHash, cooldownUntil))
-        {
-            _cooldowns[cooldownHash] = cooldownUntil;
-        }
+        _cooldowns.AddOrSet(cooldownHash, cooldownUntil);
     }
 
     public void AddAfkCooldown(long userId)
@@ -48,11 +45,7 @@ public sealed class CooldownController
         CooldownHash cooldownHash = new(userId);
         TimeSpan cooldownTime = TimeSpan.FromMilliseconds(AppSettings.AfkCooldown);
         DateTime cooldownUntil = DateTime.UtcNow + cooldownTime;
-
-        if (!_afkCooldowns.TryAdd(cooldownHash, cooldownUntil))
-        {
-            _afkCooldowns[cooldownHash] = cooldownUntil;
-        }
+        _afkCooldowns.AddOrSet(cooldownHash, cooldownUntil);
     }
 
     public bool IsOnCooldown(long userId, CommandType type)

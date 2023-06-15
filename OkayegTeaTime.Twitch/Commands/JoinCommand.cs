@@ -3,8 +3,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
-using OkayegTeaTime.Twitch.Api.Helix.Models;
 using OkayegTeaTime.Twitch.Attributes;
+using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Models;
 using StringHelper = OkayegTeaTime.Utils.StringHelper;
 
@@ -69,7 +69,7 @@ public readonly struct JoinCommand : IChatCommand<JoinCommand>
                 return;
             }
 
-            bool success = await _twitchBot.JoinChannel(channel);
+            bool success = await _twitchBot.JoinChannelAsync(channel);
             Response.Append(ChatMessage.Username, ", ", success ? "successfully joined" : "failed to join", " #", channel);
         }
     }

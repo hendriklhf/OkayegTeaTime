@@ -6,8 +6,8 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
-using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Twitch.Services;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -61,7 +61,7 @@ public readonly struct WeatherCommand : IChatCommand<WeatherCommand>
             isPrivateLocation = user.IsPrivateLocation;
         }
 
-        WeatherData? weatherData = await _twitchBot.WeatherController.GetWeather(city);
+        WeatherData? weatherData = await _twitchBot.WeatherService.GetWeatherAsync(city);
         if (weatherData is null)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ApiError);
@@ -75,7 +75,7 @@ public readonly struct WeatherCommand : IChatCommand<WeatherCommand>
         }
 
         Response.Append(ChatMessage.Username, ", ");
-        int charsWritten = WeatherController.WriteWeatherData(weatherData, Response.FreeBufferSpan, isPrivateLocation);
+        int charsWritten = WeatherService.WriteWeatherData(weatherData, Response.FreeBufferSpan, isPrivateLocation);
         Response.Advance(charsWritten);
     }
 

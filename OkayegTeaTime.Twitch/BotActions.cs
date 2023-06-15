@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using HLE.Strings;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Models.Json;
-using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Settings;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch;
@@ -26,9 +25,13 @@ public static class BotActions
 
     public static async ValueTask SendComingBack(this TwitchBot twitchBot, User user, string channel)
     {
-        AfkCommand cmd = twitchBot.CommandController[user.AfkType];
-        string afkMessage = new AfkMessage(user, cmd).ComingBack;
-        await twitchBot.SendAsync(channel, afkMessage);
+        string emote = twitchBot.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
+        using PoolBufferStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
+        responseBuilder.Append(emote, " ");
+
+        int afkMessageLength = twitchBot.AfkMessageBuilder.BuildComingBackMessage(user, user.AfkType, responseBuilder.FreeBufferSpan);
+        responseBuilder.Advance(afkMessageLength);
+        await twitchBot.SendAsync(channel, responseBuilder.WrittenMemory);
     }
 
     public static async ValueTask SendReminder(this TwitchBot twitchBot, string channel, Reminder[] reminders)

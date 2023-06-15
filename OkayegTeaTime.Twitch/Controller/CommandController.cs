@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Frozen;
-using System.Diagnostics;
 using System.Linq;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
@@ -12,10 +11,6 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class CommandController
 {
-    public Command this[CommandType type] => GetCommand(type);
-
-    public AfkCommand this[AfkType type] => GetAfkCommand(type);
-
     public Command[] Commands { get; }
 
     public AfkCommand[] AfkCommands { get; }
@@ -24,31 +19,37 @@ public sealed class CommandController
 
     public CommandController()
     {
-        Commands = AppSettings.CommandList.Commands.OrderBy(c => c.Name).ToArray();
+        int commandTypeCount = Enum.GetValues<CommandType>().Length;
+        Commands = new Command[commandTypeCount];
+        foreach (Command command in AppSettings.CommandList.Commands)
+        {
+            CommandType commandType = Enum.Parse<CommandType>(command.Name, true);
+            Commands[(int)commandType] = command;
+        }
 
-        AfkCommands = AppSettings.CommandList.AfkCommands;
-        _afkCommandAliasHashes = AfkCommands.SelectMany(c => c.Aliases).Select(a => new AliasHash(a)).ToFrozenSet();
+        int afkCommandTypeCount = Enum.GetValues<AfkType>().Length;
+        AfkCommands = new AfkCommand[afkCommandTypeCount];
+        foreach (AfkCommand command in AppSettings.CommandList.AfkCommands)
+        {
+            AfkType afkType = Enum.Parse<AfkType>(command.Name, true);
+            AfkCommands[(int)afkType] = command;
+        }
+
+        _afkCommandAliasHashes = AfkCommands.SelectMany(c => c.Aliases).Select(a => new AliasHash(a)).ToFrozenSet(true);
     }
 
     public bool IsAfkCommand(string? channelPrefix, string message)
     {
-        MessageHelper.ExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _);
-        return _afkCommandAliasHashes.Contains(new(alias.Span));
+        return MessageHelper.TryExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _) && _afkCommandAliasHashes.Contains(new(alias.Span));
     }
 
-    private Command GetCommand(CommandType type)
+    public Command GetCommand(CommandType type)
     {
-        // asserting the enum and the commands are both in the same order so commands can be accessed by index of the enum value
-        Debug.Assert(Enum.GetNames<CommandType>().Select(c => c.ToLower()).SequenceEqual(Commands.Select(c => c.Name.ToLower())));
-
         return Commands[(int)type];
     }
 
-    private AfkCommand GetAfkCommand(AfkType type)
+    public AfkCommand GetAfkCommand(AfkType type)
     {
-        // asserting the enum and the commands are both in the same order so commands can be accessed by index of the enum value
-        Debug.Assert(Enum.GetNames<AfkType>().Select(a => a.ToLower()).SequenceEqual(AfkCommands.Select(a => a.Name.ToLower())));
-
         return AfkCommands[(int)type];
     }
 }

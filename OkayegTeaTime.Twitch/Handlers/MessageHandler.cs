@@ -1,9 +1,4 @@
 ﻿using System;
-#if RELEASE
-using System.Linq;
-using HLE.Memory;
-using OkayegTeaTime.Database;
-#endif
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Twitch.Models;
@@ -12,6 +7,9 @@ using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Models;
 #if RELEASE
+using System.Linq;
+using HLE.Memory;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Utils;
 #endif
@@ -23,7 +21,7 @@ public sealed class MessageHandler : Handler
     private readonly CommandHandler _commandHandler;
     private readonly PajaAlertHandler _pajaAlertHandler;
 
-    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+    private readonly Regex _forgottenPrefixPattern = new($@"^@?{AppSettings.Twitch.Username},?\s*(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     public MessageHandler(TwitchBot twitchBot) : base(twitchBot)
     {
@@ -41,21 +39,21 @@ public sealed class MessageHandler : Handler
             return;
         }
 
-        await CheckForAfk(chatMessage);
-        await CheckForReminder(chatMessage.Username, chatMessage.Channel);
+        await CheckForAfkAsync(chatMessage);
+        await CheckForReminderAsync(chatMessage.Username, chatMessage.Channel);
         await _commandHandler.Handle(chatMessage);
-        await HandleSpecificMessages(chatMessage);
+        await HandleSpecificMessagesAsync(chatMessage);
     }
 
-    private async ValueTask HandleSpecificMessages(ChatMessage chatMessage)
+    private async ValueTask HandleSpecificMessagesAsync(ChatMessage chatMessage)
     {
 #if RELEASE
         await CheckForSpotifyUri(chatMessage);
 #endif
-        await CheckForForgottenPrefix(chatMessage);
+        await CheckForForgottenPrefixAsync(chatMessage);
     }
 
-    private async ValueTask CheckForAfk(ChatMessage chatMessage)
+    private async ValueTask CheckForAfkAsync(ChatMessage chatMessage)
     {
         User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user?.IsAfk != true)
@@ -70,7 +68,7 @@ public sealed class MessageHandler : Handler
         }
     }
 
-    private async ValueTask CheckForReminder(string username, string channel)
+    private async ValueTask CheckForReminderAsync(string username, string channel)
     {
         Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
         await _twitchBot.SendReminder(channel, reminders);
@@ -110,7 +108,7 @@ public sealed class MessageHandler : Handler
     }
 #endif
 
-    private async ValueTask CheckForForgottenPrefix(ChatMessage chatMessage)
+    private async ValueTask CheckForForgottenPrefixAsync(ChatMessage chatMessage)
     {
         if (!_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {

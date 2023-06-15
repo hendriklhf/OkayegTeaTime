@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using HLE.Twitch.Models;
+using OkayegTeaTime.Database;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -40,16 +39,20 @@ public readonly struct MathCommand : IChatCommand<MathCommand>
         Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
+            Response.Append(ChatMessage.Username, ", ");
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            string? mathResult = await GetMathResult(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
-            Response.Append(ChatMessage.Username, ", ", mathResult);
+            string expression = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
+            try
+            {
+                string result = await _twitchBot.MathService.GetExpressionResultAsync(expression);
+                Response.Append(result);
+            }
+            catch (Exception ex)
+            {
+                await DbController.LogExceptionAsync(ex);
+                Response.Append(Messages.ApiError);
+            }
         }
-    }
-
-    private static async ValueTask<string?> GetMathResult(string expression)
-    {
-        HttpGet request = await HttpGet.GetStringAsync($"https://api.mathjs.org/v4/?expr={HttpUtility.UrlEncode(expression)}");
-        return request.Result;
     }
 
     public void Dispose()

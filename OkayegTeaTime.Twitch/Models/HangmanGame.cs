@@ -18,7 +18,7 @@ public sealed class HangmanGame : IDisposable
     public bool IsSolved => DiscoveredWord.Equals(Solution, StringComparison.OrdinalIgnoreCase);
 
     private readonly RentedArray<char> _discoveredWord;
-    private readonly RentedArray<char> _wrongChars;
+    private readonly RentedArray<char> _wrongChars = new(26);
     private int _wrongCharLength;
 
     public const int MaxWrongGuesses = 10;
@@ -28,7 +28,6 @@ public sealed class HangmanGame : IDisposable
         Solution = solution;
         _discoveredWord = new(solution.Length);
         _discoveredWord.Span.Fill('_');
-        _wrongChars = new(26);
     }
 
     ~HangmanGame()

@@ -58,12 +58,12 @@ public readonly struct KotlinCommand : IChatCommand<KotlinCommand>
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             string code = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
-            string result = await GetProgramOutput(code);
+            string result = await GetProgramOutputAsync(code);
             Response.Append(ChatMessage.Username, ", ", result);
         }
     }
 
-    private static async ValueTask<string> GetProgramOutput(string input)
+    private static async ValueTask<string> GetProgramOutputAsync(string input)
     {
         try
         {

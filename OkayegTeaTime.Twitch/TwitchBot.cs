@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
-using HLE.Collections;
 using HLE.Emojis;
-using HLE.Strings;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
-using OkayegTeaTime.Twitch.Api.Bttv;
-using OkayegTeaTime.Twitch.Api.Ffz;
-using OkayegTeaTime.Twitch.Api.Helix;
-using OkayegTeaTime.Twitch.Api.SevenTv;
+using OkayegTeaTime.Twitch.Bttv;
 using OkayegTeaTime.Twitch.Controller;
+using OkayegTeaTime.Twitch.Ffz;
 using OkayegTeaTime.Twitch.Handlers;
+using OkayegTeaTime.Twitch.Helix;
+using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Twitch.Services;
+using OkayegTeaTime.Twitch.SevenTv;
 using OkayegTeaTime.Utils;
 using static OkayegTeaTime.Utils.ProcessUtils;
 
@@ -37,7 +35,7 @@ public sealed class TwitchBot
 
     public CommandController CommandController { get; } = new();
 
-    public WeatherController WeatherController { get; } = new();
+    public WeatherService WeatherService { get; } = new();
 
     public CooldownController CooldownController { get; }
 
@@ -55,11 +53,19 @@ public sealed class TwitchBot
 
     public Dictionary<long, HangmanGame> HangmanGames { get; } = new();
 
+    public EmoteService EmoteService { get; }
+
+    public DotNetFiddleService DotNetFiddleService { get; } = new();
+
+    public MathService MathService { get; } = new();
+
+    public AfkMessageBuilder AfkMessageBuilder { get; }
+
     public uint CommandCount { get; set; }
 
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
-    private readonly TimerCollection _timerCollection = new();
+    private readonly PeriodicActionsController _periodicActionsController;
 
     public TwitchBot(IEnumerable<string>? channels = null)
     {
@@ -79,24 +85,36 @@ public sealed class TwitchBot
         CooldownController = new(CommandController);
         LastMessages = new(Channels);
         _messageHandler = new(this);
-        InitializeTimers();
+        EmoteService = new(this);
+        _periodicActionsController = new(GetPeriodicActions());
+        AfkMessageBuilder = new(CommandController.AfkCommands);
     }
 
     public async ValueTask ConnectAsync()
     {
         await _twitchClient.ConnectAsync();
-        _timerCollection.StartAll();
+        _periodicActionsController.StartAll();
     }
 
     public async ValueTask DisconnectAsync()
     {
-        _timerCollection.StopAll();
+        _periodicActionsController.StopAll();
         await _twitchClient.DisconnectAsync();
     }
 
     public async ValueTask SendAsync(long channelId, ReadOnlyMemory<char> message)
     {
         await _twitchClient.SendAsync(channelId, message);
+    }
+
+    public async ValueTask SendAsync(string channel, ReadOnlyMemory<char> message)
+    {
+        await _twitchClient.SendAsync(channel, message);
+    }
+
+    public async ValueTask SendAsync(ReadOnlyMemory<char> channel, ReadOnlyMemory<char> message)
+    {
+        await _twitchClient.SendAsync(channel, message);
     }
 
     public async ValueTask SendAsync(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
@@ -121,7 +139,7 @@ public sealed class TwitchBot
         LastMessages[channel] = message;
     }
 
-    public async ValueTask<bool> JoinChannel(string channel)
+    public async ValueTask<bool> JoinChannelAsync(string channel)
     {
         try
         {
@@ -143,7 +161,7 @@ public sealed class TwitchBot
         }
     }
 
-    public async ValueTask<bool> LeaveChannel(string channel)
+    public async ValueTask<bool> LeaveChannelAsync(string channel)
     {
         try
         {
@@ -165,106 +183,6 @@ public sealed class TwitchBot
         SpotifyUsers.Invalidate();
         Users.Invalidate();
         Channels.Invalidate();
-    }
-
-    public async ValueTask<string> GetBestEmoteAsync(long channelId, string fallback, params string[] keywords)
-    {
-        using PoolBufferList<string> emoteNames = await GetAllEmoteNames(channelId);
-        using PoolBufferList<string> bestEmotes = new(32);
-        foreach (string keyword in keywords)
-        {
-            Regex keywordPattern = RegexPool.Shared.GetOrAdd(keyword, RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-            for (int i = 0; i < emoteNames.Count; i++)
-            {
-                string emoteName = emoteNames[i];
-                if (keywordPattern.IsMatch(emoteName))
-                {
-                    bestEmotes.Add(emoteName);
-                }
-            }
-        }
-
-        return bestEmotes.AsSpan().Random() ?? fallback;
-    }
-
-    public async ValueTask<PoolBufferList<string>> GetAllEmoteNames(long channelId)
-    {
-        var getTwitchGlobalEmotesTask = TwitchApi.GetGlobalEmotesAsync().AsTask();
-        var getTwitchChannelEmotesTask = TwitchApi.GetChannelEmotesAsync(channelId).AsTask();
-        var getFfzGlobalEmotesTask = FfzApi.GetGlobalEmotesAsync().AsTask();
-        var getFfzChannelEmotesTask = FfzApi.GetChannelEmotesAsync(channelId).AsTask();
-        var getBttvGlobalEmotesTask = BttvApi.GetGlobalEmotesAsync().AsTask();
-        var getBttvChannelEmotesTask = BttvApi.GetChannelEmotesAsync(channelId).AsTask();
-        var getSevenTvGlobalEmotesTask = SevenTvApi.GetGlobalEmotesAsync().AsTask();
-        var getSevenTvChannelEmotesTask = SevenTvApi.GetChannelEmotesAsync(channelId).AsTask();
-
-        await Task.WhenAll(getTwitchGlobalEmotesTask, getTwitchChannelEmotesTask, getFfzGlobalEmotesTask, getFfzChannelEmotesTask,
-            getBttvGlobalEmotesTask, getBttvChannelEmotesTask, getSevenTvGlobalEmotesTask, getSevenTvChannelEmotesTask);
-
-        var twitchGlobalEmotes = getTwitchGlobalEmotesTask.Result;
-        var twitchChannelEmotes = getTwitchChannelEmotesTask.Result;
-        var ffzGlobalEmotes = getFfzGlobalEmotesTask.Result;
-        var ffzChannelEmotes = getFfzChannelEmotesTask.Result;
-        var bttvGlobalEmotes = getBttvGlobalEmotesTask.Result;
-        var bttvChannelEmotes = getBttvChannelEmotesTask.Result;
-        var sevenTvGlobalEmotes = getSevenTvGlobalEmotesTask.Result;
-        var sevenTvChannelEmotes = getSevenTvChannelEmotesTask.Result;
-
-        int totalEmoteCount = twitchGlobalEmotes.Length + twitchChannelEmotes.Length + ffzGlobalEmotes.Length + (ffzChannelEmotes?.Length ?? 0) +
-                              bttvGlobalEmotes.Length + (bttvChannelEmotes?.Length ?? 0) + sevenTvGlobalEmotes.Length + (sevenTvChannelEmotes?.Length ?? 0);
-
-        PoolBufferList<string> emoteNames = new(totalEmoteCount);
-
-        foreach (var emote in twitchGlobalEmotes)
-        {
-            emoteNames.Add(emote.Name);
-        }
-
-        foreach (var emote in twitchChannelEmotes)
-        {
-            emoteNames.Add(emote.Name);
-        }
-
-        foreach (var emote in ffzGlobalEmotes)
-        {
-            emoteNames.Add(emote.Name);
-        }
-
-        if (ffzChannelEmotes is not null)
-        {
-            foreach (var emote in ffzChannelEmotes)
-            {
-                emoteNames.Add(emote.Name);
-            }
-        }
-
-        foreach (var emote in bttvGlobalEmotes)
-        {
-            emoteNames.Add(emote.Name);
-        }
-
-        if (bttvChannelEmotes is not null)
-        {
-            foreach (var emote in bttvChannelEmotes)
-            {
-                emoteNames.Add(emote.Name);
-            }
-        }
-
-        foreach (var emote in sevenTvGlobalEmotes)
-        {
-            emoteNames.Add(emote.Name);
-        }
-
-        if (sevenTvChannelEmotes is not null)
-        {
-            foreach (var emote in sevenTvChannelEmotes)
-            {
-                emoteNames.Add(emote.Name);
-            }
-        }
-
-        return emoteNames;
     }
 
     #region Bot_On
@@ -314,12 +232,15 @@ public sealed class TwitchBot
 
     #region Timer
 
-    private void InitializeTimers()
+    private PeriodicAction[] GetPeriodicActions()
     {
-        _timerCollection.Add(OnTimer1000, TimeSpan.FromSeconds(1).TotalMilliseconds, startDirectly: false);
+        return new PeriodicAction[]
+        {
+            new(CheckForExpiredReminders, TimeSpan.FromSeconds(1))
+        };
     }
 
-    private async ValueTask OnTimer1000(object? sender, ElapsedEventArgs e)
+    private async ValueTask CheckForExpiredReminders()
     {
         Reminder[] reminders = Reminders.GetExpiredReminders();
         for (int i = 0; i < reminders.Length; i++)
