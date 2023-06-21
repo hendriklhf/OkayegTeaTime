@@ -48,6 +48,11 @@ public readonly struct CSharpCommand : IChatCommand<CSharpCommand>
             {
                 DotNetFiddleResult dotNetFiddleResult = await _twitchBot.DotNetFiddleService.ExecuteCodeAsync(mainMethodContent);
                 ReadOnlyMemory<char> consoleOutput = dotNetFiddleResult.ConsoleOutput.AsMemory();
+                if (consoleOutput.Length == 0)
+                {
+                    Response.Append("empty output, code executed successfully");
+                }
+
                 bool isConsoleOutputTooLong = consoleOutput.Length > 450;
                 if (isConsoleOutputTooLong)
                 {
