@@ -626,12 +626,13 @@
       "Name": "Kotlin",
       "Description": "Executes the given Kotlin code",
       "Aliases": [
-        "kotlin"
+        "kotlin",
+        "kt"
       ],
       "Parameters": [
         "[code]"
       ],
-      "ParameterDescriptions": [
+pajam         "ParameterDescriptions": [
         "Executes the given Kotlin code"
       ],
       "Cooldown": 15000,
