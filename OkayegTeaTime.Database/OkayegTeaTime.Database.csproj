@@ -1,42 +1,39 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <NoWin32Manifest>true</NoWin32Manifest>
-    <DebugType>embedded</DebugType>
-    <Nullable>enable</Nullable>
-    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <ImplicitUsings>disable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
-    <PackageReference Include="MySql.Data.EntityFramework" Version="8.0.33" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.2" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>IDE0005</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj" />
-    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <TreatAsUsed>true</TreatAsUsed>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <TreatAsUsed>true</TreatAsUsed>
+        </PackageReference>
+        <PackageReference Include="MySql.Data.EntityFramework" Version="8.1.0" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj"/>
+        <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
+    </ItemGroup>
 
 </Project>

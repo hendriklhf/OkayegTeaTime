@@ -1,28 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <NoWin32Manifest>true</NoWin32Manifest>
-    <DebugType>embedded</DebugType>
-    <Nullable>enable</Nullable>
-    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <ImplicitUsings>disable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SpotifyAPI.Web" Version="7.0.0" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>IDE0005</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj" />
-    <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj" />
-    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SpotifyAPI.Web" Version="7.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj"/>
+        <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj"/>
+        <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
+    </ItemGroup>
 
 </Project>

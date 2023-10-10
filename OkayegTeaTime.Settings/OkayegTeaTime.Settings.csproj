@@ -1,25 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <NoWin32Manifest>true</NoWin32Manifest>
-    <DebugType>embedded</DebugType>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <ImplicitUsings>disable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="HLE" Version="2.1.6" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>IDE0005</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Models\OkayegTeaTime.Models.csproj" />
-    <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="HLE" Version="2.1.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OkayegTeaTime.Models\OkayegTeaTime.Models.csproj"/>
+        <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj"/>
+    </ItemGroup>
 
 </Project>

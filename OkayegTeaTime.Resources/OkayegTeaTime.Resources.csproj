@@ -1,53 +1,39 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <NoWin32Manifest>true</NoWin32Manifest>
-    <DebugType>embedded</DebugType>
-    <Nullable>enable</Nullable>
-    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <ImplicitUsings>disable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>IDE0005</NoWarn>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="CSharpTemplate.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="CSharpTemplate.cs"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="CSharpTemplate.cs" />
-    <EmbeddedResource Include="Commands.json" />
-    <EmbeddedResource Include="GachiSongs.json" />
-    <EmbeddedResource Include="LastCommit" />
-    <EmbeddedResource Include="CodeFiles" />
-    <EmbeddedResource Include="KotlinTemplate.kt" />
-    <EmbeddedResource Include="HangmanWords" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="CSharpTemplate.cs"/>
+        <EmbeddedResource Include="Commands.json"/>
+        <EmbeddedResource Include="GachiSongs.json"/>
+        <EmbeddedResource Include="LastCommit"/>
+        <EmbeddedResource Include="CodeFiles"/>
+        <EmbeddedResource Include="KotlinTemplate.kt"/>
+        <EmbeddedResource Include="HangmanWords"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Settings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="HLE" Version="2.1.6" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="HLE" Version="2.1.7" />
+    </ItemGroup>
 
 </Project>

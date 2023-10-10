@@ -2,16 +2,18 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>IDE0005</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="HLE" Version="2.1.7" />
+    </ItemGroup>
 
 </Project>

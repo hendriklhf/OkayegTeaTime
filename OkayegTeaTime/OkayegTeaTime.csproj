@@ -1,43 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <StartupObject>OkayegTeaTime.Program</StartupObject>
-    <RepositoryUrl>https://github.com/Sterbehilfe/OkayegTeaTime</RepositoryUrl>
-    <SignAssembly>false</SignAssembly>
-    <Platforms>AnyCPU</Platforms>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <ApplicationIcon>..\OkayegTeaTime.Resources\Okayeg.ico</ApplicationIcon>
-    <PackageIcon>..\OkayegTeaTime.Resources\Okayeg.ico</PackageIcon>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <Description>A Twitch bot.</Description>
-    <NeutralLanguage>en</NeutralLanguage>
-    <NoWin32Manifest>true</NoWin32Manifest>
-    <DebugType>embedded</DebugType>
-    <Nullable>enable</Nullable>
-    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <RepositoryUrl>https://github.com/Sterbehilfe/OkayegTeaTime</RepositoryUrl>
+        <ApplicationIcon>..\OkayegTeaTime.Resources\Okayeg.ico</ApplicationIcon>
+        <PackageIcon>..\OkayegTeaTime.Resources\Okayeg.ico</PackageIcon>
+        <Description>A Twitch bot.</Description>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>IDE0005</NoWarn>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.5" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.10" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj" />
-    <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj" />
-    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj"/>
+        <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj"/>
+        <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
+    </ItemGroup>
 
 </Project>
