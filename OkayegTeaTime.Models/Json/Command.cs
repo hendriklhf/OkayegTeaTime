@@ -1,20 +1,22 @@
-﻿#nullable disable
+﻿using System.Collections.Immutable;
 
 namespace OkayegTeaTime.Models.Json;
 
 public sealed class Command
 {
-    public string Name { get; set; }
+    public required string Name { get; init; }
 
-    public string Description { get; set; }
+    public required string Description { get; init; }
 
-    public string[] Aliases { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<string> Aliases { get; init; }
 
-    public string[] Parameters { get; set; }
+    public required ImmutableArray<string> Parameters { get; init; }
 
-    public string[] ParameterDescriptions { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<string> ParameterDescriptions { get; init; }
 
-    public int Cooldown { get; set; }
+    public required int Cooldown { get; init; }
 
-    public bool Document { get; set; }
+    public required bool Document { get; init; }
 }

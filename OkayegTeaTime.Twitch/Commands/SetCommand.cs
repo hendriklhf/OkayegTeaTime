@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Memory;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
@@ -13,29 +13,18 @@ using Channel = OkayegTeaTime.Database.Models.Channel;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Set, typeof(SetCommand))]
-public readonly struct SetCommand : IChatCommand<SetCommand>
+public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<SetCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static readonly Regex _enabledPattern = new(@"(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-    private static readonly Regex _disabledPattern = new(@"(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-
-    public SetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -44,28 +33,28 @@ public readonly struct SetCommand : IChatCommand<SetCommand>
     {
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;
-        Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\sprefix\s\S+");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\sprefix\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetPrefix();
             return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\semote\s\S+");
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\semote\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetEmote();
             return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetSongRequestState();
             return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\slocation\s((private)|(public))\s\S+");
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\slocation\s((private)|(public))\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetLocation();
@@ -139,11 +128,11 @@ public readonly struct SetCommand : IChatCommand<SetCommand>
         }
 
         bool? state = null;
-        if (_enabledPattern.IsMatch(messageExtension.Split[2].Span))
+        if (GetEnabledPattern().IsMatch(messageExtension.Split[2].Span))
         {
             state = true;
         }
-        else if (_disabledPattern.IsMatch(messageExtension.Split[2].Span))
+        else if (GetDisabledPattern().IsMatch(messageExtension.Split[2].Span))
         {
             state = false;
         }
@@ -165,12 +154,13 @@ public readonly struct SetCommand : IChatCommand<SetCommand>
         Response.Append("song requests ", state.Value ? "enabled" : "disabled", " ", "for channel ", ChatMessage.Channel);
     }
 
+    [SkipLocalsInit]
     private void SetLocation()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.Split.GetSplits();
+        ReadOnlySpan<ReadOnlyMemory<char>> splits = messageExtension.Split.Splits;
 
-        Span<char> cityBuffer = stackalloc char[500];
+        Span<char> cityBuffer = stackalloc char[512];
         int cityBufferLength = StringHelper.Join(splits[3..messageExtension.Split.Length], ' ', cityBuffer);
         string city = new(cityBuffer[..cityBufferLength]);
 
@@ -191,11 +181,42 @@ public readonly struct SetCommand : IChatCommand<SetCommand>
             user.IsPrivateLocation = isPrivate;
         }
 
-        Response.Append(ChatMessage.Username, ", ", "your ", isPrivate ? "private" : "public", " location has been set");
+        Response.Append(ChatMessage.Username, ", your ", isPrivate ? "private" : "public", " location has been set");
     }
+
+    [GeneratedRegex("(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, 1000)]
+    private static partial Regex GetEnabledPattern();
+
+    [GeneratedRegex("(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, 1000)]
+    private static partial Regex GetDisabledPattern();
 
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(SetCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SetCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(SetCommand left, SetCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(SetCommand left, SetCommand right)
+    {
+        return !left.Equals(right);
     }
 }

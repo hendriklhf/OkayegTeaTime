@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Text.Json;
 using OkayegTeaTime.Models.Json;
@@ -20,9 +21,9 @@ public static class JsonController
         return commandList ?? throw new ArgumentNullException(nameof(commandList));
     }
 
-    public static GachiSong[] GetGachiSongs()
+    public static ImmutableArray<GachiSong> GetGachiSongs()
     {
-        GachiSong[]? gachiSongs = JsonSerializer.Deserialize<GachiSong[]>(ResourceController.GachiSongs);
-        return gachiSongs ?? throw new ArgumentNullException(nameof(gachiSongs));
+        ImmutableArray<GachiSong> gachiSongs = JsonSerializer.Deserialize<ImmutableArray<GachiSong>>(ResourceController.GachiSongs);
+        return gachiSongs.IsDefault ? throw new InvalidOperationException($"{nameof(gachiSongs)} is default.") : gachiSongs;
     }
 }

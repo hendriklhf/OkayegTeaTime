@@ -1,14 +1,10 @@
+using System;
+
 namespace OkayegTeaTime.Models.Formula1;
 
-public sealed class Session
+public sealed class Session(string name, DateTime start)
 {
-    public string Name { get; }
+    public string Name { get; } = name;
 
-    public DateTime Start { get; }
-
-    public Session(string name, DateTime start)
-    {
-        Name = name;
-        Start = start;
-    }
+    public DateTime Start { get; } = start;
 }

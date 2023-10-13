@@ -1,39 +1,28 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
-#pragma warning disable IDE0052
-
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Chatterino, typeof(ChatterinoCommand))]
-[SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly struct ChatterinoCommand : IChatCommand<ChatterinoCommand>
+public readonly struct ChatterinoCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<ChatterinoCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private const string _responseMessage = "Website: chatterino.com || Releases: github.com/Chatterino/chatterino2/releases";
 
-    public ChatterinoCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ChatterinoCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ChatterinoCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -47,5 +36,30 @@ public readonly struct ChatterinoCommand : IChatCommand<ChatterinoCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(ChatterinoCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ChatterinoCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(ChatterinoCommand left, ChatterinoCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ChatterinoCommand left, ChatterinoCommand right)
+    {
+        return !left.Equals(right);
     }
 }

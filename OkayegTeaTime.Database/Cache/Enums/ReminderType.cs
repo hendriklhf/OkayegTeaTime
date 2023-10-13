@@ -3,7 +3,7 @@
 namespace OkayegTeaTime.Database.Cache.Enums;
 
 [Flags]
-public enum ReminderType : byte
+public enum ReminderType
 {
     Timed = 1,
     NonTimed = 2

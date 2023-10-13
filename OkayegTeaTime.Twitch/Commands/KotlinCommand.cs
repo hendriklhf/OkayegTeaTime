@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
@@ -16,15 +17,16 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Kotlin, typeof(KotlinCommand))]
-public readonly struct KotlinCommand : IChatCommand<KotlinCommand>
+public readonly struct KotlinCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<KotlinCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private const string _kotlinFileName = "File.kt";
     /// <summary>
@@ -37,23 +39,14 @@ public readonly struct KotlinCommand : IChatCommand<KotlinCommand>
     private const byte _outStreamLabelLength = 11;
     private const string _errorSeverity = "ERROR";
 
-    public KotlinCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out KotlinCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out KotlinCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public async ValueTask Handle()
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
@@ -92,7 +85,7 @@ public readonly struct KotlinCommand : IChatCommand<KotlinCommand>
             int errorLength = errors.GetArrayLength();
             if (errorLength > 0)
             {
-                using PoolBufferList<string> errorTexts = new();
+                using PooledList<string> errorTexts = new();
                 for (int i = 0; i < errorLength; i++)
                 {
                     JsonElement error = errors[i];
@@ -141,5 +134,30 @@ public readonly struct KotlinCommand : IChatCommand<KotlinCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(KotlinCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is KotlinCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(KotlinCommand left, KotlinCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(KotlinCommand left, KotlinCommand right)
+    {
+        return !left.Equals(right);
     }
 }

@@ -6,17 +6,13 @@ using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public sealed class PajaAlertHandler : PajaHandler
+public sealed class PajaAlertHandler(TwitchBot twitchBot) : PajaHandler(twitchBot)
 {
     protected override Regex Pattern { get; } = Utils.Pattern.PajaAlert;
 
     protected override string Message => $"/me pajaStare {Emoji.RotatingLight} OBACHT";
 
-    public PajaAlertHandler(TwitchBot twitchBot) : base(twitchBot)
-    {
-    }
-
-    public override async ValueTask Handle(ChatMessage chatMessage)
+    public override async ValueTask Handle(IChatMessage chatMessage)
     {
         if (chatMessage.ChannelId != _pajaChannelId || chatMessage.UserId != _pajaAlertUserId || !Pattern.IsMatch(chatMessage.Message))
         {

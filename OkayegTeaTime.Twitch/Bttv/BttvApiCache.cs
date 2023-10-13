@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using HLE.Collections;
-using HLE.Memory;
 using OkayegTeaTime.Twitch.Bttv.Models;
 
 namespace OkayegTeaTime.Twitch.Bttv;
 
-public sealed class BttvApiCache : IEquatable<BttvApiCache>
+public sealed class BttvApiCache(CacheOptions options) : IEquatable<BttvApiCache>
 {
-    public CacheOptions Options { get; }
+    public CacheOptions Options { get; } = options;
 
     private readonly ConcurrentDictionary<long, CacheEntry<Emote[]>> _channelEmoteCache = new();
     private CacheEntry<Emote[]> _globalEmoteCache = CacheEntry<Emote[]>.Empty;
-
-    public BttvApiCache(CacheOptions options)
-    {
-        Options = options;
-    }
 
     public void AddChannelEmotes(long channelId, Emote[] emotes)
     {
@@ -65,7 +60,7 @@ public sealed class BttvApiCache : IEquatable<BttvApiCache>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(BttvApiCache? left, BttvApiCache? right)

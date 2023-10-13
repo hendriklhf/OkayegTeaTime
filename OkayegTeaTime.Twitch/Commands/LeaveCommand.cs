@@ -11,33 +11,25 @@ using StringHelper = OkayegTeaTime.Utils.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Leave, typeof(LeaveCommand))]
-public readonly struct LeaveCommand : IChatCommand<LeaveCommand>
+public readonly struct LeaveCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<LeaveCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public LeaveCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out LeaveCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out LeaveCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public async ValueTask Handle()
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s#?\w{3,25}");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s#?\w{3,25}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
@@ -70,5 +62,30 @@ public readonly struct LeaveCommand : IChatCommand<LeaveCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(LeaveCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is LeaveCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(LeaveCommand left, LeaveCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(LeaveCommand left, LeaveCommand right)
+    {
+        return !left.Equals(right);
     }
 }

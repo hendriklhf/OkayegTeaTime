@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Memory;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
@@ -18,22 +17,23 @@ using StringHelper = HLE.Strings.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Remind, typeof(RemindCommand))]
-[SuppressMessage("ReSharper", "UnusedMember.Local")]
-public readonly struct RemindCommand : IChatCommand<RemindCommand>
+public readonly struct RemindCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<RemindCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     private const string _timeIdentificator = "in";
     private const string _yourself = "me";
 
+#pragma warning disable CA1823 // unused field
     [TimePattern(nameof(TimeSpan.FromDays), 365)]
     private static readonly Regex _yearPattern = new(@"\b\d+([,\.]\d+)?\s?y(ear)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
@@ -51,6 +51,7 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
 
     [TimePattern(nameof(TimeSpan.FromSeconds))]
     private static readonly Regex _secondPattern = new(@"\b\d+([,\.]\d+)?\s?s(ec(ond)?)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+#pragma warning restore CA1823
 
     private static readonly Regex _beginningNumberPattern = new(@"^\d+([,\.]\d+)?", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     private static readonly string _timePattern = GetTimePattern();
@@ -60,16 +61,7 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
 
     private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    private RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -80,8 +72,8 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         string message;
         long toTime = 0;
 
-        Regex timedReminderPattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
-        Regex normalReminderPattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
+        Regex timedReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({_timePattern})(\s{_timePattern})*.*");
+        Regex normalReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
         if (timedReminderPattern.IsMatch(ChatMessage.Message))
         {
             toTime = GetToTime();
@@ -144,7 +136,7 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         }
 
         int[] ids = _twitchBot.Reminders.AddRange(reminders);
-        int count = ids.Count(i => i > 0);
+        int count = ids.Count(static i => i > 0);
         if (count == 0)
         {
             Response.Append(Messages.AllTargetUsersHaveTooManyRemindersSetForThem);
@@ -158,7 +150,7 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         {
             Reminder? reminder = reminders.FirstOrDefault(r => r.Id == i);
             return reminder is null ? null : $"{reminder.Target} ({reminder.Id})";
-        }).Where(r => r is not null).ToArray()!;
+        }).Where(static r => r is not null).ToArray()!;
 
         int joinLength = StringHelper.Join(responses, ", ", Response.FreeBufferSpan);
         Response.Advance(joinLength);
@@ -169,18 +161,19 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         return _exceptMessagePattern.Replace(ChatMessage.Message, string.Empty);
     }
 
+    [SkipLocalsInit]
     private unsafe long GetToTime()
     {
         long result = 0;
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        int timeStartIndex = GetTimeStartIdx(&messageExtension);
+        int timeStartIndex = GetTimeStartIndex(&messageExtension);
 
-        using RentedArray<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.GetSplits();
-        Span<char> timesBuffer = stackalloc char[500];
+        ReadOnlySpan<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.Splits;
+        Span<char> timesBuffer = stackalloc char[512];
         int timesBufferLength = StringHelper.Join(splits[timeStartIndex..], ' ', timesBuffer);
         string times = new(timesBuffer[..timesBufferLength]);
 
-        string[] matches = _timeConversions.Select(t => t.Regex.Matches(times).Select(m => m.Value)).SelectMany(m => m).ToArray();
+        string[] matches = _timeConversions.Select(t => t.Regex.Matches(times).Select(static m => m.Value)).SelectMany(static m => m).ToArray();
         foreach (string match in matches)
         {
             foreach (TimeConversionMethod timeConversion in _timeConversions)
@@ -201,12 +194,17 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         return result + _now;
     }
 
+    [SkipLocalsInit]
     private string[] GetTargets()
     {
         ReadOnlySpan<char> match = _targetPattern.Match(ChatMessage.Message).Value;
-        int firstWordLength = match[match.GetRangesOfSplit()[0]].Length + 1;
+        int firstWordLength = match.IndexOf(' ');
         match = match[firstWordLength..];
-        ReadOnlySpan<Range> ranges = match.GetRangesOfSplit(',');
+
+        Span<Range> ranges = stackalloc Range[256];
+        int rangesLength = match.Split(ranges, ',');
+        ranges = ranges[..rangesLength];
+
         string[] targets = new string[ranges.Length];
         Span<char> targetBuffer = stackalloc char[30];
         for (int i = 0; i < ranges.Length; i++)
@@ -222,14 +220,14 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
 
     private static string GetTimePattern()
     {
-        IEnumerable<string> pattern = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePatternAttribute>() is not null).Select(f => f.GetValue(null)!.ToString()![2..^2]);
+        IEnumerable<string> pattern = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(static f => f.GetCustomAttribute<TimePatternAttribute>() is not null).Select(static f => f.GetValue(null)!.ToString()![2..^2]);
         return '(' + string.Join(")|(", pattern) + ')';
     }
 
     private static TimeConversionMethod[] GetTimeConversionMethods()
     {
-        FieldInfo[] fields = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.GetCustomAttribute<TimePatternAttribute>() is not null).ToArray();
-        string[] methodNames = fields.Select(f => f.GetCustomAttribute<TimePatternAttribute>()!.ConversionMethod).ToArray();
+        FieldInfo[] fields = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(static f => f.GetCustomAttribute<TimePatternAttribute>() is not null).ToArray();
+        string[] methodNames = fields.Select(static f => f.GetCustomAttribute<TimePatternAttribute>()!.ConversionMethod).ToArray();
         MethodInfo[] methods = typeof(TimeSpan).GetMethods(BindingFlags.Static | BindingFlags.Public).Where(f => methodNames.Contains(f.Name)).ToArray();
         return fields.Select(f =>
         {
@@ -240,12 +238,12 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
         }).ToArray();
     }
 
-    private static unsafe int GetTimeStartIdx(ChatMessageExtension* messageExtension)
+    private static unsafe int GetTimeStartIndex(ChatMessageExtension* messageExtension)
     {
         SmartSplit lowerSplit = messageExtension->LowerSplit;
         for (int i = 2; i < lowerSplit.Length; i++)
         {
-            if (lowerSplit[i].Span.Equals(_timeIdentificator, StringComparison.Ordinal))
+            if (lowerSplit[i].Span is _timeIdentificator)
             {
                 return i + 1;
             }
@@ -257,5 +255,30 @@ public readonly struct RemindCommand : IChatCommand<RemindCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(RemindCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is RemindCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(RemindCommand left, RemindCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(RemindCommand left, RemindCommand right)
+    {
+        return !left.Equals(right);
     }
 }

@@ -1,17 +1,15 @@
-﻿#nullable disable
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.Json;
 
 public sealed class TwitchSettings
 {
-    public string Username { get; set; }
+    public required string Username { get; init; }
 
-    public string OAuthToken { get; set; }
+    public required string OAuthToken { get; init; }
 
     [JsonPropertyName("ApiClientId")]
-    public string ApiClientId { get; set; }
+    public required string ApiClientId { get; init; }
 
-    public string ApiClientSecret { get; set; }
+    public required string ApiClientSecret { get; init; }
 }

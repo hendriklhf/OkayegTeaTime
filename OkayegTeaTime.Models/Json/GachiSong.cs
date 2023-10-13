@@ -1,10 +1,8 @@
-﻿#nullable disable
-
-namespace OkayegTeaTime.Models.Json;
+﻿namespace OkayegTeaTime.Models.Json;
 
 public sealed class GachiSong
 {
-    public string Title { get; set; }
+    public required string Title { get; init; }
 
-    public string Url { get; set; }
+    public required string Url { get; init; }
 }

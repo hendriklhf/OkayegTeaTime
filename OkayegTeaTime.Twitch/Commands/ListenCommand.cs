@@ -16,26 +16,18 @@ using StringHelper = HLE.Strings.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Listen, typeof(ListenCommand))]
-public readonly struct ListenCommand : IChatCommand<ListenCommand>
+public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<ListenCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public ListenCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ListenCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ListenCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -44,25 +36,25 @@ public readonly struct ListenCommand : IChatCommand<ListenCommand>
     {
         if (!AppSettings.UserLists.SecretUsers.Contains(ChatMessage.UserId))
         {
-            Response.Append(ChatMessage.Username, ", ", "this command is still being tested, you aren't allowed to use this command");
+            Response.Append(ChatMessage.Username, ", this command is still being tested, you aren't allowed to use this command");
             return;
         }
 
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s((leave)|(stop))");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s((leave)|(stop))");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             StopListening();
             return;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\ssync");
+        pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\ssync");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             await SyncListening();
             return;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
+        pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             await ListenToUser();
@@ -118,7 +110,7 @@ public readonly struct ListenCommand : IChatCommand<ListenCommand>
             {
                 Response.Append(track.Name, " by ");
 
-                string[] artists = track.Artists.Select(a => a.Name).ToArray();
+                string[] artists = track.Artists.Select(static a => a.Name).ToArray();
                 int joinLength = StringHelper.Join(artists, ", ", Response.FreeBufferSpan);
                 Response.Advance(joinLength);
 
@@ -184,7 +176,7 @@ public readonly struct ListenCommand : IChatCommand<ListenCommand>
             case SpotifyTrack track:
                 Response.Append(track.Name, " by ");
 
-                string[] artists = track.Artists.Select(a => a.Name).ToArray();
+                string[] artists = track.Artists.Select(static a => a.Name).ToArray();
                 int joinLength = StringHelper.Join(artists, ", ", Response.FreeBufferSpan);
                 Response.Advance(joinLength);
 
@@ -223,5 +215,30 @@ public readonly struct ListenCommand : IChatCommand<ListenCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(ListenCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ListenCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(ListenCommand left, ListenCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ListenCommand left, ListenCommand right)
+    {
+        return !left.Equals(right);
     }
 }

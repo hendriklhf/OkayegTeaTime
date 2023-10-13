@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace OkayegTeaTime.Twitch.Handlers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public abstract class PajaHandler : Handler
+public abstract class PajaHandler(TwitchBot twitchBot) : Handler(twitchBot)
 {
     private protected const int _pajaAlertUserId = 82008718;
     private protected const int _pajaChannelId = 11148817;
@@ -13,8 +13,4 @@ public abstract class PajaHandler : Handler
     protected abstract Regex Pattern { get; }
 
     protected abstract string Message { get; }
-
-    protected PajaHandler(TwitchBot twitchBot) : base(twitchBot)
-    {
-    }
 }

@@ -11,7 +11,10 @@ public abstract class DbCache<T> : IEnumerable<T> where T : CacheModel
 
     protected DbCache()
     {
+#pragma warning disable CA2214
+        // ReSharper disable once VirtualMemberCallInConstructor
         GetAllItemsFromDatabase();
+#pragma warning restore CA2214
     }
 
     private protected abstract void GetAllItemsFromDatabase();

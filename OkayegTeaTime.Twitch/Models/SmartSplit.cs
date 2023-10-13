@@ -1,6 +1,5 @@
 ﻿using System;
 using HLE.Memory;
-using HLE.Strings;
 
 namespace OkayegTeaTime.Twitch.Models;
 
@@ -8,11 +7,12 @@ public readonly struct SmartSplit : IDisposable, IEquatable<SmartSplit>
 {
     public ReadOnlyMemory<char> this[int index] => _message[_ranges[index]];
 
-    public int Length => _length;
+    public ReadOnlySpan<ReadOnlyMemory<char>> Splits => GetSplits();
+
+    public int Length { get; }
 
     private readonly ReadOnlyMemory<char> _message;
     private readonly RentedArray<Range> _ranges = new(255);
-    private readonly int _length;
 
     public static SmartSplit Empty => new();
 
@@ -20,19 +20,19 @@ public readonly struct SmartSplit : IDisposable, IEquatable<SmartSplit>
     {
         _message = ReadOnlyMemory<char>.Empty;
         _ranges = RentedArray<Range>.Empty;
-        _length = 0;
+        Length = 0;
     }
 
     public SmartSplit(ReadOnlyMemory<char> message)
     {
         _message = message;
-        _length = message.Span.GetRangesOfSplit(' ', _ranges);
+        Length = message.Span.Split(_ranges, ' ');
     }
 
-    public RentedArray<ReadOnlyMemory<char>> GetSplits()
+    private ReadOnlyMemory<char>[] GetSplits()
     {
-        RentedArray<ReadOnlyMemory<char>> splits = new(_length);
-        for (int i = 0; i < _length; i++)
+        ReadOnlyMemory<char>[] splits = new ReadOnlyMemory<char>[Length];
+        for (int i = 0; i < Length; i++)
         {
             splits[i] = _message[_ranges[i]];
         }
@@ -47,7 +47,7 @@ public readonly struct SmartSplit : IDisposable, IEquatable<SmartSplit>
 
     public bool Equals(SmartSplit other)
     {
-        return _length == other._length && _message.Equals(other._message) && _ranges.Equals(other._ranges);
+        return Length == other.Length && _message.Equals(other._message) && _ranges.Equals(other._ranges);
     }
 
     public override bool Equals(object? obj)
@@ -57,7 +57,7 @@ public readonly struct SmartSplit : IDisposable, IEquatable<SmartSplit>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_message, _ranges, _length);
+        return HashCode.Combine(_message, _ranges, Length);
     }
 
     public static bool operator ==(SmartSplit left, SmartSplit right)

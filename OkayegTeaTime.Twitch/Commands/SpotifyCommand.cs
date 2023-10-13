@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -15,28 +15,18 @@ using StringHelper = HLE.Strings.StringHelper;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Spotify, typeof(SpotifyCommand))]
-[SuppressMessage("ReSharper", "NotAccessedField.Local")]
-[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-public readonly struct SpotifyCommand : IChatCommand<SpotifyCommand>
+public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<SpotifyCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public SpotifyCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SpotifyCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SpotifyCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -96,7 +86,7 @@ public readonly struct SpotifyCommand : IChatCommand<SpotifyCommand>
             {
                 Response.Append(track.Name, " by ");
 
-                string[] artists = track.Artists.Select(a => a.Name).ToArray();
+                string[] artists = track.Artists.Select(static a => a.Name).ToArray();
                 int joinLength = StringHelper.Join(artists, ", ", Response.FreeBufferSpan);
                 Response.Advance(joinLength);
 
@@ -119,5 +109,30 @@ public readonly struct SpotifyCommand : IChatCommand<SpotifyCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(SpotifyCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SpotifyCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(SpotifyCommand left, SpotifyCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(SpotifyCommand left, SpotifyCommand right)
+    {
+        return !left.Equals(right);
     }
 }

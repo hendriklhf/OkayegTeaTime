@@ -4,10 +4,10 @@ using System.IO;
 #endif
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 #if DEBUG
 using System.Text.Json;
 #endif
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OkayegTeaTime.Database.EntityFrameworkModels;
 using OkayegTeaTime.Settings;
@@ -16,6 +16,13 @@ namespace OkayegTeaTime.Database;
 
 public static class DbController
 {
+#if DEBUG
+    private static readonly JsonSerializerOptions _logSerializerOptions = new()
+    {
+        WriteIndented = true
+    };
+#endif
+
     public static void AddChannel(long id, string channel)
     {
         // FIXME: all operations create a Context, act on it and dispose straight away
@@ -154,10 +161,7 @@ public static class DbController
     {
         ExceptionLog log = new(ex);
 #if DEBUG
-        await File.WriteAllTextAsync($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        }));
+        await File.WriteAllTextAsync($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, _logSerializerOptions));
 #else
         await using OkayegTeaTimeContext database = new();
         await database.ExceptionLogs.AddAsync(log);

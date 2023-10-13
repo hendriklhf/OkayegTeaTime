@@ -13,7 +13,7 @@ public sealed class LastMessageController
 
     public LastMessageController(ChannelCache? channelCache = null)
     {
-        Dictionary<string, string> lastMessages = channelCache is null ? DbController.GetChannels().Select(c => c.Name).ToDictionary(c => c, _ => string.Empty) : channelCache.Select(c => c.Name).ToDictionary(c => c, _ => string.Empty);
+        Dictionary<string, string> lastMessages = channelCache is null ? DbController.GetChannels().Select(static c => c.Name).ToDictionary(static c => c, static _ => string.Empty) : channelCache.Select(static c => c.Name).ToDictionary(static c => c, static _ => string.Empty);
         _lastMessages = new(lastMessages);
     }
 

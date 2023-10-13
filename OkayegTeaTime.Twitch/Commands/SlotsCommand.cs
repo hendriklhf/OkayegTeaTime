@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
+using HLE.Marshalling;
 using HLE.Memory;
 using HLE.Strings;
 using HLE.Twitch.Models;
@@ -12,28 +13,18 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Slots, typeof(SlotsCommand))]
-public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
+public readonly struct SlotsCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<SlotsCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static readonly RegexPool _emotePatternPool = new();
-
-    public SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SlotsCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SlotsCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -41,16 +32,16 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
     public async ValueTask Handle()
     {
         Regex? emotePattern = null;
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             try
             {
                 using ChatMessageExtension messageExtension = new(ChatMessage);
-                if (!_emotePatternPool.TryGet(messageExtension.Split[1].Span, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1), out emotePattern))
+                if (!RegexPool.Shared.TryGet(messageExtension.Split[1].Span, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1), out emotePattern))
                 {
                     emotePattern = new(new(messageExtension.Split[1].Span), RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-                    _emotePatternPool.Add(emotePattern);
+                    RegexPool.Shared.Add(emotePattern);
                 }
             }
             catch (ArgumentException)
@@ -60,7 +51,7 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
             }
         }
 
-        string[] allEmotes = await _twitchBot.EmoteService.GetAllEmoteNamesAsync(ChatMessage.ChannelId);
+        StringArray allEmotes = await _twitchBot.EmoteService.GetAllEmoteNamesAsync(ChatMessage.ChannelId);
         if (allEmotes.Length == 0)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ThereAreNoThirdPartyEmotesEnabledInThisChannel);
@@ -68,7 +59,7 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
         }
 
         using RentedArray<string> matchingEmotesBuffer = new(allEmotes.Length);
-        ReadOnlyMemory<string> matchingEmotes = allEmotes;
+        ReadOnlyMemory<string> matchingEmotes = StringArrayMarshal.GetStrings(allEmotes);
         if (emotePattern is not null)
         {
             int matchingEmoteCount = GetMatchingEmotes(allEmotes, matchingEmotesBuffer, emotePattern);
@@ -86,15 +77,15 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
         Response.Append(" emote", matchingEmotes.Length > 1 ? "s" : string.Empty, ")");
     }
 
-    private static int GetMatchingEmotes(ReadOnlySpan<string> allEmotes, Span<string> matchingEmotes, Regex regex)
+    private static int GetMatchingEmotes(StringArray allEmotes, Span<string> matchingEmotes, Regex regex)
     {
         int matchingEmoteCount = 0;
         for (int i = 0; i < allEmotes.Length; i++)
         {
-            string emote = allEmotes[i];
+            ReadOnlySpan<char> emote = allEmotes.GetChars(i);
             if (regex.IsMatch(emote))
             {
-                matchingEmotes[matchingEmoteCount++] = emote;
+                matchingEmotes[matchingEmoteCount++] = allEmotes[i];
             }
         }
 
@@ -104,5 +95,30 @@ public readonly struct SlotsCommand : IChatCommand<SlotsCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(SlotsCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SlotsCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(SlotsCommand left, SlotsCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(SlotsCommand left, SlotsCommand right)
+    {
+        return !left.Equals(right);
     }
 }

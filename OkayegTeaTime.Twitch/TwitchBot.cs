@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HLE.Emojis;
 using HLE.Twitch;
@@ -18,12 +19,11 @@ using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Twitch.SevenTv;
-using OkayegTeaTime.Utils;
 using static OkayegTeaTime.Utils.ProcessUtils;
 
 namespace OkayegTeaTime.Twitch;
 
-public sealed class TwitchBot
+public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 {
     public UserCache Users { get; } = new();
 
@@ -47,7 +47,7 @@ public sealed class TwitchBot
 
     public SevenTvApi SevenTvApi { get; } = new(new());
 
-    public RegexCreator RegexCreator { get; set; } = new();
+    public MessageRegexCreator MessageRegexCreator { get; set; } = new();
 
     public LastMessageController LastMessages { get; }
 
@@ -67,15 +67,21 @@ public sealed class TwitchBot
     private readonly MessageHandler _messageHandler;
     private readonly PeriodicActionsController _periodicActionsController;
 
-    public TwitchBot(IEnumerable<string>? channels = null)
+    public TwitchBot(ReadOnlyMemory<string> channels)
     {
-        _twitchClient = new(AppSettings.Twitch.Username, AppSettings.Twitch.OAuthToken, new()
+        OAuthToken token = new(AppSettings.Twitch.OAuthToken);
+        _twitchClient = new(AppSettings.Twitch.Username, token, new()
         {
-            UseSSL = true
+            UseSSL = true,
+            ParsingMode = ParsingMode.MemoryEfficient
         });
 
-        channels ??= Channels.Select(c => c.Name);
-        _twitchClient.JoinChannelsAsync(channels.ToArray()).AsTask().Wait(); // TODO: 💢
+        if (channels.Length == 0)
+        {
+            channels = Channels.Select(static c => c.Name).ToArray();
+        }
+
+        _twitchClient.JoinChannelsAsync(channels).AsTask().Wait(); // TODO: 💢
 
         _twitchClient.OnConnected += Client_OnConnected!;
         _twitchClient.OnJoinedChannel += async (_, e) => await Client_OnJoinedChannel(e);
@@ -87,7 +93,7 @@ public sealed class TwitchBot
         _messageHandler = new(this);
         EmoteService = new(this);
         _periodicActionsController = new(GetPeriodicActions());
-        AfkMessageBuilder = new(CommandController.AfkCommands);
+        AfkMessageBuilder = new(CommandController.AfkCommands.AsSpan());
     }
 
     public async ValueTask ConnectAsync()
@@ -192,7 +198,7 @@ public sealed class TwitchBot
         ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
     }
 
-    private async ValueTask Client_OnJoinedChannel(JoinedChannelArgs e)
+    private async ValueTask Client_OnJoinedChannel(JoinChannelMessage e)
     {
         if (e.Username == AppSettings.Twitch.Username)
         {
@@ -217,10 +223,15 @@ public sealed class TwitchBot
         }
     }
 
-    private async ValueTask Client_OnMessageReceived(ChatMessage message)
+    private async ValueTask Client_OnMessageReceived(IChatMessage message)
     {
         ConsoleOut($"[TWITCH] <#{message.Channel}> {message.Username}: {message.Message}");
         await _messageHandler.Handle(message);
+
+        if (message is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 
     private static void Client_OnDisconnect(object sender, EventArgs e)
@@ -250,4 +261,37 @@ public sealed class TwitchBot
     }
 
     #endregion Timer
+
+    public bool Equals(TwitchBot? other)
+    {
+        return ReferenceEquals(this, other);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is TwitchBot other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return RuntimeHelpers.GetHashCode(this);
+    }
+
+    public static bool operator ==(TwitchBot? left, TwitchBot? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(TwitchBot? left, TwitchBot? right)
+    {
+        return !(left == right);
+    }
+
+    public void Dispose()
+    {
+        _twitchClient.Dispose();
+        _periodicActionsController.Dispose();
+        TwitchApi.Dispose();
+        MessageRegexCreator.Dispose();
+    }
 }

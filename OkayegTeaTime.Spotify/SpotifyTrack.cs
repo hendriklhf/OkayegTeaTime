@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using SpotifyAPI.Web;
 
 #nullable disable
@@ -28,7 +29,7 @@ public sealed class SpotifyTrack : SpotifyItem
 
     public int TrackNumber { get; }
 
-    public SpotifyTrack(CurrentlyPlaying item) : this(item.Item)
+    public SpotifyTrack([NotNull] CurrentlyPlaying item) : this(item.Item)
     {
     }
 
@@ -51,9 +52,10 @@ public sealed class SpotifyTrack : SpotifyItem
         TrackNumber = track.TrackNumber;
     }
 
+    [NotNull]
     public override string ToString()
     {
-        string artists = string.Join(", ", Artists.Select(a => a.Name));
+        string artists = string.Join(", ", Artists.Select(static a => a.Name));
         return $"{Name} by {artists}";
     }
 }

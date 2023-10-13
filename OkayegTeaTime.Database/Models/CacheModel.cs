@@ -5,7 +5,9 @@ using Timer = System.Timers.Timer;
 
 namespace OkayegTeaTime.Database.Models;
 
+#pragma warning disable CA1001
 public abstract class CacheModel
+#pragma warning restore CA1001
 {
     private OkayegTeaTimeContext? _db;
     private readonly Timer _timer = new(1000);
@@ -29,23 +31,6 @@ public abstract class CacheModel
                 ReturnContext();
             }
         };
-    }
-
-    ~CacheModel()
-    {
-        try
-        {
-            _mutex.WaitOne();
-            _db?.SaveChanges();
-            _mutex.ReleaseMutex();
-            _db?.Dispose();
-            _mutex.Dispose();
-            _timer.Dispose();
-        }
-        catch (Exception ex)
-        {
-            DbController.LogExceptionAsync(ex).AsTask().Wait();
-        }
     }
 
     private protected OkayegTeaTimeContext GetContext()

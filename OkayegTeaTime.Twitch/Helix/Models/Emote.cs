@@ -53,7 +53,7 @@ public class Emote : IEquatable<Emote>
     public bool TryGetImageUrl(EmoteImageFormats format, EmoteThemes theme, EmoteScales scale, [MaybeNullWhen(false)] out string url)
     {
         url = null;
-        ValueStringBuilder urlBuilder = stackalloc char[250];
+        ValueStringBuilder urlBuilder = new(stackalloc char[250]);
         urlBuilder.Append("https://static-cdn.jtvnw.net/emoticons/v2/");
         if ((Formats & format) != format || !NumberHelper.IsOnlyOneBitSet((int)format))
         {

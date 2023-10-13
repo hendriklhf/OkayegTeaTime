@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Http;
 using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Helix.Models.Responses;
 
@@ -19,7 +18,7 @@ public sealed partial class TwitchApi
 
         using UrlBuilder urlBuilder = new(_apiBaseUrl, "chat/emotes/global");
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<Emote> getResponse = JsonSerializer.Deserialize<GetResponse<Emote>>(response.Span);
+        GetResponse<Emote> getResponse = JsonSerializer.Deserialize<GetResponse<Emote>>(response.AsSpan());
         if (getResponse.Items.Length == 0)
         {
             throw new InvalidOperationException("An unknown error occurred. The response contained zero emotes.");
@@ -40,7 +39,7 @@ public sealed partial class TwitchApi
         using UrlBuilder urlBuilder = new(_apiBaseUrl, "chat/emotes");
         urlBuilder.AppendParameter("broadcaster_id", channelId);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<ChannelEmote> getResponse = JsonSerializer.Deserialize<GetResponse<ChannelEmote>>(response.Span);
+        GetResponse<ChannelEmote> getResponse = JsonSerializer.Deserialize<GetResponse<ChannelEmote>>(response.AsSpan());
         emotes = getResponse.Items;
         Cache?.AddChannelEmotes(channelId, emotes);
         return emotes;

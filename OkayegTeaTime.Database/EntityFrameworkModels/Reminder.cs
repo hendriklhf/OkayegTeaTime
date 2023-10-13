@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable disable
-
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
 public sealed class Reminder
@@ -12,7 +10,7 @@ public sealed class Reminder
 
     public string Target { get; set; }
 
-    public string Message { get; set; }
+    public string? Message { get; set; }
 
     public string Channel { get; set; }
 

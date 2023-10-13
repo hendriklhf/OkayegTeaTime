@@ -3,14 +3,9 @@ using HLE.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public abstract class Handler
+public abstract class Handler(TwitchBot twitchBot)
 {
-    private protected readonly TwitchBot _twitchBot;
+    private protected readonly TwitchBot _twitchBot = twitchBot;
 
-    protected Handler(TwitchBot twitchBot)
-    {
-        _twitchBot = twitchBot;
-    }
-
-    public abstract ValueTask Handle(ChatMessage chatMessage);
+    public abstract ValueTask Handle(IChatMessage chatMessage);
 }

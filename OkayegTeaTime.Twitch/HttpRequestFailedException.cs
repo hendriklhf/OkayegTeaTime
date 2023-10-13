@@ -1,23 +1,18 @@
 using System;
+using System.Collections.Immutable;
 using System.Net;
 using System.Text;
 
 namespace OkayegTeaTime.Twitch;
 
-public sealed class HttpRequestFailedException : Exception
+public sealed class HttpRequestFailedException(int statusCode, ReadOnlySpan<byte> responseBytes)
+    : Exception($"The request failed with code {statusCode} and delivered: {Encoding.UTF8.GetString(responseBytes)}")
 {
-    public HttpStatusCode HttpStatusCode { get; }
+    public HttpStatusCode HttpStatusCode { get; } = (HttpStatusCode)statusCode;
 
-    public byte[] HttpResponseContent { get; }
+    public ImmutableArray<byte> HttpResponseContent { get; } = ImmutableArray.Create(responseBytes);
 
     public HttpRequestFailedException(HttpStatusCode statusCode, ReadOnlySpan<byte> responseBytes) : this((int)statusCode, responseBytes)
     {
-    }
-
-    public HttpRequestFailedException(int statusCode, ReadOnlySpan<byte> responseBytes)
-        : base($"The request failed with code {statusCode} and delivered: {Encoding.UTF8.GetString(responseBytes)}")
-    {
-        HttpStatusCode = (HttpStatusCode)statusCode;
-        HttpResponseContent = responseBytes.ToArray();
     }
 }

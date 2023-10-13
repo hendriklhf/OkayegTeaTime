@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using System;
+using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.OpenWeatherMap;
@@ -10,7 +12,7 @@ public sealed class WeatherData
     public Coordinates Coordinates { get; set; }
 
     [JsonPropertyName("weather")]
-    public WeatherCondition[] WeatherConditions { get; set; }
+    public ImmutableArray<WeatherCondition> WeatherConditions { get; set; }
 
     [JsonPropertyName("base")]
     public string Base { get; set; }

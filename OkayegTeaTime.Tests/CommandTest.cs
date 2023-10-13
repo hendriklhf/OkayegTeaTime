@@ -48,8 +48,8 @@ public sealed class CommandTest
     public void CommandCompletenessFromHandledCommands()
     {
         HandledCommandAttribute[]? handles = Assembly.GetAssembly(typeof(HandledCommandAttribute))?.GetTypes()
-            .Where(t => t.GetCustomAttribute<HandledCommandAttribute>() is not null)
-            .Select(t => t.GetCustomAttribute<HandledCommandAttribute>()!)
+            .Where(static t => t.GetCustomAttribute<HandledCommandAttribute>() is not null)
+            .Select(static t => t.GetCustomAttribute<HandledCommandAttribute>()!)
             .ToArray();
         Assert.IsNotNull(handles);
         Assert.IsTrue(handles.Length <= _commandTypes.Length);

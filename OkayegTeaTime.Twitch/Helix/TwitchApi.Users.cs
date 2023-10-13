@@ -6,14 +6,12 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Collections;
-using HLE.Http;
 using HLE.Memory;
 using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Helix.Models.Responses;
 
 namespace OkayegTeaTime.Twitch.Helix;
 
-[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 public sealed partial class TwitchApi
 {
     public async ValueTask<User?> GetUserAsync(long userId)
@@ -26,7 +24,7 @@ public sealed partial class TwitchApi
         using UrlBuilder urlBuilder = new(_apiBaseUrl, "users", _apiBaseUrl.Length + "users".Length + 50);
         urlBuilder.AppendParameter("id", userId);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.Span);
+        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.AsSpan());
         if (getResponse.Items.Length == 0)
         {
             return null;
@@ -52,7 +50,7 @@ public sealed partial class TwitchApi
         using UrlBuilder urlBuilder = new(_apiBaseUrl, "users", _apiBaseUrl.Length + "users".Length + 50);
         urlBuilder.AppendParameter("login", username.Span);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.Span);
+        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.AsSpan());
         if (getResponse.Items.Length == 0)
         {
             return null;
@@ -65,26 +63,31 @@ public sealed partial class TwitchApi
 
     public async ValueTask<User[]> GetUsersAsync(IEnumerable<string> usernames)
     {
+        // ReSharper disable once PossibleMultipleEnumeration
         if (usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory))
         {
             return await GetUsersAsync(usernamesMemory, ReadOnlyMemory<long>.Empty);
         }
 
+        // ReSharper disable once PossibleMultipleEnumeration
         return await GetUsersAsync(usernames.ToArray(), ReadOnlyMemory<long>.Empty);
     }
 
     public async ValueTask<User[]> GetUsersAsync(IEnumerable<long> userIds)
     {
+        // ReSharper disable once PossibleMultipleEnumeration
         if (userIds.TryGetReadOnlyMemory(out var userIdsMemory))
         {
             return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIdsMemory);
         }
 
+        // ReSharper disable once PossibleMultipleEnumeration
         return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds.ToArray());
     }
 
     public async ValueTask<User[]> GetUsersAsync(IEnumerable<string> usernames, IEnumerable<long> userIds)
     {
+        // ReSharper disable PossibleMultipleEnumeration
         bool usernamesIsMemory = usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory);
         bool userIdsIsMemory = userIds.TryGetReadOnlyMemory<long>(out ReadOnlyMemory<long> userIdsMemory);
 
@@ -95,21 +98,22 @@ public sealed partial class TwitchApi
             false when userIdsIsMemory => await GetUsersAsync(usernamesMemory.ToArray(), userIdsMemory),
             _ => await GetUsersAsync(usernames.ToArray(), userIds.ToArray())
         };
+        // ReSharper restore PossibleMultipleEnumeration
     }
 
     public async ValueTask<User[]> GetUsersAsync(List<string> usernames)
     {
-        return await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryDangerous(), ReadOnlyMemory<long>.Empty);
+        return await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
     }
 
     public async ValueTask<User[]> GetUsersAsync(List<long> userIds)
     {
-        return await GetUsersAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(userIds).AsMemoryDangerous());
+        return await GetUsersAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
     }
 
     public async ValueTask<User[]> GetUsersAsync(List<string> usernames, List<long> userIds)
     {
-        return await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryDangerous(), CollectionsMarshal.AsSpan(userIds).AsMemoryDangerous());
+        return await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
     }
 
     public async ValueTask<User[]> GetUsersAsync(params string[] usernames)
@@ -187,7 +191,7 @@ public sealed partial class TwitchApi
         }
 
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.Span);
+        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.AsSpan());
         int deserializedUserCount = getResponse.Items.Length;
         if (deserializedUserCount > 0)
         {

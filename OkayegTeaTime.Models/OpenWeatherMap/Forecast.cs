@@ -1,5 +1,6 @@
 #nullable disable
 
+using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.OpenWeatherMap;
@@ -28,7 +29,7 @@ public sealed class Forecast
     public int Humidity { get; set; }
 
     [JsonPropertyName("weather")]
-    public WeatherCondition[] WeatherConditions { get; set; }
+    public ImmutableArray<WeatherCondition> WeatherConditions { get; set; }
 
     [JsonPropertyName("speed")]
     public double WindSpeed { get; set; }

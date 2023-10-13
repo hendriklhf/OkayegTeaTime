@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
@@ -14,28 +14,18 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Skip, typeof(SkipCommand))]
-[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members")]
-[SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly struct SkipCommand : IChatCommand<SkipCommand>
+public readonly struct SkipCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<SkipCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public SkipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SkipCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SkipCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -108,5 +98,30 @@ public readonly struct SkipCommand : IChatCommand<SkipCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(SkipCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SkipCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(SkipCommand left, SkipCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(SkipCommand left, SkipCommand right)
+    {
+        return !left.Equals(right);
     }
 }

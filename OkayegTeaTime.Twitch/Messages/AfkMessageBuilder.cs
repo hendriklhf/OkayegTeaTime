@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using HLE.Memory;
+using System.Runtime.CompilerServices;
 using HLE.Strings;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
@@ -26,13 +26,13 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
 
     public int BuildComingBackMessage(User user, AfkType afkType, Span<char> resultBuffer)
     {
-        ValueStringBuilder builder = resultBuffer;
+        ValueStringBuilder builder = new(resultBuffer);
         ReadOnlySpan<string> messageParts = _comingBackMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 3);
 
         TimeSpan afkDuration = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
         builder.Append(user.Username, messageParts[0], user.AfkMessage, messageParts[1]);
-        int durationLength = afkDuration.Format(builder.FreeBuffer);
+        int durationLength = TimeSpanFormatter.Format(afkDuration, builder.FreeBuffer);
         builder.Advance(durationLength);
         builder.Append(" ago", messageParts[2]);
         return builder.Length;
@@ -40,7 +40,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
 
     public int BuildGoingAwayMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> resultBuffer)
     {
-        ValueStringBuilder builder = resultBuffer;
+        ValueStringBuilder builder = new(resultBuffer);
         ReadOnlySpan<string> messageParts = _goingAwayMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 1);
 
@@ -50,7 +50,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
 
     public int BuildResumingMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> resultBuffer)
     {
-        ValueStringBuilder builder = resultBuffer;
+        ValueStringBuilder builder = new(resultBuffer);
         ReadOnlySpan<string> messageParts = _resumingMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 1);
 
@@ -68,7 +68,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
             resumingMessageParts[(int)type] = messageParts;
         }
 
-        Debug.Assert(resumingMessageParts.All(p => p.Length == 1), "all have one message part");
+        Debug.Assert(resumingMessageParts.All(static p => p.Length == 1), "all have one message part");
         return resumingMessageParts;
     }
 
@@ -82,7 +82,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
             goingAwayMessageParts[(int)type] = messageParts;
         }
 
-        Debug.Assert(goingAwayMessageParts.All(p => p.Length == 1), "all have one message part");
+        Debug.Assert(goingAwayMessageParts.All(static p => p.Length == 1), "all have one message part");
         return goingAwayMessageParts;
     }
 
@@ -96,7 +96,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
             comingBackMessageParts[(int)type] = messageParts;
         }
 
-        Debug.Assert(comingBackMessageParts.All(p => p.Length == 3), "all have three message parts");
+        Debug.Assert(comingBackMessageParts.All(static p => p.Length == 3), "all have three message parts");
         return comingBackMessageParts;
     }
 
@@ -112,7 +112,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(AfkMessageBuilder? left, AfkMessageBuilder? right)

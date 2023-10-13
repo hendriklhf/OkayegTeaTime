@@ -10,9 +10,9 @@ using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Tools;
 
-public sealed class Builder
+public sealed class Builder(string[] args)
 {
-    private readonly string[] _args;
+    private readonly string[] _args = args;
 
     private readonly FrozenDictionary<Runtime, Regex> _runtimes = new Dictionary<Runtime, Regex>(new KeyValuePair<Runtime, Regex>[]
     {
@@ -27,18 +27,13 @@ public sealed class Builder
     private const string _commitIdFile = "./OkayegTeaTime.Resources/LastCommit";
     private const string _codeFilesFile = "./OkayegTeaTime.Resources/CodeFiles";
 
-    public Builder(string[] args)
-    {
-        _args = args;
-    }
-
     public void Build()
     {
         Runtime[] runtimes = GetRuntimes();
         if (runtimes.Length == 0)
         {
             Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
-            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.Select(r => r.Identifier).JoinToString(", ")}");
+            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.Select(static r => r.Identifier).JoinToString(", ")}");
             return;
         }
 
@@ -56,7 +51,7 @@ public sealed class Builder
     private Runtime[] GetRuntimes()
     {
         string[] args = _args[1..];
-        return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a))).Select(kv => kv.Key).ToArray();
+        return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a))).Select(static kv => kv.Key).ToArray();
     }
 
     private static void BuildBot(string outputDirectory, Runtime runtime)
@@ -66,14 +61,13 @@ public sealed class Builder
 
     private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
     {
-        using Process buildProcess = new()
+        using Process buildProcess = new();
+        buildProcess.StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --no-self-contained {projectPath}")
         {
-            StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --no-self-contained {projectPath}")
-            {
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            }
+            RedirectStandardOutput = false,
+            RedirectStandardError = false
         };
+
         Console.WriteLine($"Starting {projectName} build");
         Console.WriteLine($"Output directory: \"{outputDir}\"");
         buildProcess.Start();
@@ -113,7 +107,7 @@ public sealed class Builder
     {
         Console.WriteLine("Searching for .cs files");
         Regex fileRegex = new($@"^\.[\\/]{AppSettings.AssemblyName.Split('.')[0]}(\.\w+)?[\\/](?!((bin)|(obj)[\\/])).*\.cs$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(f => f[2..].Replace('\\', '/')).Order().ToArray();
+        string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(static f => f[2..].Replace('\\', '/')).Order().ToArray();
         Console.WriteLine($"Found {files.Length} .cs files");
         File.WriteAllLines(_codeFilesFile, files);
         Console.WriteLine($"Created \"CodeFiles\" file{Environment.NewLine}");

@@ -1,5 +1,4 @@
-#nullable disable
-
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.Formula1;
@@ -7,38 +6,42 @@ namespace OkayegTeaTime.Models.Formula1;
 public sealed class Race
 {
     [JsonPropertyName("season")]
-    public string Season { get; set; }
+    public required string Season { get; set; }
 
     [JsonPropertyName("round")]
-    public string Round { get; set; }
+    public required string Round { get; set; }
 
     [JsonPropertyName("url")]
-    public string WikipediaUrl { get; set; }
+    public required string WikipediaUrl { get; set; }
 
     [JsonPropertyName("raceName")]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [JsonPropertyName("Circuit")]
-    public Circuit Circuit { get; set; }
+    public required Circuit Circuit { get; set; }
+
+    // ReSharper disable PropertyCanBeMadeInitOnly.Global
+    [JsonIgnore]
+    public Session RaceSession { get; set; } = null!;
 
     [JsonIgnore]
-    public Session RaceSession { get; set; }
+    public Session PracticeOneSession { get; set; } = null!;
 
     [JsonIgnore]
-    public Session PracticeOneSession { get; set; }
+    public Session PracticeTwoSession { get; set; } = null!;
 
     [JsonIgnore]
-    public Session PracticeTwoSession { get; set; }
+    public Session? PracticeThreeSession { get; set; }
 
     [JsonIgnore]
-    public Session PracticeThreeSession { get; set; }
+    public Session QualifyingSession { get; set; } = null!;
+    // ReSharper restore PropertyCanBeMadeInitOnly.Global
 
     [JsonIgnore]
-    public Session QualifyingSession { get; set; }
+    public Session? SprintSession { get; set; }
 
     [JsonIgnore]
-    public Session SprintSession { get; set; }
-
-    [JsonIgnore]
+    [MemberNotNullWhen(false, nameof(PracticeThreeSession))]
+    [MemberNotNullWhen(true, nameof(SprintSession))]
     public bool HasSprintRace => SprintSession != default && PracticeThreeSession == default;
 }

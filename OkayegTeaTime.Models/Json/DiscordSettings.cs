@@ -1,12 +1,10 @@
-﻿#nullable disable
-
-namespace OkayegTeaTime.Models.Json;
+﻿namespace OkayegTeaTime.Models.Json;
 
 public sealed class DiscordSettings
 {
-    public string PermissionInt { get; set; }
+    public required string PermissionInt { get; init; }
 
-    public string ApplicationId { get; set; }
+    public required string ApplicationId { get; init; }
 
-    public string Token { get; set; }
+    public required string Token { get; init; }
 }

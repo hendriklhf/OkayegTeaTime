@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using HLE.Collections.Concurrent;
-using HLE.Memory;
 using OkayegTeaTime.Twitch.Ffz.Models;
 
 namespace OkayegTeaTime.Twitch.Ffz;
 
-public sealed class FfzApiCache : IEquatable<FfzApiCache>
+public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>, IDisposable
 {
-    public CacheOptions Options { get; set; }
+    public CacheOptions Options { get; set; } = options;
 
     private readonly ConcurrentDoubleDictionary<long, int, CacheEntry<Emote[]>> _channelEmotesCache = new();
     private CacheEntry<Emote[]> _globalEmotesCache = CacheEntry<Emote[]>.Empty;
-
-    public FfzApiCache(CacheOptions options)
-    {
-        Options = options;
-    }
 
     public void AddChannelEmotes(long channelId, ReadOnlySpan<char> channelName, Emote[] emotes)
     {
@@ -43,7 +38,7 @@ public sealed class FfzApiCache : IEquatable<FfzApiCache>
 
     public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
     {
-        if (_channelEmotesCache.TryGetValue(channelId, out CacheEntry<Emote[]> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmotesCache.TryGetByPrimaryKey(channelId, out CacheEntry<Emote[]> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = emoteEntry.Value;
             return true;
@@ -56,7 +51,7 @@ public sealed class FfzApiCache : IEquatable<FfzApiCache>
     public bool TryGetChannelEmotes(ReadOnlySpan<char> channelName, [MaybeNullWhen(false)] out Emote[] emotes)
     {
         int channelNameHash = string.GetHashCode(channelName, StringComparison.OrdinalIgnoreCase);
-        if (_channelEmotesCache.TryGetValue(channelNameHash, out CacheEntry<Emote[]> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmotesCache.TryGetBySecondaryKey(channelNameHash, out CacheEntry<Emote[]> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = emoteEntry.Value;
             return true;
@@ -78,7 +73,7 @@ public sealed class FfzApiCache : IEquatable<FfzApiCache>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(FfzApiCache? left, FfzApiCache? right)
@@ -89,5 +84,10 @@ public sealed class FfzApiCache : IEquatable<FfzApiCache>
     public static bool operator !=(FfzApiCache? left, FfzApiCache? right)
     {
         return !(left == right);
+    }
+
+    public void Dispose()
+    {
+        _channelEmotesCache.Dispose();
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
-
-#nullable disable
+using System.Diagnostics.CodeAnalysis;
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
@@ -10,6 +9,7 @@ public sealed class Suggestion
 
     public string Username { get; set; }
 
+    [SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
     public byte[] Content { get; set; }
 
     public string Channel { get; set; }

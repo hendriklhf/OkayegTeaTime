@@ -26,7 +26,7 @@ public static class BotActions
     public static async ValueTask SendComingBack(this TwitchBot twitchBot, User user, string channel)
     {
         string emote = twitchBot.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
-        using PoolBufferStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
+        using PooledStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
         responseBuilder.Append(emote, " ");
 
         int afkMessageLength = twitchBot.AfkMessageBuilder.BuildComingBackMessage(user, user.AfkType, responseBuilder.FreeBufferSpan);
@@ -44,9 +44,9 @@ public static class BotActions
         string creator = reminders[0].Creator == reminders[0].Target ? _yourself : reminders[0].Creator;
         TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminders[0].Time);
 
-        using PoolBufferStringBuilder builder = new(500);
+        using PooledStringBuilder builder = new(500);
         builder.Append(reminders[0].Target, ", ", _reminderFromSpace, creator, " (");
-        builder.Advance(timeSinceReminderCreation.Format(builder.FreeBufferSpan));
+        builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
         builder.Append(" ago)");
 
         twitchBot.Reminders.Remove(reminders[0].Id);
@@ -63,7 +63,7 @@ public static class BotActions
             timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 
             builder.Append(" || ", creator, " (");
-            builder.Advance(timeSinceReminderCreation.Format(builder.FreeBufferSpan));
+            builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
             builder.Append(" ago)");
 
             if (reminder.Message?.Length > 0)
@@ -80,9 +80,9 @@ public static class BotActions
         string creator = reminder.Target == reminder.Creator ? _yourself : reminder.Creator;
         TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 
-        using PoolBufferStringBuilder builder = new(500);
+        using PooledStringBuilder builder = new(500);
         builder.Append(reminder.Target, ", ", _reminderFromSpace, creator, " (");
-        builder.Advance(timeSinceReminderCreation.Format(builder.FreeBufferSpan));
+        builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
         builder.Append(" ago)");
 
         if (!string.IsNullOrWhiteSpace(reminder.Message))

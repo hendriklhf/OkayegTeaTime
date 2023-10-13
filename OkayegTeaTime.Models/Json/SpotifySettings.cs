@@ -1,14 +1,14 @@
-﻿#nullable disable
+﻿using System.Collections.Immutable;
 
 namespace OkayegTeaTime.Models.Json;
 
 public sealed class SpotifySettings
 {
-    public string ClientId { get; set; }
+    public required string ClientId { get; init; }
 
-    public string ClientSecret { get; set; }
+    public required string ClientSecret { get; init; }
 
-    public string ChatPlaylistId { get; set; }
+    public required string ChatPlaylistId { get; init; }
 
-    public long[] ChatPlaylistUsers { get; set; }
+    public required ImmutableArray<long> ChatPlaylistUsers { get; init; }
 }

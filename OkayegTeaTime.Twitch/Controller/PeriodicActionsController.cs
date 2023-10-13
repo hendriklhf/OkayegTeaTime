@@ -7,46 +7,41 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public sealed class PeriodicActionsController : IDisposable
+public sealed class PeriodicActionsController(IEnumerable<PeriodicAction> periodicActions) : IDisposable
 {
+    private readonly IEnumerable<PeriodicAction> _periodicActions = periodicActions;
     private CancellationTokenSource _cancellationTokenSource = new();
-    private readonly IEnumerable<PeriodicAction> _periodicActions;
-
-    public PeriodicActionsController(IEnumerable<PeriodicAction> periodicActions)
-    {
-        _periodicActions = periodicActions;
-    }
-
-    ~PeriodicActionsController()
-    {
-        StopAll();
-        _cancellationTokenSource.Dispose();
-    }
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         StopAll();
         _cancellationTokenSource.Dispose();
     }
 
     public void StartAll()
     {
-        Parallel.ForEachAsync(_periodicActions, _cancellationTokenSource.Token, async (periodicAction, cancellationToken) =>
+        try
         {
-            try
+            Parallel.ForEachAsync(_periodicActions, _cancellationTokenSource.Token, static async (periodicAction, cancellationToken) =>
             {
-                PeriodicTimer timer = new(periodicAction.Interval);
-                while (!cancellationToken.IsCancellationRequested && await timer.WaitForNextTickAsync(cancellationToken))
+                try
                 {
-                    await periodicAction.Action();
+                    PeriodicTimer timer = new(periodicAction.Interval);
+                    while (!cancellationToken.IsCancellationRequested && await timer.WaitForNextTickAsync(cancellationToken))
+                    {
+                        await periodicAction.Action();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                await DbController.LogExceptionAsync(ex);
-            }
-        });
+                catch (Exception ex)
+                {
+                    await DbController.LogExceptionAsync(ex);
+                }
+            });
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public void StopAll()

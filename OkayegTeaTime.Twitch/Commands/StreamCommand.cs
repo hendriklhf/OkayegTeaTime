@@ -2,7 +2,7 @@
 using System.Collections.Frozen;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Numerics;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
@@ -12,39 +12,31 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Stream, typeof(StreamCommand))]
-public readonly struct StreamCommand : IChatCommand<StreamCommand>
+public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<StreamCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private static readonly FrozenSet<long> _noViewerCountChannelIds = new long[]
     {
         149489313,
         35933008
-    }.ToFrozenSet(true);
+    }.ToFrozenSet();
 
-    public StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out StreamCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out StreamCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public async ValueTask Handle()
     {
-        Regex channelPattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
+        Regex channelPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
         Response.Append(ChatMessage.Username, ", ");
 
         using ChatMessageExtension messageExtension = new(ChatMessage);
@@ -61,16 +53,42 @@ public readonly struct StreamCommand : IChatCommand<StreamCommand>
         if (ChatMessage.ChannelId != stream.UserId || !_noViewerCountChannelIds.Contains(stream.UserId))
         {
             Response.Append(" with ");
-            Response.Advance(NumberHelper.InsertThousandSeparators(stream.ViewerCount, '.', Response.FreeBufferSpan));
+            Response.Append(stream.ViewerCount, "N0");
             Response.Append(" viewer", stream.ViewerCount != 1 ? "s" : string.Empty);
         }
 
         TimeSpan streamTime = DateTime.UtcNow - stream.StartedAt;
+        // TODO: remove allocation of .ToString and .Split
         Response.Append(" for ", streamTime.ToString("g").Split('.')[0]);
     }
 
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(StreamCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is StreamCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(StreamCommand left, StreamCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(StreamCommand left, StreamCommand right)
+    {
+        return !left.Equals(right);
     }
 }

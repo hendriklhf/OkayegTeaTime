@@ -2,14 +2,9 @@
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public readonly struct AliasHash : IEquatable<AliasHash>
+public readonly struct AliasHash(ReadOnlySpan<char> alias) : IEquatable<AliasHash>
 {
-    private readonly int _hash;
-
-    public AliasHash(ReadOnlySpan<char> alias)
-    {
-        _hash = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
-    }
+    private readonly int _hash = string.GetHashCode(alias, StringComparison.OrdinalIgnoreCase);
 
     public bool Equals(AliasHash other)
     {
@@ -34,10 +29,5 @@ public readonly struct AliasHash : IEquatable<AliasHash>
     public static bool operator !=(AliasHash left, AliasHash right)
     {
         return !(left == right);
-    }
-
-    public static implicit operator int(AliasHash hash)
-    {
-        return hash._hash;
     }
 }

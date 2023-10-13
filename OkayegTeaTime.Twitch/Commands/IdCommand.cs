@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
@@ -10,26 +11,18 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Id, typeof(IdCommand))]
-public readonly struct IdCommand : IChatCommand<IdCommand>
+public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<IdCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public IdCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out IdCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out IdCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -37,7 +30,7 @@ public readonly struct IdCommand : IChatCommand<IdCommand>
     public async ValueTask Handle()
     {
         Response.Append(ChatMessage.Username, ", ");
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
         long userId;
         if (pattern.IsMatch(ChatMessage.Message))
         {
@@ -79,5 +72,30 @@ public readonly struct IdCommand : IChatCommand<IdCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(IdCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is IdCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(IdCommand left, IdCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(IdCommand left, IdCommand right)
+    {
+        return !left.Equals(right);
     }
 }

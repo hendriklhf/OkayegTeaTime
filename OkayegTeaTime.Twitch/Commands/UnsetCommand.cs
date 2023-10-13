@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
@@ -11,26 +12,18 @@ using Channel = OkayegTeaTime.Database.Models.Channel;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Unset, typeof(UnsetCommand))]
-public readonly struct UnsetCommand : IChatCommand<UnsetCommand>
+public readonly struct UnsetCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<UnsetCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public UnsetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out UnsetCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out UnsetCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -39,28 +32,28 @@ public readonly struct UnsetCommand : IChatCommand<UnsetCommand>
     {
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;
-        Regex pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\sprefix");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\sprefix");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetPrefix();
             return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\sreminder\s\d+");
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\sreminder\s\d+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetReminder();
             return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\semote");
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\semote");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetEmote();
             return ValueTask.CompletedTask;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(alias, prefix, @"\slocation");
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\slocation");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             UnsetLocation();
@@ -135,5 +128,30 @@ public readonly struct UnsetCommand : IChatCommand<UnsetCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(UnsetCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is UnsetCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(UnsetCommand left, UnsetCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(UnsetCommand left, UnsetCommand right)
+    {
+        return !left.Equals(right);
     }
 }

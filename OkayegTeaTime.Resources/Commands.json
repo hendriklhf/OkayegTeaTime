@@ -257,29 +257,6 @@
       "Document": true
     },
     {
-      "Name": "Chatters",
-      "Description": "Sends the amount of chatters in channels",
-      "Aliases": [
-        "chatters",
-        "chattercount",
-        "cc",
-        "offlinechatter",
-        "oc",
-        "offlineviewer",
-        "ov"
-      ],
-      "Parameters": [
-        "(none)",
-        "#[channel]"
-      ],
-      "ParameterDescriptions": [
-        "Sends the amount of chatters in the current channel",
-        "Sends the amount of chatters in the given channel"
-      ],
-      "Cooldown": 10000,
-      "Document": true
-    },
-    {
       "Name": "Join",
       "Description": "Joins the given channel",
       "Aliases": [
@@ -632,7 +609,7 @@
       "Parameters": [
         "[code]"
       ],
-pajam         "ParameterDescriptions": [
+      "ParameterDescriptions": [
         "Executes the given Kotlin code"
       ],
       "Cooldown": 15000,

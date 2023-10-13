@@ -5,7 +5,7 @@ using HLE.Numerics;
 
 namespace OkayegTeaTime.Twitch.JsonConverters;
 
-internal sealed class Int64StringJsonConverter : JsonConverter<long>
+public sealed class Int64StringJsonConverter : JsonConverter<long>
 {
     public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

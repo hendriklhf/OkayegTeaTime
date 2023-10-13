@@ -1,47 +1,54 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using HLE.Strings;
 using OkayegTeaTime.Settings;
 
-namespace OkayegTeaTime.Utils;
+namespace OkayegTeaTime.Twitch;
 
-public sealed class RegexCreator
+public sealed class MessageRegexCreator : IDisposable
 {
-    private readonly RegexPool _cachedPatterns = new();
+    private readonly RegexPool _regexPool = new();
 
     private const string _patternEnding = @"(\s|$)";
     private const RegexOptions _regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase;
 
+    [SkipLocalsInit]
     public Regex Create(ReadOnlySpan<char> alias, ReadOnlySpan<char> prefix, [StringSyntax(StringSyntaxAttribute.Regex)] ReadOnlySpan<char> addition = default)
     {
-        ValueStringBuilder patternBuilder = stackalloc char[512];
+        ValueStringBuilder patternBuilder = new(stackalloc char[512]);
         patternBuilder.Append('^');
 
         int escapedItemLength;
         if (prefix.Length == 0)
         {
-            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
+            escapedItemLength = StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
-            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(AppSettings.Suffix, patternBuilder.FreeBuffer);
+            escapedItemLength = StringHelper.RegexEscape(AppSettings.Suffix, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
         }
         else
         {
-            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(prefix, patternBuilder.FreeBuffer);
+            escapedItemLength = StringHelper.RegexEscape(prefix, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
-            escapedItemLength = HLE.Strings.StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
+            escapedItemLength = StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
         }
 
         patternBuilder.Append(addition, _patternEnding);
-        if (_cachedPatterns.TryGet(patternBuilder.WrittenSpan, _regexOptions, TimeSpan.FromSeconds(1), out Regex? cachedPattern))
+        if (_regexPool.TryGet(patternBuilder.WrittenSpan, _regexOptions, TimeSpan.FromSeconds(1), out Regex? cachedPattern))
         {
             return cachedPattern;
         }
 
         Regex compiledRegex = new(patternBuilder.ToString(), _regexOptions, TimeSpan.FromSeconds(1));
-        _cachedPatterns.Add(compiledRegex);
+        _regexPool.Add(compiledRegex);
         return compiledRegex;
+    }
+
+    public void Dispose()
+    {
+        _regexPool.Dispose();
     }
 }

@@ -1,14 +1,19 @@
 #nullable disable
 
+using System.Collections.Immutable;
+
 namespace OkayegTeaTime.Models.Json;
 
 public sealed class UserLists
 {
-    public long Owner { get; set; }
+    public required long Owner { get; init; }
 
-    public long[] Moderators { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<long> Moderators { get; init; }
 
-    public long[] IgnoredUsers { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<long> IgnoredUsers { get; init; }
 
-    public long[] SecretUsers { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<long> SecretUsers { get; init; }
 }

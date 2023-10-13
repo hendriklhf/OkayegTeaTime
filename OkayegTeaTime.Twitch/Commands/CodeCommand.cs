@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
@@ -13,37 +12,29 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Code, typeof(CodeCommand))]
-public readonly struct CodeCommand : IChatCommand<CodeCommand>
+public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<CodeCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static string[]? _codeFiles;
+    private static StringArray? _codeFiles;
 
-    public CodeCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-
-        _codeFiles ??= ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CodeCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CodeCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public ValueTask Handle()
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
+        _codeFiles ??= new(ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries).AsSpan());
+
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             Regex? filePattern;
@@ -58,8 +49,8 @@ public readonly struct CodeCommand : IChatCommand<CodeCommand>
                 return ValueTask.CompletedTask;
             }
 
-            using PoolBufferList<string> matchingFiles = new(5);
-            GetMatchingFiles(filePattern, matchingFiles);
+            using PooledList<string> matchingFiles = new(5);
+            GetMatchingFiles(_codeFiles, matchingFiles, filePattern);
             Response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Count)
             {
@@ -90,14 +81,14 @@ public readonly struct CodeCommand : IChatCommand<CodeCommand>
         return ValueTask.CompletedTask;
     }
 
-    private static void GetMatchingFiles<TCollection>(Regex filePattern, TCollection files) where TCollection : ICollection<string>
+    private static void GetMatchingFiles(StringArray codeFiles, PooledList<string> matchingFiles, Regex filePattern)
     {
-        for (int i = 0; i < _codeFiles!.Length; i++)
+        for (int i = 0; i < codeFiles.Length; i++)
         {
-            string file = _codeFiles[i];
+            ReadOnlySpan<char> file = codeFiles.GetChars(i);
             if (filePattern.IsMatch(file))
             {
-                files.Add(file);
+                matchingFiles.Add(codeFiles[i]);
             }
         }
     }
@@ -105,5 +96,30 @@ public readonly struct CodeCommand : IChatCommand<CodeCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(CodeCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CodeCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(CodeCommand left, CodeCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(CodeCommand left, CodeCommand right)
+    {
+        return !left.Equals(right);
     }
 }

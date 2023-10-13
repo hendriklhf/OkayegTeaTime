@@ -2,10 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Http;
-using HLE.Memory;
 using HLE.Strings;
 using OkayegTeaTime.Twitch.Bttv.Models;
 using OkayegTeaTime.Twitch.Bttv.Models.Responses;
@@ -33,7 +32,7 @@ public sealed class BttvApi : IEquatable<BttvApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(100);
+        using PooledStringBuilder urlBuilder = new(100);
         urlBuilder.Append(_apiBaseUrl, "/cached/users/twitch/");
         urlBuilder.Append(channelId);
 
@@ -44,20 +43,19 @@ public sealed class BttvApi : IEquatable<BttvApi>
             return null;
         }
 
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
+        }
+
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
-
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
-        }
-
-        GetUserResponse userResponse = JsonSerializer.Deserialize<GetUserResponse>(httpContentBytes.Span);
+        GetUserResponse userResponse = JsonSerializer.Deserialize<GetUserResponse>(httpContentBytes.AsSpan());
         if (userResponse.ChannelEmotes.Length == 0 && userResponse.SharedEmotes.Length == 0)
         {
             return Array.Empty<Emote>();
@@ -77,24 +75,23 @@ public sealed class BttvApi : IEquatable<BttvApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(100);
+        using PooledStringBuilder urlBuilder = new(100);
         urlBuilder.Append(_apiBaseUrl, "/cached/emotes/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
+        }
+
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
-        }
-
-        emotes = JsonSerializer.Deserialize<Emote[]>(httpContentBytes.Span) ?? throw new InvalidOperationException("The deserialization of the global emotes response failed and returned null.");
+        emotes = JsonSerializer.Deserialize<Emote[]>(httpContentBytes.AsSpan()) ?? throw new InvalidOperationException("The deserialization of the global emotes response failed and returned null.");
         Cache?.AddGlobalEmotes(emotes);
         return emotes;
     }
@@ -123,7 +120,7 @@ public sealed class BttvApi : IEquatable<BttvApi>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(BttvApi? left, BttvApi? right)

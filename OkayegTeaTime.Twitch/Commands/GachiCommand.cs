@@ -1,47 +1,36 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Emojis;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
-#pragma warning disable IDE0052
-
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Gachi, typeof(GachiCommand))]
-[SuppressMessage("ReSharper", "NotAccessedField.Local")]
-public readonly struct GachiCommand : IChatCommand<GachiCommand>
+public readonly struct GachiCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<GachiCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GachiCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GachiCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public ValueTask Handle()
     {
-        GachiSong? gachiSong = AppSettings.GachiSongs.Random();
+        GachiSong? gachiSong = AppSettings.GachiSongs.AsSpan().Random();
         if (gachiSong is null)
         {
             Response.Append(Messages.CouldntFindASong);
@@ -55,5 +44,30 @@ public readonly struct GachiCommand : IChatCommand<GachiCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(GachiCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is GachiCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(GachiCommand left, GachiCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(GachiCommand left, GachiCommand right)
+    {
+        return !left.Equals(right);
     }
 }

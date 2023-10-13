@@ -1,12 +1,11 @@
 using System;
-using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Emojis;
-using HLE.Memory;
+using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Models.Formula1;
@@ -20,37 +19,29 @@ using OkayegTeaTime.Utils;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Formula1, typeof(Formula1Command))]
-public readonly struct Formula1Command : IChatCommand<Formula1Command>
+public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<Formula1Command>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private static Race[]? _races;
     private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
 
-    public Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public async ValueTask Handle()
     {
-        _races ??= await GetRaces();
+        _races ??= await GetRacesAsync();
         if (_races is null)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ApiError);
@@ -64,7 +55,7 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
             return;
         }
 
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\sweather");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\sweather");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             await SendWeatherInformation(race);
@@ -76,16 +67,17 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
 
     private void SendRaceInformation(Race race)
     {
-        Span<char> charBuffer = stackalloc char[250];
+        Span<char> charBuffer = stackalloc char[255];
         DateTime now = DateTime.UtcNow;
 
-        Response.Append(ChatMessage.Username, ", ", race.RaceSession.Start > now ? "Next" : "Current", " race: ", race.Name);
+        bool raceHasStarted = race.RaceSession.Start > now;
+        Response.Append(ChatMessage.Username, ", ", raceHasStarted ? "Next" : "Current", " race: ", race.Name);
         Response.Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, ", ", race.Circuit.Location.Country, ". ");
         Response.Append(Emoji.RacingCar, " ");
-        if (race.RaceSession.Start > now)
+        if (raceHasStarted)
         {
-            race.RaceSession.Start.TryFormat(charBuffer, out int length, "R");
-            Response.Append("The ", race.RaceSession.Name, " will start ", charBuffer[..length]);
+            Response.Append("The ", race.RaceSession.Name, " will start ");
+            Response.Append(race.RaceSession.Start, "R");
 
             TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
@@ -94,8 +86,9 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
         }
         else
         {
-            race.RaceSession.Start.TryFormat(charBuffer, out int length, "t");
-            Response.Append("The ", race.RaceSession.Name, " started ", charBuffer[..length], " GMT. ", Emoji.CheckeredFlag);
+            Response.Append("The ", race.RaceSession.Name, " started ");
+            Response.Append(race.RaceSession.Start, "t");
+            Response.Append(" GMT. ", Emoji.CheckeredFlag);
         }
 
         Session session = GetNextOrCurrentSession(race);
@@ -155,7 +148,7 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
 
     private static Session GetNextOrCurrentSession(Race race)
     {
-        using RentedArray<Session> sessions = ArrayPool<Session>.Shared.Rent(5);
+        Unsafe.SkipInit(out FiveSessionsBuffer sessions);
         if (race.HasSprintRace)
         {
             sessions[0] = race.PracticeOneSession;
@@ -183,10 +176,10 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
             }
         }
 
-        throw new UnreachableException("There has to be a current or next session, if this has been called");
+        throw new UnreachableException("There has to be a current or next session, if this method has been called");
     }
 
-    private static async ValueTask<Race[]?> GetRaces()
+    private static async ValueTask<Race[]?> GetRacesAsync()
     {
         try
         {
@@ -266,5 +259,30 @@ public readonly struct Formula1Command : IChatCommand<Formula1Command>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(Formula1Command other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Formula1Command other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(Formula1Command left, Formula1Command right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Formula1Command left, Formula1Command right)
+    {
+        return !left.Equals(right);
     }
 }

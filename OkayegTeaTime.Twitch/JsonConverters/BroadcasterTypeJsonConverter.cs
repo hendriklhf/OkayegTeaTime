@@ -5,7 +5,7 @@ using OkayegTeaTime.Twitch.Helix.Models;
 
 namespace OkayegTeaTime.Twitch.JsonConverters;
 
-internal sealed class BroadcasterTypeJsonConverter : JsonConverter<BroadcasterType>
+public sealed class BroadcasterTypeJsonConverter : JsonConverter<BroadcasterType>
 {
     public override BroadcasterType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

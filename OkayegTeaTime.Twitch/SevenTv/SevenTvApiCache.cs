@@ -1,23 +1,18 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using HLE.Collections;
-using HLE.Memory;
 using OkayegTeaTime.Twitch.SevenTv.Models;
 
 namespace OkayegTeaTime.Twitch.SevenTv;
 
-public sealed class SevenTvApiCache : IEquatable<SevenTvApiCache>
+public sealed class SevenTvApiCache(CacheOptions options) : IEquatable<SevenTvApiCache>
 {
-    public CacheOptions Options { get; set; }
+    public CacheOptions Options { get; set; } = options;
 
     private CacheEntry<Emote[]> _globalEmotesCache = CacheEntry<Emote[]>.Empty;
     private readonly ConcurrentDictionary<long, CacheEntry<Emote[]>> _channelEmotesCache = new();
-
-    public SevenTvApiCache(CacheOptions options)
-    {
-        Options = options;
-    }
 
     public void AddGlobalEmotes(Emote[] emotes)
     {
@@ -65,7 +60,7 @@ public sealed class SevenTvApiCache : IEquatable<SevenTvApiCache>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(SevenTvApiCache? left, SevenTvApiCache? right)

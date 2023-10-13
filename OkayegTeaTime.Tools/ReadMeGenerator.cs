@@ -62,7 +62,7 @@ public sealed class ReadMeGenerator
         }
 
         builder.Append("<tr/>");
-        Command[] commands = commandController.Commands.Where(c => c.Document).OrderBy(c => c.Name).ToArray();
+        Command[] commands = commandController.Commands.Where(static c => c.Document).OrderBy(static c => c.Name).ToArray();
         foreach (Command cmd in commands)
         {
             builder.Append($"<tr><td>{cmd.Name}</td><td><table>");
@@ -87,7 +87,7 @@ public sealed class ReadMeGenerator
         }
 
         builder.Append("</tr>");
-        AfkCommand[] afkCommands = commandController.AfkCommands.Where(c => c.Document).OrderBy(c => c.Name).ToArray();
+        AfkCommand[] afkCommands = commandController.AfkCommands.Where(static c => c.Document).OrderBy(static c => c.Name).ToArray();
         foreach (AfkCommand cmd in afkCommands)
         {
             builder.Append($"<tr><td>{cmd.Name}</td><td><table>");

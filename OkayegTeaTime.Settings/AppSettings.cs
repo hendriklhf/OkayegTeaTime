@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Reflection;
 using OkayegTeaTime.Models.Json;
 using UserLists = OkayegTeaTime.Settings.Models.UserLists;
@@ -19,7 +20,7 @@ public static class AppSettings
 
     public static string OfflineChatChannel { get; private set; }
 
-    public static string[] OfflineChatEmotes { get; private set; }
+    public static ImmutableArray<string> OfflineChatEmotes { get; private set; }
 
     public static string OpenWeatherMapApiKey { get; private set; }
 
@@ -29,7 +30,7 @@ public static class AppSettings
 
     public static UserLists UserLists { get; private set; }
 
-    public static GachiSong[] GachiSongs { get; private set; }
+    public static ImmutableArray<GachiSong> GachiSongs { get; private set; }
 
     public static CommandList CommandList { get; private set; }
 

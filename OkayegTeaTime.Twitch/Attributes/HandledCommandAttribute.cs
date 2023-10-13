@@ -6,15 +6,10 @@ namespace OkayegTeaTime.Twitch.Attributes;
 
 [MeansImplicitUse]
 [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class)]
-public sealed class HandledCommandAttribute : Attribute
+public sealed class HandledCommandAttribute(CommandType commandType, Type command)
+    : Attribute
 {
-    public CommandType CommandType { get; }
+    public CommandType CommandType { get; } = commandType;
 
-    public Type Command { get; }
-
-    public HandledCommandAttribute(CommandType commandType, Type command)
-    {
-        CommandType = commandType;
-        Command = command;
-    }
+    public Type Command { get; } = command;
 }

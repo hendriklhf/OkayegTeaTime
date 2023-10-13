@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Strings;
@@ -10,28 +9,19 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[SuppressMessage("ReSharper", "NotAccessedField.Local")]
 [HandledCommand(CommandType.Massping, typeof(MasspingCommand))]
-public readonly struct MasspingCommand : IChatCommand<MasspingCommand>
+public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<MasspingCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public MasspingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MasspingCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MasspingCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -52,9 +42,9 @@ public readonly struct MasspingCommand : IChatCommand<MasspingCommand>
 
         string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
         ReadOnlySpan<char> emote = messageExtension.Split.Length > 1 ? messageExtension.Split[1].Span : channelEmote;
-        using PoolBufferList<string> chatters = new(50, 50);
+        using PooledList<string> chatters = new();
         Response.Append("OkayegTeaTime", " ", emote, " ");
-        chatters.AddRange(AppSettings.OfflineChatEmotes);
+        chatters.AddRange(AppSettings.OfflineChatEmotes.AsSpan());
 
         Span<char> separator = stackalloc char[emote.Length + 2];
         separator[0] = ' ';
@@ -69,5 +59,30 @@ public readonly struct MasspingCommand : IChatCommand<MasspingCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(MasspingCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is MasspingCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(MasspingCommand left, MasspingCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(MasspingCommand left, MasspingCommand right)
+    {
+        return !left.Equals(right);
     }
 }

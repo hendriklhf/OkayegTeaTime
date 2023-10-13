@@ -2,12 +2,7 @@
 
 namespace OkayegTeaTime.Spotify;
 
-public sealed class SpotifyException : Exception
+public sealed class SpotifyException(string message) : Exception
 {
-    public override string Message { get; }
-
-    public SpotifyException(string message)
-    {
-        Message = message;
-    }
+    public override string Message { get; } = message;
 }

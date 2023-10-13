@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable disable
-
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
 public sealed class Spotify

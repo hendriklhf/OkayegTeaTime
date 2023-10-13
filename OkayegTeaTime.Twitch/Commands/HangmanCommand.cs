@@ -14,15 +14,16 @@ using OkayegTeaTime.Twitch.Models;
 namespace OkayegTeaTime.Twitch.Commands;
 
 [HandledCommand(CommandType.Hangman, typeof(HangmanCommand))]
-public struct HangmanCommand : IChatCommand<HangmanCommand>
+public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<HangmanCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private string? _happyEmote;
     private string? _sadEmote;
@@ -30,16 +31,7 @@ public struct HangmanCommand : IChatCommand<HangmanCommand>
 
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
 
-    public HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HangmanCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HangmanCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
@@ -50,21 +42,21 @@ public struct HangmanCommand : IChatCommand<HangmanCommand>
         _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
         _partyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.PartyingFace, "cheer", "happy", "good");
 
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s[a-z]");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s[a-z]");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             GuessChar();
             return;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s[a-z]{2,}");
+        pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s[a-z]{2,}");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             GuessWord();
             return;
         }
 
-        pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span);
+        pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span);
         if (pattern.IsMatch(ChatMessage.Message))
         {
             StartNewGame();
@@ -150,9 +142,9 @@ public struct HangmanCommand : IChatCommand<HangmanCommand>
         else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
         {
             Response.Append('\'', guess, '\'', ' ');
-            Span<char> buffer = stackalloc char[10];
-            correctPlacesCount.TryFormat(buffer, out int bufferLength);
-            Response.Append(Messages.IsCorrectIn, " ", buffer[..bufferLength]);
+            Response.Append(Messages.IsCorrectIn, " ");
+            Response.Append(' ');
+            Response.Append(correctPlacesCount);
             Response.Append(" ", correctPlacesCount == 1 ? "place" : "places");
             Response.Append(" ", correctPlacesCount > 0 ? _happyEmote : _sadEmote, " ");
         }
@@ -174,11 +166,11 @@ public struct HangmanCommand : IChatCommand<HangmanCommand>
 
     private readonly void AppendWordStatus(HangmanGame game)
     {
-        Span<char> buffer = stackalloc char[100];
-        int bufferLength = StringHelper.Join(game.DiscoveredWord, ' ', buffer);
-        Response.Append(buffer[..bufferLength]);
-        game.Solution.Length.TryFormat(buffer, out bufferLength);
-        Response.Append(" (", buffer[..bufferLength], " chars)");
+        int joinLength = StringHelper.Join(game.DiscoveredWord, ' ', Response.FreeBufferSpan);
+        Response.Advance(joinLength);
+        Response.Append(" (");
+        Response.Append(game.Solution.Length);
+        Response.Append(" chars)");
     }
 
     private readonly void AppendWrongCharStatus(HangmanGame game)
@@ -200,5 +192,32 @@ public struct HangmanCommand : IChatCommand<HangmanCommand>
     public readonly void Dispose()
     {
         Response.Dispose();
+    }
+
+    public readonly bool Equals(HangmanCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    // ReSharper disable once ArrangeModifiersOrder
+    public override readonly bool Equals(object? obj)
+    {
+        return obj is HangmanCommand other && Equals(other);
+    }
+
+    // ReSharper disable once ArrangeModifiersOrder
+    public override readonly int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(HangmanCommand left, HangmanCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(HangmanCommand left, HangmanCommand right)
+    {
+        return !left.Equals(right);
     }
 }

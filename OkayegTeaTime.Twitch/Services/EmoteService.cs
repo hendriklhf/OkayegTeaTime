@@ -1,49 +1,45 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HLE.Collections;
-using HLE.Memory;
+using HLE.Strings;
 
 namespace OkayegTeaTime.Twitch.Services;
 
-public sealed class EmoteService : IEquatable<EmoteService>
+public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
 {
-    private readonly ConcurrentDictionary<long, CacheEntry<string[]>> _emoteNamesCache = new();
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ConcurrentDictionary<long, CacheEntry<StringArray>> _emoteNamesCache = new();
     private readonly TimeSpan _emoteNamesCacheTime = TimeSpan.FromHours(1);
-    private readonly TwitchBot _twitchBot;
-
-    public EmoteService(TwitchBot twitchBot)
-    {
-        _twitchBot = twitchBot;
-    }
 
     public async ValueTask<string> GetBestEmoteAsync(long channelId, string fallback, params string[] keywords)
     {
-        string[] emoteNames = await GetAllEmoteNamesAsync(channelId);
-        using PoolBufferList<string> bestEmotes = new(32);
+        StringArray emoteNames = await GetAllEmoteNamesAsync(channelId);
+        using PooledList<string> bestEmotes = new(32);
         foreach (string keyword in keywords)
         {
             for (int i = 0; i < emoteNames.Length; i++)
             {
-                string emoteName = emoteNames[i];
-                if (emoteName.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                {
-                    bestEmotes.Add(emoteName);
-                }
-            }
-
-            if (bestEmotes.Count > 0)
-            {
-                break;
+                AddEmoteIfContainsKeyword(emoteNames, i, keyword, bestEmotes);
             }
         }
 
         return bestEmotes.AsSpan().Random() ?? fallback;
     }
 
-    public async ValueTask<string[]> GetAllEmoteNamesAsync(long channelId)
+    private static void AddEmoteIfContainsKeyword(StringArray emoteNames, int i, string keyword, PooledList<string> bestEmotes)
     {
-        if (_emoteNamesCache.TryGetValue(channelId, out CacheEntry<string[]> emoteNamesEntry) && emoteNamesEntry.IsValid(_emoteNamesCacheTime))
+        ReadOnlySpan<char> emoteName = emoteNames.GetChars(i);
+        if (emoteName.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+        {
+            bestEmotes.Add(emoteNames[i]);
+        }
+    }
+
+    public async ValueTask<StringArray> GetAllEmoteNamesAsync(long channelId)
+    {
+        if (_emoteNamesCache.TryGetValue(channelId, out CacheEntry<StringArray> emoteNamesEntry) && emoteNamesEntry.IsValid(_emoteNamesCacheTime))
         {
             return emoteNamesEntry.Value;
         }
@@ -60,6 +56,7 @@ public sealed class EmoteService : IEquatable<EmoteService>
         await Task.WhenAll(getTwitchGlobalEmotesTask, getTwitchChannelEmotesTask, getFfzGlobalEmotesTask, getFfzChannelEmotesTask,
             getBttvGlobalEmotesTask, getBttvChannelEmotesTask, getSevenTvGlobalEmotesTask, getSevenTvChannelEmotesTask);
 
+#pragma warning disable CA1849
         var twitchGlobalEmotes = getTwitchGlobalEmotesTask.Result;
         var twitchChannelEmotes = getTwitchChannelEmotesTask.Result;
         var ffzGlobalEmotes = getFfzGlobalEmotesTask.Result;
@@ -68,11 +65,12 @@ public sealed class EmoteService : IEquatable<EmoteService>
         var bttvChannelEmotes = getBttvChannelEmotesTask.Result;
         var sevenTvGlobalEmotes = getSevenTvGlobalEmotesTask.Result;
         var sevenTvChannelEmotes = getSevenTvChannelEmotesTask.Result;
+#pragma warning restore CA1849
 
         int totalEmoteCount = twitchGlobalEmotes.Length + twitchChannelEmotes.Length + ffzGlobalEmotes.Length + (ffzChannelEmotes?.Length ?? 0) +
                               bttvGlobalEmotes.Length + (bttvChannelEmotes?.Length ?? 0) + sevenTvGlobalEmotes.Length + (sevenTvChannelEmotes?.Length ?? 0);
 
-        string[] emoteNames = new string[totalEmoteCount];
+        StringArray emoteNames = new(totalEmoteCount);
         int emoteNameCount = 0;
 
         foreach (var emote in twitchGlobalEmotes)
@@ -140,7 +138,7 @@ public sealed class EmoteService : IEquatable<EmoteService>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(EmoteService? left, EmoteService? right)

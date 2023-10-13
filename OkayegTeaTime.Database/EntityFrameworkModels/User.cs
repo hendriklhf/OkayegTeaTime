@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable disable
-
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
 public sealed class User
@@ -10,7 +8,7 @@ public sealed class User
 
     public string Username { get; set; }
 
-    public string AfkMessage { get; set; }
+    public string? AfkMessage { get; set; }
 
     public int AfkType { get; set; }
 
@@ -18,7 +16,7 @@ public sealed class User
 
     public bool IsAfk { get; set; }
 
-    public string Location { get; set; }
+    public string? Location { get; set; }
 
     public bool IsPrivateLocation { get; set; }
 

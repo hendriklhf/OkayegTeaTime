@@ -1,10 +1,12 @@
-﻿namespace OkayegTeaTime.Models.Json;
+﻿using System.Collections.Immutable;
 
-#nullable disable
+namespace OkayegTeaTime.Models.Json;
 
 public sealed class CommandList
 {
-    public Command[] Commands { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<Command> Commands { get; init; }
 
-    public AfkCommand[] AfkCommands { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<AfkCommand> AfkCommands { get; init; }
 }

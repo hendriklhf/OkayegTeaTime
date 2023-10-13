@@ -8,6 +8,7 @@ public static class ProcessUtils
 {
     public static void ConsoleOut(string value, ConsoleColor fontColor = ConsoleColor.Gray, bool logging = false)
     {
+        ConsoleColor previousForegroundColor = Console.ForegroundColor;
         Console.ForegroundColor = fontColor;
         try
         {
@@ -15,7 +16,7 @@ public static class ProcessUtils
         }
         finally
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = previousForegroundColor;
         }
 
         if (logging)

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Http;
-using HLE.Memory;
 using OkayegTeaTime.Twitch.Helix.Models;
 
 namespace OkayegTeaTime.Twitch.Helix;
@@ -53,14 +52,13 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
     {
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.PostAsync("https://id.twitch.tv/oauth2/token", _accessTokenRequestContent);
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
-        return JsonSerializer.Deserialize<AccessToken>(httpContentBytes.Span);
+        return JsonSerializer.Deserialize<AccessToken>(httpContentBytes.AsSpan());
     }
 
     private async ValueTask EnsureValidAccessTokenAsync()
@@ -77,16 +75,15 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
     {
         using HttpClient httpClient = await CreateHttpClientAsync();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(url);
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
         return httpContentBytes;
@@ -104,7 +101,7 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(TwitchApi? left, TwitchApi? right)

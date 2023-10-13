@@ -5,7 +5,7 @@ using OkayegTeaTime.Twitch.Helix.Models;
 
 namespace OkayegTeaTime.Twitch.JsonConverters;
 
-internal sealed class UserTypeJsonConverter : JsonConverter<UserType>
+public sealed class UserTypeJsonConverter : JsonConverter<UserType>
 {
     public override UserType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

@@ -12,7 +12,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Services;
 
-public sealed class WeatherService
+public sealed class WeatherService : IDisposable
 {
     private readonly ConcurrentDoubleDictionary<int, (double, double), WeatherData> _weatherCache = new();
     private readonly ConcurrentDictionary<int, ForecastData> _forecastCache = new();
@@ -22,7 +22,7 @@ public sealed class WeatherService
     public async ValueTask<WeatherData?> GetWeatherAsync(string location, bool tryGetFromCache = true)
     {
         int key = string.GetHashCode(location, StringComparison.OrdinalIgnoreCase);
-        if (tryGetFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _weatherCache.TryGetByPrimaryKey(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -51,7 +51,7 @@ public sealed class WeatherService
     public async ValueTask<WeatherData?> GetWeatherAsync(double latitude, double longitude, bool tryGetFromCache = true)
     {
         var key = (latitude, longitude);
-        if (tryGetFromCache && _weatherCache.TryGetValue(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _weatherCache.TryGetBySecondaryKey(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -104,7 +104,7 @@ public sealed class WeatherService
 
     public static int WriteWeatherData(WeatherData weatherData, Span<char> responseBuffer, bool isPrivateLocation)
     {
-        ValueStringBuilder response = responseBuffer;
+        ValueStringBuilder response = new(responseBuffer);
 
         if (isPrivateLocation)
         {
@@ -183,5 +183,10 @@ public sealed class WeatherService
             <= 360 => "N",
             _ => Emoji.Question
         };
+    }
+
+    public void Dispose()
+    {
+        _weatherCache.Dispose();
     }
 }

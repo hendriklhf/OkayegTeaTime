@@ -7,19 +7,14 @@ using OkayegTeaTime.Twitch.Helix.Models;
 
 namespace OkayegTeaTime.Twitch.Helix;
 
-public sealed class TwitchApiCache
+public sealed class TwitchApiCache(CacheOptions options) : IDisposable
 {
-    public CacheOptions Options { get; set; }
+    public CacheOptions Options { get; set; } = options;
 
     private readonly ConcurrentDoubleDictionary<long, int, User> _userCache = new();
     private readonly ConcurrentDoubleDictionary<long, int, Stream> _streamCache = new();
     private CacheEntry<Emote[]> _globalEmoteCache = CacheEntry<Emote[]>.Empty;
     private readonly ConcurrentDictionary<long, CacheEntry<ChannelEmote[]>> _channelEmoteCache = new();
-
-    public TwitchApiCache(CacheOptions options)
-    {
-        Options = options;
-    }
 
     public void AddUser(User user)
     {
@@ -37,13 +32,13 @@ public sealed class TwitchApiCache
 
     public bool TryGetUser(long userId, [MaybeNullWhen(false)] out User user)
     {
-        return _userCache.TryGetValue(userId, out user) && user.IsValid(Options.UserCacheTime);
+        return _userCache.TryGetByPrimaryKey(userId, out user) && user.IsValid(Options.UserCacheTime);
     }
 
     public bool TryGetUser(ReadOnlySpan<char> username, [MaybeNullWhen(false)] out User user)
     {
         int usernameHash = string.GetHashCode(username, StringComparison.OrdinalIgnoreCase);
-        return _userCache.TryGetValue(usernameHash, out user) && user.IsValid(Options.UserCacheTime);
+        return _userCache.TryGetBySecondaryKey(usernameHash, out user) && user.IsValid(Options.UserCacheTime);
     }
 
     public void AddStream(Stream stream)
@@ -62,13 +57,13 @@ public sealed class TwitchApiCache
 
     public bool TryGetStream(long channelId, [MaybeNullWhen(false)] out Stream stream)
     {
-        return _streamCache.TryGetValue(channelId, out stream) && stream.IsValid(Options.StreamCacheTime);
+        return _streamCache.TryGetByPrimaryKey(channelId, out stream) && stream.IsValid(Options.StreamCacheTime);
     }
 
     public bool TryGetStream(ReadOnlySpan<char> username, [MaybeNullWhen(false)] out Stream stream)
     {
         int usernameHash = string.GetHashCode(username, StringComparison.OrdinalIgnoreCase);
-        return _streamCache.TryGetValue(usernameHash, out stream) && stream.IsValid(Options.StreamCacheTime);
+        return _streamCache.TryGetBySecondaryKey(usernameHash, out stream) && stream.IsValid(Options.StreamCacheTime);
     }
 
     public void AddGlobalEmotes(Emote[] emotes)
@@ -103,5 +98,11 @@ public sealed class TwitchApiCache
 
         emotes = null;
         return false;
+    }
+
+    public void Dispose()
+    {
+        _userCache.Dispose();
+        _streamCache.Dispose();
     }
 }

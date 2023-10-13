@@ -4,18 +4,18 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Utils;
 
-public readonly partial struct ArgsResolver
+public readonly partial struct ArgsResolver : IEquatable<ArgsResolver>
 {
-    public string[]? Channels { get; }
+    public ReadOnlyMemory<string> Channels => _channels;
 
     private readonly string[] _args;
-
+    private readonly string[]? _channels;
     private readonly Regex _channelListPattern = GetChannelListPattern();
 
     public ArgsResolver(string[] args)
     {
         _args = args;
-        Channels = GetChannels();
+        _channels = GetChannels();
     }
 
     [GeneratedRegex(@"^\w{3,25}(,\w{3,25})*", RegexOptions.Compiled)]
@@ -23,7 +23,7 @@ public readonly partial struct ArgsResolver
 
     private string[]? GetChannels()
     {
-        int idx = GetArgIdx("--channels");
+        int idx = GetArgumentIndex("--channels");
         if (idx == -1)
         {
             return null;
@@ -31,13 +31,13 @@ public readonly partial struct ArgsResolver
 
         if (_channelListPattern.IsMatch(_args[idx + 1]))
         {
-            return _args[idx + 1].Split(',').Select(c => c.ToLower()).ToArray();
+            return _args[idx + 1].Split(',').Select(static c => c.ToLower()).ToArray();
         }
 
         throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");
     }
 
-    private int GetArgIdx(string argumentName)
+    private int GetArgumentIndex(string argumentName)
     {
         for (int i = 0; i < _args.Length; i++)
         {
@@ -48,5 +48,30 @@ public readonly partial struct ArgsResolver
         }
 
         return -1;
+    }
+
+    public bool Equals(ArgsResolver other)
+    {
+        return _args == other._args && _channelListPattern == other._channelListPattern && Channels.Span.SequenceEqual(other.Channels.Span);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ArgsResolver other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_args, _channelListPattern, _channels);
+    }
+
+    public static bool operator ==(ArgsResolver left, ArgsResolver right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ArgsResolver left, ArgsResolver right)
+    {
+        return !left.Equals(right);
     }
 }

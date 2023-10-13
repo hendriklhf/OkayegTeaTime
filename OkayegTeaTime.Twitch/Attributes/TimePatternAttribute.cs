@@ -1,17 +1,13 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace OkayegTeaTime.Twitch.Attributes;
 
+[MeansImplicitUse]
 [AttributeUsage(AttributeTargets.Field)]
-public sealed class TimePatternAttribute : Attribute
+public sealed class TimePatternAttribute(string conversionMethod, int factor = 1) : Attribute
 {
-    public string ConversionMethod { get; }
+    public string ConversionMethod { get; } = conversionMethod;
 
-    public int Factor { get; }
-
-    public TimePatternAttribute(string conversionMethod, int factor = 1)
-    {
-        ConversionMethod = conversionMethod;
-        Factor = factor;
-    }
+    public int Factor { get; } = factor;
 }

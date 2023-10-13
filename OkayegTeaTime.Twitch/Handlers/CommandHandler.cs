@@ -14,23 +14,15 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public sealed class CommandHandler : Handler
+public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
 {
-    private readonly CommandExecutor _commandExecutor;
-    private readonly AfkCommandHandler _afkCommandHandler;
+    private readonly CommandExecutor _commandExecutor = new(twitchBot);
+    private readonly AfkCommandHandler _afkCommandHandler = new(twitchBot);
 
-    private readonly FrozenDictionary<AliasHash, CommandType> _commandTypes;
-    private readonly FrozenDictionary<AliasHash, AfkType> _afkTypes;
+    private readonly FrozenDictionary<AliasHash, CommandType> _commandTypes = CreateCommandTypeDictionary(twitchBot);
+    private readonly FrozenDictionary<AliasHash, AfkType> _afkTypes = CreateAfkTypeDictionary(twitchBot);
 
-    public CommandHandler(TwitchBot twitchBot) : base(twitchBot)
-    {
-        _afkCommandHandler = new(twitchBot);
-        _commandTypes = CreateCommandTypeDictionary(twitchBot);
-        _afkTypes = CreateAfkTypeDictionary(twitchBot);
-        _commandExecutor = new(twitchBot);
-    }
-
-    public override async ValueTask Handle(ChatMessage chatMessage)
+    public override async ValueTask Handle(IChatMessage chatMessage)
     {
         bool handled = await HandleCommand(chatMessage);
         if (!handled)
@@ -39,7 +31,7 @@ public sealed class CommandHandler : Handler
         }
     }
 
-    private async ValueTask<bool> HandleCommand(ChatMessage chatMessage)
+    private async ValueTask<bool> HandleCommand(IChatMessage chatMessage)
     {
         ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
         ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
@@ -71,7 +63,7 @@ public sealed class CommandHandler : Handler
         return true;
     }
 
-    private async ValueTask HandleAfkCommand(ChatMessage chatMessage)
+    private async ValueTask HandleAfkCommand(IChatMessage chatMessage)
     {
         ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
         ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
@@ -106,8 +98,8 @@ public sealed class CommandHandler : Handler
     {
         Dictionary<AliasHash, CommandType> result = new();
         CommandType[] handledCommands = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(c => c.GetCustomAttribute<HandledCommandAttribute>() is not null)
-            .Select(c => c.GetCustomAttribute<HandledCommandAttribute>()!.CommandType).ToArray();
+            .Where(static c => c.GetCustomAttribute<HandledCommandAttribute>() is not null)
+            .Select(static c => c.GetCustomAttribute<HandledCommandAttribute>()!.CommandType).ToArray();
         foreach (Command command in twitchBot.CommandController.Commands)
         {
             CommandType type = Enum.Parse<CommandType>(command.Name);
@@ -123,7 +115,7 @@ public sealed class CommandHandler : Handler
             }
         }
 
-        return result.ToFrozenDictionary(true);
+        return result.ToFrozenDictionary();
     }
 
     private static FrozenDictionary<AliasHash, AfkType> CreateAfkTypeDictionary(TwitchBot twitchBot)
@@ -139,6 +131,6 @@ public sealed class CommandHandler : Handler
             }
         }
 
-        return result.ToFrozenDictionary(true);
+        return result.ToFrozenDictionary();
     }
 }

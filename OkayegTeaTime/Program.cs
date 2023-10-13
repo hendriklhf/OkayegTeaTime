@@ -20,7 +20,7 @@ public static class Program
         AppSettings.Initialize();
 
         ArgsResolver argsResolver = new(args);
-        TwitchBot twitchBot = new(argsResolver.Channels);
+        using TwitchBot twitchBot = new(argsResolver.Channels);
         await twitchBot.ConnectAsync();
 
         await _keepAliveSemaphore.WaitAsync();

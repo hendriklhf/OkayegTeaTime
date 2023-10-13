@@ -1,24 +1,24 @@
-#nullable disable
+using System.Collections.Immutable;
 
 namespace OkayegTeaTime.Models.Json;
 
 public sealed class Settings
 {
-    public TwitchSettings Twitch { get; set; }
+    public required TwitchSettings Twitch { get; init; }
 
-    public DiscordSettings Discord { get; set; }
+    public required DiscordSettings Discord { get; init; }
 
-    public string[] OfflineChatEmotes { get; set; }
+    public required ImmutableArray<string> OfflineChatEmotes { get; init; }
 
-    public SpotifySettings Spotify { get; set; }
+    public required SpotifySettings Spotify { get; init; }
 
-    public UserLists UserLists { get; set; }
+    public required UserLists UserLists { get; init; }
 
-    public string RepositoryUrl { get; set; }
+    public required string RepositoryUrl { get; init; }
 
-    public string OfflineChatChannel { get; set; }
+    public required string OfflineChatChannel { get; init; }
 
-    public DatabaseConnection DatabaseConnection { get; set; }
+    public required DatabaseConnection DatabaseConnection { get; init; }
 
-    public string OpenWeatherMapApiKey { get; set; }
+    public required string OpenWeatherMapApiKey { get; init; }
 }

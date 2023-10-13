@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Http;
 using HLE.Memory;
 using HLE.Strings;
 using OkayegTeaTime.Resources;
@@ -41,14 +41,13 @@ public sealed class DotNetFiddleService : IEquatable<DotNetFiddleService>
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.PostAsync(_apiUrl, httpContent);
 
-        int contentLength = httpResponse.GetContentLength();
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        DotNetFiddleResult dotNetFiddleResult = JsonSerializer.Deserialize<DotNetFiddleResult>(httpContentBytes.Span);
+        DotNetFiddleResult dotNetFiddleResult = JsonSerializer.Deserialize<DotNetFiddleResult>(httpContentBytes.AsSpan());
         if (dotNetFiddleResult == DotNetFiddleResult.Empty)
         {
             throw new JsonException($"Deserialization of {typeof(DotNetFiddleResult)} failed.");
@@ -62,17 +61,19 @@ public sealed class DotNetFiddleService : IEquatable<DotNetFiddleService>
         using RentedArray<char> charBuffer = new(mainMethodCodeBlock.Length);
         mainMethodCodeBlock.Span.CopyTo(charBuffer.Span);
         Memory<char> escapedMainMethodCodeBlock = ReplaceSpecialChars(charBuffer.Memory[..mainMethodCodeBlock.Length]);
-        using PoolBufferStringBuilder codeBuilder = new(_templateFileParts[0].Length + _templateFileParts[1].Length + escapedMainMethodCodeBlock.Length);
+        using PooledStringBuilder codeBuilder = new(_templateFileParts[0].Length + _templateFileParts[1].Length + escapedMainMethodCodeBlock.Length);
         codeBuilder.Append(_templateFileParts[0], escapedMainMethodCodeBlock.Span, _templateFileParts[1]);
         return codeBuilder.ToString();
     }
 
     private FormUrlEncodedContent CreateHttpContent(string codeBlock)
     {
-        List<KeyValuePair<string, string>> contentPairs = new(_defaultHttpContentPairs.Length + 1);
-        contentPairs.AddRange(_defaultHttpContentPairs);
-        contentPairs.Add(new("CodeBlock", codeBlock));
-        return new(contentPairs);
+        using PooledBufferWriter<KeyValuePair<string, string>> contentPairsWriter = new(_defaultHttpContentPairs.Length + 1);
+        Span<KeyValuePair<string, string>> destination = contentPairsWriter.GetSpan(_defaultHttpContentPairs.Length + 1);
+        _defaultHttpContentPairs.CopyTo(destination);
+        destination[_defaultHttpContentPairs.Length] = new("CodeBlock", codeBlock);
+        contentPairsWriter.Advance(_defaultHttpContentPairs.Length + 1);
+        return new(contentPairsWriter);
     }
 
     private static Memory<char> ReplaceSpecialChars(Memory<char> code)
@@ -99,7 +100,7 @@ public sealed class DotNetFiddleService : IEquatable<DotNetFiddleService>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(DotNetFiddleService? left, DotNetFiddleService? right)

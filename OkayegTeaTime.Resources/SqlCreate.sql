@@ -5,7 +5,8 @@ create table Channels
         primary key,
     EmoteInFront varchar(50)      null,
     Prefix       varchar(50)      null
-);
+)
+    engine = InnoDB;
 
 create table ExceptionLogs
 (
@@ -16,7 +17,8 @@ create table ExceptionLogs
     Message    varchar(1000)                        null,
     StackTrace varchar(3000)                        null,
     Time       datetime default current_timestamp() not null
-);
+)
+    engine = InnoDB;
 
 create table Reminders
 (
@@ -28,7 +30,8 @@ create table Reminders
     Channel varchar(25)      not null,
     Time    bigint default 0 not null,
     ToTime  bigint default 0 not null
-);
+)
+    engine = InnoDB;
 
 create table Spotify
 (
@@ -39,7 +42,8 @@ create table Spotify
     Time               bigint      default 0  not null,
     SongRequestEnabled bit                    not null,
     Username           varchar(25) default '' not null
-);
+)
+    engine = InnoDB;
 
 create table Suggestions
 (
@@ -50,7 +54,8 @@ create table Suggestions
     Channel  varchar(50)                                      not null,
     Time     bigint                                           not null,
     Status   enum ('Open', 'Done', 'Rejected') default 'Open' not null
-);
+)
+    engine = InnoDB;
 
 create table Users
 (
@@ -63,4 +68,5 @@ create table Users
     IsAfk             bit                    not null,
     Location          varchar(100)           null,
     IsPrivateLocation bit                    not null
-);
+)
+    engine = InnoDB;

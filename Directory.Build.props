@@ -14,4 +14,8 @@
         <NoWin32Manifest>true</NoWin32Manifest>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <NoWarn>CS1591,CS8500</NoWarn>
+    </PropertyGroup>
+
 </Project>

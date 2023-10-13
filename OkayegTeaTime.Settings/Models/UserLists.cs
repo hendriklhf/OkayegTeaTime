@@ -2,21 +2,13 @@
 
 namespace OkayegTeaTime.Settings.Models;
 
-public sealed class UserLists
+public sealed class UserLists(OkayegTeaTime.Models.Json.UserLists userLists)
 {
-    public long Owner { get; set; }
+    public long Owner { get; set; } = userLists.Owner;
 
-    public FrozenSet<long> Moderators { get; }
+    public FrozenSet<long> Moderators { get; } = userLists.Moderators.ToFrozenSet();
 
-    public FrozenSet<long> IgnoredUsers { get; }
+    public FrozenSet<long> IgnoredUsers { get; } = userLists.IgnoredUsers.ToFrozenSet();
 
-    public FrozenSet<long> SecretUsers { get; }
-
-    public UserLists(OkayegTeaTime.Models.Json.UserLists userLists)
-    {
-        Owner = userLists.Owner;
-        Moderators = userLists.Moderators.ToFrozenSet(true);
-        IgnoredUsers = userLists.IgnoredUsers.ToFrozenSet(true);
-        SecretUsers = userLists.SecretUsers.ToFrozenSet(true);
-    }
+    public FrozenSet<long> SecretUsers { get; } = userLists.SecretUsers.ToFrozenSet();
 }

@@ -24,6 +24,10 @@ public static class SpotifyController
                 return _chatPlaylistUris;
             }
 
+            GetPlaylistTracks().Wait();
+            _chatPlaylistUris ??= new();
+            return _chatPlaylistUris;
+
             static async Task GetPlaylistTracks()
             {
                 string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
@@ -40,12 +44,8 @@ public static class SpotifyController
 
                 SpotifyUser user = new(efUser);
                 SpotifyTrack[] tracks = await GetPlaylistItemsAsync(user, AppSettings.Spotify.ChatPlaylistId);
-                _chatPlaylistUris = tracks.Select(t => t.Uri).ToList();
+                _chatPlaylistUris = tracks.Select(static t => t.Uri).ToList();
             }
-
-            GetPlaylistTracks().Wait();
-            _chatPlaylistUris ??= new();
-            return _chatPlaylistUris;
         }
     }
 
@@ -145,7 +145,7 @@ public static class SpotifyController
     /// <exception cref="SpotifyException">Will be thrown if it was unable to add a song to the playlist.</exception>
     public static async ValueTask AddToPlaylist(SpotifyUser user, params string[] songs)
     {
-        string[] uris = songs.Select(s => ParseSongToUri(s) ?? string.Empty).Where(u => !string.IsNullOrWhiteSpace(u)).ToArray();
+        string[] uris = songs.Select(static s => ParseSongToUri(s) ?? string.Empty).Where(static u => !string.IsNullOrWhiteSpace(u)).ToArray();
         if (uris.Length == 0)
         {
             return;
@@ -154,7 +154,7 @@ public static class SpotifyController
         SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         try
         {
-            uris = uris.Where(u => !ChatPlaylistUris.Contains(u)).ToArray();
+            uris = uris.Where(static u => !ChatPlaylistUris.Contains(u)).ToArray();
             if (uris.Length == 0)
             {
                 return;
@@ -184,7 +184,7 @@ public static class SpotifyController
                     Offset = offset
                 }, default);
                 // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                SpotifyTrack[]? items = playlistItems?.Items?.Select(i => new SpotifyTrack(i.Track)).ToArray();
+                SpotifyTrack[]? items = playlistItems?.Items?.Select(static i => new SpotifyTrack(i.Track)).ToArray();
                 if (items is null)
                 {
                     break;
@@ -306,6 +306,7 @@ public static class SpotifyController
             listenerSession.Listeners.Clear();
             listenerSession.StopTimer();
             _listeningSessions.Remove(listenerSession);
+            listenerSession.Dispose();
         }
 
         ListeningSession hostSession = GetOrCreateListeningSession(host);
@@ -491,8 +492,8 @@ public static class SpotifyController
             return artist.Genres.ToArray();
         }
 
-        List<string> artistIds = track.Artists.Select(a => a.Id).ToList();
+        List<string> artistIds = track.Artists.Select(static a => a.Id).ToList();
         ArtistsResponse artists = await client.Artists.GetSeveral(new(artistIds));
-        return artists.Artists.Select(a => a.Genres).SelectMany(a => a).Distinct().ToArray();
+        return artists.Artists.Select(static a => a.Genres).SelectMany(static a => a).Distinct().ToArray();
     }
 }

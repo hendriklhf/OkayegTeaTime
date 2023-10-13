@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using OkayegTeaTime.Twitch.JsonConverters;
@@ -33,7 +34,7 @@ public sealed class Stream : CachedModel, IEquatable<Stream>
     public required string Title { get; init; }
 
     [JsonPropertyName("tags")]
-    public required string[] Tags { get; init; }
+    public required ImmutableArray<string> Tags { get; init; }
 
     [JsonPropertyName("viewer_count")]
     public required int ViewerCount { get; init; }

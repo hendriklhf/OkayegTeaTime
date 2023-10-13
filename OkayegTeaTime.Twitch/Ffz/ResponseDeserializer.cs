@@ -8,14 +8,9 @@ using OkayegTeaTime.Twitch.Ffz.Models;
 
 namespace OkayegTeaTime.Twitch.Ffz;
 
-internal readonly ref struct ResponseDeserializer
+internal readonly ref struct ResponseDeserializer(ReadOnlySpan<byte> response)
 {
-    private readonly ReadOnlySpan<byte> _response;
-
-    public ResponseDeserializer(ReadOnlySpan<byte> response)
-    {
-        _response = response;
-    }
+    private readonly ReadOnlySpan<byte> _response = response;
 
     public Emote[] Deserialize()
     {

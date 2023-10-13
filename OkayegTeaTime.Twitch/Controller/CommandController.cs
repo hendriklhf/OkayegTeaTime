@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.InteropServices;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
@@ -11,31 +13,33 @@ namespace OkayegTeaTime.Twitch.Controller;
 
 public sealed class CommandController
 {
-    public Command[] Commands { get; }
+    public ImmutableArray<Command> Commands { get; }
 
-    public AfkCommand[] AfkCommands { get; }
+    public ImmutableArray<AfkCommand> AfkCommands { get; }
 
     private readonly FrozenSet<AliasHash> _afkCommandAliasHashes;
 
     public CommandController()
     {
         int commandTypeCount = Enum.GetValues<CommandType>().Length;
-        Commands = new Command[commandTypeCount];
+        Command[] commands = new Command[commandTypeCount];
+        Commands = ImmutableCollectionsMarshal.AsImmutableArray(commands);
         foreach (Command command in AppSettings.CommandList.Commands)
         {
             CommandType commandType = Enum.Parse<CommandType>(command.Name, true);
-            Commands[(int)commandType] = command;
+            commands[(int)commandType] = command;
         }
 
         int afkCommandTypeCount = Enum.GetValues<AfkType>().Length;
-        AfkCommands = new AfkCommand[afkCommandTypeCount];
+        AfkCommand[] afkCommands = new AfkCommand[afkCommandTypeCount];
+        AfkCommands = ImmutableCollectionsMarshal.AsImmutableArray(afkCommands);
         foreach (AfkCommand command in AppSettings.CommandList.AfkCommands)
         {
             AfkType afkType = Enum.Parse<AfkType>(command.Name, true);
-            AfkCommands[(int)afkType] = command;
+            afkCommands[(int)afkType] = command;
         }
 
-        _afkCommandAliasHashes = AfkCommands.SelectMany(c => c.Aliases).Select(a => new AliasHash(a)).ToFrozenSet(true);
+        _afkCommandAliasHashes = AfkCommands.SelectMany(static c => c.Aliases).Select(static a => new AliasHash(a)).ToFrozenSet();
     }
 
     public bool IsAfkCommand(string? channelPrefix, string message)

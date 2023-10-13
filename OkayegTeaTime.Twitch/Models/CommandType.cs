@@ -2,12 +2,11 @@
 
 // new values have to be inserted to ensure alphabetic order
 
-public enum CommandType : byte
+public enum CommandType
 {
     BanFromFile,
     Chatterino,
     Chatterino7,
-    Chatters,
     Check,
     Code,
     Coinflip,

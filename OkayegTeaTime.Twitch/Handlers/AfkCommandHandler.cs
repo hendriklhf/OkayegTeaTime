@@ -9,22 +9,15 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
-public sealed class AfkCommandHandler
+public sealed class AfkCommandHandler(TwitchBot twitchBot)
 {
-    private readonly TwitchBot _twitchBot;
-
-    public AfkCommandHandler(TwitchBot twitchBot)
+    public async ValueTask Handle(IChatMessage chatMessage, AfkType afkType)
     {
-        _twitchBot = twitchBot;
-    }
-
-    public async ValueTask Handle(ChatMessage chatMessage, AfkType afkType)
-    {
-        User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
+        User? user = twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
             user = new(chatMessage.UserId, chatMessage.Username);
-            _twitchBot.Users.Add(user);
+            twitchBot.Users.Add(user);
         }
 
         using ChatMessageExtension messageExtension = new(chatMessage);
@@ -34,12 +27,12 @@ public sealed class AfkCommandHandler
         user.AfkTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         user.IsAfk = true;
 
-        string emote = _twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
-        using PoolBufferStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
+        string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
+        using PooledStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
         responseBuilder.Append(emote, " ");
-        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username, afkType, responseBuilder.FreeBufferSpan);
+        int afkMessageLength = twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username, afkType, responseBuilder.FreeBufferSpan);
         responseBuilder.Advance(afkMessageLength);
 
-        await _twitchBot.SendAsync(chatMessage.Channel, responseBuilder.WrittenMemory);
+        await twitchBot.SendAsync(chatMessage.Channel, responseBuilder.WrittenMemory);
     }
 }

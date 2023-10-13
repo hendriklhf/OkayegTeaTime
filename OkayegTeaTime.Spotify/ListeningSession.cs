@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
@@ -5,7 +6,7 @@ using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Spotify;
 
-public sealed class ListeningSession
+public sealed class ListeningSession : IDisposable
 {
     public SpotifyUser Host { get; }
 
@@ -17,6 +18,11 @@ public sealed class ListeningSession
     {
         Host = host;
         _timer.Elapsed += async (_, _) => await Timer_OnElapsed();
+    }
+
+    public void Dispose()
+    {
+        _timer.Dispose();
     }
 
     public void StartTimer(double interval)

@@ -1,22 +1,24 @@
-﻿#nullable disable
+﻿using System.Collections.Immutable;
 
 namespace OkayegTeaTime.Models.Json;
 
 public sealed class AfkCommand
 {
-    public string Name { get; set; }
+    public required string Name { get; init; }
 
-    public string ComingBack { get; set; }
+    public required string ComingBack { get; init; }
 
-    public string GoingAway { get; set; }
+    public required string GoingAway { get; init; }
 
-    public string Resuming { get; set; }
+    public required string Resuming { get; init; }
 
-    public string[] Aliases { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<string> Aliases { get; init; }
 
-    public string[] Parameters { get; set; }
+    public required ImmutableArray<string> Parameters { get; init; }
 
-    public string[] ParameterDescriptions { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public required ImmutableArray<string> ParameterDescriptions { get; init; }
 
-    public bool Document { get; set; }
+    public required bool Document { get; init; }
 }

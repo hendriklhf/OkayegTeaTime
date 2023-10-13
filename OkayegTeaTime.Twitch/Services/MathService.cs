@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using HLE.Collections;
-using HLE.Http;
-using HLE.Memory;
 using HLE.Strings;
 
 namespace OkayegTeaTime.Twitch.Services;
@@ -29,14 +28,13 @@ public sealed class MathService : IEquatable<MathService>
         string url = $"{_apiUrl}{HttpUtility.UrlEncode(expression)}";
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(url);
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync();
-        result = Encoding.UTF8.GetString(httpContentBytes.Span);
+        result = Encoding.UTF8.GetString(httpContentBytes.AsSpan());
 
         ClearCacheIfThereAreTooManyEntries();
         _expressionResultCache.AddOrSet(expression, result);
@@ -63,7 +61,7 @@ public sealed class MathService : IEquatable<MathService>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(MathService? left, MathService? right)

@@ -2,10 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Http;
-using HLE.Memory;
 using HLE.Strings;
 using OkayegTeaTime.Twitch.SevenTv.Models;
 using OkayegTeaTime.Twitch.SevenTv.Models.Responses;
@@ -33,24 +32,23 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
+        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
         urlBuilder.Append(_apiBaseUrl, "/emote-sets/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        GetGlobalEmotesResponse response = JsonSerializer.Deserialize<GetGlobalEmotesResponse>(httpContentBytes.Span);
+        GetGlobalEmotesResponse response = JsonSerializer.Deserialize<GetGlobalEmotesResponse>(httpContentBytes.AsSpan());
         emotes = response.Emotes;
         Cache?.AddGlobalEmotes(emotes);
         return emotes;
@@ -63,7 +61,7 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
+        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
         urlBuilder.Append(_apiBaseUrl, "/users/twitch/");
         urlBuilder.Append(channelId);
 
@@ -74,19 +72,18 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
             return null;
         }
 
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        GetChannelEmotesResponse response = JsonSerializer.Deserialize<GetChannelEmotesResponse>(httpContentBytes.Span);
+        GetChannelEmotesResponse response = JsonSerializer.Deserialize<GetChannelEmotesResponse>(httpContentBytes.AsSpan());
         emotes = response.EmoteSet.Emotes;
         Cache?.AddChannelEmotes(channelId, emotes);
         return emotes;
@@ -116,7 +113,7 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(SevenTvApi? left, SevenTvApi? right)

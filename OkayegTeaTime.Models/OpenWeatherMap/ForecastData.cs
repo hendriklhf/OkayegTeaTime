@@ -1,5 +1,7 @@
 #nullable disable
 
+using System;
+using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Models.OpenWeatherMap;
@@ -13,7 +15,7 @@ public sealed class ForecastData
     public byte Count { get; set; }
 
     [JsonPropertyName("list")]
-    public Forecast[] Forecasts { get; set; }
+    public ImmutableArray<Forecast> Forecasts { get; set; }
 
     [JsonIgnore]
     public DateTime TimeOfRequest { get; } = DateTime.UtcNow;

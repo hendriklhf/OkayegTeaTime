@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System;
+﻿using System;
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
@@ -10,11 +8,11 @@ public sealed class ExceptionLog
 
     public string Type { get; set; }
 
-    public string Origin { get; set; }
+    public string? Origin { get; set; }
 
     public string Message { get; set; }
 
-    public string StackTrace { get; set; }
+    public string? StackTrace { get; set; }
 
     public ExceptionLog(int id, string type, string origin, string message, string stackTrace)
     {
@@ -27,8 +25,8 @@ public sealed class ExceptionLog
 
     public ExceptionLog(Exception ex)
     {
-        Type = ex.GetType().FullName;
-        Origin = ex.TargetSite?.Name;
+        Type = ex.GetType().ToString();
+        Origin = null; // should be removed from db
         Message = ex.Message;
         StackTrace = ex.StackTrace;
     }

@@ -10,44 +10,34 @@ using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Settings;
-using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Reddit, typeof(RedditCommand))]
-public readonly struct RedditCommand : IChatCommand<RedditCommand>
+public readonly struct RedditCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    : IChatCommand<RedditCommand>
 {
-    public ResponseBuilder Response { get; }
+    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
 
-    public ChatMessage ChatMessage { get; }
+    public IChatMessage ChatMessage { get; } = chatMessage;
 
-    private readonly TwitchBot _twitchBot;
-    private readonly ReadOnlyMemory<char> _prefix;
-    private readonly ReadOnlyMemory<char> _alias;
+    private readonly TwitchBot _twitchBot = twitchBot;
+    private readonly ReadOnlyMemory<char> _prefix = prefix;
+    private readonly ReadOnlyMemory<char> _alias = alias;
 
     private static readonly Dictionary<string, RedditPost[]> _redditPostCache = new();
     private static readonly TimeSpan _cacheTime = TimeSpan.FromHours(1);
-    private static readonly Func<RedditPost, bool> _postFilter = rp => rp is { Pinned: false, IsNsfw: false };
+    private static readonly Func<RedditPost, bool> _postFilter = static rp => rp is { Pinned: false, IsNsfw: false };
 
-    private RedditCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        ChatMessage = chatMessage;
-        Response = new(AppSettings.MaxMessageLength);
-        _twitchBot = twitchBot;
-        _prefix = prefix;
-        _alias = alias;
-    }
-
-    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RedditCommand command)
+    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RedditCommand command)
     {
         command = new(twitchBot, chatMessage, prefix, alias);
     }
 
     public async ValueTask Handle()
     {
-        Regex pattern = _twitchBot.RegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
+        Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
@@ -90,7 +80,7 @@ public readonly struct RedditCommand : IChatCommand<RedditCommand>
 
             JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
             JsonElement posts = json.GetProperty("data").GetProperty("children");
-            using PoolBufferList<string> rawPosts = new(50);
+            using PooledList<string> rawPosts = new(50);
             for (int i = 0; i < posts.GetArrayLength(); i++)
             {
                 rawPosts.Add(posts[i].GetProperty("data").GetRawText());
@@ -137,5 +127,30 @@ public readonly struct RedditCommand : IChatCommand<RedditCommand>
     public void Dispose()
     {
         Response.Dispose();
+    }
+
+    public bool Equals(RedditCommand other)
+    {
+        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is RedditCommand other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
+    }
+
+    public static bool operator ==(RedditCommand left, RedditCommand right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(RedditCommand left, RedditCommand right)
+    {
+        return !left.Equals(right);
     }
 }

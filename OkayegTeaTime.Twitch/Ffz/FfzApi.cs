@@ -2,17 +2,16 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Http;
-using HLE.Memory;
 using HLE.Strings;
 using OkayegTeaTime.Twitch.Ffz.Models;
 using OkayegTeaTime.Twitch.Ffz.Models.Responses;
 
 namespace OkayegTeaTime.Twitch.Ffz;
 
-public sealed class FfzApi : IEquatable<FfzApi>
+public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
 {
     public FfzApiCache? Cache { get; set; }
 
@@ -33,7 +32,7 @@ public sealed class FfzApi : IEquatable<FfzApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
+        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
         urlBuilder.Append(_apiBaseUrl, "/room/id/");
         urlBuilder.Append(channelId);
 
@@ -44,25 +43,24 @@ public sealed class FfzApi : IEquatable<FfzApi>
             return null;
         }
 
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        Room room = JsonSerializer.Deserialize<GetRoomResponse>(httpContentBytes.Span).Room;
+        Room room = JsonSerializer.Deserialize<GetRoomResponse>(httpContentBytes.AsSpan()).Room;
         if (room == Room.Empty)
         {
             return null;
         }
 
-        emotes = DeserializeResponse(httpContentBytes.Span);
+        emotes = DeserializeResponse(httpContentBytes.AsSpan());
         Cache?.AddChannelEmotes(channelId, room.TwitchUsername, emotes);
         return emotes;
     }
@@ -79,7 +77,7 @@ public sealed class FfzApi : IEquatable<FfzApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
+        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
         urlBuilder.Append(_apiBaseUrl, "/room/", channelName.Span);
 
         using HttpClient httpClient = new();
@@ -89,25 +87,24 @@ public sealed class FfzApi : IEquatable<FfzApi>
             return null;
         }
 
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
+        }
+
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
-        if (!httpResponse.IsSuccessStatusCode)
-        {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
-        }
-
-        Room room = JsonSerializer.Deserialize<GetRoomResponse>(httpContentBytes.Span).Room;
+        Room room = JsonSerializer.Deserialize<GetRoomResponse>(httpContentBytes.AsSpan()).Room;
         if (room == Room.Empty)
         {
             return null;
         }
 
-        emotes = DeserializeResponse(httpContentBytes.Span);
+        emotes = DeserializeResponse(httpContentBytes.AsSpan());
         Cache?.AddChannelEmotes(room.TwitchId, channelName.Span, emotes);
         return emotes;
     }
@@ -119,24 +116,23 @@ public sealed class FfzApi : IEquatable<FfzApi>
             return emotes;
         }
 
-        using PoolBufferStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
+        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
         urlBuilder.Append(_apiBaseUrl, "/set/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
-        int contentLength = httpResponse.GetContentLength();
-        if (contentLength == 0)
+        using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
+        if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        using HttpContentBytes httpContentBytes = await httpResponse.GetContentBytesAsync(contentLength);
         if (!httpResponse.IsSuccessStatusCode)
         {
-            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.Span);
+            throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        emotes = JsonSerializer.Deserialize<GetGlobalEmotesResponse>(httpContentBytes.Span).Sets.GlobalSet.Emotes;
+        emotes = JsonSerializer.Deserialize<GetGlobalEmotesResponse>(httpContentBytes.AsSpan()).Sets.GlobalSet.Emotes;
         if (emotes.Length == 0)
         {
             return emotes;
@@ -182,7 +178,7 @@ public sealed class FfzApi : IEquatable<FfzApi>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(FfzApi? left, FfzApi? right)
@@ -193,5 +189,10 @@ public sealed class FfzApi : IEquatable<FfzApi>
     public static bool operator !=(FfzApi? left, FfzApi? right)
     {
         return !(left == right);
+    }
+
+    public void Dispose()
+    {
+        Cache?.Dispose();
     }
 }

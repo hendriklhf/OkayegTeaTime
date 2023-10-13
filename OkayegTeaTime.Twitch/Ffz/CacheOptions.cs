@@ -1,5 +1,5 @@
 using System;
-using HLE.Memory;
+using System.Runtime.CompilerServices;
 
 namespace OkayegTeaTime.Twitch.Ffz;
 
@@ -21,7 +21,7 @@ public sealed class CacheOptions : IEquatable<CacheOptions>
 
     public override int GetHashCode()
     {
-        return MemoryHelper.GetRawDataPointer(this).GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public static bool operator ==(CacheOptions? left, CacheOptions? right)
