@@ -23,14 +23,13 @@ public sealed class UserTypeJsonConverter : JsonConverter<UserType>
         };
     }
 
-    public override void Write(Utf8JsonWriter writer, UserType value, JsonSerializerOptions options)
-    {
+    public override void Write(Utf8JsonWriter writer, UserType value, JsonSerializerOptions options) =>
         writer.WriteStringValue(value switch
         {
+            UserType.Normal => string.Empty,
             UserType.Admin => "admin",
             UserType.GlobalMod => "global_mod",
             UserType.Staff => "staff",
             _ => string.Empty
         });
-    }
 }

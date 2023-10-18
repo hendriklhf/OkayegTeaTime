@@ -55,9 +55,7 @@ public sealed class Builder(string[] args)
     }
 
     private static void BuildBot(string outputDirectory, Runtime runtime)
-    {
-        StartBuildProcess(outputDirectory, runtime, _botProjectPath, "OkayegTeaTime");
-    }
+        => StartBuildProcess(outputDirectory, runtime, _botProjectPath, "OkayegTeaTime");
 
     private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
     {

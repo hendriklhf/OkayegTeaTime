@@ -24,9 +24,9 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
         _resumingMessageParts = GetResumingMessageParts(afkCommands, afkTypeCount);
     }
 
-    public int BuildComingBackMessage(User user, AfkType afkType, Span<char> resultBuffer)
+    public int BuildComingBackMessage(User user, AfkType afkType, Span<char> destination)
     {
-        ValueStringBuilder builder = new(resultBuffer);
+        ValueStringBuilder builder = new(destination);
         ReadOnlySpan<string> messageParts = _comingBackMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 3);
 
@@ -38,9 +38,9 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
         return builder.Length;
     }
 
-    public int BuildGoingAwayMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> resultBuffer)
+    public int BuildGoingAwayMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> destination)
     {
-        ValueStringBuilder builder = new(resultBuffer);
+        ValueStringBuilder builder = new(destination);
         ReadOnlySpan<string> messageParts = _goingAwayMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 1);
 
@@ -48,9 +48,9 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
         return builder.Length;
     }
 
-    public int BuildResumingMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> resultBuffer)
+    public int BuildResumingMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> destination)
     {
-        ValueStringBuilder builder = new(resultBuffer);
+        ValueStringBuilder builder = new(destination);
         ReadOnlySpan<string> messageParts = _resumingMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 1);
 
@@ -100,28 +100,13 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
         return comingBackMessageParts;
     }
 
-    public bool Equals(AfkMessageBuilder? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(AfkMessageBuilder? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is AfkMessageBuilder other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is AfkMessageBuilder other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(AfkMessageBuilder? left, AfkMessageBuilder? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(AfkMessageBuilder? left, AfkMessageBuilder? right) => Equals(left, right);
 
-    public static bool operator !=(AfkMessageBuilder? left, AfkMessageBuilder? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(AfkMessageBuilder? left, AfkMessageBuilder? right) => !(left == right);
 }

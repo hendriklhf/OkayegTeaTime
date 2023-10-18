@@ -54,7 +54,7 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
             return;
         }
 
-        await _twitchBot.SendComingBack(user, chatMessage.Channel);
+        await _twitchBot.SendComingBackAsync(user, chatMessage.Channel);
         if (!_twitchBot.CommandController.IsAfkCommand(_twitchBot.Channels[chatMessage.ChannelId]?.Prefix, chatMessage.Message) || _twitchBot.CooldownController.IsOnAfkCooldown(chatMessage.UserId))
         {
             user.IsAfk = false;
@@ -64,7 +64,7 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
     private async ValueTask CheckForReminderAsync(string username, string channel)
     {
         Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
-        await _twitchBot.SendReminder(channel, reminders);
+        await _twitchBot.SendReminderAsync(channel, reminders);
     }
 
 #if RELEASE

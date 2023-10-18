@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HLE.Collections;
 using OkayegTeaTime.Database.Models;
 
 namespace OkayegTeaTime.Database.Cache;
@@ -14,12 +15,12 @@ public sealed class ChannelCache : DbCache<Channel>
     {
         Channel channel = new(id, name);
         DbController.AddChannel(id, name);
-        _items.Add(id, channel);
+        _items.AddOrSet(id, channel);
     }
 
     public void Remove(long id)
     {
-        _items.Remove(id);
+        _items.TryRemove(id, out _);
         DbController.RemoveChannel(id);
     }
 
@@ -31,7 +32,7 @@ public sealed class ChannelCache : DbCache<Channel>
             return;
         }
 
-        _items.Remove(channel.Id);
+        _items.TryRemove(channel.Id, out _);
         DbController.RemoveChannel(channel.Id);
     }
 
@@ -41,10 +42,7 @@ public sealed class ChannelCache : DbCache<Channel>
         return channel;
     }
 
-    private Channel? Get(string name)
-    {
-        return this.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-    }
+    private Channel? Get(string name) => this.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
     private protected override void GetAllItemsFromDatabase()
     {
@@ -55,7 +53,7 @@ public sealed class ChannelCache : DbCache<Channel>
 
         foreach (EntityFrameworkModels.Channel channel in DbController.GetChannels().Where(c => _items.All(i => c.Id != i.Value.Id)))
         {
-            _items.Add(channel.Id, new(channel));
+            _items.AddOrSet(channel.Id, new(channel));
         }
 
         _containsAll = true;

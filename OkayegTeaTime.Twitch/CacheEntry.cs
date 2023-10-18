@@ -26,37 +26,19 @@ internal readonly struct CacheEntry<T> : IEquatable<CacheEntry<T>>
 
     [Pure]
     [MemberNotNullWhen(true, nameof(Value))]
-    public bool IsValid(TimeSpan cacheTime)
-    {
-        return this != default && _timeOfRequest + cacheTime > DateTime.UtcNow;
-    }
+    public bool IsValid(TimeSpan cacheTime) => this != default && _timeOfRequest + cacheTime > DateTime.UtcNow;
 
     [Pure]
-    public bool Equals(CacheEntry<T> other)
-    {
-        return Value?.Equals(other.Value) == true && _timeOfRequest == other._timeOfRequest;
-    }
+    public bool Equals(CacheEntry<T> other) => Value?.Equals(other.Value) == true && _timeOfRequest == other._timeOfRequest;
 
     [Pure]
-    public override bool Equals(object? obj)
-    {
-        return obj is CacheEntry<T> other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is CacheEntry<T> other && Equals(other);
 
     [Pure]
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Value, _timeOfRequest);
-    }
+    public override int GetHashCode() => HashCode.Combine(Value, _timeOfRequest);
 
     [Pure]
-    public static bool operator ==(CacheEntry<T> left, CacheEntry<T> right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(CacheEntry<T> left, CacheEntry<T> right) => left.Equals(right);
 
-    public static bool operator !=(CacheEntry<T> left, CacheEntry<T> right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(CacheEntry<T> left, CacheEntry<T> right) => !(left == right);
 }

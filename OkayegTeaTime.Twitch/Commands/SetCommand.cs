@@ -25,9 +25,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
     private readonly ReadOnlyMemory<char> _alias = alias;
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask Handle()
     {
@@ -190,33 +188,17 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
     [GeneratedRegex("(0|false|disabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, 1000)]
     private static partial Regex GetDisabledPattern();
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
-    public bool Equals(SetCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public bool Equals(SetCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is SetCommand other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is SetCommand other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(SetCommand left, SetCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(SetCommand left, SetCommand right) => left.Equals(right);
 
-    public static bool operator !=(SetCommand left, SetCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(SetCommand left, SetCommand right) => !left.Equals(right);
 }

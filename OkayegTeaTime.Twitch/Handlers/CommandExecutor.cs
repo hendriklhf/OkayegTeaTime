@@ -34,9 +34,7 @@ public sealed class CommandExecutor
     }
 
     public async ValueTask ExecuteAsync(CommandType type, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-    {
-        await _executionMethods[(int)type](_twitchBot, chatMessage, prefix, alias);
-    }
+        => await _executionMethods[(int)type](_twitchBot, chatMessage, prefix, alias);
 
     private static async ValueTask ExecuteCommandAsync<T>(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias) where T : IChatCommand<T>
     {

@@ -2,45 +2,18 @@
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public readonly struct CooldownHash : IEquatable<CooldownHash>
+public readonly struct CooldownHash(long userId, CommandType type = 0) : IEquatable<CooldownHash>
 {
-    private readonly long _userId;
-    private readonly CommandType _commandType;
+    private readonly long _userId = userId;
+    private readonly CommandType _commandType = type;
 
-    public CooldownHash(long userId, CommandType type)
-    {
-        _userId = userId;
-        _commandType = type;
-    }
+    public bool Equals(CooldownHash other) => _userId == other._userId && _commandType == other._commandType;
 
-    public CooldownHash(long userId)
-    {
-        _userId = userId;
-        _commandType = 0;
-    }
+    public override bool Equals(object? obj) => obj is CooldownHash other && Equals(other);
 
-    public bool Equals(CooldownHash other)
-    {
-        return _userId == other._userId && _commandType == other._commandType;
-    }
+    public override int GetHashCode() => HashCode.Combine(_userId, _commandType);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is CooldownHash other && Equals(other);
-    }
+    public static bool operator ==(CooldownHash left, CooldownHash right) => left.Equals(right);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_userId, _commandType);
-    }
-
-    public static bool operator ==(CooldownHash left, CooldownHash right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(CooldownHash left, CooldownHash right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(CooldownHash left, CooldownHash right) => !(left == right);
 }

@@ -115,9 +115,7 @@ public static class SpotifyController
     }
 
     private static bool IsAccessTokenExpired(SpotifyUser user)
-    {
-        return user.Time + TimeSpan.FromHours(1).TotalMilliseconds <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + TimeSpan.FromSeconds(30).TotalMilliseconds;
-    }
+        => user.Time + TimeSpan.FromHours(1).TotalMilliseconds <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + TimeSpan.FromSeconds(30).TotalMilliseconds;
 
     private static async ValueTask<SpotifyClient?> GetClientAsync(SpotifyUser user)
     {
@@ -265,10 +263,7 @@ public static class SpotifyController
         }
     }
 
-    public static ListeningSession? GetListeningSession(SpotifyUser host)
-    {
-        return _listeningSessions.FirstOrDefault(s => ReferenceEquals(s.Host, host));
-    }
+    public static ListeningSession? GetListeningSession(SpotifyUser host) => _listeningSessions.FirstOrDefault(s => ReferenceEquals(s.Host, host));
 
     private static ListeningSession GetOrCreateListeningSession(SpotifyUser host)
     {
@@ -478,10 +473,7 @@ public static class SpotifyController
         return playback;
     }
 
-    public static SpotifyUser? GetListeningTo(SpotifyUser listener)
-    {
-        return _listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
-    }
+    public static SpotifyUser? GetListeningTo(SpotifyUser listener) => _listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
 
     public static async ValueTask<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
     {

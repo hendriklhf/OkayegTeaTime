@@ -28,10 +28,7 @@ public struct UrlBuilder : IDisposable, IEquatable<UrlBuilder>
         _builder.Append(endpoint);
     }
 
-    public readonly void Dispose()
-    {
-        _builder.Dispose();
-    }
+    public readonly void Dispose() => _builder.Dispose();
 
     public void AppendParameter(ReadOnlySpan<char> key, ReadOnlySpan<char> value)
     {
@@ -53,35 +50,17 @@ public struct UrlBuilder : IDisposable, IEquatable<UrlBuilder>
 
     [Pure]
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly string ToString()
-    {
-        return _builder.ToString();
-    }
+    public override readonly string ToString() => _builder.ToString();
 
-    public readonly bool Equals(UrlBuilder other)
-    {
-        return _builder.Equals(other._builder) && ParameterCount == other.ParameterCount;
-    }
+    public readonly bool Equals(UrlBuilder other) => _builder.Equals(other._builder) && ParameterCount == other.ParameterCount;
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly bool Equals(object? obj)
-    {
-        return obj is UrlBuilder other && Equals(other);
-    }
+    public override readonly bool Equals(object? obj) => obj is UrlBuilder other && Equals(other);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly int GetHashCode()
-    {
-        return HashCode.Combine(_builder, ParameterCount);
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(_builder, ParameterCount);
 
-    public static bool operator ==(UrlBuilder left, UrlBuilder right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(UrlBuilder left, UrlBuilder right) => left.Equals(right);
 
-    public static bool operator !=(UrlBuilder left, UrlBuilder right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(UrlBuilder left, UrlBuilder right) => !left.Equals(right);
 }

@@ -19,10 +19,7 @@ public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>,
         _channelEmotesCache.AddOrSet(channelId, channelNameHash, new(emotes));
     }
 
-    public void AddGlobalEmotes(Emote[] emotes)
-    {
-        _globalEmotesCache = new(emotes);
-    }
+    public void AddGlobalEmotes(Emote[] emotes) => _globalEmotesCache = new(emotes);
 
     public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
     {
@@ -61,33 +58,15 @@ public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>,
         return false;
     }
 
-    public bool Equals(FfzApiCache? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(FfzApiCache? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is FfzApiCache other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is FfzApiCache other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(FfzApiCache? left, FfzApiCache? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(FfzApiCache? left, FfzApiCache? right) => Equals(left, right);
 
-    public static bool operator !=(FfzApiCache? left, FfzApiCache? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(FfzApiCache? left, FfzApiCache? right) => !(left == right);
 
-    public void Dispose()
-    {
-        _channelEmotesCache.Dispose();
-    }
+    public void Dispose() => _channelEmotesCache.Dispose();
 }

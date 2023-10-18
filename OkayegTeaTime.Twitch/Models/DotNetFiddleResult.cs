@@ -17,28 +17,13 @@ public readonly struct DotNetFiddleResult : IEquatable<DotNetFiddleResult>
     {
     }
 
-    public bool Equals(DotNetFiddleResult other)
-    {
-        return ConsoleOutput == other.ConsoleOutput;
-    }
+    public bool Equals(DotNetFiddleResult other) => ConsoleOutput == other.ConsoleOutput;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is DotNetFiddleResult other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is DotNetFiddleResult other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return ConsoleOutput.GetHashCode();
-    }
+    public override int GetHashCode() => ConsoleOutput.GetHashCode();
 
-    public static bool operator ==(DotNetFiddleResult? left, DotNetFiddleResult? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(DotNetFiddleResult? left, DotNetFiddleResult? right) => Equals(left, right);
 
-    public static bool operator !=(DotNetFiddleResult? left, DotNetFiddleResult? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(DotNetFiddleResult? left, DotNetFiddleResult? right) => !(left == right);
 }

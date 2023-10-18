@@ -35,10 +35,7 @@ public sealed partial class TwitchApi
         return stream;
     }
 
-    public async ValueTask<Stream?> GetStreamAsync(string username)
-    {
-        return await GetStreamAsync(username.AsMemory());
-    }
+    public async ValueTask<Stream?> GetStreamAsync(string username) => await GetStreamAsync(username.AsMemory());
 
     public async ValueTask<Stream?> GetStreamAsync(ReadOnlyMemory<char> username)
     {
@@ -102,44 +99,28 @@ public sealed partial class TwitchApi
     }
 
     public async ValueTask<Stream[]> GetStreamsAsync(List<string> usernames)
-    {
-        return await GetStreamsAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
-    }
+        => await GetStreamsAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<Stream[]> GetStreamsAsync(List<long> channelIds)
-    {
-        return await GetStreamsAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(channelIds).AsMemoryUnsafe());
-    }
+        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(channelIds).AsMemoryUnsafe());
 
     public async ValueTask<Stream[]> GetStreamsAsync(List<string> usernames, List<long> channelIds)
-    {
-        return await GetStreamsAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(channelIds).AsMemoryUnsafe());
-    }
+        => await GetStreamsAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(channelIds).AsMemoryUnsafe());
 
     public async ValueTask<Stream[]> GetStreamsAsync(params string[] usernames)
-    {
-        return await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
-    }
+        => await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<Stream[]> GetStreamsAsync(params long[] channelIds)
-    {
-        return await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
-    }
+        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
 
     public async ValueTask<Stream[]> GetStreamsAsync(string[] usernames, long[] channelIds)
-    {
-        return await GetStreamsAsync(usernames.AsMemory(), channelIds);
-    }
+        => await GetStreamsAsync(usernames.AsMemory(), channelIds);
 
     public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames)
-    {
-        return await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
-    }
+        => await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<long> channelIds)
-    {
-        return await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
-    }
+        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
 
     public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> channelIds)
     {

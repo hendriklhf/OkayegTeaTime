@@ -56,7 +56,7 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
         await Task.WhenAll(getTwitchGlobalEmotesTask, getTwitchChannelEmotesTask, getFfzGlobalEmotesTask, getFfzChannelEmotesTask,
             getBttvGlobalEmotesTask, getBttvChannelEmotesTask, getSevenTvGlobalEmotesTask, getSevenTvChannelEmotesTask);
 
-#pragma warning disable CA1849
+#pragma warning disable CA1849 // the tasks have been awaited
         var twitchGlobalEmotes = getTwitchGlobalEmotesTask.Result;
         var twitchChannelEmotes = getTwitchChannelEmotesTask.Result;
         var ffzGlobalEmotes = getFfzGlobalEmotesTask.Result;
@@ -126,28 +126,13 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
         return emoteNames;
     }
 
-    public bool Equals(EmoteService? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(EmoteService? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is EmoteService other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is EmoteService other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(EmoteService? left, EmoteService? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(EmoteService? left, EmoteService? right) => Equals(left, right);
 
-    public static bool operator !=(EmoteService? left, EmoteService? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(EmoteService? left, EmoteService? right) => !(left == right);
 }

@@ -49,38 +49,17 @@ public readonly struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposa
     }
 
     // TODO: fix with next HLE version
-    private static byte[] GetUnderlyingArray(RentedArray<byte> rentedArray)
-    {
-        return (byte[])_underlyingArrayField.GetValue(rentedArray)!;
-    }
+    private static byte[] GetUnderlyingArray(RentedArray<byte> rentedArray) => (byte[])_underlyingArrayField.GetValue(rentedArray)!;
 
-    public bool Equals(HttpContentBytes other)
-    {
-        return Length == other.Length && _bytes == other._bytes;
-    }
+    public bool Equals(HttpContentBytes other) => Length == other.Length && _bytes == other._bytes;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is HttpContentBytes other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is HttpContentBytes other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_bytes, Length);
-    }
+    public override int GetHashCode() => HashCode.Combine(_bytes, Length);
 
-    public static bool operator ==(HttpContentBytes left, HttpContentBytes right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(HttpContentBytes left, HttpContentBytes right) => left.Equals(right);
 
-    public static bool operator !=(HttpContentBytes left, HttpContentBytes right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(HttpContentBytes left, HttpContentBytes right) => !(left == right);
 
-    public void Dispose()
-    {
-        _bytes.Dispose();
-    }
+    public void Dispose() => _bytes.Dispose();
 }

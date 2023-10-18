@@ -23,9 +23,7 @@ public readonly struct Chatterino7Command(TwitchBot twitchBot, IChatMessage chat
     private const string _responseMessage = "Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Chatterino7Command command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask Handle()
     {
@@ -33,33 +31,16 @@ public readonly struct Chatterino7Command(TwitchBot twitchBot, IChatMessage chat
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
     public bool Equals(Chatterino7Command other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+        => _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Chatterino7Command other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is Chatterino7Command other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(Chatterino7Command left, Chatterino7Command right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(Chatterino7Command left, Chatterino7Command right) => left.Equals(right);
 
-    public static bool operator !=(Chatterino7Command left, Chatterino7Command right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(Chatterino7Command left, Chatterino7Command right) => !left.Equals(right);
 }

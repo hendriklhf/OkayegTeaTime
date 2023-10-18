@@ -88,28 +88,13 @@ public sealed class DotNetFiddleService : IEquatable<DotNetFiddleService>
         return code.TrimEnd();
     }
 
-    public bool Equals(DotNetFiddleService? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(DotNetFiddleService? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is DotNetFiddleService other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is DotNetFiddleService other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(DotNetFiddleService? left, DotNetFiddleService? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(DotNetFiddleService? left, DotNetFiddleService? right) => Equals(left, right);
 
-    public static bool operator !=(DotNetFiddleService? left, DotNetFiddleService? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(DotNetFiddleService? left, DotNetFiddleService? right) => !(left == right);
 }

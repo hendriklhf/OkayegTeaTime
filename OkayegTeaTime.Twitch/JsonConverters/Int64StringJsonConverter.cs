@@ -8,9 +8,7 @@ namespace OkayegTeaTime.Twitch.JsonConverters;
 public sealed class Int64StringJsonConverter : JsonConverter<long>
 {
     public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        return NumberHelper.ParsePositiveNumber<long>(reader.ValueSpan);
-    }
+        => NumberHelper.ParsePositiveNumber<long>(reader.ValueSpan);
 
     public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
     {

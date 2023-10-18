@@ -40,33 +40,15 @@ public readonly struct SmartSplit : IDisposable, IEquatable<SmartSplit>
         return splits;
     }
 
-    public void Dispose()
-    {
-        _ranges.Dispose();
-    }
+    public void Dispose() => _ranges.Dispose();
 
-    public bool Equals(SmartSplit other)
-    {
-        return Length == other.Length && _message.Equals(other._message) && _ranges.Equals(other._ranges);
-    }
+    public bool Equals(SmartSplit other) => Length == other.Length && _message.Equals(other._message) && _ranges.Equals(other._ranges);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is SmartSplit other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is SmartSplit other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_message, _ranges, Length);
-    }
+    public override int GetHashCode() => HashCode.Combine(_message, _ranges, Length);
 
-    public static bool operator ==(SmartSplit left, SmartSplit right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(SmartSplit left, SmartSplit right) => left.Equals(right);
 
-    public static bool operator !=(SmartSplit left, SmartSplit right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(SmartSplit left, SmartSplit right) => !(left == right);
 }

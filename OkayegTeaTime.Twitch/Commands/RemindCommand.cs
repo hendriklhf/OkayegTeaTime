@@ -62,9 +62,7 @@ public readonly struct RemindCommand(TwitchBot twitchBot, IChatMessage chatMessa
     private static readonly Regex _exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({_timePattern})(\s{_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask Handle()
     {
@@ -156,10 +154,7 @@ public readonly struct RemindCommand(TwitchBot twitchBot, IChatMessage chatMessa
         Response.Advance(joinLength);
     }
 
-    private string GetMessage()
-    {
-        return _exceptMessagePattern.Replace(ChatMessage.Message, string.Empty);
-    }
+    private string GetMessage() => _exceptMessagePattern.Replace(ChatMessage.Message, string.Empty);
 
     [SkipLocalsInit]
     private unsafe long GetToTime()
@@ -252,33 +247,17 @@ public readonly struct RemindCommand(TwitchBot twitchBot, IChatMessage chatMessa
         return -1;
     }
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
-    public bool Equals(RemindCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public bool Equals(RemindCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is RemindCommand other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is RemindCommand other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(RemindCommand left, RemindCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(RemindCommand left, RemindCommand right) => left.Equals(right);
 
-    public static bool operator !=(RemindCommand left, RemindCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(RemindCommand left, RemindCommand right) => !left.Equals(right);
 }

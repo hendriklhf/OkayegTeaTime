@@ -138,9 +138,8 @@ public sealed class WeatherService : IDisposable
         return response.Length;
     }
 
-    private static string GetWeatherEmoji(int weatherId)
-    {
-        return weatherId switch
+    private static string GetWeatherEmoji(int weatherId) =>
+        weatherId switch
         {
             >= 200 and <= 231 => Emoji.CloudWithLightningAndRain,
             >= 300 and <= 321 => Emoji.CloudWithRain,
@@ -157,11 +156,9 @@ public sealed class WeatherService : IDisposable
             803 or 804 => Emoji.Cloud,
             _ => Emoji.Question
         };
-    }
 
-    private static string GetDirection(double degrees)
-    {
-        return degrees switch
+    private static string GetDirection(double degrees) =>
+        degrees switch
         {
             < 0 => Emoji.Question,
             < 11.25 => "N",
@@ -183,10 +180,6 @@ public sealed class WeatherService : IDisposable
             <= 360 => "N",
             _ => Emoji.Question
         };
-    }
 
-    public void Dispose()
-    {
-        _weatherCache.Dispose();
-    }
+    public void Dispose() => _weatherCache.Dispose();
 }

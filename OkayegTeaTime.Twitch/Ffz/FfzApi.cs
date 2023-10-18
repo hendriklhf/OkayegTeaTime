@@ -65,10 +65,7 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
         return emotes;
     }
 
-    public async ValueTask<Emote[]?> GetChannelEmotesAsync(string channelName)
-    {
-        return await GetChannelEmotesAsync(channelName.AsMemory());
-    }
+    public async ValueTask<Emote[]?> GetChannelEmotesAsync(string channelName) => await GetChannelEmotesAsync(channelName.AsMemory());
 
     public async ValueTask<Emote[]?> GetChannelEmotesAsync(ReadOnlyMemory<char> channelName)
     {
@@ -166,33 +163,15 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
         return deserializer.Deserialize();
     }
 
-    public bool Equals(FfzApi? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(FfzApi? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is FfzApi other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is FfzApi other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(FfzApi? left, FfzApi? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(FfzApi? left, FfzApi? right) => Equals(left, right);
 
-    public static bool operator !=(FfzApi? left, FfzApi? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(FfzApi? left, FfzApi? right) => !(left == right);
 
-    public void Dispose()
-    {
-        Cache?.Dispose();
-    }
+    public void Dispose() => Cache?.Dispose();
 }

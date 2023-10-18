@@ -7,10 +7,7 @@ namespace OkayegTeaTime.Tests;
 [TestClass]
 public sealed class AppSettingsTest
 {
-    public AppSettingsTest()
-    {
-        AppSettings.Initialize();
-    }
+    public AppSettingsTest() => AppSettings.Initialize();
 
     [TestMethod]
     public void AllPropertiesNotDefaultTest()

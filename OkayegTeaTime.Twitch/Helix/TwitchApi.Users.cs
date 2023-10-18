@@ -35,10 +35,7 @@ public sealed partial class TwitchApi
         return user;
     }
 
-    public async ValueTask<User?> GetUserAsync(string username)
-    {
-        return await GetUserAsync(username.AsMemory());
-    }
+    public async ValueTask<User?> GetUserAsync(string username) => await GetUserAsync(username.AsMemory());
 
     public async ValueTask<User?> GetUserAsync(ReadOnlyMemory<char> username)
     {
@@ -102,44 +99,28 @@ public sealed partial class TwitchApi
     }
 
     public async ValueTask<User[]> GetUsersAsync(List<string> usernames)
-    {
-        return await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
-    }
+        => await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<User[]> GetUsersAsync(List<long> userIds)
-    {
-        return await GetUsersAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
-    }
+        => await GetUsersAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
 
     public async ValueTask<User[]> GetUsersAsync(List<string> usernames, List<long> userIds)
-    {
-        return await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
-    }
+        => await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
 
     public async ValueTask<User[]> GetUsersAsync(params string[] usernames)
-    {
-        return await GetUsersAsync(usernames, ReadOnlyMemory<long>.Empty);
-    }
+        => await GetUsersAsync(usernames, ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<User[]> GetUsersAsync(params long[] userIds)
-    {
-        return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds);
-    }
+        => await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds);
 
     public async ValueTask<User[]> GetUsersAsync(string[] usernames, long[] userIds)
-    {
-        return await GetUsersAsync(usernames.AsMemory(), userIds);
-    }
+        => await GetUsersAsync(usernames.AsMemory(), userIds);
 
     public async ValueTask<User[]> GetUsersAsync(ReadOnlyMemory<string> usernames)
-    {
-        return await GetUsersAsync(usernames, ReadOnlyMemory<long>.Empty);
-    }
+        => await GetUsersAsync(usernames, ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<User[]> GetUsersAsync(ReadOnlyMemory<long> userIds)
-    {
-        return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds);
-    }
+        => await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds);
 
     public async ValueTask<User[]> GetUsersAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> userIds)
     {

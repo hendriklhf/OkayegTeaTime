@@ -20,10 +20,7 @@ public sealed class ListeningSession : IDisposable
         _timer.Elapsed += async (_, _) => await Timer_OnElapsed();
     }
 
-    public void Dispose()
-    {
-        _timer.Dispose();
-    }
+    public void Dispose() => _timer.Dispose();
 
     public void StartTimer(double interval)
     {
@@ -32,10 +29,7 @@ public sealed class ListeningSession : IDisposable
         _timer.Start();
     }
 
-    public void StopTimer()
-    {
-        _timer.Stop();
-    }
+    public void StopTimer() => _timer.Stop();
 
     private async Task Timer_OnElapsed()
     {

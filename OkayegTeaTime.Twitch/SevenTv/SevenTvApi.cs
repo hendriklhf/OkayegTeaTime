@@ -101,28 +101,13 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
         return Cache?.TryGetChannelEmotes(channelId, out emotes) == true;
     }
 
-    public bool Equals(SevenTvApi? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(SevenTvApi? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is SevenTvApi other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is SevenTvApi other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(SevenTvApi? left, SevenTvApi? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(SevenTvApi? left, SevenTvApi? right) => Equals(left, right);
 
-    public static bool operator !=(SevenTvApi? left, SevenTvApi? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(SevenTvApi? left, SevenTvApi? right) => !(left == right);
 }

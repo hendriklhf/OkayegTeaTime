@@ -31,9 +31,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
     private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SongRequestCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask Handle()
     {
@@ -439,33 +437,17 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         }
     }
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
-    public bool Equals(SongRequestCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public bool Equals(SongRequestCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is SongRequestCommand other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is SongRequestCommand other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(SongRequestCommand left, SongRequestCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(SongRequestCommand left, SongRequestCommand right) => left.Equals(right);
 
-    public static bool operator !=(SongRequestCommand left, SongRequestCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(SongRequestCommand left, SongRequestCommand right) => !left.Equals(right);
 }

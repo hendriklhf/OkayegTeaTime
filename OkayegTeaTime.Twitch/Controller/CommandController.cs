@@ -43,17 +43,9 @@ public sealed class CommandController
     }
 
     public bool IsAfkCommand(string? channelPrefix, string message)
-    {
-        return MessageHelper.TryExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _) && _afkCommandAliasHashes.Contains(new(alias.Span));
-    }
+        => MessageHelper.TryExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _) && _afkCommandAliasHashes.Contains(new(alias.Span));
 
-    public Command GetCommand(CommandType type)
-    {
-        return Commands[(int)type];
-    }
+    public Command GetCommand(CommandType type) => Commands[(int)type];
 
-    public AfkCommand GetAfkCommand(AfkType type)
-    {
-        return AfkCommands[(int)type];
-    }
+    public AfkCommand GetAfkCommand(AfkType type) => AfkCommands[(int)type];
 }

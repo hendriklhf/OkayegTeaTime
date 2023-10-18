@@ -12,7 +12,7 @@ public static class BotActions
     private const string _yourself = "yourself";
     private const string _reminderFromSpace = "reminder from ";
 
-    public static async ValueTask SendComingBack(this TwitchBot twitchBot, long userId, string channel)
+    public static async ValueTask SendComingBackAsync(this TwitchBot twitchBot, long userId, string channel)
     {
         User? user = twitchBot.Users[userId];
         if (user is null)
@@ -20,10 +20,10 @@ public static class BotActions
             return;
         }
 
-        await SendComingBack(twitchBot, user, channel);
+        await SendComingBackAsync(twitchBot, user, channel);
     }
 
-    public static async ValueTask SendComingBack(this TwitchBot twitchBot, User user, string channel)
+    public static async ValueTask SendComingBackAsync(this TwitchBot twitchBot, User user, string channel)
     {
         string emote = twitchBot.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
         using PooledStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
@@ -34,7 +34,7 @@ public static class BotActions
         await twitchBot.SendAsync(channel, responseBuilder.WrittenMemory);
     }
 
-    public static async ValueTask SendReminder(this TwitchBot twitchBot, string channel, Reminder[] reminders)
+    public static async ValueTask SendReminderAsync(this TwitchBot twitchBot, string channel, Reminder[] reminders)
     {
         if (reminders.Length == 0)
         {
@@ -75,7 +75,7 @@ public static class BotActions
         await twitchBot.SendAsync(channel, builder.ToString());
     }
 
-    public static async ValueTask SendTimedReminder(this TwitchBot twitchBot, Reminder reminder)
+    public static async ValueTask SendTimedReminderAsync(this TwitchBot twitchBot, Reminder reminder)
     {
         string creator = reminder.Target == reminder.Creator ? _yourself : reminder.Creator;
         TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);

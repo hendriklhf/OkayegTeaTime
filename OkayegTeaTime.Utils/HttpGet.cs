@@ -14,15 +14,9 @@ public readonly struct HttpGet : IEquatable<HttpGet>
     {
     }
 
-    private HttpGet(string? result)
-    {
-        Result = result;
-    }
+    private HttpGet(string? result) => Result = result;
 
-    public static HttpGet FromResult(string? result)
-    {
-        return new(result);
-    }
+    public static HttpGet FromResult(string? result) => new(result);
 
     public static async ValueTask<HttpGet> GetStringAsync(string url)
     {
@@ -38,28 +32,13 @@ public readonly struct HttpGet : IEquatable<HttpGet>
         }
     }
 
-    public bool Equals(HttpGet other)
-    {
-        return Result == other.Result;
-    }
+    public bool Equals(HttpGet other) => Result == other.Result;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is HttpGet other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is HttpGet other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return Result?.GetHashCode() ?? 0;
-    }
+    public override int GetHashCode() => Result?.GetHashCode() ?? 0;
 
-    public static bool operator ==(HttpGet left, HttpGet right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(HttpGet left, HttpGet right) => left.Equals(right);
 
-    public static bool operator !=(HttpGet left, HttpGet right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(HttpGet left, HttpGet right) => !(left == right);
 }

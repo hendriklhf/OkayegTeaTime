@@ -23,9 +23,7 @@ public readonly struct GuidCommand(TwitchBot twitchBot, IChatMessage chatMessage
     private const string _guidFormat = "D";
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GuidCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask Handle()
     {
@@ -36,33 +34,17 @@ public readonly struct GuidCommand(TwitchBot twitchBot, IChatMessage chatMessage
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
-    public bool Equals(GuidCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public bool Equals(GuidCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is GuidCommand other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is GuidCommand other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(GuidCommand left, GuidCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(GuidCommand left, GuidCommand right) => left.Equals(right);
 
-    public static bool operator !=(GuidCommand left, GuidCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(GuidCommand left, GuidCommand right) => !left.Equals(right);
 }

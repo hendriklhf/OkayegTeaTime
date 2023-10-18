@@ -108,28 +108,13 @@ public sealed class BttvApi : IEquatable<BttvApi>
         return Cache?.TryGetGlobalEmotes(out emotes) == true;
     }
 
-    public bool Equals(BttvApi? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(BttvApi? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is BttvApi other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is BttvApi other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(BttvApi? left, BttvApi? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(BttvApi? left, BttvApi? right) => Equals(left, right);
 
-    public static bool operator !=(BttvApi? left, BttvApi? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(BttvApi? left, BttvApi? right) => !(left == right);
 }

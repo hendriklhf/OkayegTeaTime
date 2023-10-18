@@ -23,9 +23,7 @@ public readonly struct FuckCommand(TwitchBot twitchBot, IChatMessage chatMessage
     private readonly ReadOnlyMemory<char> _alias = alias;
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out FuckCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask Handle()
     {
@@ -43,33 +41,17 @@ public readonly struct FuckCommand(TwitchBot twitchBot, IChatMessage chatMessage
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
-    public bool Equals(FuckCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public bool Equals(FuckCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is FuckCommand other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is FuckCommand other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(FuckCommand left, FuckCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(FuckCommand left, FuckCommand right) => left.Equals(right);
 
-    public static bool operator !=(FuckCommand left, FuckCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(FuckCommand left, FuckCommand right) => !left.Equals(right);
 }

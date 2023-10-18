@@ -47,8 +47,5 @@ public sealed class MessageRegexCreator : IDisposable
         return compiledRegex;
     }
 
-    public void Dispose()
-    {
-        _regexPool.Dispose();
-    }
+    public void Dispose() => _regexPool.Dispose();
 }

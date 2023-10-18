@@ -10,8 +10,5 @@ public abstract class CachedModel
     internal readonly DateTime _timeOfRequest = DateTime.UtcNow;
 
     [Pure]
-    internal bool IsValid(TimeSpan cacheTime)
-    {
-        return _timeOfRequest + cacheTime > DateTime.UtcNow;
-    }
+    internal bool IsValid(TimeSpan cacheTime) => _timeOfRequest + cacheTime > DateTime.UtcNow;
 }

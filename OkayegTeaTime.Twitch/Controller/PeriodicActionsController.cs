@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using OkayegTeaTime.Database;
@@ -7,21 +6,16 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public sealed class PeriodicActionsController(IEnumerable<PeriodicAction> periodicActions) : IDisposable
+public sealed class PeriodicActionsController(PeriodicAction[] periodicActions) : IDisposable
 {
-    private readonly IEnumerable<PeriodicAction> _periodicActions = periodicActions;
-    private CancellationTokenSource _cancellationTokenSource = new();
-
-    public void Dispose()
-    {
-        StopAll();
-        _cancellationTokenSource.Dispose();
-    }
+    private readonly PeriodicAction[] _periodicActions = periodicActions;
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public void StartAll()
     {
         try
         {
+            _cancellationTokenSource ??= new();
             Parallel.ForEachAsync(_periodicActions, _cancellationTokenSource.Token, static async (periodicAction, cancellationToken) =>
             {
                 try
@@ -46,8 +40,19 @@ public sealed class PeriodicActionsController(IEnumerable<PeriodicAction> period
 
     public void StopAll()
     {
+        if (_cancellationTokenSource is null)
+        {
+            return;
+        }
+
         _cancellationTokenSource.Cancel();
         _cancellationTokenSource.Dispose();
-        _cancellationTokenSource = new();
+        _cancellationTokenSource = null;
+    }
+
+    public void Dispose()
+    {
+        StopAll();
+        _cancellationTokenSource?.Dispose();
     }
 }

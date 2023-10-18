@@ -49,28 +49,13 @@ public sealed class MathService : IEquatable<MathService>
         }
     }
 
-    public bool Equals(MathService? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(MathService? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is MathService other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is MathService other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(MathService? left, MathService? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(MathService? left, MathService? right) => Equals(left, right);
 
-    public static bool operator !=(MathService? left, MathService? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(MathService? left, MathService? right) => !(left == right);
 }

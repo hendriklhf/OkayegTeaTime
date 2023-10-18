@@ -14,10 +14,7 @@ public sealed class BttvApiCache(CacheOptions options) : IEquatable<BttvApiCache
     private readonly ConcurrentDictionary<long, CacheEntry<Emote[]>> _channelEmoteCache = new();
     private CacheEntry<Emote[]> _globalEmoteCache = CacheEntry<Emote[]>.Empty;
 
-    public void AddChannelEmotes(long channelId, Emote[] emotes)
-    {
-        _channelEmoteCache.AddOrSet(channelId, new(emotes));
-    }
+    public void AddChannelEmotes(long channelId, Emote[] emotes) => _channelEmoteCache.AddOrSet(channelId, new(emotes));
 
     public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
     {
@@ -31,10 +28,7 @@ public sealed class BttvApiCache(CacheOptions options) : IEquatable<BttvApiCache
         return false;
     }
 
-    public void AddGlobalEmotes(Emote[] emotes)
-    {
-        _globalEmoteCache = new(emotes);
-    }
+    public void AddGlobalEmotes(Emote[] emotes) => _globalEmoteCache = new(emotes);
 
     public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
     {
@@ -48,28 +42,13 @@ public sealed class BttvApiCache(CacheOptions options) : IEquatable<BttvApiCache
         return false;
     }
 
-    public bool Equals(BttvApiCache? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(BttvApiCache? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is BttvApiCache other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is BttvApiCache other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(BttvApiCache? left, BttvApiCache? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(BttvApiCache? left, BttvApiCache? right) => Equals(left, right);
 
-    public static bool operator !=(BttvApiCache? left, BttvApiCache? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(BttvApiCache? left, BttvApiCache? right) => !(left == right);
 }

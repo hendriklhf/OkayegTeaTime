@@ -108,20 +108,11 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         await _twitchClient.DisconnectAsync();
     }
 
-    public async ValueTask SendAsync(long channelId, ReadOnlyMemory<char> message)
-    {
-        await _twitchClient.SendAsync(channelId, message);
-    }
+    public async ValueTask SendAsync(long channelId, ReadOnlyMemory<char> message) => await _twitchClient.SendAsync(channelId, message);
 
-    public async ValueTask SendAsync(string channel, ReadOnlyMemory<char> message)
-    {
-        await _twitchClient.SendAsync(channel, message);
-    }
+    public async ValueTask SendAsync(string channel, ReadOnlyMemory<char> message) => await _twitchClient.SendAsync(channel, message);
 
-    public async ValueTask SendAsync(ReadOnlyMemory<char> channel, ReadOnlyMemory<char> message)
-    {
-        await _twitchClient.SendAsync(channel, message);
-    }
+    public async ValueTask SendAsync(ReadOnlyMemory<char> channel, ReadOnlyMemory<char> message) => await _twitchClient.SendAsync(channel, message);
 
     public async ValueTask SendAsync(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
     {
@@ -193,10 +184,7 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     #region Bot_On
 
-    private static void Client_OnConnected(object sender, EventArgs e)
-    {
-        ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
-    }
+    private static void Client_OnConnected(object sender, EventArgs e) => ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
 
     private async ValueTask Client_OnJoinedChannel(JoinChannelMessage e)
     {
@@ -234,58 +222,34 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         }
     }
 
-    private static void Client_OnDisconnect(object sender, EventArgs e)
-    {
-        ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
-    }
+    private static void Client_OnDisconnect(object sender, EventArgs e) => ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
 
     #endregion Bot_On
 
-    #region Timer
-
-    private PeriodicAction[] GetPeriodicActions()
-    {
-        return new PeriodicAction[]
+    private PeriodicAction[] GetPeriodicActions() =>
+        new PeriodicAction[]
         {
             new(CheckForExpiredReminders, TimeSpan.FromSeconds(1))
         };
-    }
 
     private async ValueTask CheckForExpiredReminders()
     {
         Reminder[] reminders = Reminders.GetExpiredReminders();
         for (int i = 0; i < reminders.Length; i++)
         {
-            await this.SendTimedReminder(reminders[i]);
+            await this.SendTimedReminderAsync(reminders[i]);
         }
     }
 
-    #endregion Timer
+    public bool Equals(TwitchBot? other) => ReferenceEquals(this, other);
 
-    public bool Equals(TwitchBot? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public override bool Equals(object? obj) => obj is TwitchBot other && Equals(other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is TwitchBot other && Equals(other);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public static bool operator ==(TwitchBot? left, TwitchBot? right) => Equals(left, right);
 
-    public static bool operator ==(TwitchBot? left, TwitchBot? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(TwitchBot? left, TwitchBot? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(TwitchBot? left, TwitchBot? right) => !(left == right);
 
     public void Dispose()
     {

@@ -31,9 +31,7 @@ public sealed class TwitchApiCache(CacheOptions options) : IDisposable
     }
 
     public bool TryGetUser(long userId, [MaybeNullWhen(false)] out User user)
-    {
-        return _userCache.TryGetByPrimaryKey(userId, out user) && user.IsValid(Options.UserCacheTime);
-    }
+        => _userCache.TryGetByPrimaryKey(userId, out user) && user.IsValid(Options.UserCacheTime);
 
     public bool TryGetUser(ReadOnlySpan<char> username, [MaybeNullWhen(false)] out User user)
     {
@@ -56,9 +54,7 @@ public sealed class TwitchApiCache(CacheOptions options) : IDisposable
     }
 
     public bool TryGetStream(long channelId, [MaybeNullWhen(false)] out Stream stream)
-    {
-        return _streamCache.TryGetByPrimaryKey(channelId, out stream) && stream.IsValid(Options.StreamCacheTime);
-    }
+        => _streamCache.TryGetByPrimaryKey(channelId, out stream) && stream.IsValid(Options.StreamCacheTime);
 
     public bool TryGetStream(ReadOnlySpan<char> username, [MaybeNullWhen(false)] out Stream stream)
     {
@@ -66,10 +62,7 @@ public sealed class TwitchApiCache(CacheOptions options) : IDisposable
         return _streamCache.TryGetBySecondaryKey(usernameHash, out stream) && stream.IsValid(Options.StreamCacheTime);
     }
 
-    public void AddGlobalEmotes(Emote[] emotes)
-    {
-        _globalEmoteCache = new(emotes);
-    }
+    public void AddGlobalEmotes(Emote[] emotes) => _globalEmoteCache = new(emotes);
 
     public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
     {
@@ -83,10 +76,7 @@ public sealed class TwitchApiCache(CacheOptions options) : IDisposable
         return false;
     }
 
-    public void AddChannelEmotes(long channelId, ChannelEmote[] emotes)
-    {
-        _channelEmoteCache.AddOrSet(channelId, new(emotes));
-    }
+    public void AddChannelEmotes(long channelId, ChannelEmote[] emotes) => _channelEmoteCache.AddOrSet(channelId, new(emotes));
 
     public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out ChannelEmote[] emotes)
     {

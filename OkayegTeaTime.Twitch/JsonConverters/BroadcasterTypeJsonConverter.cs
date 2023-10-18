@@ -22,13 +22,12 @@ public sealed class BroadcasterTypeJsonConverter : JsonConverter<BroadcasterType
         };
     }
 
-    public override void Write(Utf8JsonWriter writer, BroadcasterType value, JsonSerializerOptions options)
-    {
+    public override void Write(Utf8JsonWriter writer, BroadcasterType value, JsonSerializerOptions options) =>
         writer.WriteStringValue(value switch
         {
+            BroadcasterType.Normal => string.Empty,
             BroadcasterType.Affiliate => "affiliate",
             BroadcasterType.Partner => "partner",
             _ => string.Empty
         });
-    }
 }

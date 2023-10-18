@@ -51,28 +51,13 @@ public sealed class Stream : CachedModel, IEquatable<Stream>
     [JsonPropertyName("is_mature")]
     public required bool IsMature { get; init; }
 
-    public bool Equals(Stream? other)
-    {
-        return ReferenceEquals(this, other) || Id == other?.Id;
-    }
+    public bool Equals(Stream? other) => ReferenceEquals(this, other) || Id == other?.Id;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Stream other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is Stream other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public static bool operator ==(Stream? left, Stream? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(Stream? left, Stream? right) => Equals(left, right);
 
-    public static bool operator !=(Stream? left, Stream? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(Stream? left, Stream? right) => !(left == right);
 }

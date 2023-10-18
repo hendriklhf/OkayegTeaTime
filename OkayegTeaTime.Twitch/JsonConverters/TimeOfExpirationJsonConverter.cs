@@ -16,7 +16,5 @@ public sealed class TimeOfExpirationJsonConverter : JsonConverter<DateTime>
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-    {
-        throw new NotSupportedException($"The property {nameof(AccessToken)}.{nameof(AccessToken.TimeOfExpiration)} is not available for serialization.");
-    }
+        => throw new NotSupportedException($"The property {nameof(AccessToken)}.{nameof(AccessToken.TimeOfExpiration)} is not available for serialization.");
 }

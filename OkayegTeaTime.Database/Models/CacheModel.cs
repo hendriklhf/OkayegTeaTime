@@ -13,8 +13,7 @@ public abstract class CacheModel
     private readonly Timer _timer = new(1000);
     private protected readonly Mutex _mutex = new();
 
-    protected CacheModel()
-    {
+    protected CacheModel() =>
         _timer.Elapsed += async (_, _) =>
         {
             OkayegTeaTimeContext db = GetContext();
@@ -31,7 +30,6 @@ public abstract class CacheModel
                 ReturnContext();
             }
         };
-    }
 
     private protected OkayegTeaTimeContext GetContext()
     {
@@ -39,10 +37,7 @@ public abstract class CacheModel
         return _db ??= new();
     }
 
-    private protected void ReturnContext()
-    {
-        _mutex.ReleaseMutex();
-    }
+    private protected void ReturnContext() => _mutex.ReleaseMutex();
 
     private protected void EditedProperty()
     {

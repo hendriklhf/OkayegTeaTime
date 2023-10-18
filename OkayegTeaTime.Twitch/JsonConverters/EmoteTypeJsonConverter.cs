@@ -7,19 +7,16 @@ namespace OkayegTeaTime.Twitch.JsonConverters;
 
 public sealed class EmoteTypeJsonConverter : JsonConverter<EmoteType>
 {
-    public override EmoteType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        return reader.ValueSpan[0] switch
+    public override EmoteType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
+        reader.ValueSpan[0] switch
         {
             (byte)'b' => EmoteType.BitsTier,
             (byte)'f' => EmoteType.Follower,
             (byte)'s' => EmoteType.Subscription,
             _ => throw new InvalidOperationException($"Emote deserialization failed. Unknown {nameof(EmoteType)} in API response.")
         };
-    }
 
-    public override void Write(Utf8JsonWriter writer, EmoteType value, JsonSerializerOptions options)
-    {
+    public override void Write(Utf8JsonWriter writer, EmoteType value, JsonSerializerOptions options) =>
         writer.WriteStringValue(value switch
         {
             EmoteType.BitsTier => "bitstier",
@@ -27,5 +24,4 @@ public sealed class EmoteTypeJsonConverter : JsonConverter<EmoteType>
             EmoteType.Subscription => "subscriptions",
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, $"Emote serialization failed. Unknown {nameof(EmoteType)}.")
         });
-    }
 }

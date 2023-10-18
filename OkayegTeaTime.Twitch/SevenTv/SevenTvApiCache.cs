@@ -14,15 +14,9 @@ public sealed class SevenTvApiCache(CacheOptions options) : IEquatable<SevenTvAp
     private CacheEntry<Emote[]> _globalEmotesCache = CacheEntry<Emote[]>.Empty;
     private readonly ConcurrentDictionary<long, CacheEntry<Emote[]>> _channelEmotesCache = new();
 
-    public void AddGlobalEmotes(Emote[] emotes)
-    {
-        _globalEmotesCache = new(emotes);
-    }
+    public void AddGlobalEmotes(Emote[] emotes) => _globalEmotesCache = new(emotes);
 
-    public void AddChannelEmotes(long channelId, Emote[] emotes)
-    {
-        _channelEmotesCache.AddOrSet(channelId, new(emotes));
-    }
+    public void AddChannelEmotes(long channelId, Emote[] emotes) => _channelEmotesCache.AddOrSet(channelId, new(emotes));
 
     public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
     {
@@ -48,28 +42,13 @@ public sealed class SevenTvApiCache(CacheOptions options) : IEquatable<SevenTvAp
         return false;
     }
 
-    public bool Equals(SevenTvApiCache? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(SevenTvApiCache? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is SevenTvApiCache other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is SevenTvApiCache other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(SevenTvApiCache? left, SevenTvApiCache? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(SevenTvApiCache? left, SevenTvApiCache? right) => Equals(left, right);
 
-    public static bool operator !=(SevenTvApiCache? left, SevenTvApiCache? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(SevenTvApiCache? left, SevenTvApiCache? right) => !(left == right);
 }

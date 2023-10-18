@@ -83,33 +83,15 @@ public class Emote : IEquatable<Emote>
         return true;
     }
 
-    public override string ToString()
-    {
-        return Name;
-    }
+    public override string ToString() => Name;
 
-    public bool Equals(Emote? other)
-    {
-        return ReferenceEquals(this, other) || Id == other?.Id;
-    }
+    public bool Equals(Emote? other) => ReferenceEquals(this, other) || Id == other?.Id;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Emote other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is Emote other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public static bool operator ==(Emote? left, Emote? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(Emote? left, Emote? right) => Equals(left, right);
 
-    public static bool operator !=(Emote? left, Emote? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(Emote? left, Emote? right) => !(left == right);
 }

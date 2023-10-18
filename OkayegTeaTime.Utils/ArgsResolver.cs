@@ -50,28 +50,14 @@ public readonly partial struct ArgsResolver : IEquatable<ArgsResolver>
         return -1;
     }
 
-    public bool Equals(ArgsResolver other)
-    {
-        return _args == other._args && _channelListPattern == other._channelListPattern && Channels.Span.SequenceEqual(other.Channels.Span);
-    }
+    public bool Equals(ArgsResolver other) =>
+        _args == other._args && _channelListPattern == other._channelListPattern && Channels.Span.SequenceEqual(other.Channels.Span);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is ArgsResolver other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is ArgsResolver other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_args, _channelListPattern, _channels);
-    }
+    public override int GetHashCode() => HashCode.Combine(_args, _channelListPattern, _channels);
 
-    public static bool operator ==(ArgsResolver left, ArgsResolver right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(ArgsResolver left, ArgsResolver right) => left.Equals(right);
 
-    public static bool operator !=(ArgsResolver left, ArgsResolver right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(ArgsResolver left, ArgsResolver right) => !left.Equals(right);
 }

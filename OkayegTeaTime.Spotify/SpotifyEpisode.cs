@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using SpotifyAPI.Web;
 
 #nullable disable
@@ -25,7 +26,7 @@ public sealed class SpotifyEpisode : SpotifyItem
 
     public SimpleShow Show { get; }
 
-    public SpotifyEpisode(CurrentlyPlaying item) : this(item.Item)
+    public SpotifyEpisode([NotNull] CurrentlyPlaying item) : this(item.Item)
     {
     }
 
@@ -47,8 +48,6 @@ public sealed class SpotifyEpisode : SpotifyItem
         Show = episode.Show;
     }
 
-    public override string ToString()
-    {
-        return $"{Name} by {Show.Name}";
-    }
+    [NotNull]
+    public override string ToString() => $"{Name} by {Show.Name}";
 }

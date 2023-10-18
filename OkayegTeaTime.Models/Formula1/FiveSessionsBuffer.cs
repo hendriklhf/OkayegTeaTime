@@ -16,31 +16,17 @@ public struct FiveSessionsBuffer : IEquatable<FiveSessionsBuffer>
 
     #endregion
 
-    public readonly bool Equals(FiveSessionsBuffer other)
-    {
-        return this[0] == other[0] && this[1] == other[1] && this[2] == other[2] &&
-               this[3] == other[3] && this[4] == other[4];
-    }
+    public readonly bool Equals(FiveSessionsBuffer other) =>
+        this[0] == other[0] && this[1] == other[1] && this[2] == other[2] &&
+        this[3] == other[3] && this[4] == other[4];
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly bool Equals(object? obj)
-    {
-        return obj is FiveSessionsBuffer other && Equals(other);
-    }
+    public override readonly bool Equals(object? obj) => obj is FiveSessionsBuffer other && Equals(other);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly int GetHashCode()
-    {
-        return _session.GetHashCode();
-    }
+    public override readonly int GetHashCode() => _session.GetHashCode();
 
-    public static bool operator ==(FiveSessionsBuffer left, FiveSessionsBuffer right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(FiveSessionsBuffer left, FiveSessionsBuffer right) => left.Equals(right);
 
-    public static bool operator !=(FiveSessionsBuffer left, FiveSessionsBuffer right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(FiveSessionsBuffer left, FiveSessionsBuffer right) => !left.Equals(right);
 }

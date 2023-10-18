@@ -23,14 +23,13 @@ public sealed class EmoteTierJsonConverter : JsonConverter<EmoteTier>
         };
     }
 
-    public override void Write(Utf8JsonWriter writer, EmoteTier value, JsonSerializerOptions options)
-    {
+    public override void Write(Utf8JsonWriter writer, EmoteTier value, JsonSerializerOptions options) =>
         writer.WriteStringValue(value switch
         {
+            EmoteTier.None => string.Empty,
             EmoteTier.One => "1000",
             EmoteTier.Two => "2000",
             EmoteTier.Three => "3000",
             _ => string.Empty
         });
-    }
 }

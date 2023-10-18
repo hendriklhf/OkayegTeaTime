@@ -22,33 +22,15 @@ public readonly struct AccessToken : IEquatable<AccessToken>
     {
     }
 
-    public bool Equals(AccessToken other)
-    {
-        return TimeOfExpiration == other.TimeOfExpiration && Token == other.Token;
-    }
+    public bool Equals(AccessToken other) => TimeOfExpiration == other.TimeOfExpiration && Token == other.Token;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is AccessToken other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is AccessToken other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(TimeOfExpiration, Token);
-    }
+    public override int GetHashCode() => HashCode.Combine(TimeOfExpiration, Token);
 
-    public override string ToString()
-    {
-        return Token;
-    }
+    public override string ToString() => Token;
 
-    public static bool operator ==(AccessToken left, AccessToken right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(AccessToken left, AccessToken right) => left.Equals(right);
 
-    public static bool operator !=(AccessToken left, AccessToken right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(AccessToken left, AccessToken right) => !(left == right);
 }

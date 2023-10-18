@@ -27,9 +27,7 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
     private readonly ReadOnlyMemory<char> _alias = alias;
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SpotifyCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask Handle()
     {
@@ -106,33 +104,17 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
         }
     }
 
-    public void Dispose()
-    {
-        Response.Dispose();
-    }
+    public void Dispose() => Response.Dispose();
 
-    public bool Equals(SpotifyCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public bool Equals(SpotifyCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is SpotifyCommand other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is SpotifyCommand other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(SpotifyCommand left, SpotifyCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(SpotifyCommand left, SpotifyCommand right) => left.Equals(right);
 
-    public static bool operator !=(SpotifyCommand left, SpotifyCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(SpotifyCommand left, SpotifyCommand right) => !left.Equals(right);
 }

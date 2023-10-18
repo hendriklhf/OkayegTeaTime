@@ -41,28 +41,13 @@ public sealed class User : CachedModel, IEquatable<User>
     [JsonPropertyName("created_at")]
     public required DateTime TimeOfCreation { get; init; }
 
-    public override bool Equals(object? obj)
-    {
-        return obj is User other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is User other && Equals(other);
 
-    public bool Equals(User? other)
-    {
-        return ReferenceEquals(this, other) || Id == other?.Id;
-    }
+    public bool Equals(User? other) => ReferenceEquals(this, other) || Id == other?.Id;
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public static bool operator ==(User? left, User? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(User? left, User? right) => Equals(left, right);
 
-    public static bool operator !=(User? left, User? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(User? left, User? right) => !(left == right);
 }

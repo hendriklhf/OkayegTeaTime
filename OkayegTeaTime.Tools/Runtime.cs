@@ -32,8 +32,5 @@ public sealed record Runtime
         Identifier = "osx-x64"
     };
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Name, Identifier);
-    }
+    public override int GetHashCode() => HashCode.Combine(Name, Identifier);
 }

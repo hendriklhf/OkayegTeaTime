@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HLE.Collections;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
@@ -24,7 +25,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         }
 
         reminder.Id = id;
-        _items.Add(id, reminder);
+        _items.AddOrSet(id, reminder);
         return id;
     }
 
@@ -46,7 +47,7 @@ public sealed class ReminderCache : DbCache<Reminder>
             }
 
             reminders[i].Id = ids[i];
-            _items.Add(ids[i], reminders[i]);
+            _items.AddOrSet(ids[i], reminders[i]);
         }
 
         return ids;
@@ -112,9 +113,7 @@ public sealed class ReminderCache : DbCache<Reminder>
     }
 
     public Reminder[] GetExpiredReminders()
-    {
-        return this.Where(static r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
-    }
+        => this.Where(static r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
 
     private Reminder? Get(int id)
     {
@@ -142,7 +141,7 @@ public sealed class ReminderCache : DbCache<Reminder>
 
         foreach (EntityFrameworkModels.Reminder reminder in DbController.GetReminders().Where(r => _items.All(i => i.Value.Id != r.Id)))
         {
-            _items.Add(reminder.Id, new(reminder));
+            _items.AddOrSet(reminder.Id, new(reminder));
         }
 
         _containsAll = true;

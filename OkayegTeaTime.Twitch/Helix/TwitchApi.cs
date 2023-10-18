@@ -34,10 +34,7 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
         });
     }
 
-    public void Dispose()
-    {
-        _accessTokenRequestContent.Dispose();
-    }
+    public void Dispose() => _accessTokenRequestContent.Dispose();
 
     private async ValueTask<HttpClient> CreateHttpClientAsync()
     {
@@ -89,28 +86,13 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
         return httpContentBytes;
     }
 
-    public bool Equals(TwitchApi? other)
-    {
-        return ReferenceEquals(this, other);
-    }
+    public bool Equals(TwitchApi? other) => ReferenceEquals(this, other);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is TwitchApi other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is TwitchApi other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return RuntimeHelpers.GetHashCode(this);
-    }
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
-    public static bool operator ==(TwitchApi? left, TwitchApi? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(TwitchApi? left, TwitchApi? right) => Equals(left, right);
 
-    public static bool operator !=(TwitchApi? left, TwitchApi? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(TwitchApi? left, TwitchApi? right) => !(left == right);
 }

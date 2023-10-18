@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HLE.Collections;
 using OkayegTeaTime.Database.EntityFrameworkModels;
 using OkayegTeaTime.Database.Models;
 
@@ -18,13 +19,10 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
         }
 
         SpotifyUser user = new(id.Value, username, accessToken, refreshToken);
-        _items.Add(user.Id, user);
+        _items.AddOrSet(user.Id, user);
     }
 
-    private SpotifyUser? Get(string username)
-    {
-        return this.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
-    }
+    private SpotifyUser? Get(string username) => this.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
 
     private protected override void GetAllItemsFromDatabase()
     {
@@ -35,7 +33,7 @@ public sealed class SpotifyUserCache : DbCache<SpotifyUser>
 
         foreach (Spotify user in DbController.GetSpotifyUsers().Where(u => _items.All(i => i.Value.Id != u.Id)))
         {
-            _items.Add(user.Id, new(user));
+            _items.AddOrSet(user.Id, new(user));
         }
 
         _containsAll = true;

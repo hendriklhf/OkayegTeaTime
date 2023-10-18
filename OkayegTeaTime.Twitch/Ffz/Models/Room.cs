@@ -17,28 +17,13 @@ public readonly struct Room : IEquatable<Room>
         TwitchUsername = string.Empty
     };
 
-    public bool Equals(Room other)
-    {
-        return TwitchId == other.TwitchId && TwitchUsername == other.TwitchUsername;
-    }
+    public bool Equals(Room other) => TwitchId == other.TwitchId && TwitchUsername == other.TwitchUsername;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Room other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is Room other && Equals(other);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(TwitchId, TwitchUsername);
-    }
+    public override int GetHashCode() => HashCode.Combine(TwitchId, TwitchUsername);
 
-    public static bool operator ==(Room left, Room right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(Room left, Room right) => left.Equals(right);
 
-    public static bool operator !=(Room left, Room right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(Room left, Room right) => !(left == right);
 }

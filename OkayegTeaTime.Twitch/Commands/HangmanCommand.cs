@@ -32,9 +32,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
     private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HangmanCommand command)
-    {
-        command = new(twitchBot, chatMessage, prefix, alias);
-    }
+        => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask Handle()
     {
@@ -189,35 +187,19 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
         Response.Append(" ", Messages.WrongGuesses);
     }
 
-    public readonly void Dispose()
-    {
-        Response.Dispose();
-    }
+    public readonly void Dispose() => Response.Dispose();
 
-    public readonly bool Equals(HangmanCommand other)
-    {
-        return _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) && Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
-    }
+    public readonly bool Equals(HangmanCommand other) =>
+        _twitchBot.Equals(other._twitchBot) && _prefix.Equals(other._prefix) && _alias.Equals(other._alias) &&
+        Response.Equals(other.Response) && ChatMessage.Equals(other.ChatMessage);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly bool Equals(object? obj)
-    {
-        return obj is HangmanCommand other && Equals(other);
-    }
+    public override readonly bool Equals(object? obj) => obj is HangmanCommand other && Equals(other);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly int GetHashCode()
-    {
-        return HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(_twitchBot, _prefix, _alias, Response, ChatMessage);
 
-    public static bool operator ==(HangmanCommand left, HangmanCommand right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(HangmanCommand left, HangmanCommand right) => left.Equals(right);
 
-    public static bool operator !=(HangmanCommand left, HangmanCommand right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(HangmanCommand left, HangmanCommand right) => !left.Equals(right);
 }

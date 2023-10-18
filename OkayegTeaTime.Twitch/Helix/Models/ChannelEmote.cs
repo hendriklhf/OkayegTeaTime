@@ -22,30 +22,15 @@ public sealed class ChannelEmote : Emote, IEquatable<ChannelEmote>
     public required EmoteTier Tier { get; init; }
 
     [Pure]
-    public bool Equals(ChannelEmote? other)
-    {
-        return ReferenceEquals(this, other) || Id == other?.Id;
-    }
+    public bool Equals(ChannelEmote? other) => ReferenceEquals(this, other) || Id == other?.Id;
 
     [Pure]
-    public override bool Equals(object? obj)
-    {
-        return obj is ChannelEmote other && Equals(other);
-    }
+    public override bool Equals(object? obj) => obj is ChannelEmote other && Equals(other);
 
     [Pure]
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public static bool operator ==(ChannelEmote? left, ChannelEmote? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(ChannelEmote? left, ChannelEmote? right) => Equals(left, right);
 
-    public static bool operator !=(ChannelEmote? left, ChannelEmote? right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(ChannelEmote? left, ChannelEmote? right) => !(left == right);
 }

@@ -58,30 +58,15 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
         LowerSplit.Dispose();
     }
 
-    public readonly bool Equals(ChatMessageExtension other)
-    {
-        return _lowerCaseMessage.Equals(other._lowerCaseMessage) && _split.Equals(other._split) && _lowerSplit.Equals(other._lowerSplit);
-    }
+    public readonly bool Equals(ChatMessageExtension other) => _lowerCaseMessage.Equals(other._lowerCaseMessage) && _split.Equals(other._split) && _lowerSplit.Equals(other._lowerSplit);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly bool Equals(object? obj)
-    {
-        return obj is ChatMessageExtension other && Equals(other);
-    }
+    public override readonly bool Equals(object? obj) => obj is ChatMessageExtension other && Equals(other);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly int GetHashCode()
-    {
-        return HashCode.Combine(_lowerCaseMessage, _split, _lowerSplit);
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(_lowerCaseMessage, _split, _lowerSplit);
 
-    public static bool operator ==(ChatMessageExtension left, ChatMessageExtension right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(ChatMessageExtension left, ChatMessageExtension right) => left.Equals(right);
 
-    public static bool operator !=(ChatMessageExtension left, ChatMessageExtension right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(ChatMessageExtension left, ChatMessageExtension right) => !left.Equals(right);
 }
