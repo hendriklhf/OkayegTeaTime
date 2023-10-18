@@ -6,8 +6,6 @@ public sealed class Settings
 {
     public required TwitchSettings Twitch { get; init; }
 
-    public required DiscordSettings Discord { get; init; }
-
     public required ImmutableArray<string> OfflineChatEmotes { get; init; }
 
     public required SpotifySettings Spotify { get; init; }

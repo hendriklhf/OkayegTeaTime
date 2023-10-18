@@ -14,8 +14,6 @@ public static class AppSettings
 
     public static DatabaseConnection DatabaseConnection { get; private set; }
 
-    public static DiscordSettings Discord { get; private set; }
-
     public static string RepositoryUrl { get; private set; }
 
     public static string OfflineChatChannel { get; private set; }
@@ -50,7 +48,6 @@ public static class AppSettings
     {
         OkayegTeaTime.Models.Json.Settings settings = JsonController.GetSettings();
         DatabaseConnection = settings.DatabaseConnection;
-        Discord = settings.Discord;
         RepositoryUrl = settings.RepositoryUrl;
         OfflineChatChannel = settings.OfflineChatChannel;
         OfflineChatEmotes = settings.OfflineChatEmotes;
