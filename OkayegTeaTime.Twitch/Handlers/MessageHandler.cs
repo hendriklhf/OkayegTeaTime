@@ -74,7 +74,13 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
 #if RELEASE
     private async ValueTask CheckForSpotifyUri(IChatMessage chatMessage)
     {
-        if (chatMessage.Channel != GlobalSettings.Settings.OfflineChat!.Channel)
+        if (GlobalSettings.Settings.OfflineChat is null || GlobalSettings.Settings.Spotify is null)
+        {
+            // settings are not configured, return
+            return;
+        }
+
+        if (chatMessage.Channel != GlobalSettings.Settings.OfflineChat.Channel)
         {
             return;
         }

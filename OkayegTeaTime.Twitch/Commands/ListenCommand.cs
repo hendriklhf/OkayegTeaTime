@@ -32,7 +32,13 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
 
     public async ValueTask HandleAsync()
     {
-        if (!GlobalSettings.Settings.OfflineChat!.Users.Contains(ChatMessage.UserId))
+        if (GlobalSettings.Settings.OfflineChat is null || GlobalSettings.Settings.Spotify is null)
+        {
+            Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+            return;
+        }
+
+        if (!GlobalSettings.Settings.OfflineChat.Users.Contains(ChatMessage.UserId))
         {
             Response.Append(ChatMessage.Username, ", this command is still being tested, you aren't allowed to use this command");
             return;

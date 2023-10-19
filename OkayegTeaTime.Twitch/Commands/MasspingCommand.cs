@@ -26,7 +26,13 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
 
     public ValueTask HandleAsync()
     {
-        if (ChatMessage.Channel != GlobalSettings.Settings.OfflineChat!.Channel)
+        if (GlobalSettings.Settings.OfflineChat is null)
+        {
+            Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+            return ValueTask.CompletedTask;
+        }
+
+        if (ChatMessage.Channel != GlobalSettings.Settings.OfflineChat.Channel)
         {
             return ValueTask.CompletedTask;
         }

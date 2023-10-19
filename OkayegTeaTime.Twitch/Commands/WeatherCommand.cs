@@ -29,6 +29,12 @@ public readonly struct WeatherCommand(TwitchBot twitchBot, IChatMessage chatMess
 
     public async ValueTask HandleAsync()
     {
+        if (GlobalSettings.Settings.OpenWeatherMap is null)
+        {
+            Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+            return;
+        }
+
         string? city;
         bool isPrivateLocation;
 

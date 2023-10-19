@@ -35,6 +35,12 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
 
     public async ValueTask HandleAsync()
     {
+        if (GlobalSettings.Settings.Spotify is null)
+        {
+            Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+            return;
+        }
+
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, $@"\s{Pattern.MultipleTargets}\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {

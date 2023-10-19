@@ -31,6 +31,12 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
 
     public async ValueTask HandleAsync()
     {
+        if (GlobalSettings.Settings.Spotify is null)
+        {
+            Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+            return;
+        }
+
         using ChatMessageExtension messageExtension = new(ChatMessage);
         ReadOnlyMemory<char> firstParameter = messageExtension.LowerSplit[1];
         string username = new(messageExtension.LowerSplit.Length > 1 ? (firstParameter.Span is "me" ? ChatMessage.Username : firstParameter.Span) : ChatMessage.Channel);
@@ -40,11 +46,11 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
         {
             if (targetIsSender)
             {
-                Response.Append(ChatMessage.Username, ", ", "can't get your currently playing song, you have to register first");
+                Response.Append(ChatMessage.Username, ", can't get your currently playing song, you have to register first");
                 return;
             }
 
-            Response.Append(ChatMessage.Username, ", ", "can't get the currently playing song of ", username.Antiping(), ", they have to register first");
+            Response.Append(ChatMessage.Username, ", can't get the currently playing song of ", username.Antiping(), ", they have to register first");
             return;
         }
 

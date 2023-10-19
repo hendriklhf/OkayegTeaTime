@@ -56,6 +56,12 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\sweather");
         if (pattern.IsMatch(ChatMessage.Message))
         {
+            if (GlobalSettings.Settings.OpenWeatherMap is null)
+            {
+                Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+                return;
+            }
+
             await SendWeatherInformation(race);
             return;
         }

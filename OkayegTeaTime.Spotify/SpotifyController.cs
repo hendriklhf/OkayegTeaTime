@@ -381,7 +381,13 @@ public static class SpotifyController
                 item = new SpotifyTrack(track);
 
 #if RELEASE
-                if (!GlobalSettings.Settings.OfflineChat!.PlaylistUsers.Contains(user.Id))
+                if (GlobalSettings.Settings.OfflineChat is null)
+                {
+                    // not configured, return
+                    return item;
+                }
+
+                if (!GlobalSettings.Settings.OfflineChat.PlaylistUsers.Contains(user.Id))
                 {
                     return item;
                 }

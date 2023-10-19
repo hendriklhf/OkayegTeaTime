@@ -30,6 +30,12 @@ public readonly struct SkipCommand(TwitchBot twitchBot, IChatMessage chatMessage
 
     public async ValueTask HandleAsync()
     {
+        if (GlobalSettings.Settings.Spotify is null)
+        {
+            Response.Append(ChatMessage.Username, ", ", Messages.TheCommandHasNotBeenConfiguredByTheBotOwner);
+            return;
+        }
+
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
