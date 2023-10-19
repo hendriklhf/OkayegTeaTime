@@ -8,11 +8,11 @@ using HLE.Emojis;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
-using OkayegTeaTime.Models.Formula1;
-using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Twitch.Models.Formula1;
+using OkayegTeaTime.Twitch.Models.OpenWeatherMap;
 using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Utils;
 
@@ -22,7 +22,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<Formula1Command>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -37,7 +37,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         _races ??= await GetRacesAsync();
         if (_races is null)
@@ -126,7 +126,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         weatherData.CityName = race.Circuit.Location.Name;
         weatherData.Location.Country = race.Circuit.Location.Country;
         Response.Append(ChatMessage.Username, ", ");
-        int charsWritten = WeatherService.WriteWeatherData(weatherData, Response.FreeBufferSpan, false);
+        int charsWritten = WeatherService.FormatWeatherData(weatherData, Response.FreeBufferSpan, false);
         Response.Advance(charsWritten);
     }
 

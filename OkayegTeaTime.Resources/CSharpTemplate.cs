@@ -1,5 +1,3 @@
-//#define HLE // nuget import currently broken on api
-
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
@@ -137,19 +135,6 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Xml.XPath;
 using System.Xml.Xsl;
-
-#if HLE
-using HLE;
-using HLE.Collections;
-using HLE.Emojis;
-using HLE.Http;
-using HLE.Maths;
-using HLE.Resources;
-using HLE.Time;
-using HLE.Twitch;
-using HLE.Twitch.Chatterino;
-using HLE.Twitch.Models;
-#endif
 
 #nullable enable
 

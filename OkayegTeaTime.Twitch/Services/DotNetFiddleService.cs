@@ -20,7 +20,7 @@ public sealed class DotNetFiddleService : IEquatable<DotNetFiddleService>
     {
         new("Compiler", "Net7"),
         new("Language", "CSharp"),
-        new("NuGetPackageVersionIds", AppSettings.HleNugetVersionId),
+        new("NuGetPackageVersionIds", GlobalSettings.HleNugetVersionId),
         new("ProjectType", "Console"),
         new("UseResultCache", "false")
     };

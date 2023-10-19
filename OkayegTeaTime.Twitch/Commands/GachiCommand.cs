@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Emojis;
 using HLE.Strings;
 using HLE.Twitch.Models;
-using OkayegTeaTime.Models.Json;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -15,7 +17,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct GachiCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<GachiCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -23,12 +25,14 @@ public readonly struct GachiCommand(TwitchBot twitchBot, IChatMessage chatMessag
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
+    private static readonly ImmutableArray<GachiSong> _songs = JsonSerializer.Deserialize<ImmutableArray<GachiSong>>(ResourceController.GachiSongs);
+
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GachiCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
-        GachiSong? gachiSong = AppSettings.GachiSongs.AsSpan().Random();
+        GachiSong? gachiSong = _songs.AsSpan().Random();
         if (gachiSong is null)
         {
             Response.Append(Messages.CouldntFindASong);

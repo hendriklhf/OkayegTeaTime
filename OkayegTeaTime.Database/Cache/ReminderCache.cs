@@ -129,7 +129,7 @@ public sealed class ReminderCache : DbCache<Reminder>
             _ => r => r.Target == target && r.ToTime > 0
         };
 
-        return this.Count(condition) >= AppSettings.MaxReminders;
+        return this.Count(condition) >= GlobalSettings.MaxReminders;
     }
 
     private protected override void GetAllItemsFromDatabase()

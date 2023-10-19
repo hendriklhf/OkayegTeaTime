@@ -12,7 +12,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct VanishCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<VanishCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -23,7 +23,7 @@ public readonly struct VanishCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out VanishCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)

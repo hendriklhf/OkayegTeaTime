@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Emojis;
 using HLE.Twitch;
@@ -9,6 +10,7 @@ using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Bttv;
 using OkayegTeaTime.Twitch.Controller;
@@ -33,13 +35,13 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     public SpotifyUserCache SpotifyUsers { get; } = new();
 
-    public CommandController CommandController { get; } = new();
+    public CommandController CommandController { get; } = new(JsonSerializer.Deserialize<CommandList>(ResourceController.Commands)!);
 
     public WeatherService WeatherService { get; } = new();
 
     public CooldownController CooldownController { get; }
 
-    public TwitchApi TwitchApi { get; } = new(AppSettings.Twitch.ApiClientId, AppSettings.Twitch.ApiClientSecret, new());
+    public TwitchApi TwitchApi { get; } = new(GlobalSettings.Settings.Twitch.ApiClientId, GlobalSettings.Settings.Twitch.ApiClientSecret, new());
 
     public FfzApi FfzApi { get; } = new(new());
 
@@ -69,8 +71,8 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     public TwitchBot(ReadOnlyMemory<string> channels)
     {
-        OAuthToken token = new(AppSettings.Twitch.OAuthToken);
-        _twitchClient = new(AppSettings.Twitch.Username, token, new()
+        OAuthToken token = new(GlobalSettings.Settings.Twitch.OAuthToken);
+        _twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, new()
         {
             UseSSL = true,
             ParsingMode = ParsingMode.MemoryEfficient
@@ -118,18 +120,18 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
     {
         if (addEmote)
         {
-            string emote = Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
+            string emote = Channels[channel]?.Emote ?? GlobalSettings.DefaultEmote;
             message = emote + ' ' + message;
         }
 
         if (checkDuplicate && message == LastMessages[channel])
         {
-            message = message + ' ' + AppSettings.ChatterinoChar;
+            message = message + ' ' + GlobalSettings.ChatterinoChar;
         }
 
-        if (checkLength && message.Length > AppSettings.MaxMessageLength)
+        if (checkLength && message.Length > GlobalSettings.MaxMessageLength)
         {
-            message = message[..AppSettings.MaxMessageLength];
+            message = message[..GlobalSettings.MaxMessageLength];
         }
 
         await _twitchClient.SendAsync(_twitchClient.Channels[channel]!.Id, message);
@@ -188,13 +190,13 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     private async ValueTask Client_OnJoinedChannel(JoinChannelMessage e)
     {
-        if (e.Username == AppSettings.Twitch.Username)
+        if (e.Username == GlobalSettings.Settings.Twitch.Username)
         {
             ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", ConsoleColor.Red);
             return;
         }
 
-        if (e.Channel != AppSettings.OfflineChatChannel)
+        if (e.Channel != GlobalSettings.Settings.OfflineChat!.Channel)
         {
             return;
         }
@@ -205,16 +207,16 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
             return;
         }
 
-        if (!AppSettings.UserLists.SecretUsers.Contains(user.Id))
+        if (!GlobalSettings.Settings.OfflineChat.Users.Contains(user.Id))
         {
-            await SendAsync(AppSettings.OfflineChatChannel, $"{e.Username} joined the chat Stare");
+            await SendAsync(GlobalSettings.Settings.OfflineChat.Channel, $"{e.Username} joined the chat Stare");
         }
     }
 
     private async ValueTask Client_OnMessageReceived(IChatMessage message)
     {
         ConsoleOut($"[TWITCH] <#{message.Channel}> {message.Username}: {message.Message}");
-        await _messageHandler.Handle(message);
+        await _messageHandler.HandleAsync(message);
 
         if (message is IDisposable disposable)
         {

@@ -10,7 +10,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct InvalidateCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<InvalidateCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -21,7 +21,7 @@ public readonly struct InvalidateCommand(TwitchBot twitchBot, IChatMessage chatM
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out InvalidateCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!messageExtension.IsBotModerator)

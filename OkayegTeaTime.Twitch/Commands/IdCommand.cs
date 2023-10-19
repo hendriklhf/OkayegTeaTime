@@ -14,7 +14,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<IdCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -25,7 +25,7 @@ public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out IdCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         Response.Append(ChatMessage.Username, ", ");
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");

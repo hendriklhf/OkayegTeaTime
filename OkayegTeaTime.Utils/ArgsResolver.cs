@@ -31,7 +31,7 @@ public readonly partial struct ArgsResolver : IEquatable<ArgsResolver>
 
         if (_channelListPattern.IsMatch(_args[idx + 1]))
         {
-            return _args[idx + 1].Split(',').Select(static c => c.ToLower()).ToArray();
+            return _args[idx + 1].Split(',').Select(static c => c.ToLowerInvariant()).ToArray();
         }
 
         throw new ArgumentException($"The \"channels\" argument (\"{_args[idx + 1]}\") at index {idx + 1} is in the wrong format. Expected: \"channel1,channel2,channel3\"");

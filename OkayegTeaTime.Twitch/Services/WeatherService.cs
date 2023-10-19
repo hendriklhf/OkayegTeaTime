@@ -6,28 +6,27 @@ using System.Threading.Tasks;
 using HLE.Collections.Concurrent;
 using HLE.Emojis;
 using HLE.Strings;
-using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
+using OkayegTeaTime.Twitch.Models.OpenWeatherMap;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Services;
 
 public sealed class WeatherService : IDisposable
 {
-    private readonly ConcurrentDoubleDictionary<int, (double, double), WeatherData> _weatherCache = new();
-    private readonly ConcurrentDictionary<int, ForecastData> _forecastCache = new();
+    private readonly ConcurrentDoubleDictionary<string, (double, double), WeatherData> _weatherCache = new();
+    private readonly ConcurrentDictionary<string, ForecastData> _forecastCache = new();
     private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(30);
     private readonly TimeSpan _forecastCacheTime = TimeSpan.FromHours(1);
 
     public async ValueTask<WeatherData?> GetWeatherAsync(string location, bool tryGetFromCache = true)
     {
-        int key = string.GetHashCode(location, StringComparison.OrdinalIgnoreCase);
-        if (tryGetFromCache && _weatherCache.TryGetByPrimaryKey(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _weatherCache.TryGetByPrimaryKey(location, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
         {
             return data;
         }
 
-        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&units=metric&appid={GlobalSettings.Settings.OpenWeatherMap!.ApiKey}");
         if (request.Result is null)
         {
             return null;
@@ -40,9 +39,9 @@ public sealed class WeatherService : IDisposable
         }
 
         var coordinates = (data.Coordinates.Latitude, data.Coordinates.Longitude);
-        if (!_weatherCache.TryAdd(key, coordinates, data))
+        if (!_weatherCache.TryAdd(location, coordinates, data))
         {
-            _weatherCache[key, coordinates] = data;
+            _weatherCache[location, coordinates] = data;
         }
 
         return data;
@@ -56,7 +55,7 @@ public sealed class WeatherService : IDisposable
             return data;
         }
 
-        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&units=metric&appid={GlobalSettings.Settings.OpenWeatherMap!.ApiKey}");
         if (request.Result is null)
         {
             return null;
@@ -68,21 +67,19 @@ public sealed class WeatherService : IDisposable
             return null;
         }
 
-        int locationHash = string.GetHashCode(data.CityName, StringComparison.OrdinalIgnoreCase);
-        _weatherCache.AddOrSet(locationHash, key, data);
+        _weatherCache.AddOrSet(data.CityName, key, data);
         return data;
     }
 
     // ReSharper disable once UnusedMember.Global
-    public async ValueTask<ForecastData?> GetForecast(string city, bool tryGetFromCache = true)
+    public async ValueTask<ForecastData?> GetForecast(string location, bool tryGetFromCache = true)
     {
-        int key = string.GetHashCode(city, StringComparison.OrdinalIgnoreCase);
-        if (tryGetFromCache && _forecastCache.TryGetValue(key, out ForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _forecastCache.TryGetValue(location, out ForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
         {
             return data;
         }
 
-        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/forecast/daily?q={city}&cnt=16&units=metric&appid={AppSettings.OpenWeatherMapApiKey}");
+        HttpGet request = await HttpGet.GetStringAsync($"https://api.openweathermap.org/data/2.5/forecast/daily?q={location}&cnt=16&units=metric&appid={GlobalSettings.Settings.OpenWeatherMap!.ApiKey}");
         if (request.Result is null)
         {
             return null;
@@ -94,15 +91,15 @@ public sealed class WeatherService : IDisposable
             return null;
         }
 
-        if (!_forecastCache.TryAdd(key, data))
+        if (!_forecastCache.TryAdd(location, data))
         {
-            _forecastCache[key] = data;
+            _forecastCache[location] = data;
         }
 
         return data;
     }
 
-    public static int WriteWeatherData(WeatherData weatherData, Span<char> responseBuffer, bool isPrivateLocation)
+    public static int FormatWeatherData(WeatherData weatherData, Span<char> responseBuffer, bool isPrivateLocation)
     {
         ValueStringBuilder response = new(responseBuffer);
 

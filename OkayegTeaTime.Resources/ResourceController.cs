@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Text;
 using HLE.Resources;
 
@@ -20,5 +21,5 @@ public static class ResourceController
 
     public static string KotlinTemplate { get; } = Encoding.UTF8.GetString(_resourceReader.Read("KotlinTemplate.kt")!);
 
-    public static string HangmanWords { get; } = Encoding.UTF8.GetString(_resourceReader.Read("HangmanWords")!);
+    public static string HangmanWords { get; } = Encoding.UTF8.GetString(_resourceReader.Read("HangmanWords")!.AsSpan(..^2));
 }

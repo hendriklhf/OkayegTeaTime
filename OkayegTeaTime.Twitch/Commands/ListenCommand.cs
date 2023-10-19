@@ -19,7 +19,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<ListenCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -30,9 +30,9 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ListenCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
-        if (!AppSettings.UserLists.SecretUsers.Contains(ChatMessage.UserId))
+        if (!GlobalSettings.Settings.OfflineChat!.Users.Contains(ChatMessage.UserId))
         {
             Response.Append(ChatMessage.Username, ", this command is still being tested, you aren't allowed to use this command");
             return;

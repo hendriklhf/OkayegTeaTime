@@ -11,7 +11,7 @@ public static class MessageHelper
         ReadOnlySpan<char> messageSpan = message.Span;
         int indexOfWhitespace = messageSpan.IndexOf(' ');
         ReadOnlyMemory<char> firstWord = message[..Unsafe.As<int, Index>(ref indexOfWhitespace)];
-        if (firstWord.Length <= (channelPrefix.Length == 0 ? AppSettings.Suffix.Length : channelPrefix.Length))
+        if (firstWord.Length <= (channelPrefix.Length == 0 ? GlobalSettings.Suffix.Length : channelPrefix.Length))
         {
             usedAlias = ReadOnlyMemory<char>.Empty;
             usedPrefix = ReadOnlyMemory<char>.Empty;
@@ -20,8 +20,8 @@ public static class MessageHelper
 
         if (channelPrefix.Length == 0)
         {
-            usedAlias = firstWord[..^AppSettings.Suffix.Length];
-            usedPrefix = firstWord[^AppSettings.Suffix.Length..];
+            usedAlias = firstWord[..^GlobalSettings.Suffix.Length];
+            usedPrefix = firstWord[^GlobalSettings.Suffix.Length..];
             return true;
         }
 

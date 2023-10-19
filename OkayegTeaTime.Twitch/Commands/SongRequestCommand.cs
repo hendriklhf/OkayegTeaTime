@@ -20,7 +20,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<SongRequestCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -33,44 +33,44 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SongRequestCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, $@"\s{Pattern.MultipleTargets}\sme");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await RequestSongOfSenderToMultipleUsers();
+            await RequestSongOfSenderToMultipleUsersAsync();
             return;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\sme\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await RequestSongOfTargetToSender();
+            await RequestSongOfTargetToSenderAsync();
             return;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, $@"\s{Pattern.MultipleTargets}\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await RequestSongBySearchTermsToMutlipleUsers();
+            await RequestSongBySearchTermsToMultipleUsersAsync();
             return;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\sme$");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await RequestSongOfSenderToStreamer();
+            await RequestSongOfSenderToStreamerAsync();
             return;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await RequestSongBySearchTermToStreamer();
+            await RequestSongBySearchTermToStreamerAsync();
         }
     }
 
-    private async Task RequestSongBySearchTermToStreamer()
+    private async Task RequestSongBySearchTermToStreamerAsync()
     {
         SpotifyUser? target = _twitchBot.SpotifyUsers[ChatMessage.Channel];
         if (target is null)
@@ -82,7 +82,8 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         try
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            SpotifyTrack track = await SpotifyController.AddToQueueAsync(target, ChatMessage.Message[(messageExtension.Split[0].Length + 1)..]);
+            string song = ChatMessage.Message[(messageExtension.Split[0].Length + 1)..];
+            SpotifyTrack track = await SpotifyController.AddToQueueAsync(target, song);
             Response.Append(ChatMessage.Username, ", ", track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
             Response.Append(" has been added to the queue of ", target.Username.Antiping());
         }
@@ -104,7 +105,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         }
     }
 
-    private async Task RequestSongOfSenderToStreamer()
+    private async Task RequestSongOfSenderToStreamerAsync()
     {
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (user is null)
@@ -178,7 +179,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         Response.Append(" has been added to the queue of ", target.Username.Antiping());
     }
 
-    private async Task RequestSongBySearchTermsToMutlipleUsers()
+    private async Task RequestSongBySearchTermsToMultipleUsersAsync()
     {
         SpotifyUser[] targets = GetTargets();
         if (targets.Length == 0)
@@ -238,7 +239,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         CreateMultipleTargetResponse(success, track);
     }
 
-    private async Task RequestSongOfTargetToSender()
+    private async Task RequestSongOfTargetToSenderAsync()
     {
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (user is null)
@@ -314,7 +315,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         Response.Append(" has been added to the queue of ", user.Username.Antiping());
     }
 
-    private async ValueTask RequestSongOfSenderToMultipleUsers()
+    private async ValueTask RequestSongOfSenderToMultipleUsersAsync()
     {
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (user is null)

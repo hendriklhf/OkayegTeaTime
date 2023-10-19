@@ -16,7 +16,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<SetCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -27,7 +27,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;
@@ -78,9 +78,9 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         }
 
         ReadOnlySpan<char> prefixSpan = messageExtension.LowerSplit[2].Span;
-        if (prefixSpan.Length > AppSettings.MaxPrefixLength)
+        if (prefixSpan.Length > GlobalSettings.MaxPrefixLength)
         {
-            prefixSpan = prefixSpan[..AppSettings.MaxPrefixLength];
+            prefixSpan = prefixSpan[..GlobalSettings.MaxPrefixLength];
         }
 
         string prefix = new(prefixSpan);
@@ -105,9 +105,9 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         }
 
         ReadOnlySpan<char> emoteSpan = messageExtension.Split[2].Span;
-        if (emoteSpan.Length > AppSettings.MaxEmoteInFrontLength)
+        if (emoteSpan.Length > GlobalSettings.MaxEmoteInFrontLength)
         {
-            emoteSpan = emoteSpan[..AppSettings.MaxPrefixLength];
+            emoteSpan = emoteSpan[..GlobalSettings.MaxPrefixLength];
         }
 
         string emote = new(emoteSpan);

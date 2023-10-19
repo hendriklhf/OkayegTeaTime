@@ -104,7 +104,7 @@ public sealed class Builder(string[] args)
     private static void CreateCodeFilesFile()
     {
         Console.WriteLine("Searching for .cs files");
-        Regex fileRegex = new($@"^\.[\\/]{AppSettings.AssemblyName.Split('.')[0]}(\.\w+)?[\\/](?!((bin)|(obj)[\\/])).*\.cs$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        Regex fileRegex = new($@"^\.[\\/]{GlobalSettings.AssemblyName.Split('.')[0]}(\.\w+)?[\\/](?!((bin)|(obj)[\\/])).*\.cs$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(static f => f[2..].Replace('\\', '/')).Order().ToArray();
         Console.WriteLine($"Found {files.Length} .cs files");
         File.WriteAllLines(_codeFilesFile, files);

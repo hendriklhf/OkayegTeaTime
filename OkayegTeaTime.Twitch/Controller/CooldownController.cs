@@ -15,7 +15,7 @@ public sealed class CooldownController(CommandController commandController)
     public void AddCooldown(long userId, CommandType type)
     {
 #if DEBUG
-        if (AppSettings.UserLists.Moderators.Contains(userId))
+        if (GlobalSettings.Settings.Users.Moderators.Contains(userId))
         {
             return;
         }
@@ -30,14 +30,14 @@ public sealed class CooldownController(CommandController commandController)
     public void AddAfkCooldown(long userId)
     {
 #if DEBUG
-        if (AppSettings.UserLists.Moderators.Contains(userId))
+        if (GlobalSettings.Settings.Users.Moderators.Contains(userId))
         {
             return;
         }
 #endif
 
         CooldownHash cooldownHash = new(userId);
-        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(AppSettings.AfkCooldown);
+        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(GlobalSettings.AfkCooldown);
         DateTime cooldownUntil = DateTime.UtcNow + cooldownTime;
         _afkCooldowns.AddOrSet(cooldownHash, cooldownUntil);
     }

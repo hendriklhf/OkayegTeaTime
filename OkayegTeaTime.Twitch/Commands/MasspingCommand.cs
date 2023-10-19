@@ -13,7 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<MasspingCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -24,9 +24,9 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MasspingCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
-        if (ChatMessage.Channel != AppSettings.OfflineChatChannel)
+        if (ChatMessage.Channel != GlobalSettings.Settings.OfflineChat!.Channel)
         {
             return ValueTask.CompletedTask;
         }
@@ -38,11 +38,11 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
             return ValueTask.CompletedTask;
         }
 
-        string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? AppSettings.DefaultEmote;
+        string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? GlobalSettings.DefaultEmote;
         ReadOnlySpan<char> emote = messageExtension.Split.Length > 1 ? messageExtension.Split[1].Span : channelEmote;
         using PooledList<string> chatters = new();
         Response.Append("OkayegTeaTime", " ", emote, " ");
-        chatters.AddRange(AppSettings.OfflineChatEmotes.AsSpan());
+        chatters.AddRange(GlobalSettings.Settings.OfflineChat!.Emotes.AsSpan());
 
         Span<char> separator = stackalloc char[emote.Length + 2];
         separator[0] = ' ';

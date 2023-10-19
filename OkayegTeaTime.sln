@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Utils", "Okay
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Twitch", "OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj", "{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Models", "OkayegTeaTime.Models\OkayegTeaTime.Models.csproj", "{2A972CE5-A11C-43E0-A597-F158619438A0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,10 +63,6 @@ Global
 		{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A972CE5-A11C-43E0-A597-F158619438A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A972CE5-A11C-43E0-A597-F158619438A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A972CE5-A11C-43E0-A597-F158619438A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A972CE5-A11C-43E0-A597-F158619438A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

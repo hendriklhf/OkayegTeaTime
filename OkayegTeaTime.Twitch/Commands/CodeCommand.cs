@@ -15,7 +15,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<CodeCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -28,18 +28,19 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CodeCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         _codeFiles ??= new(ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries).AsSpan());
 
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            Regex? filePattern;
+            Regex? fileRegex;
             try
             {
                 using ChatMessageExtension messageExtension = new(ChatMessage);
-                filePattern = new(ChatMessage.Message[(messageExtension.Split[0].Length + 1)..], RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+                ReadOnlyMemory<char> filePattern = ChatMessage.Message.AsMemory((messageExtension.Split[0].Length + 1)..);
+                fileRegex = RegexPool.Shared.GetOrAdd(filePattern.Span, RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             }
             catch (ArgumentException)
             {
@@ -47,8 +48,8 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
                 return ValueTask.CompletedTask;
             }
 
-            using PooledList<string> matchingFiles = new(5);
-            GetMatchingFiles(_codeFiles, matchingFiles, filePattern);
+            using PooledList<string> matchingFiles = new();
+            GetMatchingFiles(_codeFiles, matchingFiles, fileRegex);
             Response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Count)
             {
@@ -56,7 +57,7 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
                     Response.Append(Messages.YourPatternMatchedNoSourceCodeFiles);
                     break;
                 case 1:
-                    Response.Append(AppSettings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
+                    Response.Append(GlobalSettings.Settings.RepositoryUrl, "/blob/master/", matchingFiles[0]);
                     break;
                 case <= 5:
                     Response.Append("your pattern matched ");
@@ -79,12 +80,12 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
         return ValueTask.CompletedTask;
     }
 
-    private static void GetMatchingFiles(StringArray codeFiles, PooledList<string> matchingFiles, Regex filePattern)
+    private static void GetMatchingFiles(StringArray codeFiles, PooledList<string> matchingFiles, Regex fileRegex)
     {
         for (int i = 0; i < codeFiles.Length; i++)
         {
             ReadOnlySpan<char> file = codeFiles.GetChars(i);
-            if (filePattern.IsMatch(file))
+            if (fileRegex.IsMatch(file))
             {
                 matchingFiles.Add(codeFiles[i]);
             }

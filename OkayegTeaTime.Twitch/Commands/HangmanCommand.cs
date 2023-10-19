@@ -17,7 +17,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<HangmanCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -29,12 +29,12 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
     private string? _sadEmote;
     private string? _partyEmote;
 
-    private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split("\r\n");
+    private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split(',');
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HangmanCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         _happyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Grinning, "happy", "good");
         _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
@@ -64,7 +64,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
     private readonly void StartNewGame()
     {
         Response.Append(ChatMessage.Username, ", ");
-        if (_twitchBot.HangmanGames.TryGetValue(ChatMessage.ChannelId, out _))
+        if (_twitchBot.HangmanGames.ContainsKey(ChatMessage.ChannelId))
         {
             Response.Append(Messages.ThereIsAlreadyAGameRunning);
             return;
@@ -127,7 +127,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
             return;
         }
 
-        char guess = ChatMessage.Message[_alias.Length + (_prefix.Length == 0 ? AppSettings.Suffix.Length : _prefix.Length) + 1];
+        char guess = ChatMessage.Message[_alias.Length + (_prefix.Length == 0 ? GlobalSettings.Suffix.Length : _prefix.Length) + 1];
         guess = char.ToLowerInvariant(guess);
         int correctPlacesCount = game.Guess(guess);
         Response.Append(ChatMessage.Username, ", ");

@@ -30,12 +30,6 @@ public sealed class HangmanGame : IDisposable
         _discoveredWord.Span.Fill('_');
     }
 
-    ~HangmanGame()
-    {
-        _discoveredWord.Dispose();
-        _wrongChars.Dispose();
-    }
-
     public int Guess(char guess)
     {
         ref char firstSolutionChar = ref MemoryMarshal.GetReference<char>(Solution);
@@ -84,7 +78,6 @@ public sealed class HangmanGame : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         _discoveredWord.Dispose();
         _wrongChars.Dispose();
     }

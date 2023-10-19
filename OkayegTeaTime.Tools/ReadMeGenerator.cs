@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using OkayegTeaTime.Models.Json;
+using System.Text.Json;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Controller;
+using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Tools;
 
@@ -47,7 +49,7 @@ public sealed class ReadMeGenerator
     private string CreateReadMe()
     {
         StringBuilder builder = new();
-        CommandController commandController = new();
+        CommandController commandController = new(JsonSerializer.Deserialize<CommandList>(ResourceController.Commands)!);
 
         builder.Append($"<h1>{_title}</h1><h2>{_header1}</h2>");
         foreach (string headerText in _header1Text)

@@ -90,28 +90,10 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static Channel? GetChannel(string channel)
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Channels.FirstOrDefault(c => c.Name == channel);
-    }
-
-    public static Channel? GetChannel(long id)
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Channels.FirstOrDefault(c => c.Id == id);
-    }
-
     public static Channel[] GetChannels()
     {
         using OkayegTeaTimeContext database = new();
         return database.Channels.ToArray();
-    }
-
-    public static Reminder? GetReminder(int id)
-    {
-        using OkayegTeaTimeContext database = new();
-        return database.Reminders.FirstOrDefault(r => r.Id == id);
     }
 
     public static Reminder[] GetReminders()
@@ -182,19 +164,6 @@ public static class DbController
         database.SaveChanges();
     }
 
-    public static void RemoveChannel(string channel)
-    {
-        using OkayegTeaTimeContext database = new();
-        Channel? chnl = database.Channels.FirstOrDefault(c => c.Name == channel);
-        if (chnl is null)
-        {
-            return;
-        }
-
-        database.Channels.Remove(chnl);
-        database.SaveChanges();
-    }
-
     /// <summary>
     ///     Removes a reminder without checking for permission.
     /// </summary>
@@ -220,7 +189,7 @@ public static class DbController
             return false;
         }
 
-        if (reminder.Creator != username && (reminder.Target != username || reminder.ToTime == 0) && !AppSettings.UserLists.Moderators.Contains(userId))
+        if (reminder.Creator != username && (reminder.Target != username || reminder.ToTime == 0) && !GlobalSettings.Settings.Users.Moderators.Contains(userId))
         {
             return false;
         }

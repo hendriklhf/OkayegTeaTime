@@ -18,7 +18,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<SpotifyCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -29,7 +29,7 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SpotifyCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         ReadOnlyMemory<char> firstParameter = messageExtension.LowerSplit[1];

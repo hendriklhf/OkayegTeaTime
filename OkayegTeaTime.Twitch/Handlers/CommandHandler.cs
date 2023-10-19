@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Models.Json;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Messages;
@@ -22,19 +21,19 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
     private readonly FrozenDictionary<AliasHash, CommandType> _commandTypes = CreateCommandTypeDictionary(twitchBot);
     private readonly FrozenDictionary<AliasHash, AfkType> _afkTypes = CreateAfkTypeDictionary(twitchBot);
 
-    public override async ValueTask Handle(IChatMessage chatMessage)
+    public override async ValueTask HandleAsync(IChatMessage chatMessage)
     {
-        bool handled = await HandleCommand(chatMessage);
+        bool handled = await HandleCommandAsync(chatMessage);
         if (!handled)
         {
-            await HandleAfkCommand(chatMessage);
+            await HandleAfkCommandAsync(chatMessage);
         }
     }
 
-    private async ValueTask<bool> HandleCommand(IChatMessage chatMessage)
+    private async ValueTask<bool> HandleCommandAsync(IChatMessage chatMessage)
     {
         ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
-        ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
+        ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? GlobalSettings.Suffix.AsMemory() : prefix;
 
         if (!MessageHelper.TryExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix))
         {
@@ -63,10 +62,10 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
         return true;
     }
 
-    private async ValueTask HandleAfkCommand(IChatMessage chatMessage)
+    private async ValueTask HandleAfkCommandAsync(IChatMessage chatMessage)
     {
         ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
-        ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? AppSettings.Suffix.AsMemory() : prefix;
+        ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? GlobalSettings.Suffix.AsMemory() : prefix;
 
         if (!MessageHelper.TryExtractAlias(chatMessage.Message.AsMemory(), prefix.Span, out var usedAlias, out var usedPrefix))
         {

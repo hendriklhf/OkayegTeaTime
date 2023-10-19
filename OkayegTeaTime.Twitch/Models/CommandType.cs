@@ -1,7 +1,5 @@
 ﻿namespace OkayegTeaTime.Twitch.Models;
 
-// new values have to be inserted to ensure alphabetic order
-
 public enum CommandType
 {
     BanFromFile,

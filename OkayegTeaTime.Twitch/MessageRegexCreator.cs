@@ -25,7 +25,7 @@ public sealed class MessageRegexCreator : IDisposable
         {
             escapedItemLength = StringHelper.RegexEscape(alias, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
-            escapedItemLength = StringHelper.RegexEscape(AppSettings.Suffix, patternBuilder.FreeBuffer);
+            escapedItemLength = StringHelper.RegexEscape(GlobalSettings.Suffix, patternBuilder.FreeBuffer);
             patternBuilder.Advance(escapedItemLength);
         }
         else

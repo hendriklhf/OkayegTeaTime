@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Models.Json;
+using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
@@ -20,8 +21,8 @@ public sealed class CommandTest
 
     public CommandTest()
     {
-        AppSettings.Initialize();
-        _commandController = new();
+        GlobalSettings.Initialize();
+        _commandController = new(JsonSerializer.Deserialize<CommandList>(ResourceController.Commands)!);
     }
 
     [TestMethod]

@@ -13,7 +13,7 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
         {
             if (_split == SmartSplit.Empty)
             {
-                _split = new(chatMessage.Message.AsMemory());
+                _split = new(_chatMessage.Message.AsMemory());
             }
 
             return _split;
@@ -31,22 +31,23 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
 
             if (_lowerCaseMessage == RentedArray<char>.Empty)
             {
-                _lowerCaseMessage = new(chatMessage.Message.Length);
-                chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
+                _lowerCaseMessage = new(_chatMessage.Message.Length);
+                _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
             }
 
-            _lowerSplit = new(_lowerCaseMessage.Memory[..chatMessage.Message.Length]);
+            _lowerSplit = new(_lowerCaseMessage.Memory[.._chatMessage.Message.Length]);
 
             return _lowerSplit;
         }
     }
 
-    public readonly bool IsBotModerator => AppSettings.UserLists.Moderators.Contains(chatMessage.UserId);
+    public readonly bool IsBotModerator => GlobalSettings.Settings.Users.Moderators.Contains(_chatMessage.UserId);
 
-    public readonly bool IsIgnoredUser => AppSettings.UserLists.IgnoredUsers.Contains(chatMessage.UserId);
+    public readonly bool IsIgnoredUser => GlobalSettings.Settings.Users.IgnoredUsers.Contains(_chatMessage.UserId);
 
-    public readonly bool IsBroadcaster => chatMessage.UserId == chatMessage.ChannelId;
+    public readonly bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
 
+    private readonly IChatMessage _chatMessage = chatMessage;
     private RentedArray<char> _lowerCaseMessage = RentedArray<char>.Empty;
     private SmartSplit _split = SmartSplit.Empty;
     private SmartSplit _lowerSplit = SmartSplit.Empty;

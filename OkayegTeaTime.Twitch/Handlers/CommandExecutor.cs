@@ -41,12 +41,12 @@ public sealed class CommandExecutor
         T.Create(twitchBot, chatMessage, prefix, alias, out T command);
         try
         {
-            string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
+            string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? GlobalSettings.DefaultEmote;
             command.Response.Append(emote);
             command.Response.Append(' ');
             int responseLengthBeforeHandle = command.Response.Length;
 
-            await command.Handle();
+            await command.HandleAsync();
             if (command.Response.Length <= responseLengthBeforeHandle)
             {
                 return;

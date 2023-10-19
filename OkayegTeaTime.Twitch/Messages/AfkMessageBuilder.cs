@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using HLE.Strings;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Models.Json;
+using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Messages;

@@ -25,8 +25,8 @@ public static class BotActions
 
     public static async ValueTask SendComingBackAsync(this TwitchBot twitchBot, User user, string channel)
     {
-        string emote = twitchBot.Channels[channel]?.Emote ?? AppSettings.DefaultEmote;
-        using PooledStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
+        string emote = twitchBot.Channels[channel]?.Emote ?? GlobalSettings.DefaultEmote;
+        using PooledStringBuilder responseBuilder = new(GlobalSettings.MaxMessageLength);
         responseBuilder.Append(emote, " ");
 
         int afkMessageLength = twitchBot.AfkMessageBuilder.BuildComingBackMessage(user, user.AfkType, responseBuilder.FreeBufferSpan);

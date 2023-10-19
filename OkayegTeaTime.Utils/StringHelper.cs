@@ -22,7 +22,7 @@ public static class StringHelper
         {
             true => channel[0] == '#' ? channel : '#' + channel,
             _ => channel[0] == '#' ? channel[1..] : channel
-        }).ToLower();
+        }).ToLowerInvariant();
 
         return true;
     }

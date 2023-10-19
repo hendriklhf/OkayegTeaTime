@@ -17,7 +17,7 @@ public static class Program
         Console.Title = "OkayegTeaTime";
         Console.OutputEncoding = Encoding.UTF8;
 
-        AppSettings.Initialize();
+        GlobalSettings.Initialize();
 
         ArgsResolver argsResolver = new(args);
         using TwitchBot twitchBot = new(argsResolver.Channels);

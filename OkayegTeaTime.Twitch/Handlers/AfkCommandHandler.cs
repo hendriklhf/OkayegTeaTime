@@ -27,8 +27,8 @@ public sealed class AfkCommandHandler(TwitchBot twitchBot)
         user.AfkTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         user.IsAfk = true;
 
-        string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? AppSettings.DefaultEmote;
-        using PooledStringBuilder responseBuilder = new(AppSettings.MaxMessageLength);
+        string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? GlobalSettings.DefaultEmote;
+        using PooledStringBuilder responseBuilder = new(GlobalSettings.MaxMessageLength);
         responseBuilder.Append(emote, " ");
         int afkMessageLength = twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username, afkType, responseBuilder.FreeBufferSpan);
         responseBuilder.Advance(afkMessageLength);

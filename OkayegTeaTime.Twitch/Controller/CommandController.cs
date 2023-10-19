@@ -4,8 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.InteropServices;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Models.Json;
-using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 
@@ -19,12 +17,12 @@ public sealed class CommandController
 
     private readonly FrozenSet<AliasHash> _afkCommandAliasHashes;
 
-    public CommandController()
+    public CommandController(CommandList commandList)
     {
         int commandTypeCount = Enum.GetValues<CommandType>().Length;
         Command[] commands = new Command[commandTypeCount];
         Commands = ImmutableCollectionsMarshal.AsImmutableArray(commands);
-        foreach (Command command in AppSettings.CommandList.Commands)
+        foreach (Command command in commandList.Commands)
         {
             CommandType commandType = Enum.Parse<CommandType>(command.Name, true);
             commands[(int)commandType] = command;
@@ -33,7 +31,7 @@ public sealed class CommandController
         int afkCommandTypeCount = Enum.GetValues<AfkType>().Length;
         AfkCommand[] afkCommands = new AfkCommand[afkCommandTypeCount];
         AfkCommands = ImmutableCollectionsMarshal.AsImmutableArray(afkCommands);
-        foreach (AfkCommand command in AppSettings.CommandList.AfkCommands)
+        foreach (AfkCommand command in commandList.AfkCommands)
         {
             AfkType afkType = Enum.Parse<AfkType>(command.Name, true);
             afkCommands[(int)afkType] = command;
@@ -43,7 +41,8 @@ public sealed class CommandController
     }
 
     public bool IsAfkCommand(string? channelPrefix, string message)
-        => MessageHelper.TryExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _) && _afkCommandAliasHashes.Contains(new(alias.Span));
+        => MessageHelper.TryExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _) &&
+           _afkCommandAliasHashes.Contains(new(alias.Span));
 
     public Command GetCommand(CommandType type) => Commands[(int)type];
 

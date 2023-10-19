@@ -1,37 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 using OkayegTeaTime.Settings;
 
 #nullable disable
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
-public class OkayegTeaTimeContext : DbContext
+internal sealed class OkayegTeaTimeContext : DbContext
 {
     public OkayegTeaTimeContext()
     {
     }
 
-    public OkayegTeaTimeContext(DbContextOptions<OkayegTeaTimeContext> options) : base(options)
+    public OkayegTeaTimeContext([NotNull] DbContextOptions<OkayegTeaTimeContext> options) : base(options)
     {
     }
 
-    public virtual DbSet<Channel> Channels { get; set; }
+    public DbSet<Channel> Channels { get; set; }
 
-    public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
+    public DbSet<ExceptionLog> ExceptionLogs { get; set; }
 
-    public virtual DbSet<Reminder> Reminders { get; set; }
+    public DbSet<Reminder> Reminders { get; set; }
 
-    public virtual DbSet<Spotify> Spotify { get; set; }
+    public DbSet<Spotify> Spotify { get; set; }
 
-    public virtual DbSet<Suggestion> Suggestions { get; set; }
+    public DbSet<Suggestion> Suggestions { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseMySQL(AppSettings.DatabaseConnection.ConnectionString);
+            optionsBuilder.UseMySQL(GlobalSettings.Settings.Database.ConnectionString);
         }
     }
 

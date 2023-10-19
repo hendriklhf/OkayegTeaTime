@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Models.OpenWeatherMap;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Twitch.Models.OpenWeatherMap;
 using OkayegTeaTime.Twitch.Services;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -16,7 +16,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct WeatherCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<WeatherCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -27,7 +27,7 @@ public readonly struct WeatherCommand(TwitchBot twitchBot, IChatMessage chatMess
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out WeatherCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         string? city;
         bool isPrivateLocation;
@@ -66,7 +66,7 @@ public readonly struct WeatherCommand(TwitchBot twitchBot, IChatMessage chatMess
         }
 
         Response.Append(ChatMessage.Username, ", ");
-        int charsWritten = WeatherService.WriteWeatherData(weatherData, Response.FreeBufferSpan, isPrivateLocation);
+        int charsWritten = WeatherService.FormatWeatherData(weatherData, Response.FreeBufferSpan, isPrivateLocation);
         Response.Advance(charsWritten);
     }
 

@@ -13,7 +13,7 @@ namespace OkayegTeaTime.Twitch.Commands;
 public readonly struct HelpCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<HelpCommand>
 {
-    public PooledStringBuilder Response { get; } = new(AppSettings.MaxMessageLength);
+    public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
     public IChatMessage ChatMessage { get; } = chatMessage;
 
@@ -24,11 +24,11 @@ public readonly struct HelpCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HelpCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         ReadOnlySpan<char> username = messageExtension.Split.Length > 1 ? messageExtension.LowerSplit[1].Span : ChatMessage.Username;
-        Response.Append(Emoji.PointRight, " ", username, ", here you can find a list of commands and the repository: ", AppSettings.RepositoryUrl);
+        Response.Append(Emoji.PointRight, " ", username, ", here you can find a list of commands and the repository: ", GlobalSettings.Settings.RepositoryUrl);
         return ValueTask.CompletedTask;
     }
 

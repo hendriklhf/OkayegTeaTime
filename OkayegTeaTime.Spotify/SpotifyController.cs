@@ -30,7 +30,7 @@ public static class SpotifyController
 
             static async Task GetPlaylistTracks()
             {
-                string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
+                string? username = DbController.GetUser(GlobalSettings.Settings.Users.Owner)?.Username;
                 if (username is null)
                 {
                     return;
@@ -43,7 +43,7 @@ public static class SpotifyController
                 }
 
                 SpotifyUser user = new(efUser);
-                SpotifyTrack[] tracks = await GetPlaylistItemsAsync(user, AppSettings.Spotify.ChatPlaylistId);
+                SpotifyTrack[] tracks = await GetPlaylistItemsAsync(user, GlobalSettings.Settings.OfflineChat!.ChatPlaylistId);
                 _chatPlaylistUris = tracks.Select(static t => t.Uri).ToList();
             }
         }
@@ -58,7 +58,7 @@ public static class SpotifyController
 
     public static string GetLoginUrl()
     {
-        LoginRequest login = new(new("https://example.com/callback"), AppSettings.Spotify.ClientId, LoginRequest.ResponseType.Code)
+        LoginRequest login = new(new("https://example.com/callback"), GlobalSettings.Settings.Spotify!.ClientId, LoginRequest.ResponseType.Code)
         {
             Scope = new[]
             {
@@ -74,7 +74,9 @@ public static class SpotifyController
     {
         try
         {
-            AuthorizationCodeRefreshResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeRefreshRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, refreshToken));
+            OAuthClient oAuthClient = new();
+            AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = new(GlobalSettings.Settings.Spotify!.ClientId, GlobalSettings.Settings.Spotify!.ClientSecret, refreshToken);
+            AuthorizationCodeRefreshResponse response = await oAuthClient.RequestToken(authorizationCodeRefreshRequest);
             return response.AccessToken;
         }
         catch (Exception ex)
@@ -88,7 +90,9 @@ public static class SpotifyController
     {
         try
         {
-            AuthorizationCodeTokenResponse response = await new OAuthClient().RequestToken(new AuthorizationCodeTokenRequest(AppSettings.Spotify.ClientId, AppSettings.Spotify.ClientSecret, code, new("https://example.com/callback")));
+            OAuthClient oAuthClient = new();
+            AuthorizationCodeTokenRequest authorizationCodeTokenRequest = new(GlobalSettings.Settings.Spotify!.ClientId, GlobalSettings.Settings.Spotify!.ClientSecret, code, new("https://example.com/callback"));
+            AuthorizationCodeTokenResponse response = await oAuthClient.RequestToken(authorizationCodeTokenRequest);
             return (response.AccessToken, response.RefreshToken);
         }
         catch (Exception ex)
@@ -141,7 +145,7 @@ public static class SpotifyController
     /// <param name="user">The user privileged to add songs to the playlist.</param>
     /// <param name="songs">The songs that will be added to the playlist.</param>
     /// <exception cref="SpotifyException">Will be thrown if it was unable to add a song to the playlist.</exception>
-    public static async ValueTask AddToPlaylist(SpotifyUser user, params string[] songs)
+    public static async ValueTask AddToPlaylistAsync(SpotifyUser user, params string[] songs)
     {
         string[] uris = songs.Select(static s => ParseSongToUri(s) ?? string.Empty).Where(static u => !string.IsNullOrWhiteSpace(u)).ToArray();
         if (uris.Length == 0)
@@ -158,7 +162,7 @@ public static class SpotifyController
                 return;
             }
 
-            await client.Playlists.AddItems(AppSettings.Spotify.ChatPlaylistId, new(uris));
+            await client.Playlists.AddItems(GlobalSettings.Settings.OfflineChat!.ChatPlaylistId, new(uris));
             ChatPlaylistUris.AddRange(uris);
         }
         catch (Exception ex)
@@ -377,7 +381,7 @@ public static class SpotifyController
                 item = new SpotifyTrack(track);
 
 #if RELEASE
-                if (!AppSettings.Spotify.ChatPlaylistUsers.Contains(user.Id))
+                if (!GlobalSettings.Settings.OfflineChat!.PlaylistUsers.Contains(user.Id))
                 {
                     return item;
                 }
@@ -387,7 +391,7 @@ public static class SpotifyController
                     return item;
                 }
 
-                string? username = DbController.GetUser(AppSettings.UserLists.Owner)?.Username;
+                string? username = DbController.GetUser(GlobalSettings.Settings.Users.Owner)?.Username;
                 if (username is null)
                 {
                     return item;
@@ -402,7 +406,7 @@ public static class SpotifyController
                 SpotifyUser playlistUser = new(efUser);
                 try
                 {
-                    await AddToPlaylist(playlistUser, item.Uri);
+                    await AddToPlaylistAsync(playlistUser, item.Uri);
                 }
                 catch (SpotifyException ex)
                 {
