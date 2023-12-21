@@ -18,7 +18,7 @@ public static class DotNetFiddleService
     private static readonly string[] s_templateFileParts = ResourceController.CSharpTemplate.Split("{code}");
     private static readonly KeyValuePair<string, string>[] s_defaultHttpContentPairs =
     [
-        new("Compiler", "Net7"),
+        new("Compiler", "NetLatest"),
         new("Language", "CSharp"),
         new("NuGetPackageVersionIds", GlobalSettings.HleNugetVersionId),
         new("ProjectType", "Console"),
