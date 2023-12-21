@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using HLE.Collections;
 using OkayegTeaTime.Twitch.Bttv.Models;
@@ -11,26 +11,26 @@ public sealed class BttvApiCache(CacheOptions options) : IEquatable<BttvApiCache
 {
     public CacheOptions Options { get; } = options;
 
-    private readonly ConcurrentDictionary<long, CacheEntry<Emote[]>> _channelEmoteCache = new();
-    private CacheEntry<Emote[]> _globalEmoteCache = CacheEntry<Emote[]>.Empty;
+    private readonly ConcurrentDictionary<long, CacheEntry<ImmutableArray<Emote>>> _channelEmoteCache = new();
+    private CacheEntry<ImmutableArray<Emote>> _globalEmoteCache = CacheEntry<ImmutableArray<Emote>>.Empty;
 
-    public void AddChannelEmotes(long channelId, Emote[] emotes) => _channelEmoteCache.AddOrSet(channelId, new(emotes));
+    public void AddChannelEmotes(long channelId, ImmutableArray<Emote> emotes) => _channelEmoteCache.AddOrSet(channelId, new(emotes));
 
-    public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetChannelEmotes(long channelId, out ImmutableArray<Emote> emotes)
     {
-        if (_channelEmoteCache.TryGetValue(channelId, out var entry) && entry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmoteCache.TryGetValue(channelId, out CacheEntry<ImmutableArray<Emote>> entry) && entry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = entry.Value;
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 
-    public void AddGlobalEmotes(Emote[] emotes) => _globalEmoteCache = new(emotes);
+    public void AddGlobalEmotes(ImmutableArray<Emote> emotes) => _globalEmoteCache = new(emotes);
 
-    public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetGlobalEmotes(out ImmutableArray<Emote> emotes)
     {
         if (_globalEmoteCache.IsValid(Options.GlobalEmotesCacheTime))
         {
@@ -38,7 +38,7 @@ public sealed class BttvApiCache(CacheOptions options) : IEquatable<BttvApiCache
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 

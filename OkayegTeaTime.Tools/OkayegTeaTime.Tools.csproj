@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HLE" Version="2.1.7" />
+        <PackageReference Include="HLE" Version="2.1.8" />
     </ItemGroup>
 
     <ItemGroup>

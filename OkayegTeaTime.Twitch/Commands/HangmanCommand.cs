@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE;
 using HLE.Collections;
 using HLE.Emojis;
 using HLE.Strings;
@@ -29,12 +30,12 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
     private string? _sadEmote;
     private string? _partyEmote;
 
-    private static readonly string[] _hangmanWords = ResourceController.HangmanWords.Split(',');
+    private static readonly string[] s_hangmanWords = ResourceController.HangmanWords.Split(',');
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HangmanCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         _happyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Grinning, "happy", "good");
         _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
@@ -70,11 +71,13 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
             return;
         }
 
-        Debug.Assert(_hangmanWords.Length > 0, "_hangmanWords.Length > 0");
-        HangmanGame game = new(_hangmanWords.Random()!);
+        Debug.Assert(s_hangmanWords.Length != 0, "s_hangmanWords.Length != 0");
+#pragma warning disable CA2000 // added to _twitchBot.HangmanGames, cant be disposed
+        HangmanGame game = new(Random.Shared.GetItem(s_hangmanWords));
+#pragma warning restore CA2000
         Response.Append(Messages.NewGameStarted, ": ");
         AppendWordStatus(game);
-        _twitchBot.HangmanGames.Add(ChatMessage.ChannelId, game);
+        _twitchBot.HangmanGames.AddOrSet(ChatMessage.ChannelId, game);
     }
 
     private readonly void GuessWord()
@@ -98,7 +101,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
             AppendWrongCharStatus(game);
             Response.Append(", ");
             AppendGuessStatus(game);
-            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            _twitchBot.HangmanGames.TryRemove(ChatMessage.ChannelId, out _);
             game.Dispose();
         }
         else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
@@ -114,7 +117,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
         {
             Response.Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, " ", "\"", game.Solution, "\"");
             Response.Append(". ", _sadEmote);
-            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            _twitchBot.HangmanGames.TryRemove(ChatMessage.ChannelId, out _);
             game.Dispose();
         }
     }
@@ -134,7 +137,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
         if (game.IsSolved)
         {
             Response.Append(Messages.TheGameHasBeenSolved, " ", _partyEmote, " ");
-            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            _twitchBot.HangmanGames.TryRemove(ChatMessage.ChannelId, out _);
             game.Dispose();
         }
         else if (game.WrongGuesses < HangmanGame.MaxWrongGuesses)
@@ -144,13 +147,13 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
             Response.Append(' ');
             Response.Append(correctPlacesCount);
             Response.Append(" ", correctPlacesCount == 1 ? "place" : "places");
-            Response.Append(" ", correctPlacesCount > 0 ? _happyEmote : _sadEmote, " ");
+            Response.Append(" ", correctPlacesCount != 0 ? _happyEmote : _sadEmote, " ");
         }
         else
         {
             Response.Append(Messages.TheMaximumWrongGuessesHaveBeenReachedTheSolutionWas, " ", "\"", game.Solution, "\"");
             Response.Append(" ", _sadEmote, " ");
-            _twitchBot.HangmanGames.Remove(ChatMessage.ChannelId);
+            _twitchBot.HangmanGames.TryRemove(ChatMessage.ChannelId, out _);
             game.Dispose();
             return;
         }
@@ -164,7 +167,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
 
     private readonly void AppendWordStatus(HangmanGame game)
     {
-        int joinLength = StringHelper.Join(game.DiscoveredWord, ' ', Response.FreeBufferSpan);
+        int joinLength = StringHelpers.Join(' ', game.DiscoveredWord, Response.FreeBufferSpan);
         Response.Advance(joinLength);
         Response.Append(" (");
         Response.Append(game.Solution.Length);

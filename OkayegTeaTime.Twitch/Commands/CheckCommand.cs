@@ -9,7 +9,6 @@ using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -28,12 +27,12 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CheckCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\safk\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await CheckAfkStatus();
+            await CheckAfkStatusAsync();
             return;
         }
 
@@ -63,7 +62,7 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
             $"Set: {TimeSpanFormatter.Format(timeSinceReminderCreation)} ago"
         };
 
-        if (reminder.ToTime > 0)
+        if (reminder.ToTime != 0)
         {
             timeSinceReminderCreation = DateTimeOffset.FromUnixTimeMilliseconds(reminder.ToTime) - DateTime.UtcNow;
             reminderProps.Add($"Fires in: {TimeSpanFormatter.Format(timeSinceReminderCreation)}");
@@ -74,17 +73,17 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
             reminderProps.Add($"Message: {reminder.Message}");
         }
 
-        int joinLength = StringHelper.Join(reminderProps.AsSpan(), " || ", Response.FreeBufferSpan);
+        int joinLength = StringHelpers.Join(" || ", reminderProps.AsSpan(), Response.FreeBufferSpan);
         Response.Advance(joinLength);
     }
 
-    private async ValueTask CheckAfkStatus()
+    private async ValueTask CheckAfkStatusAsync()
     {
         Response.Append(ChatMessage.Username, ", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         string username = new(messageExtension.LowerSplit[2].Span);
 
-        var twitchUser = await _twitchBot.TwitchApi.GetUserAsync(username);
+        Helix.Models.User? twitchUser = await _twitchBot.TwitchApi.GetUserAsync(username);
         if (twitchUser is null)
         {
             Response.Append(Messages.CouldNotFindAnyMatchingUser);

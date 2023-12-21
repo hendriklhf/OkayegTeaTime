@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -10,11 +12,11 @@ using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
+using OkayegTeaTime.Twitch.Json;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Models.Formula1;
 using OkayegTeaTime.Twitch.Models.OpenWeatherMap;
 using OkayegTeaTime.Twitch.Services;
-using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -30,23 +32,23 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static Race[]? _races;
-    private static readonly TimeSpan _nonRaceLength = TimeSpan.FromHours(1);
-    private static readonly TimeSpan _raceLength = TimeSpan.FromHours(2);
+    private static Race[]? s_races;
+    private static readonly TimeSpan s_nonRaceLength = TimeSpan.FromHours(1);
+    private static readonly TimeSpan s_raceLength = TimeSpan.FromHours(2);
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
-        _races ??= await GetRacesAsync();
-        if (_races is null)
+        s_races ??= await GetRacesAsync();
+        if (s_races is null)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ApiError);
             return;
         }
 
-        Race? race = GetNextOrCurrentRace(_races);
+        Race? race = GetNextOrCurrentRace(s_races);
         if (race is null)
         {
             Response.Append(ChatMessage.Username, ", ", Messages.ThereIsNoNextRace);
@@ -62,7 +64,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
                 return;
             }
 
-            await SendWeatherInformation(race);
+            await SendWeatherInformationAsync(race);
             return;
         }
 
@@ -111,14 +113,14 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
             int indexOfDot = charBuffer.IndexOf('.');
             Response.Append(charBuffer[..indexOfDot], ").");
         }
-        else if (session.Start + _nonRaceLength > now)
+        else if (session.Start + s_nonRaceLength > now)
         {
             session.Start.TryFormat(charBuffer, out int length, "t");
             Response.Append("Current session: ", session.Name, ", started ", charBuffer[..length], " GMT.");
         }
     }
 
-    private async ValueTask SendWeatherInformation(Race race)
+    private async ValueTask SendWeatherInformationAsync(Race race)
     {
         double latitude = double.Parse(race.Circuit.Location.Latitude);
         double longitude = double.Parse(race.Circuit.Location.Longitude);
@@ -141,7 +143,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         for (int i = 0; i < races.Length; i++)
         {
             Race race = races[i];
-            if (race.RaceSession.Start + _raceLength > DateTime.UtcNow)
+            if (race.RaceSession.Start + s_raceLength > DateTime.UtcNow)
             {
                 return race;
             }
@@ -173,7 +175,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         for (int i = 0; i < 5; i++)
         {
             Session session = sessions[i];
-            DateTime sessionEnd = ReferenceEquals(session, race.RaceSession) ? session.Start + _raceLength : session.Start + _nonRaceLength;
+            DateTime sessionEnd = ReferenceEquals(session, race.RaceSession) ? session.Start + s_raceLength : session.Start + s_nonRaceLength;
             if (sessionEnd > DateTime.UtcNow)
             {
                 return session;
@@ -187,21 +189,22 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
     {
         try
         {
-            HttpGet request = await HttpGet.GetStringAsync("https://ergast.com/api/f1/current.json");
-            if (request.Result is null)
+            using HttpClient httpClient = new();
+            using HttpResponseMessage response = await httpClient.GetAsync("https://ergast.com/api/f1/current.json");
+            if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
-            JsonElement json = JsonSerializer.Deserialize<JsonElement>(request.Result);
-            JsonElement jRaces = json.GetProperty("MRData").GetProperty("RaceTable").GetProperty("Races");
-            Race[]? races = JsonSerializer.Deserialize<Race[]?>(jRaces.GetRawText());
+            JsonElement json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            JsonElement jsonRaces = json.GetProperty("MRData").GetProperty("RaceTable").GetProperty("Races");
+            Race[]? races = JsonSerializer.Deserialize(jsonRaces.GetRawText(), Formula1JsonSerializerContext.Default.RaceArray);
             if (races is null)
             {
                 return null;
             }
 
-            await CreateSessionStartTimes(races, jRaces);
+            await CreateSessionStartTimesAsync(races, jsonRaces);
             return races;
         }
         catch (Exception ex)
@@ -211,23 +214,23 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         }
     }
 
-    private static async ValueTask CreateSessionStartTimes(Race[] races, JsonElement jRaces)
+    private static async ValueTask CreateSessionStartTimesAsync(Race[] races, JsonElement jRaces)
     {
         try
         {
             (string RaceProperty, string? JsonProperty, string SessionName)[] props =
-            {
+            [
                 (nameof(Race.PracticeOneSession), "FirstPractice", "Free practice 1"),
                 (nameof(Race.PracticeTwoSession), "SecondPractice", "Free practice 2"),
                 (nameof(Race.PracticeThreeSession), "ThirdPractice", "Free practice 3"),
                 (nameof(Race.QualifyingSession), "Qualifying", "Qualifying"),
                 (nameof(Race.SprintSession), "Sprint", "Sprint race"),
                 (nameof(Race.RaceSession), null, "Grand Prix")
-            };
+            ];
 
             for (int i = 0; i < races.Length; i++)
             {
-                foreach (var prop in props)
+                foreach ((string RaceProperty, string? JsonProperty, string SessionName) prop in props)
                 {
                     JsonElement jProp;
                     if (prop.JsonProperty is null)

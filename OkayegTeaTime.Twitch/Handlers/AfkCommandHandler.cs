@@ -11,13 +11,15 @@ namespace OkayegTeaTime.Twitch.Handlers;
 
 public sealed class AfkCommandHandler(TwitchBot twitchBot)
 {
-    public async ValueTask Handle(IChatMessage chatMessage, AfkType afkType)
+    private readonly TwitchBot _twitchBot = twitchBot;
+
+    public async ValueTask HandleAsync(IChatMessage chatMessage, AfkType afkType)
     {
-        User? user = twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
+        User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
         if (user is null)
         {
             user = new(chatMessage.UserId, chatMessage.Username);
-            twitchBot.Users.Add(user);
+            _twitchBot.Users.Add(user);
         }
 
         using ChatMessageExtension messageExtension = new(chatMessage);
@@ -27,12 +29,13 @@ public sealed class AfkCommandHandler(TwitchBot twitchBot)
         user.AfkTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         user.IsAfk = true;
 
-        string emote = twitchBot.Channels[chatMessage.Channel]?.Emote ?? GlobalSettings.DefaultEmote;
+        string emote = _twitchBot.Channels[chatMessage.Channel]?.Emote ?? GlobalSettings.DefaultEmote;
         using PooledStringBuilder responseBuilder = new(GlobalSettings.MaxMessageLength);
-        responseBuilder.Append(emote, " ");
-        int afkMessageLength = twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username, afkType, responseBuilder.FreeBufferSpan);
+        responseBuilder.Append(emote);
+        responseBuilder.Append(' ');
+        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username, afkType, responseBuilder.FreeBufferSpan);
         responseBuilder.Advance(afkMessageLength);
 
-        await twitchBot.SendAsync(chatMessage.Channel, responseBuilder.WrittenMemory);
+        await _twitchBot.SendAsync(chatMessage.Channel, responseBuilder.WrittenMemory);
     }
 }

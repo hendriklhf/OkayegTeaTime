@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Strings;
@@ -24,7 +24,7 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MasspingCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
         if (GlobalSettings.Settings.OfflineChat is null)
         {
@@ -46,8 +46,8 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
 
         string channelEmote = _twitchBot.Channels[ChatMessage.ChannelId]?.Emote ?? GlobalSettings.DefaultEmote;
         ReadOnlySpan<char> emote = messageExtension.Split.Length > 1 ? messageExtension.Split[1].Span : channelEmote;
-        using PooledList<string> chatters = new();
-        Response.Append("OkayegTeaTime", " ", emote, " ");
+        using PooledList<string> chatters = [];
+        Response.Append("OkayegTeaTime ", emote, " ");
         chatters.AddRange(GlobalSettings.Settings.OfflineChat!.Emotes.AsSpan());
 
         Span<char> separator = stackalloc char[emote.Length + 2];
@@ -55,7 +55,7 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
         separator[^1] = ' ';
         emote.CopyTo(separator[1..]);
 
-        int joinLength = StringHelper.Join(chatters.AsSpan(), separator, Response.FreeBufferSpan);
+        int joinLength = StringHelpers.Join(separator, chatters.AsSpan(), Response.FreeBufferSpan);
         Response.Advance(joinLength);
         return ValueTask.CompletedTask;
     }

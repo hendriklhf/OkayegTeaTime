@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Emojis;
@@ -25,17 +25,17 @@ public readonly struct TuckCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out TuckCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+(\s\S+)?");
         if (pattern.IsMatch(ChatMessage.Message))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            var target = messageExtension.LowerSplit[1].Span;
+            ReadOnlySpan<char> target = messageExtension.LowerSplit[1].Span;
             Response.Append(Emoji.PointRight, " ", Emoji.Bed, " ", ChatMessage.Username);
             Response.Append(" tucked ", target, " to bed");
-            ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2].Span : ReadOnlySpan<char>.Empty;
-            if (emote.Length > 0)
+            ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2].Span : [];
+            if (emote.Length != 0)
             {
                 Response.Append(" ", emote);
             }

@@ -25,7 +25,7 @@ public readonly struct CoinflipCommand(TwitchBot twitchBot, IChatMessage chatMes
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CoinflipCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
         bool result = Random.Shared.NextBool();
         string answer = result ? "yes/heads" : "no/tails";

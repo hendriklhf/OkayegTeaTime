@@ -10,7 +10,6 @@ using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -29,7 +28,7 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SpotifyCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         if (GlobalSettings.Settings.Spotify is null)
         {
@@ -91,7 +90,7 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
                 Response.Append(track.Name, " by ");
 
                 string[] artists = track.Artists.Select(static a => a.Name).ToArray();
-                int joinLength = StringHelper.Join(artists, ", ", Response.FreeBufferSpan);
+                int joinLength = StringHelpers.Join(", ", artists, Response.FreeBufferSpan);
                 Response.Advance(joinLength);
 
                 Response.Append(" || ", track.IsLocal ? "local file" : track.Uri);

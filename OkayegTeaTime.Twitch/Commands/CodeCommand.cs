@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
@@ -23,14 +23,14 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static StringArray? _codeFiles;
+    private static StringArray? s_codeFiles;
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CodeCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
-        _codeFiles ??= new(ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries).AsSpan());
+        s_codeFiles ??= new(ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries).AsSpan());
 
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
@@ -48,8 +48,8 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
                 return ValueTask.CompletedTask;
             }
 
-            using PooledList<string> matchingFiles = new();
-            GetMatchingFiles(_codeFiles, matchingFiles, fileRegex);
+            using PooledList<string> matchingFiles = [];
+            GetMatchingFiles(s_codeFiles, matchingFiles, fileRegex);
             Response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Count)
             {
@@ -64,7 +64,7 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
                     Response.Append(matchingFiles.Count);
                     Response.Append(" files: ");
 
-                    int joinLength = StringHelper.Join(matchingFiles.AsSpan(), ", ", Response.FreeBufferSpan);
+                    int joinLength = StringHelpers.Join(", ", matchingFiles.AsSpan(), Response.FreeBufferSpan);
                     Response.Advance(joinLength);
 
                     Response.Append(". Please specify.");

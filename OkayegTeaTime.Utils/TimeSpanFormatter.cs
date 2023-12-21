@@ -5,20 +5,20 @@ namespace OkayegTeaTime.Utils;
 
 public static class TimeSpanFormatter
 {
-    private const string _spanFormatDefault = "<1s";
+    private const string SpanFormatDefault = "<1s";
 
     public static int Format(TimeSpan timeSpan, Span<char> buffer)
     {
         ValueStringBuilder builder = new(buffer);
-        if (timeSpan.Days > 0)
+        if (timeSpan.Days != 0)
         {
             builder.Append(timeSpan.Days);
             builder.Append('d');
         }
 
-        if (timeSpan.Hours > 0)
+        if (timeSpan.Hours != 0)
         {
-            if (builder.Length > 0)
+            if (builder.Length != 0)
             {
                 builder.Append(", ");
             }
@@ -27,9 +27,9 @@ public static class TimeSpanFormatter
             builder.Append('h');
         }
 
-        if (timeSpan.Minutes > 0)
+        if (timeSpan.Minutes != 0)
         {
-            if (builder.Length > 0)
+            if (builder.Length != 0)
             {
                 builder.Append(", ");
             }
@@ -38,9 +38,9 @@ public static class TimeSpanFormatter
             builder.Append("min");
         }
 
-        if (timeSpan.Seconds > 0)
+        if (timeSpan.Seconds != 0)
         {
-            if (builder.Length > 0)
+            if (builder.Length != 0)
             {
                 builder.Append(", ");
             }
@@ -51,7 +51,7 @@ public static class TimeSpanFormatter
 
         if (builder.Length == 0)
         {
-            builder.Append(_spanFormatDefault);
+            builder.Append(SpanFormatDefault);
         }
 
         return builder.Length;

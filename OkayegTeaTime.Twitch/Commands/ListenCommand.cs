@@ -11,7 +11,6 @@ using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -30,7 +29,7 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ListenCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         if (GlobalSettings.Settings.OfflineChat is null || GlobalSettings.Settings.Spotify is null)
         {
@@ -54,18 +53,18 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\ssync");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await SyncListening();
+            await SyncListeningAsync();
             return;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
-            await ListenToUser();
+            await ListenToUserAsync();
         }
     }
 
-    private async ValueTask ListenToUser()
+    private async ValueTask ListenToUserAsync()
     {
         SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (listener is null)
@@ -115,7 +114,7 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
                 Response.Append(track.Name, " by ");
 
                 string[] artists = track.Artists.Select(static a => a.Name).ToArray();
-                int joinLength = StringHelper.Join(artists, ", ", Response.FreeBufferSpan);
+                int joinLength = StringHelpers.Join(", ", artists, Response.FreeBufferSpan);
                 Response.Advance(joinLength);
 
                 Response.Append(" || ", track.IsLocal ? "local file" : track.Uri);
@@ -134,7 +133,7 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
         }
     }
 
-    private async ValueTask SyncListening()
+    private async ValueTask SyncListeningAsync()
     {
         SpotifyUser? listener = _twitchBot.SpotifyUsers[ChatMessage.Username];
         if (listener is null)
@@ -181,7 +180,7 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
                 Response.Append(track.Name, " by ");
 
                 string[] artists = track.Artists.Select(static a => a.Name).ToArray();
-                int joinLength = StringHelper.Join(artists, ", ", Response.FreeBufferSpan);
+                int joinLength = StringHelpers.Join(", ", artists, Response.FreeBufferSpan);
                 Response.Advance(joinLength);
 
                 Response.Append(" || ", track.IsLocal ? "local file" : track.Uri);

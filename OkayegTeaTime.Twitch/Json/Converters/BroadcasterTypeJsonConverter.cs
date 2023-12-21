@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using OkayegTeaTime.Twitch.Helix.Models;
 
-namespace OkayegTeaTime.Twitch.JsonConverters;
+namespace OkayegTeaTime.Twitch.Json.Converters;
 
 public sealed class BroadcasterTypeJsonConverter : JsonConverter<BroadcasterType>
 {

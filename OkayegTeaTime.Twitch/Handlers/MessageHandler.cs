@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
+using OkayegTeaTime.Twitch.Controller;
 using OkayegTeaTime.Twitch.Models;
 #if RELEASE
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using HLE.Memory;
+using HLE.Marshalling;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Utils;
@@ -23,11 +24,11 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
     private readonly CommandHandler _commandHandler = new(twitchBot);
     private readonly PajaAlertHandler _pajaAlertHandler = new(twitchBot);
 
-    private readonly Regex _forgottenPrefixPattern = new($@"^@?{GlobalSettings.Settings.Twitch.Username},?\s*(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+    private static readonly Regex s_forgottenPrefixPattern = new($@"^@?{GlobalSettings.Settings.Twitch.Username},?\s*(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    public override async ValueTask HandleAsync(IChatMessage chatMessage)
+    public override async ValueTask Handle(IChatMessage chatMessage)
     {
-        await _pajaAlertHandler.HandleAsync(chatMessage);
+        await _pajaAlertHandler.Handle(chatMessage);
 
         using ChatMessageExtension messageExtension = new(chatMessage);
         if (messageExtension.IsIgnoredUser)
@@ -37,14 +38,15 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
 
         await CheckForAfkAsync(chatMessage);
         await CheckForReminderAsync(chatMessage.Username, chatMessage.Channel);
-        await _commandHandler.HandleAsync(chatMessage);
+        await _commandHandler.Handle(chatMessage);
         await HandleSpecificMessagesAsync(chatMessage);
     }
 
+    // ReSharper disable once ReplaceAsyncWithTaskReturn
     private async ValueTask HandleSpecificMessagesAsync(IChatMessage chatMessage)
     {
 #if RELEASE
-        await CheckForSpotifyUri(chatMessage);
+        await CheckForSpotifyUriAsync(chatMessage);
 #endif
         await CheckForForgottenPrefixAsync(chatMessage);
     }
@@ -59,20 +61,22 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
 
         await _twitchBot.SendComingBackAsync(user, chatMessage.Channel);
         string? channelPrefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix;
-        if (!_twitchBot.CommandController.IsAfkCommand(channelPrefix, chatMessage.Message) || _twitchBot.CooldownController.IsOnAfkCooldown(chatMessage.UserId))
+        if (!CommandController.IsAfkCommand(channelPrefix, chatMessage.Message) || _twitchBot.CooldownController.IsOnAfkCooldown(chatMessage.UserId))
         {
             user.IsAfk = false;
         }
     }
 
-    private async ValueTask CheckForReminderAsync(string username, string channel)
+    // ReSharper disable once InconsistentNaming
+    private ValueTask CheckForReminderAsync(string username, string channel)
     {
+        // TODO: remove array allocation
         Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
-        await _twitchBot.SendReminderAsync(channel, reminders);
+        return _twitchBot.SendReminderAsync(channel, reminders);
     }
 
 #if RELEASE
-    private async ValueTask CheckForSpotifyUri(IChatMessage chatMessage)
+    private async ValueTask CheckForSpotifyUriAsync(IChatMessage chatMessage)
     {
         if (GlobalSettings.Settings.OfflineChat is null || GlobalSettings.Settings.Spotify is null)
         {
@@ -98,7 +102,7 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
         }
 
         using ChatMessageExtension messageExtension = new(chatMessage);
-        IEnumerable<ReadOnlyMemory<char>> splits = MemoryMarshal.ToEnumerable(messageExtension.Split.Splits.AsMemoryUnsafe());
+        IEnumerable<ReadOnlyMemory<char>> splits = MemoryMarshal.ToEnumerable(SpanMarshal.AsMemory(messageExtension.Split.AsSpan()));
         string[] songs = splits
             .Where(static s => Pattern.SpotifyLink.IsMatch(s.Span) || Pattern.SpotifyUri.IsMatch(s.Span))
             .Select(static s => SpotifyController.ParseSongToUri(s.Span)!).ToArray();
@@ -114,15 +118,16 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
     }
 #endif
 
-    private async ValueTask CheckForForgottenPrefixAsync(IChatMessage chatMessage)
+    // ReSharper disable once InconsistentNaming
+    private ValueTask CheckForForgottenPrefixAsync(IChatMessage chatMessage)
     {
-        if (!_forgottenPrefixPattern.IsMatch(chatMessage.Message))
+        if (!s_forgottenPrefixPattern.IsMatch(chatMessage.Message))
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         string? prefix = _twitchBot.Channels[chatMessage.Channel]?.Prefix;
         string message = string.IsNullOrWhiteSpace(prefix) ? $"{chatMessage.Username}, Suffix: {GlobalSettings.Suffix}" : $"{chatMessage.Username}, Prefix: {prefix}";
-        await _twitchBot.SendAsync(chatMessage.Channel, message);
+        return _twitchBot.SendAsync(chatMessage.Channel, message);
     }
 }

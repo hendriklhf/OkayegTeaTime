@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using HLE.Memory;
+using HLE.Strings;
 
 namespace OkayegTeaTime.Twitch.Models;
 
@@ -17,8 +18,8 @@ public sealed class HangmanGame : IDisposable
 
     public bool IsSolved => DiscoveredWord.Equals(Solution, StringComparison.OrdinalIgnoreCase);
 
-    private readonly RentedArray<char> _discoveredWord;
-    private readonly RentedArray<char> _wrongChars = new(26);
+    private RentedArray<char> _discoveredWord;
+    private RentedArray<char> _wrongChars = ArrayPool<char>.Shared.RentAsRentedArray(26);
     private int _wrongCharLength;
 
     public const int MaxWrongGuesses = 10;
@@ -26,14 +27,14 @@ public sealed class HangmanGame : IDisposable
     public HangmanGame(string solution)
     {
         Solution = solution;
-        _discoveredWord = new(solution.Length);
-        _discoveredWord.Span.Fill('_');
+        _discoveredWord = ArrayPool<char>.Shared.RentAsRentedArray(solution.Length);
+        _discoveredWord.AsSpan(..solution.Length).Fill('_');
     }
 
     public int Guess(char guess)
     {
         ref char firstSolutionChar = ref MemoryMarshal.GetReference<char>(Solution);
-        ref char firstDiscoveredWordChar = ref MemoryMarshal.GetReference<char>(_discoveredWord);
+        ref char firstDiscoveredWordChar = ref _discoveredWord.Reference;
         int solutionLength = Solution.Length;
         int discoveryCount = 0;
         for (int i = 0; i < solutionLength; i++)
@@ -48,7 +49,7 @@ public sealed class HangmanGame : IDisposable
             discoveryCount++;
         }
 
-        if (discoveryCount > 0)
+        if (discoveryCount != 0)
         {
             return discoveryCount;
         }
@@ -72,7 +73,7 @@ public sealed class HangmanGame : IDisposable
             return false;
         }
 
-        Solution.CopyTo(_discoveredWord);
+        Solution.CopyTo(ref _discoveredWord.Reference);
         return true;
     }
 

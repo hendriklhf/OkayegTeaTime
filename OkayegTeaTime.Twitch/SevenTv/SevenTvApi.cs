@@ -1,5 +1,5 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -13,7 +13,7 @@ namespace OkayegTeaTime.Twitch.SevenTv;
 
 public sealed class SevenTvApi : IEquatable<SevenTvApi>
 {
-    private const string _apiBaseUrl = "https://7tv.io/v3";
+    private const string ApiBaseUrl = "https://7tv.io/v3";
 
     public SevenTvApiCache? Cache { get; set; }
 
@@ -25,15 +25,15 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
         }
     }
 
-    public async ValueTask<Emote[]> GetGlobalEmotesAsync()
+    public async ValueTask<ImmutableArray<Emote>> GetGlobalEmotesAsync()
     {
-        if (TryGetGlobalEmotesFromCache(out Emote[]? emotes))
+        if (TryGetGlobalEmotesFromCache(out ImmutableArray<Emote> emotes))
         {
             return emotes;
         }
 
-        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
-        urlBuilder.Append(_apiBaseUrl, "/emote-sets/global");
+        using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
+        urlBuilder.Append(ApiBaseUrl, "/emote-sets/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
@@ -48,28 +48,28 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
             throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        GetGlobalEmotesResponse response = JsonSerializer.Deserialize<GetGlobalEmotesResponse>(httpContentBytes.AsSpan());
+        GetGlobalEmotesResponse response = JsonSerializer.Deserialize(httpContentBytes.AsSpan(), SevenTvJsonSerializerContext.Default.GetGlobalEmotesResponse);
         emotes = response.Emotes;
         Cache?.AddGlobalEmotes(emotes);
         return emotes;
     }
 
-    public async ValueTask<Emote[]?> GetChannelEmotesAsync(long channelId)
+    public async ValueTask<ImmutableArray<Emote>> GetChannelEmotesAsync(long channelId)
     {
-        if (TryGetChannelEmotesFromCache(channelId, out Emote[]? emotes))
+        if (TryGetChannelEmotesFromCache(channelId, out ImmutableArray<Emote> emotes))
         {
             return emotes;
         }
 
-        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
-        urlBuilder.Append(_apiBaseUrl, "/users/twitch/");
+        using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
+        urlBuilder.Append(ApiBaseUrl, "/users/twitch/");
         urlBuilder.Append(channelId);
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
         if (httpResponse.StatusCode == HttpStatusCode.NotFound)
         {
-            return null;
+            return [];
         }
 
         using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
@@ -83,21 +83,21 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
             throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        GetChannelEmotesResponse response = JsonSerializer.Deserialize<GetChannelEmotesResponse>(httpContentBytes.AsSpan());
+        GetChannelEmotesResponse response = JsonSerializer.Deserialize(httpContentBytes.AsSpan(), SevenTvJsonSerializerContext.Default.GetChannelEmotesResponse);
         emotes = response.EmoteSet.Emotes;
         Cache?.AddChannelEmotes(channelId, emotes);
         return emotes;
     }
 
-    private bool TryGetGlobalEmotesFromCache([MaybeNullWhen(false)] out Emote[] emotes)
+    private bool TryGetGlobalEmotesFromCache(out ImmutableArray<Emote> emotes)
     {
-        emotes = null;
+        emotes = [];
         return Cache?.TryGetGlobalEmotes(out emotes) == true;
     }
 
-    private bool TryGetChannelEmotesFromCache(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
+    private bool TryGetChannelEmotesFromCache(long channelId, out ImmutableArray<Emote> emotes)
     {
-        emotes = null;
+        emotes = [];
         return Cache?.TryGetChannelEmotes(channelId, out emotes) == true;
     }
 

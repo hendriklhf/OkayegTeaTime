@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using HLE.Collections;
 using HLE.Collections.Concurrent;
@@ -7,14 +8,14 @@ using OkayegTeaTime.Twitch.Helix.Models;
 
 namespace OkayegTeaTime.Twitch.Helix;
 
-public sealed class TwitchApiCache(CacheOptions options) : IDisposable
+public sealed class TwitchApiCache(CacheOptions options)
 {
     public CacheOptions Options { get; set; } = options;
 
     private readonly ConcurrentDoubleDictionary<long, int, User> _userCache = new();
     private readonly ConcurrentDoubleDictionary<long, int, Stream> _streamCache = new();
-    private CacheEntry<Emote[]> _globalEmoteCache = CacheEntry<Emote[]>.Empty;
-    private readonly ConcurrentDictionary<long, CacheEntry<ChannelEmote[]>> _channelEmoteCache = new();
+    private CacheEntry<ImmutableArray<Emote>> _globalEmoteCache = CacheEntry<ImmutableArray<Emote>>.Empty;
+    private readonly ConcurrentDictionary<long, CacheEntry<ImmutableArray<ChannelEmote>>> _channelEmoteCache = new();
 
     public void AddUser(User user)
     {
@@ -62,9 +63,9 @@ public sealed class TwitchApiCache(CacheOptions options) : IDisposable
         return _streamCache.TryGetBySecondaryKey(usernameHash, out stream) && stream.IsValid(Options.StreamCacheTime);
     }
 
-    public void AddGlobalEmotes(Emote[] emotes) => _globalEmoteCache = new(emotes);
+    public void AddGlobalEmotes(ImmutableArray<Emote> emotes) => _globalEmoteCache = new(emotes);
 
-    public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetGlobalEmotes(out ImmutableArray<Emote> emotes)
     {
         if (_globalEmoteCache.IsValid(Options.GlobalEmotesCacheTime))
         {
@@ -72,27 +73,21 @@ public sealed class TwitchApiCache(CacheOptions options) : IDisposable
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 
-    public void AddChannelEmotes(long channelId, ChannelEmote[] emotes) => _channelEmoteCache.AddOrSet(channelId, new(emotes));
+    public void AddChannelEmotes(long channelId, ImmutableArray<ChannelEmote> emotes) => _channelEmoteCache.AddOrSet(channelId, new(emotes));
 
-    public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out ChannelEmote[] emotes)
+    public bool TryGetChannelEmotes(long channelId, out ImmutableArray<ChannelEmote> emotes)
     {
-        if (_channelEmoteCache.TryGetValue(channelId, out CacheEntry<ChannelEmote[]> entry) && entry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmoteCache.TryGetValue(channelId, out CacheEntry<ImmutableArray<ChannelEmote>> entry) && entry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = entry.Value;
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
-    }
-
-    public void Dispose()
-    {
-        _userCache.Dispose();
-        _streamCache.Dispose();
     }
 }

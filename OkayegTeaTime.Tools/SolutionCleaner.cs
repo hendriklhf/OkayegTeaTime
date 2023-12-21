@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -6,12 +6,11 @@ namespace OkayegTeaTime.Tools;
 
 public sealed class SolutionCleaner
 {
-    private readonly string[] _dirsToClean =
-    {
+    private readonly string[] _directoriesToClean =
+    [
         "Build/",
         "OkayegTeaTime/bin/",
         "OkayegTeaTime.Database/bin/",
-        "OkayegTeaTime.Models/bin/",
         "OkayegTeaTime.Settings/bin/",
         "OkayegTeaTime.Resources/bin/",
         "OkayegTeaTime.Spotify/bin/",
@@ -20,20 +19,20 @@ public sealed class SolutionCleaner
         "OkayegTeaTime.Twitch/bin/",
         "OkayegTeaTime.Utils/bin/",
         "TestResults/"
-    };
+    ];
 
     public void Clean()
     {
-        foreach (string dir in _dirsToClean.Where(Directory.Exists))
+        foreach (string directory in _directoriesToClean.Where(Directory.Exists))
         {
             try
             {
-                Directory.Delete(dir, true);
-                Console.WriteLine($"Deleted \"{dir}\"");
+                Directory.Delete(directory, true);
+                Console.WriteLine($"Deleted \"{directory}\"");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unable to delete \"{dir}\" => {ex.GetType().FullName}: {ex.Message}");
+                Console.WriteLine($"Unable to delete \"{directory}\" => {ex.GetType()}: {ex.Message}");
             }
         }
     }

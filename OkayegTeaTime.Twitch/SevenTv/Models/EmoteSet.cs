@@ -1,19 +1,30 @@
 using System;
+using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Twitch.SevenTv.Models;
 
-internal readonly struct EmoteSet
+public readonly struct EmoteSet : IEquatable<EmoteSet>
 {
     [JsonPropertyName("emotes")]
-    public required Emote[] Emotes { get; init; } = Array.Empty<Emote>();
+    public required ImmutableArray<Emote> Emotes { get; init; } = [];
 
     public static EmoteSet Empty => new()
     {
-        Emotes = Array.Empty<Emote>()
+        Emotes = []
     };
 
     public EmoteSet()
     {
     }
+
+    public bool Equals(EmoteSet other) => Emotes.Equals(other.Emotes);
+
+    public override bool Equals(object? obj) => obj is EmoteSet other && Equals(other);
+
+    public override int GetHashCode() => Emotes.GetHashCode();
+
+    public static bool operator ==(EmoteSet left, EmoteSet right) => left.Equals(right);
+
+    public static bool operator !=(EmoteSet left, EmoteSet right) => !left.Equals(right);
 }

@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using HLE.Collections;
 using HLE.Numerics;
 using OkayegTeaTime.Twitch.Ffz.Models;
 
@@ -12,11 +13,11 @@ internal readonly ref struct ResponseDeserializer(ReadOnlySpan<byte> response)
 {
     private readonly ReadOnlySpan<byte> _response = response;
 
-    public Emote[] Deserialize()
+    public ImmutableArray<Emote> Deserialize()
     {
         ReadOnlySpan<byte> emotesProperty = "emoticons"u8;
 
-        List<Emote> emotes = new(50);
+        using PooledList<Emote> emotes = new(50);
         Utf8JsonReader reader = new(_response);
         while (reader.Read())
         {
@@ -27,14 +28,14 @@ internal readonly ref struct ResponseDeserializer(ReadOnlySpan<byte> response)
             }
         }
 
-        return CollectionsMarshal.AsSpan(emotes).ToArray();
+        return ImmutableCollectionsMarshal.AsImmutableArray(emotes.ToArray());
     }
 
-    private static void DeserializeEmotes(ref Utf8JsonReader reader, List<Emote> emotes)
+    private static void DeserializeEmotes(ref Utf8JsonReader reader, PooledList<Emote> emotes)
     {
-        var emoteIdProperty = "id"u8;
-        var emoteNameProperty = "name"u8;
-        var emoteOwnerProperty = "owner"u8;
+        ReadOnlySpan<byte> emoteIdProperty = "id"u8;
+        ReadOnlySpan<byte> emoteNameProperty = "name"u8;
+        ReadOnlySpan<byte> emoteOwnerProperty = "owner"u8;
 
         int emoteId = 0;
         while (reader.Read())
@@ -53,7 +54,7 @@ internal readonly ref struct ResponseDeserializer(ReadOnlySpan<byte> response)
             if (reader.ValueTextEquals(emoteIdProperty))
             {
                 reader.Read();
-                emoteId = NumberHelper.ParsePositiveNumber<int>(reader.ValueSpan);
+                emoteId = NumberHelpers.ParsePositiveNumber<int>(reader.ValueSpan);
                 continue;
             }
 

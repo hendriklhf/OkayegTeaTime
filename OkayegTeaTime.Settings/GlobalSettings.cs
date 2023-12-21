@@ -23,7 +23,8 @@ public static class GlobalSettings
     public static void Initialize()
     {
         Settings settings = SettingsReader.Read(SettingsFileName);
-        SettingsValidator.Validate(settings);
+        SettingsValidator validator = new();
+        validator.Validate(nameof(OkayegTeaTime.Settings.Settings), settings);
         Settings = settings;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace OkayegTeaTime.Twitch.Models;
 
-public sealed class GachiSong
+public sealed record GachiSong
 {
     public required string Title { get; init; }
 

@@ -20,14 +20,14 @@ public readonly struct Chatterino7Command(TwitchBot twitchBot, IChatMessage chat
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private const string _responseMessage = "Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
+    private const string ResponseMessage = "Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Chatterino7Command command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
-        Response.Append(ChatMessage.Username, ", ", _responseMessage);
+        Response.Append(ChatMessage.Username, ", ", ResponseMessage);
         return ValueTask.CompletedTask;
     }
 

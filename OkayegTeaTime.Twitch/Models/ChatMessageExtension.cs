@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using HLE.Memory;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
@@ -31,11 +31,11 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
 
             if (_lowerCaseMessage == RentedArray<char>.Empty)
             {
-                _lowerCaseMessage = new(_chatMessage.Message.Length);
-                _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage);
+                _lowerCaseMessage = ArrayPool<char>.Shared.RentAsRentedArray(_chatMessage.Message.Length);
+                _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage.AsSpan());
             }
 
-            _lowerSplit = new(_lowerCaseMessage.Memory[.._chatMessage.Message.Length]);
+            _lowerSplit = new(_lowerCaseMessage.AsMemory(.._chatMessage.Message.Length));
 
             return _lowerSplit;
         }
@@ -48,24 +48,24 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
     public readonly bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
 
     private readonly IChatMessage _chatMessage = chatMessage;
-    private RentedArray<char> _lowerCaseMessage = RentedArray<char>.Empty;
+    private RentedArray<char> _lowerCaseMessage = [];
     private SmartSplit _split = SmartSplit.Empty;
     private SmartSplit _lowerSplit = SmartSplit.Empty;
 
     public void Dispose()
     {
         _lowerCaseMessage.Dispose();
-        Split.Dispose();
-        LowerSplit.Dispose();
+        _split.Dispose();
+        _lowerSplit.Dispose();
     }
 
-    public readonly bool Equals(ChatMessageExtension other) => _lowerCaseMessage.Equals(other._lowerCaseMessage) && _split.Equals(other._split) && _lowerSplit.Equals(other._lowerSplit);
+    public readonly bool Equals(ChatMessageExtension other) => _chatMessage.Equals(other._chatMessage);
 
     // ReSharper disable once ArrangeModifiersOrder
     public override readonly bool Equals(object? obj) => obj is ChatMessageExtension other && Equals(other);
 
     // ReSharper disable once ArrangeModifiersOrder
-    public override readonly int GetHashCode() => HashCode.Combine(_lowerCaseMessage, _split, _lowerSplit);
+    public override readonly int GetHashCode() => _chatMessage.GetHashCode();
 
     public static bool operator ==(ChatMessageExtension left, ChatMessageExtension right) => left.Equals(right);
 

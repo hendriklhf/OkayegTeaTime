@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HLE.Collections;
 using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Tools;
@@ -22,10 +21,10 @@ public sealed class Builder(string[] args)
         new(Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
     }).ToFrozenDictionary();
 
-    private const string _botProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
-    private const string _commitIdSourcePath = "./.git/logs/HEAD";
-    private const string _commitIdFile = "./OkayegTeaTime.Resources/LastCommit";
-    private const string _codeFilesFile = "./OkayegTeaTime.Resources/CodeFiles";
+    private const string BotProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
+    private const string CommitIdSourcePath = "./.git/logs/HEAD";
+    private const string CommitIdFile = "./OkayegTeaTime.Resources/LastCommit";
+    private const string CodeFilesFile = "./OkayegTeaTime.Resources/CodeFiles";
 
     public void Build()
     {
@@ -33,7 +32,7 @@ public sealed class Builder(string[] args)
         if (runtimes.Length == 0)
         {
             Console.WriteLine("The provided runtimes aren't matching any available runtime identifier.");
-            Console.WriteLine($"Available runtime identifiers: {_runtimes.Keys.Select(static r => r.Identifier).JoinToString(", ")}");
+            Console.WriteLine($"Available runtime identifiers: {string.Join(", ", _runtimes.Keys.Select(static r => r.Identifier))}");
             return;
         }
 
@@ -51,11 +50,12 @@ public sealed class Builder(string[] args)
     private Runtime[] GetRuntimes()
     {
         string[] args = _args[1..];
-        return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a))).Select(static kv => kv.Key).ToArray();
+        return _runtimes.Where(kv => args.Any(a => kv.Value.IsMatch(a)))
+            .Select(static kv => kv.Key).ToArray();
     }
 
     private static void BuildBot(string outputDirectory, Runtime runtime)
-        => StartBuildProcess(outputDirectory, runtime, _botProjectPath, "OkayegTeaTime");
+        => StartBuildProcess(outputDirectory, runtime, BotProjectPath, "OkayegTeaTime");
 
     private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
     {
@@ -70,7 +70,7 @@ public sealed class Builder(string[] args)
         Console.WriteLine($"Output directory: \"{outputDir}\"");
         buildProcess.Start();
         buildProcess.WaitForExit();
-        if (buildProcess.ExitCode > 0)
+        if (buildProcess.ExitCode != 0)
         {
             PrintError($"Build for {projectName} failed!");
         }
@@ -94,10 +94,10 @@ public sealed class Builder(string[] args)
     private static void CreateLastCommitFile()
     {
         Console.WriteLine("Retrieving last commit id");
-        string[] lines = File.ReadAllLines(_commitIdSourcePath);
+        string[] lines = File.ReadAllLines(CommitIdSourcePath);
         string commitId = lines[^1].Split(' ')[1][..7];
         Console.WriteLine($"Last commit: {commitId}");
-        File.WriteAllText(_commitIdFile, commitId);
+        File.WriteAllText(CommitIdFile, commitId);
         Console.WriteLine($"Created \"LastCommit\" file{Environment.NewLine}");
     }
 
@@ -105,9 +105,9 @@ public sealed class Builder(string[] args)
     {
         Console.WriteLine("Searching for .cs files");
         Regex fileRegex = new($@"^\.[\\/]{GlobalSettings.AssemblyName.Split('.')[0]}(\.\w+)?[\\/](?!((bin)|(obj)[\\/])).*\.cs$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        string[] files = Directory.GetFiles(".", "*", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(static f => f[2..].Replace('\\', '/')).Order().ToArray();
+        string[] files = Directory.GetFiles(".", "*.cs", SearchOption.AllDirectories).Where(f => fileRegex.IsMatch(f)).Select(static f => f[2..].Replace('\\', '/')).Order().ToArray();
         Console.WriteLine($"Found {files.Length} .cs files");
-        File.WriteAllLines(_codeFilesFile, files);
+        File.WriteAllLines(CodeFilesFile, files);
         Console.WriteLine($"Created \"CodeFiles\" file{Environment.NewLine}");
     }
 
@@ -120,7 +120,7 @@ public sealed class Builder(string[] args)
         }
         finally
         {
-            Console.ForegroundColor = default;
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
     }
 }

@@ -4,13 +4,13 @@ using System.Text.Json.Serialization;
 using HLE.Numerics;
 using OkayegTeaTime.Twitch.Helix.Models;
 
-namespace OkayegTeaTime.Twitch.JsonConverters;
+namespace OkayegTeaTime.Twitch.Json.Converters;
 
 public sealed class TimeOfExpirationJsonConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        int expiresInSeconds = NumberHelper.ParsePositiveNumber<int>(reader.ValueSpan);
+        int expiresInSeconds = NumberHelpers.ParsePositiveNumber<int>(reader.ValueSpan);
         TimeSpan expiresIn = TimeSpan.FromMilliseconds(expiresInSeconds);
         return DateTime.UtcNow + expiresIn;
     }

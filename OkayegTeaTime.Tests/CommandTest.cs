@@ -1,10 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OkayegTeaTime.Database.Cache.Enums;
-using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Controller;
@@ -17,20 +15,16 @@ public sealed class CommandTest
 {
     private readonly CommandType[] _commandTypes = Enum.GetValues<CommandType>();
     private readonly AfkType[] _afkTypes = Enum.GetValues<AfkType>();
-    private readonly CommandController _commandController;
 
-    public CommandTest()
-    {
-        GlobalSettings.Initialize();
-        _commandController = new(JsonSerializer.Deserialize<CommandList>(ResourceController.Commands)!);
-    }
+    public CommandTest() => GlobalSettings.Initialize();
 
     [TestMethod]
     public void CommandCompletenessTestFromEnum()
     {
         foreach (CommandType type in _commandTypes)
         {
-            Command command = _commandController.GetCommand(type);
+            Command command = CommandController.GetCommand(type);
+            Assert.AreEqual(type, command.Type);
             Assert.IsNotNull(command);
         }
     }
@@ -38,9 +32,10 @@ public sealed class CommandTest
     [TestMethod]
     public void CommandCompletenessTestFromJson()
     {
-        foreach (Command command in _commandController.Commands)
+        foreach (Command command in CommandController.Commands)
         {
             CommandType type = Enum.Parse<CommandType>(command.Name, true);
+            Assert.AreEqual(command.Type, type);
             Assert.IsNotNull(type);
         }
     }
@@ -57,7 +52,9 @@ public sealed class CommandTest
 
         foreach (HandledCommandAttribute handle in handles)
         {
-            Assert.IsNotNull(_commandController.GetCommand(handle.CommandType));
+            Command command = CommandController.GetCommand(handle.CommandType);
+            Assert.IsNotNull(command);
+            Assert.AreEqual(handle.CommandType, command.Type);
             Assert.IsTrue(_commandTypes.Contains(handle.CommandType));
         }
     }
@@ -67,7 +64,7 @@ public sealed class CommandTest
     {
         foreach (CommandType type in _commandTypes)
         {
-            Command command = _commandController.Commands[(int)type];
+            Command command = CommandController.Commands[(int)type];
             CommandType parsedType = Enum.Parse<CommandType>(command.Name, true);
             Assert.AreEqual(type, parsedType);
         }
@@ -78,7 +75,7 @@ public sealed class CommandTest
     {
         foreach (AfkType type in _afkTypes)
         {
-            AfkCommand command = _commandController.GetAfkCommand(type);
+            AfkCommand command = CommandController.GetAfkCommand(type);
             Assert.IsNotNull(command);
         }
     }
@@ -86,7 +83,7 @@ public sealed class CommandTest
     [TestMethod]
     public void AfkCommandCompletenessTestFromJson()
     {
-        foreach (AfkCommand command in _commandController.AfkCommands)
+        foreach (AfkCommand command in CommandController.AfkCommands)
         {
             AfkType type = Enum.Parse<AfkType>(command.Name, true);
             Assert.IsNotNull(type);
@@ -98,7 +95,7 @@ public sealed class CommandTest
     {
         foreach (AfkType type in _afkTypes)
         {
-            AfkCommand command = _commandController.AfkCommands[(int)type];
+            AfkCommand command = CommandController.AfkCommands[(int)type];
             AfkType parsedType = Enum.Parse<AfkType>(command.Name, true);
             Assert.AreEqual(type, parsedType);
         }

@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using HLE;
 using HLE.Collections;
 using HLE.Strings;
+using TwitchEmote = OkayegTeaTime.Twitch.Helix.Models.Emote;
+using TwitchChannelEmote = OkayegTeaTime.Twitch.Helix.Models.ChannelEmote;
+using FfzEmote = OkayegTeaTime.Twitch.Ffz.Models.Emote;
+using SevenTvEmote = OkayegTeaTime.Twitch.SevenTv.Models.Emote;
+using BttvEmote = OkayegTeaTime.Twitch.Bttv.Models.Emote;
 
 namespace OkayegTeaTime.Twitch.Services;
 
@@ -25,7 +32,7 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
             }
         }
 
-        return bestEmotes.AsSpan().Random() ?? fallback;
+        return bestEmotes.Count == 0 ? fallback : Random.Shared.GetItem(bestEmotes.AsSpan());
     }
 
     private static void AddEmoteIfContainsKeyword(StringArray emoteNames, int i, string keyword, PooledList<string> bestEmotes)
@@ -44,82 +51,73 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
             return emoteNamesEntry.Value;
         }
 
-        var getTwitchGlobalEmotesTask = _twitchBot.TwitchApi.GetGlobalEmotesAsync().AsTask();
-        var getTwitchChannelEmotesTask = _twitchBot.TwitchApi.GetChannelEmotesAsync(channelId).AsTask();
-        var getFfzGlobalEmotesTask = _twitchBot.FfzApi.GetGlobalEmotesAsync().AsTask();
-        var getFfzChannelEmotesTask = _twitchBot.FfzApi.GetChannelEmotesAsync(channelId).AsTask();
-        var getBttvGlobalEmotesTask = _twitchBot.BttvApi.GetGlobalEmotesAsync().AsTask();
-        var getBttvChannelEmotesTask = _twitchBot.BttvApi.GetChannelEmotesAsync(channelId).AsTask();
-        var getSevenTvGlobalEmotesTask = _twitchBot.SevenTvApi.GetGlobalEmotesAsync().AsTask();
-        var getSevenTvChannelEmotesTask = _twitchBot.SevenTvApi.GetChannelEmotesAsync(channelId).AsTask();
+        Task<ImmutableArray<TwitchEmote>> getTwitchGlobalEmotesTask = _twitchBot.TwitchApi.GetGlobalEmotesAsync().AsTask();
+        Task<ImmutableArray<TwitchChannelEmote>> getTwitchChannelEmotesTask = _twitchBot.TwitchApi.GetChannelEmotesAsync(channelId).AsTask();
+        Task<ImmutableArray<FfzEmote>> getFfzGlobalEmotesTask = _twitchBot.FfzApi.GetGlobalEmotesAsync().AsTask();
+        Task<ImmutableArray<FfzEmote>> getFfzChannelEmotesTask = _twitchBot.FfzApi.GetChannelEmotesAsync(channelId).AsTask();
+        Task<ImmutableArray<BttvEmote>> getBttvGlobalEmotesTask = _twitchBot.BttvApi.GetGlobalEmotesAsync().AsTask();
+        Task<ImmutableArray<BttvEmote>> getBttvChannelEmotesTask = _twitchBot.BttvApi.GetChannelEmotesAsync(channelId).AsTask();
+        Task<ImmutableArray<SevenTvEmote>> getSevenTvGlobalEmotesTask = _twitchBot.SevenTvApi.GetGlobalEmotesAsync().AsTask();
+        Task<ImmutableArray<SevenTvEmote>> getSevenTvChannelEmotesTask = _twitchBot.SevenTvApi.GetChannelEmotesAsync(channelId).AsTask();
 
         await Task.WhenAll(getTwitchGlobalEmotesTask, getTwitchChannelEmotesTask, getFfzGlobalEmotesTask, getFfzChannelEmotesTask,
             getBttvGlobalEmotesTask, getBttvChannelEmotesTask, getSevenTvGlobalEmotesTask, getSevenTvChannelEmotesTask);
 
 #pragma warning disable CA1849 // the tasks have been awaited
-        var twitchGlobalEmotes = getTwitchGlobalEmotesTask.Result;
-        var twitchChannelEmotes = getTwitchChannelEmotesTask.Result;
-        var ffzGlobalEmotes = getFfzGlobalEmotesTask.Result;
-        var ffzChannelEmotes = getFfzChannelEmotesTask.Result;
-        var bttvGlobalEmotes = getBttvGlobalEmotesTask.Result;
-        var bttvChannelEmotes = getBttvChannelEmotesTask.Result;
-        var sevenTvGlobalEmotes = getSevenTvGlobalEmotesTask.Result;
-        var sevenTvChannelEmotes = getSevenTvChannelEmotesTask.Result;
+        ImmutableArray<TwitchEmote> twitchGlobalEmotes = getTwitchGlobalEmotesTask.Result;
+        ImmutableArray<TwitchChannelEmote> twitchChannelEmotes = getTwitchChannelEmotesTask.Result;
+        ImmutableArray<FfzEmote> ffzGlobalEmotes = getFfzGlobalEmotesTask.Result;
+        ImmutableArray<FfzEmote> ffzChannelEmotes = getFfzChannelEmotesTask.Result;
+        ImmutableArray<BttvEmote> bttvGlobalEmotes = getBttvGlobalEmotesTask.Result;
+        ImmutableArray<BttvEmote> bttvChannelEmotes = getBttvChannelEmotesTask.Result;
+        ImmutableArray<SevenTvEmote> sevenTvGlobalEmotes = getSevenTvGlobalEmotesTask.Result;
+        ImmutableArray<SevenTvEmote> sevenTvChannelEmotes = getSevenTvChannelEmotesTask.Result;
 #pragma warning restore CA1849
 
-        int totalEmoteCount = twitchGlobalEmotes.Length + twitchChannelEmotes.Length + ffzGlobalEmotes.Length + (ffzChannelEmotes?.Length ?? 0) +
-                              bttvGlobalEmotes.Length + (bttvChannelEmotes?.Length ?? 0) + sevenTvGlobalEmotes.Length + (sevenTvChannelEmotes?.Length ?? 0);
+        int totalEmoteCount = twitchGlobalEmotes.Length + twitchChannelEmotes.Length + ffzGlobalEmotes.Length + ffzChannelEmotes.Length +
+                              bttvGlobalEmotes.Length + bttvChannelEmotes.Length + sevenTvGlobalEmotes.Length + sevenTvChannelEmotes.Length;
 
         StringArray emoteNames = new(totalEmoteCount);
         int emoteNameCount = 0;
 
-        foreach (var emote in twitchGlobalEmotes)
+        foreach (TwitchEmote emote in twitchGlobalEmotes)
         {
             emoteNames[emoteNameCount++] = emote.Name;
         }
 
-        foreach (var emote in twitchChannelEmotes)
+        foreach (TwitchChannelEmote emote in twitchChannelEmotes)
         {
             emoteNames[emoteNameCount++] = emote.Name;
         }
 
-        foreach (var emote in ffzGlobalEmotes)
+        foreach (FfzEmote emote in ffzGlobalEmotes)
         {
             emoteNames[emoteNameCount++] = emote.Name;
         }
 
-        if (ffzChannelEmotes is not null)
-        {
-            foreach (var emote in ffzChannelEmotes)
-            {
-                emoteNames[emoteNameCount++] = emote.Name;
-            }
-        }
-
-        foreach (var emote in bttvGlobalEmotes)
+        foreach (FfzEmote emote in ffzChannelEmotes)
         {
             emoteNames[emoteNameCount++] = emote.Name;
         }
 
-        if (bttvChannelEmotes is not null)
-        {
-            foreach (var emote in bttvChannelEmotes)
-            {
-                emoteNames[emoteNameCount++] = emote.Name;
-            }
-        }
-
-        foreach (var emote in sevenTvGlobalEmotes)
+        foreach (BttvEmote emote in bttvGlobalEmotes)
         {
             emoteNames[emoteNameCount++] = emote.Name;
         }
 
-        if (sevenTvChannelEmotes is not null)
+        foreach (BttvEmote emote in bttvChannelEmotes)
         {
-            foreach (var emote in sevenTvChannelEmotes)
-            {
-                emoteNames[emoteNameCount++] = emote.Name;
-            }
+            emoteNames[emoteNameCount++] = emote.Name;
+        }
+
+        foreach (SevenTvEmote emote in sevenTvGlobalEmotes)
+        {
+            emoteNames[emoteNameCount++] = emote.Name;
+        }
+
+        foreach (SevenTvEmote emote in sevenTvChannelEmotes)
+        {
+            emoteNames[emoteNameCount++] = emote.Name;
         }
 
         _emoteNamesCache.AddOrSet(channelId, new(emoteNames));

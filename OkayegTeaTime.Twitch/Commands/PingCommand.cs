@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -31,7 +31,7 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PingCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         long unixMillisecondsNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         using Process currentProcess = Process.GetCurrentProcess();
@@ -55,8 +55,8 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
         if (OperatingSystem.IsLinux())
         {
             using PooledBufferWriter<char> outputWriter = new(16);
-            ReadOnlyMemory<char> temperature = await GetTemperature(outputWriter);
-            if (temperature.Length > 0)
+            ReadOnlyMemory<char> temperature = await GetTemperatureAsync(outputWriter);
+            if (temperature.Length != 0)
             {
                 Response.Append(" || Temperature: ", temperature.Span);
             }
@@ -83,7 +83,7 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
     }
 
     [SupportedOSPlatform("linux")]
-    private static async ValueTask<ReadOnlyMemory<char>> GetTemperature(PooledBufferWriter<char> outputWriter)
+    private static async ValueTask<ReadOnlyMemory<char>> GetTemperatureAsync(PooledBufferWriter<char> outputWriter)
     {
         try
         {
@@ -117,7 +117,8 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
         do
         {
             readChars = await streamReader.ReadAsync(charWriter.GetMemory(16));
-        } while (readChars > 0);
+        }
+        while (readChars != 0);
     }
 
     public void Dispose() => Response.Dispose();

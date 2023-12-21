@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using OkayegTeaTime.Twitch.Helix.Models;
 
-namespace OkayegTeaTime.Twitch.JsonConverters;
+namespace OkayegTeaTime.Twitch.Json.Converters;
 
 public sealed class EmoteImageFormatConverter : JsonConverter<EmoteImageFormats>
 {
@@ -31,14 +31,14 @@ public sealed class EmoteImageFormatConverter : JsonConverter<EmoteImageFormats>
     public override void Write(Utf8JsonWriter writer, EmoteImageFormats value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        if ((value & EmoteImageFormats.Static) == EmoteImageFormats.Static)
+        if ((value & EmoteImageFormats.Static) != 0)
         {
-            writer.WriteStringValue(Emote._imageFormatValues[EmoteImageFormats.Static]);
+            writer.WriteStringValue(Emote.s_imageFormatValues[EmoteImageFormats.Static]);
         }
 
-        if ((value & EmoteImageFormats.Animated) == EmoteImageFormats.Animated)
+        if ((value & EmoteImageFormats.Animated) != 0)
         {
-            writer.WriteStringValue(Emote._imageFormatValues[EmoteImageFormats.Animated]);
+            writer.WriteStringValue(Emote.s_imageFormatValues[EmoteImageFormats.Animated]);
         }
 
         writer.WriteEndArray();

@@ -21,7 +21,7 @@ public readonly struct InvalidateCommand(TwitchBot twitchBot, IChatMessage chatM
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out InvalidateCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!messageExtension.IsBotModerator)

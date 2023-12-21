@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Collections;
+using HLE;
 using HLE.Marshalling;
 using HLE.Memory;
 using HLE.Strings;
@@ -27,7 +27,7 @@ public readonly struct SlotsCommand(TwitchBot twitchBot, IChatMessage chatMessag
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SlotsCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         Regex? emotePattern = null;
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
@@ -56,12 +56,12 @@ public readonly struct SlotsCommand(TwitchBot twitchBot, IChatMessage chatMessag
             return;
         }
 
-        using RentedArray<string> matchingEmotesBuffer = new(allEmotes.Length);
+        using RentedArray<string> matchingEmotesBuffer = ArrayPool<string>.Shared.RentAsRentedArray(allEmotes.Length);
         ReadOnlyMemory<string> matchingEmotes = StringArrayMarshal.GetStrings(allEmotes);
         if (emotePattern is not null)
         {
-            int matchingEmoteCount = GetMatchingEmotes(allEmotes, matchingEmotesBuffer, emotePattern);
-            matchingEmotes = matchingEmotesBuffer.Memory[..matchingEmoteCount];
+            int matchingEmoteCount = GetMatchingEmotes(allEmotes, matchingEmotesBuffer.AsSpan(), emotePattern);
+            matchingEmotes = matchingEmotesBuffer.AsMemory(..matchingEmoteCount);
         }
 
         if (matchingEmotes.Length == 0)
@@ -70,7 +70,11 @@ public readonly struct SlotsCommand(TwitchBot twitchBot, IChatMessage chatMessag
             return;
         }
 
-        Response.Append(ChatMessage.Username, ", [ ", matchingEmotes.Span.Random(), " ", matchingEmotes.Span.Random(), " ", matchingEmotes.Span.Random(), " ] (");
+        string firstRandomEmote = Random.Shared.GetItem(matchingEmotes.Span);
+        string secondRandomEmote = Random.Shared.GetItem(matchingEmotes.Span);
+        string thirdRandomEmote = Random.Shared.GetItem(matchingEmotes.Span);
+
+        Response.Append(ChatMessage.Username, ", [ ", firstRandomEmote, " ", secondRandomEmote, " ", thirdRandomEmote, " ] (");
         Response.Append(matchingEmotes.Length);
         Response.Append(" emote", matchingEmotes.Length > 1 ? "s" : string.Empty, ")");
     }

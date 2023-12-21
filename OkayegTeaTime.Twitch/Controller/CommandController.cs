@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Twitch.Messages;
@@ -9,42 +11,35 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public sealed class CommandController
+public static partial class CommandController
 {
-    public ImmutableArray<Command> Commands { get; }
+    public static ImmutableArray<Command> Commands => CommandDataStorage.Commands;
 
-    public ImmutableArray<AfkCommand> AfkCommands { get; }
+    public static ImmutableArray<AfkCommand> AfkCommands => CommandDataStorage.AfkCommands;
 
-    private readonly FrozenSet<AliasHash> _afkCommandAliasHashes;
+    private static readonly FrozenSet<AliasHash> s_afkCommandAliasHashes = CommandDataStorage.AfkCommands
+        .SelectMany(static c => c.Aliases)
+        .Select(static a => new AliasHash(a.AsMemory()))
+        .ToFrozenSet();
 
-    public CommandController(CommandList commandList)
+    [Pure]
+    public static bool IsAfkCommand(string? channelPrefix, string message)
+        => MessageHelpers.TryExtractAlias(message.AsMemory(), channelPrefix, out ReadOnlyMemory<char> usedAlias, out _) &&
+           s_afkCommandAliasHashes.Contains(new(usedAlias));
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Command GetCommand(CommandType type)
     {
-        int commandTypeCount = Enum.GetValues<CommandType>().Length;
-        Command[] commands = new Command[commandTypeCount];
-        Commands = ImmutableCollectionsMarshal.AsImmutableArray(commands);
-        foreach (Command command in commandList.Commands)
-        {
-            CommandType commandType = Enum.Parse<CommandType>(command.Name, true);
-            commands[(int)commandType] = command;
-        }
-
-        int afkCommandTypeCount = Enum.GetValues<AfkType>().Length;
-        AfkCommand[] afkCommands = new AfkCommand[afkCommandTypeCount];
-        AfkCommands = ImmutableCollectionsMarshal.AsImmutableArray(afkCommands);
-        foreach (AfkCommand command in commandList.AfkCommands)
-        {
-            AfkType afkType = Enum.Parse<AfkType>(command.Name, true);
-            afkCommands[(int)afkType] = command;
-        }
-
-        _afkCommandAliasHashes = AfkCommands.SelectMany(static c => c.Aliases).Select(static a => new AliasHash(a)).ToFrozenSet();
+        Command[] commands = ImmutableCollectionsMarshal.AsArray(CommandDataStorage.Commands)!;
+        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(commands), (int)type);
     }
 
-    public bool IsAfkCommand(string? channelPrefix, string message)
-        => MessageHelper.TryExtractAlias(message.AsMemory(), channelPrefix, out var alias, out _) &&
-           _afkCommandAliasHashes.Contains(new(alias.Span));
-
-    public Command GetCommand(CommandType type) => Commands[(int)type];
-
-    public AfkCommand GetAfkCommand(AfkType type) => AfkCommands[(int)type];
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static AfkCommand GetAfkCommand(AfkType type)
+    {
+        AfkCommand[] afkCommands = ImmutableCollectionsMarshal.AsArray(CommandDataStorage.AfkCommands)!;
+        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(afkCommands), (int)type);
+    }
 }

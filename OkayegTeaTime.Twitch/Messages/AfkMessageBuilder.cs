@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using HLE;
 using HLE.Strings;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
@@ -18,7 +19,7 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
 
     public AfkMessageBuilder(ReadOnlySpan<AfkCommand> afkCommands)
     {
-        int afkTypeCount = Enum.GetValues<AfkType>().Length;
+        int afkTypeCount = EnumValues<AfkType>.Count;
         _comingBackMessageParts = GetComingBackMessageParts(afkCommands, afkTypeCount);
         _goingAwayMessageParts = GetGoingAwayMessageParts(afkCommands, afkTypeCount);
         _resumingMessageParts = GetResumingMessageParts(afkCommands, afkTypeCount);

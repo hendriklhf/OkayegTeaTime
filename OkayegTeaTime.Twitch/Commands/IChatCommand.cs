@@ -11,5 +11,5 @@ public interface IChatCommand<T> : IDisposable, IEquatable<T> where T : IChatCom
 
     static abstract void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out T command);
 
-    ValueTask HandleAsync();
+    ValueTask Handle();
 }

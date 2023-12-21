@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using OkayegTeaTime.Twitch.Helix.Models;
 
-namespace OkayegTeaTime.Twitch.JsonConverters;
+namespace OkayegTeaTime.Twitch.Json.Converters;
 
 public sealed class EmoteScaleJsonConverter : JsonConverter<EmoteScales>
 {
@@ -32,19 +32,19 @@ public sealed class EmoteScaleJsonConverter : JsonConverter<EmoteScales>
     public override void Write(Utf8JsonWriter writer, EmoteScales value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        if ((value & EmoteScales.One) == EmoteScales.One)
+        if ((value & EmoteScales.One) != 0)
         {
-            writer.WriteStringValue(Emote._scaleValues[EmoteScales.One]);
+            writer.WriteStringValue(Emote.s_scaleValues[EmoteScales.One]);
         }
 
-        if ((value & EmoteScales.Two) == EmoteScales.Two)
+        if ((value & EmoteScales.Two) != 0)
         {
-            writer.WriteStringValue(Emote._scaleValues[EmoteScales.Two]);
+            writer.WriteStringValue(Emote.s_scaleValues[EmoteScales.Two]);
         }
 
-        if ((value & EmoteScales.Three) == EmoteScales.Three)
+        if ((value & EmoteScales.Three) != 0)
         {
-            writer.WriteStringValue(Emote._scaleValues[EmoteScales.Three]);
+            writer.WriteStringValue(Emote.s_scaleValues[EmoteScales.Three]);
         }
 
         writer.WriteEndArray();

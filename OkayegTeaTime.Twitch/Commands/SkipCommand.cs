@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HLE.Strings;
 using HLE.Twitch.Models;
-using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Spotify;
@@ -28,7 +27,7 @@ public readonly struct SkipCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SkipCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         if (GlobalSettings.Settings.Spotify is null)
         {
@@ -60,21 +59,8 @@ public readonly struct SkipCommand(TwitchBot twitchBot, IChatMessage chatMessage
             Response.Append(ChatMessage.Username, ", ", ex.Message);
             return;
         }
-        catch (AggregateException ex)
-        {
-            Response.Append(ChatMessage.Username, ", ");
-            if (ex.InnerException is null)
-            {
-                await DbController.LogExceptionAsync(ex);
-                Response.Append(Messages.ApiError);
-                return;
-            }
 
-            Response.Append(ex.InnerException.Message);
-            return;
-        }
-
-        List<SpotifyUser> usersToRemove = new();
+        List<SpotifyUser> usersToRemove = [];
         ListeningSession? listeningSession = SpotifyController.GetListeningSession(user);
         if (listeningSession is null)
         {

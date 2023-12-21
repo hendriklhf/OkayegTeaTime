@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,7 +12,6 @@ using OkayegTeaTime.Spotify;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Utils;
-using StringHelper = HLE.Strings.StringHelper;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
@@ -28,12 +27,12 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static readonly Regex _exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+    private static readonly Regex s_exceptTargetPattern = new($@"^\S+\s{Pattern.MultipleTargets}\s", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SongRequestCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         if (GlobalSettings.Settings.Spotify is null)
         {
@@ -194,7 +193,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
             return;
         }
 
-        string song = _exceptTargetPattern.Replace(ChatMessage.Message, string.Empty);
+        string song = s_exceptTargetPattern.Replace(ChatMessage.Message, string.Empty);
         SpotifyTrack? track = null;
         try
         {
@@ -224,7 +223,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
             return;
         }
 
-        Dictionary<SpotifyUser, string?> success = new();
+        Dictionary<SpotifyUser, string?> success = [];
         foreach (SpotifyUser target in targets)
         {
             try
@@ -368,7 +367,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
         }
 
         SpotifyTrack track = (SpotifyTrack)item;
-        Dictionary<SpotifyUser, string?> success = new();
+        Dictionary<SpotifyUser, string?> success = [];
         foreach (SpotifyUser target in targets)
         {
             try
@@ -380,10 +379,6 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
             {
                 success.Add(target, ex.Message);
             }
-            catch (AggregateException ex)
-            {
-                success.Add(target, ex.InnerException is null ? Messages.ApiError : ex.InnerException.Message);
-            }
         }
 
         CreateMultipleTargetResponse(success, track);
@@ -392,9 +387,9 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
     private SpotifyUser[] GetTargets()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        ReadOnlySpan<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.Splits;
+        ReadOnlySpan<ReadOnlyMemory<char>> splits = messageExtension.LowerSplit.AsSpan();
         Span<char> targetBuffer = stackalloc char[512];
-        int targetBufferLength = StringHelper.Join(splits[1..^1], ' ', targetBuffer);
+        int targetBufferLength = StringHelpers.Join(' ', splits[1..^1], targetBuffer);
         string targetString = new(targetBuffer[..targetBufferLength]);
 
         Match match = Pattern.MultipleTargets.Match(targetString);
@@ -410,9 +405,9 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
 
         Span<char> joinBuffer = stackalloc char[512];
         int bufferLength;
-        if (successUsers.Length > 0)
+        if (successUsers.Length != 0)
         {
-            bufferLength = StringHelper.Join(successUsers, ", ", joinBuffer);
+            bufferLength = StringHelpers.Join(", ", successUsers, joinBuffer);
             Response.Append(ChatMessage.Username, ", ", track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
             Response.Append(" has been added to the queue", successUsers.Length > 1 ? "s of " : " of ", joinBuffer[..bufferLength]);
             if (failedUsers.Length == 0)
@@ -420,7 +415,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
                 return;
             }
 
-            bufferLength = StringHelper.Join(failedUsers, ", ", joinBuffer);
+            bufferLength = StringHelpers.Join(", ", failedUsers, joinBuffer);
             Response.Append(". ", joinBuffer[..bufferLength]);
         }
         else
@@ -438,7 +433,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
                     return;
                 }
 
-                bufferLength = StringHelper.Join(failedUsers, ", ", joinBuffer);
+                bufferLength = StringHelpers.Join(", ", failedUsers, joinBuffer);
                 Response.Append(". ", joinBuffer[..bufferLength]);
             }
         }

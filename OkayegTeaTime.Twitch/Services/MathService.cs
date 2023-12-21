@@ -14,8 +14,8 @@ public sealed class MathService : IEquatable<MathService>
 {
     private readonly ConcurrentDictionary<string, string> _expressionResultCache = new();
 
-    private const int _maximumCacheEntries = 1000;
-    private const string _apiUrl = "https://api.mathjs.org/v4/?expr=";
+    private const int MaximumCacheEntries = 1000;
+    private const string ApiUrl = "https://api.mathjs.org/v4/?expr=";
 
     public async ValueTask<string> GetExpressionResultAsync(string expression)
     {
@@ -25,7 +25,7 @@ public sealed class MathService : IEquatable<MathService>
             return result;
         }
 
-        string url = $"{_apiUrl}{HttpUtility.UrlEncode(expression)}";
+        string url = $"{ApiUrl}{HttpUtility.UrlEncode(expression)}";
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(url);
         using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
@@ -43,7 +43,7 @@ public sealed class MathService : IEquatable<MathService>
 
     private void ClearCacheIfThereAreTooManyEntries()
     {
-        if (_expressionResultCache.Count >= _maximumCacheEntries)
+        if (_expressionResultCache.Count >= MaximumCacheEntries)
         {
             _expressionResultCache.Clear();
         }

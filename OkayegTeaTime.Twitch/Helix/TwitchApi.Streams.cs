@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Collections;
+using HLE.Marshalling;
 using HLE.Memory;
 using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Helix.Models.Responses;
@@ -21,10 +22,10 @@ public sealed partial class TwitchApi
             return stream;
         }
 
-        using UrlBuilder urlBuilder = new(_apiBaseUrl, "streams", _apiBaseUrl.Length + "streams".Length + 50);
+        using UrlBuilder urlBuilder = new(ApiBaseUrl, "streams", ApiBaseUrl.Length + "streams".Length + 50);
         urlBuilder.AppendParameter("user_id", userId);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<Stream> getResponse = JsonSerializer.Deserialize<GetResponse<Stream>>(response.AsSpan());
+        GetResponse<Stream> getResponse = JsonSerializer.Deserialize(response.AsSpan(), HelixJsonSerializerContext.Default.GetResponseStream);
         if (getResponse.Items.Length == 0)
         {
             return null;
@@ -44,10 +45,10 @@ public sealed partial class TwitchApi
             return stream;
         }
 
-        using UrlBuilder urlBuilder = new(_apiBaseUrl, "streams", _apiBaseUrl.Length + "streams".Length + 50);
+        using UrlBuilder urlBuilder = new(ApiBaseUrl, "streams", ApiBaseUrl.Length + "streams".Length + 50);
         urlBuilder.AppendParameter("user_login", username.Span);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<Stream> getResponse = JsonSerializer.Deserialize<GetResponse<Stream>>(response.AsSpan());
+        GetResponse<Stream> getResponse = JsonSerializer.Deserialize(response.AsSpan(), HelixJsonSerializerContext.Default.GetResponseStream);
         if (getResponse.Items.Length == 0)
         {
             return null;
@@ -73,7 +74,7 @@ public sealed partial class TwitchApi
     public async ValueTask<Stream[]> GetStreamsAsync(IEnumerable<long> channelIds)
     {
         // ReSharper disable once PossibleMultipleEnumeration
-        if (channelIds.TryGetReadOnlyMemory<long>(out ReadOnlyMemory<long> channelIdsMemory))
+        if (channelIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> channelIdsMemory))
         {
             return await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIdsMemory);
         }
@@ -86,7 +87,7 @@ public sealed partial class TwitchApi
     {
         // ReSharper disable PossibleMultipleEnumeration
         bool usernamesIsMemory = usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory);
-        bool channelIdsIsMemory = channelIds.TryGetReadOnlyMemory<long>(out ReadOnlyMemory<long> channelIdsMemory);
+        bool channelIdsIsMemory = channelIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> channelIdsMemory);
 
         return usernamesIsMemory switch
         {
@@ -99,13 +100,13 @@ public sealed partial class TwitchApi
     }
 
     public async ValueTask<Stream[]> GetStreamsAsync(List<string> usernames)
-        => await GetStreamsAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
+        => await GetStreamsAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<Stream[]> GetStreamsAsync(List<long> channelIds)
-        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(channelIds).AsMemoryUnsafe());
+        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(channelIds)));
 
     public async ValueTask<Stream[]> GetStreamsAsync(List<string> usernames, List<long> channelIds)
-        => await GetStreamsAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(channelIds).AsMemoryUnsafe());
+        => await GetStreamsAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(channelIds)));
 
     public async ValueTask<Stream[]> GetStreamsAsync(params string[] usernames)
         => await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
@@ -124,9 +125,9 @@ public sealed partial class TwitchApi
 
     public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> channelIds)
     {
-        using RentedArray<Stream> streamBuffer = new(usernames.Length + channelIds.Length);
-        int streamCount = await GetStreamsAsync(usernames, channelIds, streamBuffer);
-        return streamCount == 0 ? Array.Empty<Stream>() : streamBuffer[..streamCount].ToArray();
+        using RentedArray<Stream> streamBuffer = ArrayPool<Stream>.Shared.RentAsRentedArray(usernames.Length + channelIds.Length);
+        int streamCount = await GetStreamsAsync(usernames, channelIds, streamBuffer.AsMemory());
+        return streamCount == 0 ? [] : streamBuffer[..streamCount].ToArray();
     }
 
     public async ValueTask<int> GetStreamsAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> channelIds, Memory<Stream> resultBuffer)
@@ -140,7 +141,7 @@ public sealed partial class TwitchApi
                 throw new ArgumentException("The endpoint allows only up to 100 parameters. You can't pass more than 100 usernames or user ids in total.");
         }
 
-        using UrlBuilder urlBuilder = new(_apiBaseUrl, "streams", usernames.Length * 35 + channelIds.Length * 25 + 50);
+        using UrlBuilder urlBuilder = new(ApiBaseUrl, "streams", usernames.Length * 35 + channelIds.Length * 25 + 50);
         int cachedStreamCount = 0;
         for (int i = 0; i < usernames.Length; i++)
         {
@@ -172,9 +173,9 @@ public sealed partial class TwitchApi
         }
 
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<Stream> getResponse = JsonSerializer.Deserialize<GetResponse<Stream>>(response.AsSpan());
+        GetResponse<Stream> getResponse = JsonSerializer.Deserialize(response.AsSpan(), HelixJsonSerializerContext.Default.GetResponseStream);
         int deserializedStreamCount = getResponse.Items.Length;
-        if (deserializedStreamCount > 0)
+        if (deserializedStreamCount != 0)
         {
             getResponse.Items.CopyTo(resultBuffer.Span[cachedStreamCount..]);
         }

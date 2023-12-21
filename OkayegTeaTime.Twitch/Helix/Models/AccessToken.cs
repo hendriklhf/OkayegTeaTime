@@ -1,6 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
-using OkayegTeaTime.Twitch.JsonConverters;
+using OkayegTeaTime.Twitch.Json.Converters;
 
 namespace OkayegTeaTime.Twitch.Helix.Models;
 

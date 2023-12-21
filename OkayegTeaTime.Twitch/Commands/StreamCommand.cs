@@ -23,7 +23,7 @@ public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessa
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static readonly FrozenSet<long> _noViewerCountChannelIds = new long[]
+    private static readonly FrozenSet<long> s_noViewerCountChannelIds = new long[]
     {
         149489313,
         35933008
@@ -32,7 +32,7 @@ public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out StreamCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         Regex channelPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
         Response.Append(ChatMessage.Username, ", ");
@@ -48,7 +48,7 @@ public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessa
         }
 
         Response.Append(stream.Username, " is currently streaming ", stream.GameName);
-        if (ChatMessage.ChannelId != stream.UserId || !_noViewerCountChannelIds.Contains(stream.UserId))
+        if (ChatMessage.ChannelId != stream.UserId || !s_noViewerCountChannelIds.Contains(stream.UserId))
         {
             Response.Append(" with ");
             Response.Append(stream.ViewerCount, "N0");

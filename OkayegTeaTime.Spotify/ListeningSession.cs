@@ -10,14 +10,14 @@ public sealed class ListeningSession : IDisposable
 {
     public SpotifyUser Host { get; }
 
-    public List<SpotifyUser> Listeners { get; } = new();
+    public List<SpotifyUser> Listeners { get; } = [];
 
     private readonly Timer _timer = new();
 
     public ListeningSession(SpotifyUser host)
     {
         Host = host;
-        _timer.Elapsed += async (_, _) => await Timer_OnElapsed();
+        _timer.Elapsed += async (_, _) => await Timer_OnElapsedAsync();
     }
 
     public void Dispose() => _timer.Dispose();
@@ -31,7 +31,7 @@ public sealed class ListeningSession : IDisposable
 
     public void StopTimer() => _timer.Stop();
 
-    private async Task Timer_OnElapsed()
+    private async Task Timer_OnElapsedAsync()
     {
         SpotifyItem? song;
         try
@@ -55,7 +55,7 @@ public sealed class ListeningSession : IDisposable
         _timer.Interval = song.Duration;
         _timer.Start();
 
-        List<SpotifyUser> usersToRemove = new();
+        List<SpotifyUser> usersToRemove = [];
         foreach (SpotifyUser listener in Listeners)
         {
             try

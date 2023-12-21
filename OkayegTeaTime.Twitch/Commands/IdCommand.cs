@@ -25,7 +25,7 @@ public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out IdCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         Response.Append(ChatMessage.Username, ", ");
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
@@ -34,24 +34,23 @@ public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, 
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             ReadOnlyMemory<char> username = messageExtension.LowerSplit[1];
-            userId = await GetUserId(username);
+            userId = await GetUserIdAsync(username);
             if (userId < 0)
             {
                 Response.Append(Messages.TwitchUserDoesntExist);
                 return;
             }
-
-            Response.Append(userId);
         }
         else
         {
             userId = ChatMessage.UserId;
             Response.Append("your id: ");
-            Response.Append(userId);
         }
+
+        Response.Append(userId);
     }
 
-    private async ValueTask<long> GetUserId(ReadOnlyMemory<char> username)
+    private async ValueTask<long> GetUserIdAsync(ReadOnlyMemory<char> username)
     {
         if (username.Span.SequenceEqual(ChatMessage.Username))
         {

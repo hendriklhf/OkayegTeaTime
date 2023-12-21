@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Text.Json.Serialization;
-using HLE.Numerics;
 using HLE.Strings;
-using OkayegTeaTime.Twitch.JsonConverters;
+using OkayegTeaTime.Twitch.Json.Converters;
 
 namespace OkayegTeaTime.Twitch.Helix.Models;
 
@@ -31,20 +31,20 @@ public class Emote : IEquatable<Emote>
     [JsonConverter(typeof(EmoteThemeJsonConverter))]
     public required EmoteThemes Themes { get; init; }
 
-    internal static readonly Dictionary<EmoteImageFormats, string> _imageFormatValues = new()
+    internal static readonly Dictionary<EmoteImageFormats, string> s_imageFormatValues = new()
     {
         { EmoteImageFormats.Static, "static" },
         { EmoteImageFormats.Animated, "animated" }
     };
 
-    internal static readonly Dictionary<EmoteScales, string> _scaleValues = new()
+    internal static readonly Dictionary<EmoteScales, string> s_scaleValues = new()
     {
         { EmoteScales.One, "1.0" },
         { EmoteScales.Two, "2.0" },
         { EmoteScales.Three, "3.0" }
     };
 
-    internal static readonly Dictionary<EmoteThemes, string> _themeValues = new()
+    internal static readonly Dictionary<EmoteThemes, string> s_themeValues = new()
     {
         { EmoteThemes.Light, "light" },
         { EmoteThemes.Dark, "dark" }
@@ -55,30 +55,30 @@ public class Emote : IEquatable<Emote>
         url = null;
         ValueStringBuilder urlBuilder = new(stackalloc char[250]);
         urlBuilder.Append("https://static-cdn.jtvnw.net/emoticons/v2/");
-        if ((Formats & format) != format || !NumberHelper.IsOnlyOneBitSet((int)format))
+        if ((Formats & format) != format || !BitOperations.IsPow2((int)format))
         {
             return false;
         }
 
         urlBuilder.Append(Id);
         urlBuilder.Append('/');
-        urlBuilder.Append(_imageFormatValues[format]);
+        urlBuilder.Append(s_imageFormatValues[format]);
 
-        if ((Themes & theme) != theme || !NumberHelper.IsOnlyOneBitSet((int)theme))
+        if ((Themes & theme) != theme || !BitOperations.IsPow2((int)theme))
         {
             return false;
         }
 
         urlBuilder.Append('/');
-        urlBuilder.Append(_themeValues[theme]);
+        urlBuilder.Append(s_themeValues[theme]);
 
-        if ((Scales & scale) != scale || !NumberHelper.IsOnlyOneBitSet((int)scale))
+        if ((Scales & scale) != scale || !BitOperations.IsPow2((int)scale))
         {
             return false;
         }
 
         urlBuilder.Append('/');
-        urlBuilder.Append(_scaleValues[scale]);
+        urlBuilder.Append(s_scaleValues[scale]);
         url = StringPool.Shared.GetOrAdd(urlBuilder.WrittenSpan);
         return true;
     }

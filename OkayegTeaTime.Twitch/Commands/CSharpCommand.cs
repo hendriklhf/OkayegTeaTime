@@ -25,7 +25,7 @@ public readonly struct CSharpCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CSharpCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))
@@ -37,7 +37,7 @@ public readonly struct CSharpCommand(TwitchBot twitchBot, IChatMessage chatMessa
 
             try
             {
-                DotNetFiddleResult dotNetFiddleResult = await _twitchBot.DotNetFiddleService.ExecuteCodeAsync(mainMethodContent);
+                DotNetFiddleResult dotNetFiddleResult = await Services.DotNetFiddleService.ExecuteCodeAsync(mainMethodContent);
                 ReadOnlyMemory<char> consoleOutput = dotNetFiddleResult.ConsoleOutput.AsMemory();
                 if (consoleOutput.Length == 0)
                 {

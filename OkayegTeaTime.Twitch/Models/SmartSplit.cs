@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+using System;
 using HLE.Memory;
 
 namespace OkayegTeaTime.Twitch.Models;
@@ -8,28 +7,28 @@ public struct SmartSplit : IDisposable, IEquatable<SmartSplit>
 {
     public readonly ReadOnlyMemory<char> this[int index] => _message[_ranges[index]];
 
-    public ReadOnlySpan<ReadOnlyMemory<char>> Splits => GetSplits();
-
     public int Length { get; }
 
     private readonly ReadOnlyMemory<char> _message;
-    private readonly RentedArray<Range> _ranges = new(255);
-    private RentedArray<ReadOnlyMemory<char>> _splits = RentedArray<ReadOnlyMemory<char>>.Empty;
+    private RentedArray<Range> _ranges = ArrayPool<Range>.Shared.RentAsRentedArray(255);
+    private RentedArray<ReadOnlyMemory<char>> _splits = [];
 
     public static SmartSplit Empty => new();
 
     public SmartSplit()
     {
         _message = ReadOnlyMemory<char>.Empty;
-        _ranges = RentedArray<Range>.Empty;
+        _ranges = [];
         Length = 0;
     }
 
     public SmartSplit(ReadOnlyMemory<char> message)
     {
         _message = message;
-        Length = message.Span.Split(_ranges, ' ');
+        Length = message.Span.Split(_ranges.AsSpan(), ' ');
     }
+
+    public ReadOnlySpan<ReadOnlyMemory<char>> AsSpan() => GetSplits().AsSpan();
 
     private RentedArray<ReadOnlyMemory<char>> GetSplits()
     {
@@ -38,7 +37,7 @@ public struct SmartSplit : IDisposable, IEquatable<SmartSplit>
             return _splits;
         }
 
-        _splits = new(ArrayPool<ReadOnlyMemory<char>>.Shared.Rent(Length));
+        _splits = ArrayPool<ReadOnlyMemory<char>>.Shared.RentAsRentedArray(Length);
         for (int i = 0; i < Length; i++)
         {
             _splits[i] = _message[_ranges[i]];
@@ -47,7 +46,7 @@ public struct SmartSplit : IDisposable, IEquatable<SmartSplit>
         return _splits;
     }
 
-    public readonly void Dispose()
+    public void Dispose()
     {
         _ranges.Dispose();
         _splits.Dispose();

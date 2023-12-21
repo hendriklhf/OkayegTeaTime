@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Collections;
+using HLE.Marshalling;
 using HLE.Memory;
 using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Helix.Models.Responses;
@@ -21,10 +22,10 @@ public sealed partial class TwitchApi
             return user;
         }
 
-        using UrlBuilder urlBuilder = new(_apiBaseUrl, "users", _apiBaseUrl.Length + "users".Length + 50);
+        using UrlBuilder urlBuilder = new(ApiBaseUrl, "users", ApiBaseUrl.Length + "users".Length + 50);
         urlBuilder.AppendParameter("id", userId);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.AsSpan());
+        GetResponse<User> getResponse = JsonSerializer.Deserialize(response.AsSpan(), HelixJsonSerializerContext.Default.GetResponseUser);
         if (getResponse.Items.Length == 0)
         {
             return null;
@@ -44,10 +45,10 @@ public sealed partial class TwitchApi
             return user;
         }
 
-        using UrlBuilder urlBuilder = new(_apiBaseUrl, "users", _apiBaseUrl.Length + "users".Length + 50);
+        using UrlBuilder urlBuilder = new(ApiBaseUrl, "users", ApiBaseUrl.Length + "users".Length + 50);
         urlBuilder.AppendParameter("login", username.Span);
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.AsSpan());
+        GetResponse<User> getResponse = JsonSerializer.Deserialize(response.AsSpan(), HelixJsonSerializerContext.Default.GetResponseUser);
         if (getResponse.Items.Length == 0)
         {
             return null;
@@ -73,7 +74,7 @@ public sealed partial class TwitchApi
     public async ValueTask<User[]> GetUsersAsync(IEnumerable<long> userIds)
     {
         // ReSharper disable once PossibleMultipleEnumeration
-        if (userIds.TryGetReadOnlyMemory(out var userIdsMemory))
+        if (userIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> userIdsMemory))
         {
             return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIdsMemory);
         }
@@ -86,7 +87,7 @@ public sealed partial class TwitchApi
     {
         // ReSharper disable PossibleMultipleEnumeration
         bool usernamesIsMemory = usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory);
-        bool userIdsIsMemory = userIds.TryGetReadOnlyMemory<long>(out ReadOnlyMemory<long> userIdsMemory);
+        bool userIdsIsMemory = userIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> userIdsMemory);
 
         return usernamesIsMemory switch
         {
@@ -99,13 +100,13 @@ public sealed partial class TwitchApi
     }
 
     public async ValueTask<User[]> GetUsersAsync(List<string> usernames)
-        => await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), ReadOnlyMemory<long>.Empty);
+        => await GetUsersAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), ReadOnlyMemory<long>.Empty);
 
     public async ValueTask<User[]> GetUsersAsync(List<long> userIds)
-        => await GetUsersAsync(ReadOnlyMemory<string>.Empty, CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
+        => await GetUsersAsync(ReadOnlyMemory<string>.Empty, SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(userIds)));
 
     public async ValueTask<User[]> GetUsersAsync(List<string> usernames, List<long> userIds)
-        => await GetUsersAsync(CollectionsMarshal.AsSpan(usernames).AsMemoryUnsafe(), CollectionsMarshal.AsSpan(userIds).AsMemoryUnsafe());
+        => await GetUsersAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(userIds)));
 
     public async ValueTask<User[]> GetUsersAsync(params string[] usernames)
         => await GetUsersAsync(usernames, ReadOnlyMemory<long>.Empty);
@@ -124,9 +125,9 @@ public sealed partial class TwitchApi
 
     public async ValueTask<User[]> GetUsersAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> userIds)
     {
-        using RentedArray<User> userBuffer = new(usernames.Length + userIds.Length);
-        int userCount = await GetUsersAsync(usernames, userIds, userBuffer);
-        return userCount == 0 ? Array.Empty<User>() : userBuffer[..userCount].ToArray();
+        using RentedArray<User> userBuffer = ArrayPool<User>.Shared.RentAsRentedArray(usernames.Length + userIds.Length);
+        int userCount = await GetUsersAsync(usernames, userIds, userBuffer.AsMemory());
+        return userCount == 0 ? [] : userBuffer[..userCount].ToArray();
     }
 
     public async ValueTask<int> GetUsersAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> userIds, Memory<User> resultBuffer)
@@ -140,7 +141,7 @@ public sealed partial class TwitchApi
                 throw new ArgumentException("The endpoint allows only up to 100 parameters. You can't pass more than 100 usernames or user ids in total.");
         }
 
-        using UrlBuilder urlBuilder = new(_apiBaseUrl, "users", usernames.Length * 35 + userIds.Length * 25 + 50);
+        using UrlBuilder urlBuilder = new(ApiBaseUrl, "users", usernames.Length * 35 + userIds.Length * 25 + 50);
         int cachedUserCount = 0;
         for (int i = 0; i < usernames.Length; i++)
         {
@@ -172,9 +173,9 @@ public sealed partial class TwitchApi
         }
 
         using HttpContentBytes response = await ExecuteRequestAsync(urlBuilder.ToString());
-        GetResponse<User> getResponse = JsonSerializer.Deserialize<GetResponse<User>>(response.AsSpan());
+        GetResponse<User> getResponse = JsonSerializer.Deserialize(response.AsSpan(), HelixJsonSerializerContext.Default.GetResponseUser);
         int deserializedUserCount = getResponse.Items.Length;
-        if (deserializedUserCount > 0)
+        if (deserializedUserCount != 0)
         {
             getResponse.Items.CopyTo(resultBuffer.Span[cachedUserCount..]);
         }

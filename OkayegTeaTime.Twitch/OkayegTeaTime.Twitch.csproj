@@ -13,8 +13,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HLE" Version="2.1.7" />
-        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
+        <PackageReference Include="HLE" Version="2.1.8" />
+        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+        <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>

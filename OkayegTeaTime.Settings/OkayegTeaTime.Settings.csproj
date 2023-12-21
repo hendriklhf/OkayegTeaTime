@@ -13,7 +13,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HLE" Version="2.1.7" />
+        <PackageReference Include="HLE" Version="2.1.8" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>

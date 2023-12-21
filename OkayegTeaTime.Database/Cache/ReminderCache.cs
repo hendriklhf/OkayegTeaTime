@@ -13,7 +13,7 @@ public sealed class ReminderCache : DbCache<Reminder>
 
     public int Add(Reminder reminder)
     {
-        if (HasTooManyRemindersSet(reminder.Target, reminder.ToTime > 0))
+        if (HasTooManyRemindersSet(reminder.Target, reminder.ToTime != 0))
         {
             return -1;
         }
@@ -34,7 +34,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         int[] ids = new int[reminders.Length];
         for (int i = 0; i < reminders.Length; i++)
         {
-            if (HasTooManyRemindersSet(reminders[i].Target, reminders[i].ToTime > 0))
+            if (HasTooManyRemindersSet(reminders[i].Target, reminders[i].ToTime != 0))
             {
                 ids[i] = -1;
                 continue;
@@ -93,17 +93,17 @@ public sealed class ReminderCache : DbCache<Reminder>
 
         static bool EvaluateReminderType(Reminder r, ReminderType t)
         {
-            if ((int)(t & (ReminderType.Timed | ReminderType.NonTimed)) == (int)(ReminderType.Timed | ReminderType.NonTimed))
+            if ((t & (ReminderType.Timed | ReminderType.NonTimed)) == (ReminderType.Timed | ReminderType.NonTimed))
             {
                 return true;
             }
 
-            if ((int)(t & ReminderType.Timed) == (int)ReminderType.Timed)
+            if ((t & ReminderType.Timed) != 0)
             {
-                return r.ToTime > 0;
+                return r.ToTime != 0;
             }
 
-            if ((int)(t & ReminderType.NonTimed) == (int)ReminderType.NonTimed)
+            if ((t & ReminderType.NonTimed) != 0)
             {
                 return r.ToTime == 0;
             }
@@ -113,7 +113,7 @@ public sealed class ReminderCache : DbCache<Reminder>
     }
 
     public Reminder[] GetExpiredReminders()
-        => this.Where(static r => r.ToTime > 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
+        => this.Where(static r => r.ToTime != 0 && r.ToTime <= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() && !r.HasBeenSent).ToArray();
 
     private Reminder? Get(int id)
     {
@@ -126,7 +126,7 @@ public sealed class ReminderCache : DbCache<Reminder>
         Func<Reminder, bool> condition = isTimedReminder switch
         {
             true => r => r.Target == target && r.ToTime == 0,
-            _ => r => r.Target == target && r.ToTime > 0
+            _ => r => r.Target == target && r.ToTime != 0
         };
 
         return this.Count(condition) >= GlobalSettings.MaxReminders;

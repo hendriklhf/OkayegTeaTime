@@ -3,24 +3,18 @@ using System.Text.Json.Serialization;
 
 namespace OkayegTeaTime.Twitch.Ffz.Models.Responses;
 
-internal readonly struct GetGlobalEmotesResponse
+public readonly struct GetGlobalEmotesResponse : IEquatable<GetGlobalEmotesResponse>
 {
     [JsonPropertyName("sets")]
     public required Sets Sets { get; init; }
-}
 
-internal readonly struct Sets
-{
-    [JsonPropertyName("3")]
-    public required GlobalSet GlobalSet { get; init; }
-}
+    public bool Equals(GetGlobalEmotesResponse other) => Sets.Equals(other.Sets);
 
-internal readonly struct GlobalSet
-{
-    [JsonPropertyName("emoticons")]
-    public required Emote[] Emotes { get; init; } = Array.Empty<Emote>();
+    public override bool Equals(object? obj) => obj is GetGlobalEmotesResponse other && Equals(other);
 
-    public GlobalSet()
-    {
-    }
+    public override int GetHashCode() => Sets.GetHashCode();
+
+    public static bool operator ==(GetGlobalEmotesResponse left, GetGlobalEmotesResponse right) => left.Equals(right);
+
+    public static bool operator !=(GetGlobalEmotesResponse left, GetGlobalEmotesResponse right) => !left.Equals(right);
 }

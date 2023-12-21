@@ -17,7 +17,7 @@ namespace OkayegTeaTime.Database;
 public static class DbController
 {
 #if DEBUG
-    private static readonly JsonSerializerOptions _logSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_logSerializerOptions = new()
     {
         WriteIndented = true
     };
@@ -143,7 +143,7 @@ public static class DbController
     {
         ExceptionLog log = new(ex);
 #if DEBUG
-        await File.WriteAllTextAsync($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, _logSerializerOptions));
+        await File.WriteAllTextAsync($"exception_{Guid.NewGuid()}", JsonSerializer.Serialize(log, s_logSerializerOptions));
 #else
         await using OkayegTeaTimeContext database = new();
         await database.ExceptionLogs.AddAsync(log);

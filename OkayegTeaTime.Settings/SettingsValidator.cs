@@ -1,16 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Options;
 
 namespace OkayegTeaTime.Settings;
 
-public static class SettingsValidator
+[OptionsValidator]
+public sealed partial class SettingsValidator : IValidateOptions<Settings>
 {
     [RegexPattern]
     public const string TwitchUsernamePattern = @"(?i)^[a-z\d]\w{2,24}$";
-
-    public static void Validate(Settings settings)
-    {
-        ValidationContext context = new(settings);
-        Validator.ValidateObject(settings, context, true);
-    }
 }

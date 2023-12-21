@@ -16,7 +16,7 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
     private AccessToken _accessToken = AccessToken.Empty;
     private readonly FormUrlEncodedContent _accessTokenRequestContent;
 
-    private const string _apiBaseUrl = "https://api.twitch.tv/helix";
+    private const string ApiBaseUrl = "https://api.twitch.tv/helix";
 
     public TwitchApi(string clientId, string clientSecret, CacheOptions? cacheOptions = null)
     {
@@ -55,7 +55,7 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
             throw new HttpResponseEmptyException();
         }
 
-        return JsonSerializer.Deserialize<AccessToken>(httpContentBytes.AsSpan());
+        return JsonSerializer.Deserialize(httpContentBytes.AsSpan(), HelixJsonSerializerContext.Default.AccessToken);
     }
 
     private async ValueTask EnsureValidAccessTokenAsync()

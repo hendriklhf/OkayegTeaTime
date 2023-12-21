@@ -4,9 +4,9 @@ using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Twitch.Messages;
 
-public static class MessageHelper
+public static class MessageHelpers
 {
-    public static bool TryExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> channelPrefix, out ReadOnlyMemory<char> usedAlias, out ReadOnlyMemory<char> usedPrefix)
+    public static bool TryExtractAlias(ReadOnlyMemory<char> message, ReadOnlySpan<char> channelPrefix, out ReadOnlyMemory<char> usedAlias, out ReadOnlyMemory<char> usedPrefixOrSuffix)
     {
         ReadOnlySpan<char> messageSpan = message.Span;
         int indexOfWhitespace = messageSpan.IndexOf(' ');
@@ -14,19 +14,19 @@ public static class MessageHelper
         if (firstWord.Length <= (channelPrefix.Length == 0 ? GlobalSettings.Suffix.Length : channelPrefix.Length))
         {
             usedAlias = ReadOnlyMemory<char>.Empty;
-            usedPrefix = ReadOnlyMemory<char>.Empty;
+            usedPrefixOrSuffix = ReadOnlyMemory<char>.Empty;
             return false;
         }
 
         if (channelPrefix.Length == 0)
         {
             usedAlias = firstWord[..^GlobalSettings.Suffix.Length];
-            usedPrefix = firstWord[^GlobalSettings.Suffix.Length..];
+            usedPrefixOrSuffix = firstWord[^GlobalSettings.Suffix.Length..];
             return true;
         }
 
         usedAlias = firstWord[channelPrefix.Length..];
-        usedPrefix = firstWord[..channelPrefix.Length];
+        usedPrefixOrSuffix = firstWord[..channelPrefix.Length];
         return true;
     }
 }

@@ -6,11 +6,10 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Controller;
 
-public sealed class CooldownController(CommandController commandController)
+public sealed class CooldownController
 {
     private readonly ConcurrentDictionary<CooldownHash, DateTime> _cooldowns = new();
     private readonly ConcurrentDictionary<CooldownHash, DateTime> _afkCooldowns = new();
-    private readonly CommandController _commandController = commandController;
 
     public void AddCooldown(long userId, CommandType type)
     {
@@ -22,8 +21,7 @@ public sealed class CooldownController(CommandController commandController)
 #endif
 
         CooldownHash cooldownHash = new(userId, type);
-        TimeSpan cooldownTime = TimeSpan.FromMilliseconds(_commandController.GetCommand(type).Cooldown);
-        DateTime cooldownUntil = DateTime.UtcNow + cooldownTime;
+        DateTime cooldownUntil = DateTime.UtcNow + CommandController.GetCommand(type).Cooldown;
         _cooldowns.AddOrSet(cooldownHash, cooldownUntil);
     }
 

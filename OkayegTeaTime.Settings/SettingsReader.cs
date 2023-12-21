@@ -12,7 +12,7 @@ public static class SettingsReader
         BufferedFileReader fileReader = new(fileName);
         using PooledBufferWriter<byte> writer = new();
         fileReader.ReadBytes(writer);
-        Settings? settings = JsonSerializer.Deserialize<Settings>(writer.WrittenSpan);
+        Settings? settings = JsonSerializer.Deserialize(writer.WrittenSpan, SettingsJsonSerializerContext.Default.Settings);
         ArgumentNullException.ThrowIfNull(settings);
         return settings;
     }

@@ -1,24 +1,31 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 
 namespace OkayegTeaTime.Settings;
 
 public sealed class Settings : IEquatable<Settings>
 {
     [Required]
+    [ValidateObjectMembers]
     public required TwitchSettings Twitch { get; init; }
 
     [Required]
+    [ValidateObjectMembers]
     public required DatabaseSettings Database { get; init; }
 
     [Required]
+    [ValidateObjectMembers]
     public required Users Users { get; init; }
 
+    [ValidateObjectMembers]
     public SpotifySettings? Spotify { get; init; }
 
+    [ValidateObjectMembers]
     public OpenWeatherMapSettings? OpenWeatherMap { get; init; }
 
+    [ValidateObjectMembers]
     public OfflineChatSettings? OfflineChat { get; init; }
 
     [Url]

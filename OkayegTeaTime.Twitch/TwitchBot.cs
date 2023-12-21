@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Emojis;
+using HLE.Strings;
 using HLE.Twitch;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
-using OkayegTeaTime.Resources;
 using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Bttv;
 using OkayegTeaTime.Twitch.Controller;
@@ -22,24 +21,24 @@ using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Twitch.SevenTv;
 using static OkayegTeaTime.Utils.ProcessUtils;
+using Channel = HLE.Twitch.Models.Channel;
+using User = OkayegTeaTime.Twitch.Helix.Models.User;
 
 namespace OkayegTeaTime.Twitch;
 
 public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 {
-    public UserCache Users { get; } = new();
+    public UserCache Users { get; } = [];
 
-    public ReminderCache Reminders { get; } = new();
+    public ReminderCache Reminders { get; } = [];
 
-    public ChannelCache Channels { get; } = new();
+    public ChannelCache Channels { get; } = [];
 
-    public SpotifyUserCache SpotifyUsers { get; } = new();
-
-    public CommandController CommandController { get; } = new(JsonSerializer.Deserialize<CommandList>(ResourceController.Commands)!);
+    public SpotifyUserCache SpotifyUsers { get; } = [];
 
     public WeatherService WeatherService { get; } = new();
 
-    public CooldownController CooldownController { get; }
+    public CooldownController CooldownController { get; } = new();
 
     public TwitchApi TwitchApi { get; } = new(GlobalSettings.Settings.Twitch.ApiClientId, GlobalSettings.Settings.Twitch.ApiClientSecret, new());
 
@@ -51,13 +50,11 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     public MessageRegexCreator MessageRegexCreator { get; set; } = new();
 
-    public LastMessageController LastMessages { get; }
+    public LastMessageController LastMessages { get; } = new();
 
-    public Dictionary<long, HangmanGame> HangmanGames { get; } = new();
+    public ConcurrentDictionary<long, HangmanGame> HangmanGames { get; } = [];
 
     public EmoteService EmoteService { get; }
-
-    public DotNetFiddleService DotNetFiddleService { get; } = new();
 
     public MathService MathService { get; } = new();
 
@@ -86,12 +83,10 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         _twitchClient.JoinChannelsAsync(channels).AsTask().Wait(); // TODO: 💢
 
         _twitchClient.OnConnected += Client_OnConnected!;
-        _twitchClient.OnJoinedChannel += async (_, e) => await Client_OnJoinedChannel(e);
-        _twitchClient.OnChatMessageReceived += async (_, msg) => await Client_OnMessageReceived(msg);
+        _twitchClient.OnJoinedChannel += async (_, e) => await Client_OnJoinedChannelAsync(e);
+        _twitchClient.OnChatMessageReceived += async (_, msg) => await Client_OnMessageReceivedAsync(msg);
         _twitchClient.OnDisconnected += Client_OnDisconnect!;
 
-        CooldownController = new(CommandController);
-        LastMessages = new(Channels);
         _messageHandler = new(this);
         EmoteService = new(this);
         _periodicActionsController = new(GetPeriodicActions());
@@ -110,31 +105,42 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         await _twitchClient.DisconnectAsync();
     }
 
-    public async ValueTask SendAsync(long channelId, ReadOnlyMemory<char> message) => await _twitchClient.SendAsync(channelId, message);
+    // ReSharper disable once InconsistentNaming
+    public ValueTask SendAsync(long channelId, ReadOnlyMemory<char> message) => _twitchClient.SendAsync(channelId, message);
 
-    public async ValueTask SendAsync(string channel, ReadOnlyMemory<char> message) => await _twitchClient.SendAsync(channel, message);
+    // ReSharper disable once InconsistentNaming
+    public ValueTask SendAsync(string channel, ReadOnlyMemory<char> message) => _twitchClient.SendAsync(channel, message);
 
-    public async ValueTask SendAsync(ReadOnlyMemory<char> channel, ReadOnlyMemory<char> message) => await _twitchClient.SendAsync(channel, message);
+    // ReSharper disable once InconsistentNaming
+    public ValueTask SendAsync(ReadOnlyMemory<char> channel, ReadOnlyMemory<char> message) => _twitchClient.SendAsync(channel, message);
 
     public async ValueTask SendAsync(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
     {
+        using PooledStringBuilder builder = new(message.Length << 1);
+
         if (addEmote)
         {
             string emote = Channels[channel]?.Emote ?? GlobalSettings.DefaultEmote;
-            message = emote + ' ' + message;
+            builder.Append(emote);
+            builder.Append(' ');
         }
+
+        builder.Append(message);
 
         if (checkDuplicate && message == LastMessages[channel])
         {
-            message = message + ' ' + GlobalSettings.ChatterinoChar;
+            builder.Append(' ');
+            builder.Append(GlobalSettings.ChatterinoChar);
         }
 
-        if (checkLength && message.Length > GlobalSettings.MaxMessageLength)
-        {
-            message = message[..GlobalSettings.MaxMessageLength];
-        }
+        message = checkLength && message.Length > GlobalSettings.MaxMessageLength
+            ? new(builder.WrittenSpan[..GlobalSettings.MaxMessageLength])
+            : builder.ToString();
 
-        await _twitchClient.SendAsync(_twitchClient.Channels[channel]!.Id, message);
+        _twitchClient.Channels.TryGet(channel, out Channel? c);
+        ArgumentNullException.ThrowIfNull(c);
+
+        await _twitchClient.SendAsync(c.Id, message);
         LastMessages[channel] = message;
     }
 
@@ -144,7 +150,7 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         {
             await _twitchClient.JoinChannelAsync(channel);
             await SendAsync(channel, $"{Emoji.Wave} hello");
-            var user = await TwitchApi.GetUserAsync(channel);
+            User? user = await TwitchApi.GetUserAsync(channel);
             if (user is null)
             {
                 return false;
@@ -188,7 +194,7 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     private static void Client_OnConnected(object sender, EventArgs e) => ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
 
-    private async ValueTask Client_OnJoinedChannel(JoinChannelMessage e)
+    private async ValueTask Client_OnJoinedChannelAsync(JoinChannelMessage e)
     {
         if (e.Username == GlobalSettings.Settings.Twitch.Username)
         {
@@ -201,7 +207,7 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
             return;
         }
 
-        var user = await TwitchApi.GetUserAsync(e.Username);
+        User? user = await TwitchApi.GetUserAsync(e.Username);
         if (user is null)
         {
             return;
@@ -213,10 +219,10 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         }
     }
 
-    private async ValueTask Client_OnMessageReceived(IChatMessage message)
+    private async ValueTask Client_OnMessageReceivedAsync(IChatMessage message)
     {
         ConsoleOut($"[TWITCH] <#{message.Channel}> {message.Username}: {message.Message}");
-        await _messageHandler.HandleAsync(message);
+        await _messageHandler.Handle(message);
 
         if (message is IDisposable disposable)
         {
@@ -229,12 +235,11 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
     #endregion Bot_On
 
     private PeriodicAction[] GetPeriodicActions() =>
-        new PeriodicAction[]
-        {
-            new(CheckForExpiredReminders, TimeSpan.FromSeconds(1))
-        };
+    [
+        new(CheckForExpiredRemindersAsync, TimeSpan.FromSeconds(1))
+    ];
 
-    private async ValueTask CheckForExpiredReminders()
+    private async ValueTask CheckForExpiredRemindersAsync()
     {
         Reminder[] reminders = Reminders.GetExpiredReminders();
         for (int i = 0; i < reminders.Length; i++)
@@ -258,6 +263,5 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         _twitchClient.Dispose();
         _periodicActionsController.Dispose();
         TwitchApi.Dispose();
-        MessageRegexCreator.Dispose();
     }
 }

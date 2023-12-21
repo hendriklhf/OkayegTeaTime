@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,22 +13,23 @@ namespace OkayegTeaTime.Spotify;
 
 public static class SpotifyController
 {
-    private static readonly List<ListeningSession> _listeningSessions = new();
+    private static readonly List<ListeningSession> s_listeningSessions = [];
 
     private static List<string> ChatPlaylistUris
     {
         get
         {
-            if (_chatPlaylistUris is not null)
+            if (s_chatPlaylistUris is not null)
             {
-                return _chatPlaylistUris;
+                return s_chatPlaylistUris;
             }
 
-            GetPlaylistTracks().Wait();
-            _chatPlaylistUris ??= new();
-            return _chatPlaylistUris;
+            GetPlaylistTracksAsync().Wait();
+            s_chatPlaylistUris ??= [];
+            return s_chatPlaylistUris;
 
-            static async Task GetPlaylistTracks()
+            // ReSharper disable once InconsistentNaming
+            static async Task GetPlaylistTracksAsync()
             {
                 string? username = DbController.GetUser(GlobalSettings.Settings.Users.Owner)?.Username;
                 if (username is null)
@@ -44,17 +45,17 @@ public static class SpotifyController
 
                 SpotifyUser user = new(efUser);
                 SpotifyTrack[] tracks = await GetPlaylistItemsAsync(user, GlobalSettings.Settings.OfflineChat!.ChatPlaylistId);
-                _chatPlaylistUris = tracks.Select(static t => t.Uri).ToList();
+                s_chatPlaylistUris = tracks.Select(static t => t.Uri).ToList();
             }
         }
     }
 
-    private static List<string>? _chatPlaylistUris;
+    private static List<string>? s_chatPlaylistUris;
 
     /// <summary>
-    ///     The length of "spotify:track:".
+    /// The length of "spotify:track:".
     /// </summary>
-    private const byte _trackIdPrefixLength = 14;
+    private const byte TrackIdPrefixLength = 14;
 
     public static string GetLoginUrl()
     {
@@ -175,7 +176,7 @@ public static class SpotifyController
     private static async ValueTask<SpotifyTrack[]> GetPlaylistItemsAsync(SpotifyUser user, string playlistUri)
     {
         SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
-        List<SpotifyTrack> result = new(1000);
+        List<SpotifyTrack> result = new(2048);
         int offset = 0;
         do
         {
@@ -205,7 +206,8 @@ public static class SpotifyController
                 await DbController.LogExceptionAsync(ex);
                 break;
             }
-        } while (true);
+        }
+        while (true);
 
         return result.ToArray();
     }
@@ -233,7 +235,7 @@ public static class SpotifyController
         {
             SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             await client.Player.AddToQueue(new(uri));
-            FullTrack item = await client.Tracks.Get(uri[_trackIdPrefixLength..]);
+            FullTrack item = await client.Tracks.Get(uri[TrackIdPrefixLength..]);
             return new(item);
         }
         catch (APIException ex)
@@ -267,7 +269,7 @@ public static class SpotifyController
         }
     }
 
-    public static ListeningSession? GetListeningSession(SpotifyUser host) => _listeningSessions.FirstOrDefault(s => ReferenceEquals(s.Host, host));
+    public static ListeningSession? GetListeningSession(SpotifyUser host) => s_listeningSessions.FirstOrDefault(s => ReferenceEquals(s.Host, host));
 
     private static ListeningSession GetOrCreateListeningSession(SpotifyUser host)
     {
@@ -278,7 +280,7 @@ public static class SpotifyController
         }
 
         session = new(host);
-        _listeningSessions.Add(session);
+        s_listeningSessions.Add(session);
         return session;
     }
 
@@ -304,7 +306,7 @@ public static class SpotifyController
         {
             listenerSession.Listeners.Clear();
             listenerSession.StopTimer();
-            _listeningSessions.Remove(listenerSession);
+            s_listeningSessions.Remove(listenerSession);
             listenerSession.Dispose();
         }
 
@@ -341,7 +343,7 @@ public static class SpotifyController
         {
             SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
             await client.Player.SkipNext();
-            if (seekToMs > 0)
+            if (seekToMs != 0)
             {
                 await client.Player.SeekTo(new(seekToMs));
             }
@@ -483,7 +485,7 @@ public static class SpotifyController
         return playback;
     }
 
-    public static SpotifyUser? GetListeningTo(SpotifyUser listener) => _listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
+    public static SpotifyUser? GetListeningTo(SpotifyUser listener) => s_listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
 
     public static async ValueTask<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
     {

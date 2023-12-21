@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HLE;
 using HLE.Strings;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Settings;
@@ -24,7 +25,7 @@ public readonly struct PickCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PickCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (!pattern.IsMatch(ChatMessage.Message))
@@ -34,8 +35,7 @@ public readonly struct PickCommand(TwitchBot twitchBot, IChatMessage chatMessage
         }
 
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        int randomIndex = Random.Shared.Next(1, messageExtension.Split.Length);
-        ReadOnlyMemory<char> randomPick = messageExtension.Split[randomIndex];
+        ReadOnlyMemory<char> randomPick = Random.Shared.GetItem(messageExtension.Split.AsSpan());
         Response.Append(ChatMessage.Username, ", ", randomPick.Span);
         return ValueTask.CompletedTask;
     }

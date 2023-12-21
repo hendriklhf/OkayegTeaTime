@@ -25,8 +25,7 @@ public static class Program
             }
             case "readme":
             {
-                ReadMeGenerator generator = new();
-                generator.Generate();
+                ReadMeGenerator.Generate();
                 break;
             }
             case "clean":

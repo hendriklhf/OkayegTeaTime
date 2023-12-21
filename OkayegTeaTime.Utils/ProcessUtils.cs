@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using OkayegTeaTime.Settings;
+using System;
 
 namespace OkayegTeaTime.Utils;
 
@@ -23,12 +21,5 @@ public static class ProcessUtils
         {
             Logger.Log(value);
         }
-    }
-
-    public static void Restart()
-    {
-        ConsoleOut("[SYSTEM] RESTARTED", ConsoleColor.Red, true);
-        Process.Start($"./{GlobalSettings.AssemblyName}", Environment.GetCommandLineArgs());
-        Environment.Exit(0);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace OkayegTeaTime.Settings;
@@ -11,7 +12,8 @@ public sealed class OfflineChatSettings : IEquatable<OfflineChatSettings>
     public required string Channel { get; init; }
 
     [MinLength(1)]
-    public required ImmutableArray<string> Emotes { get; init; }
+    [SuppressMessage("Performance", "CA1819:Properties should not return arrays")] // source generator doesnt work with ImmutableArray<T>
+    public required string[] Emotes { get; init; }
 
     [RegularExpression("(?i)^[a-z0-9]{22}$")]
     public required string ChatPlaylistId { get; init; }

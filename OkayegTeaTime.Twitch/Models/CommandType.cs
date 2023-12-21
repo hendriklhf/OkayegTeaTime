@@ -2,7 +2,6 @@
 
 public enum CommandType
 {
-    BanFromFile,
     Chatterino,
     Chatterino7,
     Check,
@@ -19,7 +18,6 @@ public enum CommandType
     Id,
     Invalidate,
     Join,
-    Kotlin,
     Leave,
     Listen,
     Massping,
@@ -27,7 +25,6 @@ public enum CommandType
     Pick,
     Ping,
     Rafk,
-    Reddit,
     Remind,
     Set,
     Skip,

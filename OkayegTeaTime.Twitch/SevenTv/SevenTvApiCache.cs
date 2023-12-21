@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using HLE.Collections;
 using OkayegTeaTime.Twitch.SevenTv.Models;
@@ -11,14 +11,14 @@ public sealed class SevenTvApiCache(CacheOptions options) : IEquatable<SevenTvAp
 {
     public CacheOptions Options { get; set; } = options;
 
-    private CacheEntry<Emote[]> _globalEmotesCache = CacheEntry<Emote[]>.Empty;
-    private readonly ConcurrentDictionary<long, CacheEntry<Emote[]>> _channelEmotesCache = new();
+    private CacheEntry<ImmutableArray<Emote>> _globalEmotesCache = CacheEntry<ImmutableArray<Emote>>.Empty;
+    private readonly ConcurrentDictionary<long, CacheEntry<ImmutableArray<Emote>>> _channelEmotesCache = new();
 
-    public void AddGlobalEmotes(Emote[] emotes) => _globalEmotesCache = new(emotes);
+    public void AddGlobalEmotes(ImmutableArray<Emote> emotes) => _globalEmotesCache = new(emotes);
 
-    public void AddChannelEmotes(long channelId, Emote[] emotes) => _channelEmotesCache.AddOrSet(channelId, new(emotes));
+    public void AddChannelEmotes(long channelId, ImmutableArray<Emote> emotes) => _channelEmotesCache.AddOrSet(channelId, new(emotes));
 
-    public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetGlobalEmotes(out ImmutableArray<Emote> emotes)
     {
         if (_globalEmotesCache.IsValid(Options.GlobalEmotesCacheTime))
         {
@@ -26,19 +26,19 @@ public sealed class SevenTvApiCache(CacheOptions options) : IEquatable<SevenTvAp
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 
-    public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetChannelEmotes(long channelId, out ImmutableArray<Emote> emotes)
     {
-        if (_channelEmotesCache.TryGetValue(channelId, out var emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmotesCache.TryGetValue(channelId, out CacheEntry<ImmutableArray<Emote>> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = emoteEntry.Value;
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 

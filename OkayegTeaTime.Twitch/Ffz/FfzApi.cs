@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -7,15 +7,14 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Strings;
 using OkayegTeaTime.Twitch.Ffz.Models;
-using OkayegTeaTime.Twitch.Ffz.Models.Responses;
 
 namespace OkayegTeaTime.Twitch.Ffz;
 
-public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
+public sealed class FfzApi : IEquatable<FfzApi>
 {
     public FfzApiCache? Cache { get; set; }
 
-    private const string _apiBaseUrl = "https://api.frankerfacez.com/v1";
+    private const string ApiBaseUrl = "https://api.frankerfacez.com/v1";
 
     public FfzApi(CacheOptions? cacheOptions = null)
     {
@@ -25,22 +24,22 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
         }
     }
 
-    public async ValueTask<Emote[]?> GetChannelEmotesAsync(long channelId)
+    public async ValueTask<ImmutableArray<Emote>> GetChannelEmotesAsync(long channelId)
     {
-        if (TryGetChannelEmotesFromCache(channelId, out Emote[]? emotes))
+        if (TryGetChannelEmotesFromCache(channelId, out ImmutableArray<Emote> emotes))
         {
             return emotes;
         }
 
-        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
-        urlBuilder.Append(_apiBaseUrl, "/room/id/");
+        using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
+        urlBuilder.Append(ApiBaseUrl, "/room/id/");
         urlBuilder.Append(channelId);
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
         if (httpResponse.StatusCode == HttpStatusCode.NotFound)
         {
-            return null;
+            return [];
         }
 
         using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
@@ -54,10 +53,10 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
             throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        Room room = JsonSerializer.Deserialize<GetRoomResponse>(httpContentBytes.AsSpan()).Room;
+        Room room = JsonSerializer.Deserialize(httpContentBytes.AsSpan(), FfzJsonSerializerContext.Default.GetRoomResponse).Room;
         if (room == Room.Empty)
         {
-            return null;
+            return [];
         }
 
         emotes = DeserializeResponse(httpContentBytes.AsSpan());
@@ -65,23 +64,24 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
         return emotes;
     }
 
-    public async ValueTask<Emote[]?> GetChannelEmotesAsync(string channelName) => await GetChannelEmotesAsync(channelName.AsMemory());
+    // ReSharper disable once InconsistentNaming
+    public ValueTask<ImmutableArray<Emote>> GetChannelEmotesAsync(string channelName) => GetChannelEmotesAsync(channelName.AsMemory());
 
-    public async ValueTask<Emote[]?> GetChannelEmotesAsync(ReadOnlyMemory<char> channelName)
+    public async ValueTask<ImmutableArray<Emote>> GetChannelEmotesAsync(ReadOnlyMemory<char> channelName)
     {
-        if (TryGetChannelEmotesFromCache(channelName.Span, out Emote[]? emotes))
+        if (TryGetChannelEmotesFromCache(channelName.Span, out ImmutableArray<Emote> emotes))
         {
             return emotes;
         }
 
-        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
-        urlBuilder.Append(_apiBaseUrl, "/room/", channelName.Span);
+        using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
+        urlBuilder.Append(ApiBaseUrl, "/room/", channelName.Span);
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
         if (httpResponse.StatusCode == HttpStatusCode.NotFound)
         {
-            return null;
+            return [];
         }
 
         using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
@@ -95,10 +95,10 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
             throw new HttpResponseEmptyException();
         }
 
-        Room room = JsonSerializer.Deserialize<GetRoomResponse>(httpContentBytes.AsSpan()).Room;
+        Room room = JsonSerializer.Deserialize(httpContentBytes.AsSpan(), FfzJsonSerializerContext.Default.GetRoomResponse).Room;
         if (room == Room.Empty)
         {
-            return null;
+            return [];
         }
 
         emotes = DeserializeResponse(httpContentBytes.AsSpan());
@@ -106,15 +106,15 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
         return emotes;
     }
 
-    public async ValueTask<Emote[]> GetGlobalEmotesAsync()
+    public async ValueTask<ImmutableArray<Emote>> GetGlobalEmotesAsync()
     {
-        if (TryGetGlobalEmotesFromCache(out Emote[]? emotes))
+        if (TryGetGlobalEmotesFromCache(out ImmutableArray<Emote> emotes))
         {
             return emotes;
         }
 
-        using PooledStringBuilder urlBuilder = new(_apiBaseUrl.Length + 30);
-        urlBuilder.Append(_apiBaseUrl, "/set/global");
+        using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
+        urlBuilder.Append(ApiBaseUrl, "/set/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
@@ -129,7 +129,7 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
             throw new HttpRequestFailedException(httpResponse.StatusCode, httpContentBytes.AsSpan());
         }
 
-        emotes = JsonSerializer.Deserialize<GetGlobalEmotesResponse>(httpContentBytes.AsSpan()).Sets.GlobalSet.Emotes;
+        emotes = JsonSerializer.Deserialize(httpContentBytes.AsSpan(), FfzJsonSerializerContext.Default.GetGlobalEmotesResponse).Sets.GlobalSet.Emotes;
         if (emotes.Length == 0)
         {
             return emotes;
@@ -139,25 +139,25 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
         return emotes;
     }
 
-    private bool TryGetGlobalEmotesFromCache([MaybeNullWhen(false)] out Emote[] emotes)
+    private bool TryGetGlobalEmotesFromCache(out ImmutableArray<Emote> emotes)
     {
-        emotes = null;
+        emotes = [];
         return Cache?.TryGetGlobalEmotes(out emotes) == true;
     }
 
-    private bool TryGetChannelEmotesFromCache(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
+    private bool TryGetChannelEmotesFromCache(long channelId, out ImmutableArray<Emote> emotes)
     {
-        emotes = null;
+        emotes = [];
         return Cache?.TryGetChannelEmotes(channelId, out emotes) == true;
     }
 
-    private bool TryGetChannelEmotesFromCache(ReadOnlySpan<char> channel, [MaybeNullWhen(false)] out Emote[] emotes)
+    private bool TryGetChannelEmotesFromCache(ReadOnlySpan<char> channel, out ImmutableArray<Emote> emotes)
     {
-        emotes = null;
+        emotes = [];
         return Cache?.TryGetChannelEmotes(channel, out emotes) == true;
     }
 
-    private static Emote[] DeserializeResponse(ReadOnlySpan<byte> response)
+    private static ImmutableArray<Emote> DeserializeResponse(ReadOnlySpan<byte> response)
     {
         ResponseDeserializer deserializer = new(response);
         return deserializer.Deserialize();
@@ -172,6 +172,4 @@ public sealed class FfzApi : IDisposable, IEquatable<FfzApi>
     public static bool operator ==(FfzApi? left, FfzApi? right) => Equals(left, right);
 
     public static bool operator !=(FfzApi? left, FfzApi? right) => !(left == right);
-
-    public void Dispose() => Cache?.Dispose();
 }

@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using HLE.Collections.Concurrent;
 using OkayegTeaTime.Twitch.Ffz.Models;
 
 namespace OkayegTeaTime.Twitch.Ffz;
 
-public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>, IDisposable
+public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>
 {
     public CacheOptions Options { get; set; } = options;
 
-    private readonly ConcurrentDoubleDictionary<long, int, CacheEntry<Emote[]>> _channelEmotesCache = new();
-    private CacheEntry<Emote[]> _globalEmotesCache = CacheEntry<Emote[]>.Empty;
+    private readonly ConcurrentDoubleDictionary<long, int, CacheEntry<ImmutableArray<Emote>>> _channelEmotesCache = new();
+    private CacheEntry<ImmutableArray<Emote>> _globalEmotesCache = CacheEntry<ImmutableArray<Emote>>.Empty;
 
-    public void AddChannelEmotes(long channelId, ReadOnlySpan<char> channelName, Emote[] emotes)
+    public void AddChannelEmotes(long channelId, ReadOnlySpan<char> channelName, ImmutableArray<Emote> emotes)
     {
         int channelNameHash = string.GetHashCode(channelName, StringComparison.OrdinalIgnoreCase);
         _channelEmotesCache.AddOrSet(channelId, channelNameHash, new(emotes));
     }
 
-    public void AddGlobalEmotes(Emote[] emotes) => _globalEmotesCache = new(emotes);
+    public void AddGlobalEmotes(ImmutableArray<Emote> emotes) => _globalEmotesCache = new(emotes);
 
-    public bool TryGetGlobalEmotes([MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetGlobalEmotes(out ImmutableArray<Emote> emotes)
     {
         if (_globalEmotesCache.IsValid(Options.GlobalEmotesCacheTime))
         {
@@ -29,32 +29,32 @@ public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>,
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 
-    public bool TryGetChannelEmotes(long channelId, [MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetChannelEmotes(long channelId, out ImmutableArray<Emote> emotes)
     {
-        if (_channelEmotesCache.TryGetByPrimaryKey(channelId, out CacheEntry<Emote[]> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmotesCache.TryGetByPrimaryKey(channelId, out CacheEntry<ImmutableArray<Emote>> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = emoteEntry.Value;
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 
-    public bool TryGetChannelEmotes(ReadOnlySpan<char> channelName, [MaybeNullWhen(false)] out Emote[] emotes)
+    public bool TryGetChannelEmotes(ReadOnlySpan<char> channelName, out ImmutableArray<Emote> emotes)
     {
         int channelNameHash = string.GetHashCode(channelName, StringComparison.OrdinalIgnoreCase);
-        if (_channelEmotesCache.TryGetBySecondaryKey(channelNameHash, out CacheEntry<Emote[]> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
+        if (_channelEmotesCache.TryGetBySecondaryKey(channelNameHash, out CacheEntry<ImmutableArray<Emote>> emoteEntry) && emoteEntry.IsValid(Options.ChannelEmotesCacheTime))
         {
             emotes = emoteEntry.Value;
             return true;
         }
 
-        emotes = null;
+        emotes = [];
         return false;
     }
 
@@ -67,6 +67,4 @@ public sealed class FfzApiCache(CacheOptions options) : IEquatable<FfzApiCache>,
     public static bool operator ==(FfzApiCache? left, FfzApiCache? right) => Equals(left, right);
 
     public static bool operator !=(FfzApiCache? left, FfzApiCache? right) => !(left == right);
-
-    public void Dispose() => _channelEmotesCache.Dispose();
 }

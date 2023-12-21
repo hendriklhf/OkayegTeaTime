@@ -27,7 +27,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask HandleAsync()
+    public ValueTask Handle()
     {
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;
@@ -156,10 +156,10 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
     private void SetLocation()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        ReadOnlySpan<ReadOnlyMemory<char>> splits = messageExtension.Split.Splits;
+        ReadOnlySpan<ReadOnlyMemory<char>> splits = messageExtension.Split.AsSpan();
 
         Span<char> cityBuffer = stackalloc char[512];
-        int cityBufferLength = StringHelper.Join(splits[3..messageExtension.Split.Length], ' ', cityBuffer);
+        int cityBufferLength = StringHelpers.Join(' ', splits[3..messageExtension.Split.Length], cityBuffer);
         string city = new(cityBuffer[..cityBufferLength]);
 
         bool isPrivate = messageExtension.LowerSplit[2].Span[1] == 'r';

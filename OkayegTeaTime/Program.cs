@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +11,9 @@ namespace OkayegTeaTime;
 
 public static class Program
 {
-    private static readonly SemaphoreSlim _keepAliveSemaphore = new(0);
+    private static readonly SemaphoreSlim s_keepAliveSemaphore = new(0);
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     private static async Task Main(string[] args)
     {
         Console.Title = "OkayegTeaTime";
@@ -23,6 +25,6 @@ public static class Program
         using TwitchBot twitchBot = new(argsResolver.Channels);
         await twitchBot.ConnectAsync();
 
-        await _keepAliveSemaphore.WaitAsync();
+        await s_keepAliveSemaphore.WaitAsync();
     }
 }

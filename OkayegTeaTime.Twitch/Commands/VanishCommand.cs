@@ -23,7 +23,7 @@ public readonly struct VanishCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out VanishCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask HandleAsync()
+    public async ValueTask Handle()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)

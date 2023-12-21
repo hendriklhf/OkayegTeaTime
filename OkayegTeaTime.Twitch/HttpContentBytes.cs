@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
+using HLE.Marshalling;
 using HLE.Memory;
 
 namespace OkayegTeaTime.Twitch;
 
-public readonly struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposable
+public struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposable
 {
     public int Length { get; }
 
-    private readonly RentedArray<byte> _bytes = RentedArray<byte>.Empty;
+    private RentedArray<byte> _bytes = [];
 
     public static HttpContentBytes Empty => new();
 
@@ -25,11 +25,9 @@ public readonly struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposa
         Length = length;
     }
 
-    public ReadOnlySpan<byte> AsSpan() => _bytes.Span[..Length];
+    public readonly ReadOnlySpan<byte> AsSpan() => _bytes.AsSpan(..Length);
 
-    public ReadOnlyMemory<byte> AsMemory() => _bytes.Memory[..Length];
-
-    private static readonly FieldInfo _underlyingArrayField = typeof(RentedArray<byte>).GetField("_array", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    public readonly ReadOnlyMemory<byte> AsMemory() => _bytes.AsMemory(..Length);
 
     public static async ValueTask<HttpContentBytes> CreateAsync(HttpResponseMessage httpResponse)
     {
@@ -39,23 +37,22 @@ public readonly struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposa
             return Empty;
         }
 
-        using RentedArray<byte> buffer = new(contentLength);
-        byte[] underlyingArray = GetUnderlyingArray(buffer);
-        MemoryStream copyDestination = new(underlyingArray);
+        using RentedArray<byte> buffer = ArrayPool<byte>.Shared.RentAsRentedArray(contentLength);
+        byte[] underlyingArray = RentedArrayMarshal<byte>.GetArray(buffer);
+        using MemoryStream copyDestination = new(underlyingArray);
 
         await httpResponse.Content.LoadIntoBufferAsync();
         await httpResponse.Content.CopyToAsync(copyDestination);
         return new(buffer, contentLength);
     }
 
-    // TODO: fix with next HLE version
-    private static byte[] GetUnderlyingArray(RentedArray<byte> rentedArray) => (byte[])_underlyingArrayField.GetValue(rentedArray)!;
+    public readonly bool Equals(HttpContentBytes other) => Length == other.Length && _bytes == other._bytes;
 
-    public bool Equals(HttpContentBytes other) => Length == other.Length && _bytes == other._bytes;
+    // ReSharper disable once ArrangeModifiersOrder
+    public override readonly bool Equals(object? obj) => obj is HttpContentBytes other && Equals(other);
 
-    public override bool Equals(object? obj) => obj is HttpContentBytes other && Equals(other);
-
-    public override int GetHashCode() => HashCode.Combine(_bytes, Length);
+    // ReSharper disable once ArrangeModifiersOrder
+    public override readonly int GetHashCode() => HashCode.Combine(_bytes, Length);
 
     public static bool operator ==(HttpContentBytes left, HttpContentBytes right) => left.Equals(right);
 

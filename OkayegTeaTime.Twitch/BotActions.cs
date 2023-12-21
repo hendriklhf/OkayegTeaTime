@@ -9,18 +9,14 @@ namespace OkayegTeaTime.Twitch;
 
 public static class BotActions
 {
-    private const string _yourself = "yourself";
-    private const string _reminderFromSpace = "reminder from ";
+    private const string Yourself = "yourself";
+    private const string ReminderFromSpace = "reminder from ";
 
-    public static async ValueTask SendComingBackAsync(this TwitchBot twitchBot, long userId, string channel)
+    // ReSharper disable once InconsistentNaming
+    public static ValueTask SendComingBackAsync(this TwitchBot twitchBot, long userId, string channel)
     {
         User? user = twitchBot.Users[userId];
-        if (user is null)
-        {
-            return;
-        }
-
-        await SendComingBackAsync(twitchBot, user, channel);
+        return user is null ? ValueTask.CompletedTask : SendComingBackAsync(twitchBot, user, channel);
     }
 
     public static async ValueTask SendComingBackAsync(this TwitchBot twitchBot, User user, string channel)
@@ -41,16 +37,16 @@ public static class BotActions
             return;
         }
 
-        string creator = reminders[0].Creator == reminders[0].Target ? _yourself : reminders[0].Creator;
+        string creator = reminders[0].Creator == reminders[0].Target ? Yourself : reminders[0].Creator;
         TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminders[0].Time);
 
         using PooledStringBuilder builder = new(500);
-        builder.Append(reminders[0].Target, ", ", _reminderFromSpace, creator, " (");
+        builder.Append(reminders[0].Target, ", ", ReminderFromSpace, creator, " (");
         builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
         builder.Append(" ago)");
 
         twitchBot.Reminders.Remove(reminders[0].Id);
-        if (reminders[0].Message?.Length > 0)
+        if (reminders[0].Message?.Length != 0)
         {
             builder.Append(": ", reminders[0].Message);
         }
@@ -59,14 +55,14 @@ public static class BotActions
         {
             Reminder reminder = reminders[i];
             twitchBot.Reminders.Remove(reminder.Id);
-            creator = reminder.Creator == reminder.Target ? _yourself : reminder.Creator;
+            creator = reminder.Creator == reminder.Target ? Yourself : reminder.Creator;
             timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 
             builder.Append(" || ", creator, " (");
             builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
             builder.Append(" ago)");
 
-            if (reminder.Message?.Length > 0)
+            if (reminder.Message?.Length != 0)
             {
                 builder.Append(": ", reminder.Message);
             }
@@ -77,11 +73,11 @@ public static class BotActions
 
     public static async ValueTask SendTimedReminderAsync(this TwitchBot twitchBot, Reminder reminder)
     {
-        string creator = reminder.Target == reminder.Creator ? _yourself : reminder.Creator;
+        string creator = reminder.Target == reminder.Creator ? Yourself : reminder.Creator;
         TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 
-        using PooledStringBuilder builder = new(500);
-        builder.Append(reminder.Target, ", ", _reminderFromSpace, creator, " (");
+        using PooledStringBuilder builder = new(512);
+        builder.Append(reminder.Target, ", ", ReminderFromSpace, creator, " (");
         builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
         builder.Append(" ago)");
 
