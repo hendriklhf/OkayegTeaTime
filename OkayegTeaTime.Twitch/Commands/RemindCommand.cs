@@ -65,7 +65,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         string[] targets;
         string message;
@@ -149,7 +149,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         Response.Append("reminder", multi ? "s" : string.Empty, " for ");
         string[] responses = ids.Select(i =>
         {
-            Reminder? reminder = reminders.FirstOrDefault(r => r.Id == i);
+            Reminder? reminder = Array.Find(reminders, r => r.Id == i);
             return reminder is null ? null : $"{reminder.Target} ({reminder.Id})";
         }).Where(static r => r is not null).ToArray()!;
 

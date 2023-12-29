@@ -24,7 +24,7 @@ public readonly struct RafkCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RafkCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         User? user = _twitchBot.Users.Get(ChatMessage.UserId, ChatMessage.Username);
         if (user is null)

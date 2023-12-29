@@ -29,7 +29,7 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out ListenCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         if (GlobalSettings.Settings.OfflineChat is null || GlobalSettings.Settings.Spotify is null)
         {
@@ -110,7 +110,6 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
         switch (item)
         {
             case SpotifyTrack track:
-            {
                 Response.Append(track.Name, " by ");
 
                 string[] artists = track.Artists.Select(static a => a.Name).ToArray();
@@ -119,17 +118,12 @@ public readonly struct ListenCommand(TwitchBot twitchBot, IChatMessage chatMessa
 
                 Response.Append(" || ", track.IsLocal ? "local file" : track.Uri);
                 break;
-            }
             case SpotifyEpisode episode:
-            {
                 Response.Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
                 break;
-            }
             default:
-            {
                 Response.Append("an unknown item type monkaS");
                 break;
-            }
         }
     }
 

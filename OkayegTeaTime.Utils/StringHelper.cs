@@ -5,7 +5,7 @@ namespace OkayegTeaTime.Utils;
 
 public static partial class StringHelper
 {
-    [GeneratedRegex(@"^#?[a-z0-9]\w{2,24}$", RegexOptions.Compiled | RegexOptions.IgnoreCase, 1000)]
+    [GeneratedRegex(@"^#?[a-z\d]\w{2,24}$", RegexOptions.Compiled | RegexOptions.IgnoreCase, 1000)]
     private static partial Regex GetChannelPattern();
 
     public static string Antiping(this string value) => value.Insert(value.Length >> 1, StringHelpers.AntipingChar);
@@ -19,12 +19,13 @@ public static partial class StringHelper
             return false;
         }
 
-        channel = (withHashTag switch
+        channel = withHashTag switch
         {
             true => channel[0] == '#' ? channel : '#' + channel,
             _ => channel[0] == '#' ? channel[1..] : channel
-        }).ToLowerInvariant();
+        };
 
+        channel = channel.ToLowerInvariant();
         return true;
     }
 }

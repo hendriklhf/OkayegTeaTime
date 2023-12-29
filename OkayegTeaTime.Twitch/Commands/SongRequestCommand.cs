@@ -32,7 +32,7 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SongRequestCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         if (GlobalSettings.Settings.Spotify is null)
         {
@@ -418,24 +418,21 @@ public readonly struct SongRequestCommand(TwitchBot twitchBot, IChatMessage chat
             bufferLength = StringHelpers.Join(", ", failedUsers, joinBuffer);
             Response.Append(". ", joinBuffer[..bufferLength]);
         }
+        else if (failedUsers.Length == 1)
+        {
+            Response.Append(ChatMessage.Username, ", ", failedUsers[0]);
+        }
         else
         {
-            if (failedUsers.Length == 1)
+            Response.Append(ChatMessage.Username, ", ", track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
+            Response.Append(" hasn't been added to any queue");
+            if (failedUsers.Length == 0)
             {
-                Response.Append(ChatMessage.Username, ", ", failedUsers[0]);
+                return;
             }
-            else
-            {
-                Response.Append(ChatMessage.Username, ", ", track.ToString(), " || ", track.IsLocal ? "local file" : track.Uri);
-                Response.Append(" hasn't been added to any queue");
-                if (failedUsers.Length == 0)
-                {
-                    return;
-                }
 
-                bufferLength = StringHelpers.Join(", ", failedUsers, joinBuffer);
-                Response.Append(". ", joinBuffer[..bufferLength]);
-            }
+            bufferLength = StringHelpers.Join(", ", failedUsers, joinBuffer);
+            Response.Append(". ", joinBuffer[..bufferLength]);
         }
     }
 

@@ -26,9 +26,9 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
 
     private static readonly Regex s_forgottenPrefixPattern = new($@"^@?{GlobalSettings.Settings.Twitch.Username},?\s*(pre|suf)fix", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    public override async ValueTask Handle(IChatMessage chatMessage)
+    public override async ValueTask HandleAsync(IChatMessage chatMessage)
     {
-        await _pajaAlertHandler.Handle(chatMessage);
+        await _pajaAlertHandler.HandleAsync(chatMessage);
 
         using ChatMessageExtension messageExtension = new(chatMessage);
         if (messageExtension.IsIgnoredUser)
@@ -38,7 +38,7 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
 
         await CheckForAfkAsync(chatMessage);
         await CheckForReminderAsync(chatMessage.Username, chatMessage.Channel);
-        await _commandHandler.Handle(chatMessage);
+        await _commandHandler.HandleAsync(chatMessage);
         await HandleSpecificMessagesAsync(chatMessage);
     }
 
@@ -70,8 +70,7 @@ public sealed class MessageHandler(TwitchBot twitchBot) : Handler(twitchBot)
     // ReSharper disable once InconsistentNaming
     private ValueTask CheckForReminderAsync(string username, string channel)
     {
-        // TODO: remove array allocation
-        Reminder[] reminders = _twitchBot.Reminders.GetRemindersFor(username, ReminderType.NonTimed);
+        Reminder[] reminders = _twitchBot.Reminders.GetReminders(username, ReminderTypes.NonTimed);
         return _twitchBot.SendReminderAsync(channel, reminders);
     }
 

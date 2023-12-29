@@ -47,34 +47,34 @@ public static class ReadMeGenerator
 
     private static string CreateReadMe()
     {
-        StringBuilder builder = new();
+        StringBuilder builder = new(16384);
 
         builder.Append($"<h1>{Title}</h1><h2>{Header1}</h2>");
         foreach (string headerText in s_header1Text)
         {
-            builder.Append($"{headerText}<br/>");
+            builder.Append(headerText).Append("<br/>");
         }
 
         builder.Append("<br/><table><tr>");
         foreach (string commandHeader in s_commandTableHeaders)
         {
-            builder.Append($"<th>{commandHeader}</th>");
+            builder.Append("<th>").Append(commandHeader).Append("</th>");
         }
 
         builder.Append("<tr/>");
         Command[] commands = CommandController.Commands.Where(static c => c.Document).OrderBy(static c => c.Name).ToArray();
         foreach (Command command in commands)
         {
-            builder.Append($"<tr><td>{command.Name}</td><td><table>");
+            builder.Append("<tr><td>").Append(command.Name).Append("</td><td><table>");
             foreach (string alias in command.Aliases)
             {
-                builder.Append($"<tr><td>{alias}</td></tr>");
+                builder.Append("<tr><td>").Append(alias).Append("</td></tr>");
             }
 
             builder.Append("</table></td><td><table>");
             foreach (Parameter parameter in command.Parameters)
             {
-                builder.Append($"<tr><td>{parameter.Name}</td><td>{parameter.Description}</td></tr>");
+                builder.Append("<tr><td>").Append(parameter.Name).Append("</td><td>").Append(parameter.Description).Append("</td></tr>");
             }
 
             builder.Append("</table></td></tr>");
@@ -83,24 +83,24 @@ public static class ReadMeGenerator
         builder.Append($"</table><h2>{Header2}</h2><table><tr>");
         foreach (string commandHeader in s_afkCommandTableHeaders)
         {
-            builder.Append($"<th>{commandHeader}</th>");
+            builder.Append("<th>").Append(commandHeader).Append("</th>");
         }
 
         builder.Append("</tr>");
         AfkCommand[] afkCommands = CommandController.AfkCommands.Where(static c => c.Document).OrderBy(static c => c.Name).ToArray();
         foreach (AfkCommand afkCommand in afkCommands)
         {
-            builder.Append($"<tr><td>{afkCommand.Name}</td><td><table>");
+            builder.Append("<tr><td>").Append(afkCommand.Name).Append("</td><td><table>");
             foreach (string alias in afkCommand.Aliases)
             {
-                builder.Append($"<tr><td>{alias}</td></tr>");
+                builder.Append("<tr><td>").Append(alias).Append("</td></tr>");
             }
 
             builder.Append("</table></td>");
             for (int i = 0; i < afkCommand.Parameters.Length; i++)
             {
                 Parameter parameter = afkCommand.Parameters[i];
-                builder.Append($"<td>{parameter.Name}</td><td>{parameter.Description}</td>");
+                builder.Append("<td>").Append(parameter.Name).Append("</td><td>").Append(parameter.Description).Append("</td>");
             }
 
             builder.Append("</td></tr>");

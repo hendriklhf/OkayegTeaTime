@@ -27,7 +27,7 @@ public readonly struct SlotsCommand(TwitchBot twitchBot, IChatMessage chatMessag
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SlotsCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         Regex? emotePattern = null;
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");

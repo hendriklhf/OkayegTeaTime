@@ -23,15 +23,13 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    private static StringArray? s_codeFiles;
+    private static readonly StringArray s_codeFiles = new(ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries).AsSpan());
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CodeCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
-        s_codeFiles ??= new(ResourceController.CodeFiles.Split("\r\n", StringSplitOptions.RemoveEmptyEntries).AsSpan());
-
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (pattern.IsMatch(ChatMessage.Message))
         {
@@ -50,6 +48,7 @@ public readonly struct CodeCommand(TwitchBot twitchBot, IChatMessage chatMessage
 
             using PooledList<string> matchingFiles = [];
             GetMatchingFiles(s_codeFiles, matchingFiles, fileRegex);
+
             Response.Append(ChatMessage.Username, ", ");
             switch (matchingFiles.Count)
             {

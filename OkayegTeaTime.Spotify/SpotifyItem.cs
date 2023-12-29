@@ -42,7 +42,6 @@ public class SpotifyItem
         switch (item)
         {
             case FullTrack track:
-            {
                 Duration = track.DurationMs;
                 Explicit = track.Explicit;
                 ExternalUrls = track.ExternalUrls;
@@ -55,9 +54,7 @@ public class SpotifyItem
                 IsLocal = track.IsLocal;
                 IsTrack = true;
                 break;
-            }
             case FullEpisode episode:
-            {
                 Duration = episode.DurationMs;
                 Explicit = episode.Explicit;
                 ExternalUrls = episode.ExternalUrls;
@@ -70,7 +67,6 @@ public class SpotifyItem
                 IsLocal = false;
                 IsEpisode = true;
                 break;
-            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE;
@@ -25,7 +26,8 @@ public readonly struct PickCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PickCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    [SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary", Justification = "ChatMessageExtension can be disposed before the Task is awaited")]
+    public ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\S+");
         if (!pattern.IsMatch(ChatMessage.Message))

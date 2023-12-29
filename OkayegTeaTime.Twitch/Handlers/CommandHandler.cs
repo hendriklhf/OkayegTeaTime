@@ -22,7 +22,7 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
     private static readonly FrozenDictionary<AliasHash, CommandType> s_commandTypes = CreateCommandTypeDictionary();
     private static readonly FrozenDictionary<AliasHash, AfkType> s_afkTypes = CreateAfkTypeDictionary();
 
-    public override async ValueTask Handle(IChatMessage chatMessage)
+    public override async ValueTask HandleAsync(IChatMessage chatMessage)
     {
         bool handled = await HandleCommandAsync(chatMessage);
         if (!handled)

@@ -27,7 +27,7 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CheckCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\safk\s\w+");
         if (pattern.IsMatch(ChatMessage.Message))

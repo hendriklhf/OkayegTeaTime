@@ -27,7 +27,7 @@ public readonly struct WeatherCommand(TwitchBot twitchBot, IChatMessage chatMess
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out WeatherCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         if (GlobalSettings.Settings.OpenWeatherMap is null)
         {

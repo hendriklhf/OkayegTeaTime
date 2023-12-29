@@ -269,7 +269,7 @@ public static class SpotifyController
         }
     }
 
-    public static ListeningSession? GetListeningSession(SpotifyUser host) => s_listeningSessions.FirstOrDefault(s => ReferenceEquals(s.Host, host));
+    public static ListeningSession? GetListeningSession(SpotifyUser host) => s_listeningSessions.Find(s => ReferenceEquals(s.Host, host));
 
     private static ListeningSession GetOrCreateListeningSession(SpotifyUser host)
     {
@@ -379,7 +379,6 @@ public static class SpotifyController
         switch (currentlyPlaying?.Item)
         {
             case FullTrack track:
-            {
                 item = new SpotifyTrack(track);
 
 #if RELEASE
@@ -422,12 +421,9 @@ public static class SpotifyController
                 }
 #endif
                 break;
-            }
             case FullEpisode episode:
-            {
                 item = new SpotifyEpisode(episode);
                 break;
-            }
         }
 
         return item;
@@ -476,16 +472,11 @@ public static class SpotifyController
     {
         SpotifyClient client = await GetClientAsync(user) ?? throw new SpotifyException($"{user.Username.Antiping()} isn't registered, they have to register first");
         CurrentlyPlayingContext? playback = await client.Player.GetCurrentPlayback();
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (playback is null || !playback.IsPlaying)
-        {
-            return null;
-        }
-
-        return playback;
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        return playback?.IsPlaying != true ? null : playback;
     }
 
-    public static SpotifyUser? GetListeningTo(SpotifyUser listener) => s_listeningSessions.FirstOrDefault(s => s.Listeners.Contains(listener))?.Host;
+    public static SpotifyUser? GetListeningTo(SpotifyUser listener) => s_listeningSessions.Find(s => s.Listeners.Contains(listener))?.Host;
 
     public static async ValueTask<string[]> GetGenresAsync(SpotifyUser user, SpotifyTrack track)
     {
@@ -496,7 +487,7 @@ public static class SpotifyController
             return artist.Genres.ToArray();
         }
 
-        List<string> artistIds = track.Artists.Select(static a => a.Id).ToList();
+        List<string> artistIds = track.Artists.ConvertAll(static a => a.Id);
         ArtistsResponse artists = await client.Artists.GetSeveral(new(artistIds));
         return artists.Artists.Select(static a => a.Genres).SelectMany(static a => a).Distinct().ToArray();
     }

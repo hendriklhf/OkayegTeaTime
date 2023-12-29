@@ -9,10 +9,12 @@ public struct FiveSessionsBuffer : IEquatable<FiveSessionsBuffer>
 {
     #region private Session _session;
 
+#pragma warning disable RCS1169 // make readonly
     [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "members of an InlineArray can't be readonly")]
     private Session _session;
+#pragma warning restore RCS1169
 
-    #endregion
+    #endregion private Session _session;
 
     [SuppressMessage("Style", "IDE0251:Make member \'readonly\'", Justification = "readonly results in a copy of this on every access")]
     public bool Equals(FiveSessionsBuffer other) =>

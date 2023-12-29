@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using HLE;
 using HLE.Memory;
 using HLE.Numerics;
 using HLE.Strings;
@@ -28,10 +28,12 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
+    private const string TemperatureFilePath = "/sys/class/thermal/thermal_zone0/temp";
+
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PingCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         long unixMillisecondsNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         using Process currentProcess = Process.GetCurrentProcess();
@@ -54,11 +56,12 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
 
         if (OperatingSystem.IsLinux())
         {
-            using PooledBufferWriter<char> outputWriter = new(16);
-            ReadOnlyMemory<char> temperature = await GetTemperatureAsync(outputWriter);
-            if (temperature.Length != 0)
+            double temperature = await GetTemperatureAsync();
+            if (temperature != 0)
             {
-                Response.Append(" || Temperature: ", temperature.Span);
+                Response.Append(" || Temperature: ");
+                Response.Append(temperature);
+                Response.Append("°C");
             }
         }
 
@@ -83,42 +86,20 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
     }
 
     [SupportedOSPlatform("linux")]
-    private static async ValueTask<ReadOnlyMemory<char>> GetTemperatureAsync(PooledBufferWriter<char> outputWriter)
+    private static async ValueTask<double> GetTemperatureAsync()
     {
         try
         {
-            using Process temperatureProcess = new()
-            {
-                StartInfo = new("vcgencmd", "measure_temp")
-                {
-                    RedirectStandardOutput = true
-                }
-            };
-
-            temperatureProcess.Start();
-            await temperatureProcess.WaitForExitAsync();
-            await ReadAllCharsAsync(temperatureProcess.StandardOutput, outputWriter);
-
-            int indexOfEqualsSign = outputWriter.WrittenSpan.IndexOf('=');
-            Memory<char> temperature = outputWriter.WrittenMemory[(indexOfEqualsSign + 1)..];
-            temperature.Span[4] = '°';
-            return temperature;
+            BufferedFileReader fileReader = new(TemperatureFilePath);
+            using PooledBufferWriter<byte> byteWriter = new(16);
+            await fileReader.ReadBytesAsync(byteWriter);
+            return double.Parse(byteWriter.WrittenSpan) / 1000;
         }
         catch (Exception ex)
         {
             await DbController.LogExceptionAsync(ex);
-            return ReadOnlyMemory<char>.Empty;
+            return 0;
         }
-    }
-
-    private static async ValueTask ReadAllCharsAsync(StreamReader streamReader, PooledBufferWriter<char> charWriter)
-    {
-        int readChars;
-        do
-        {
-            readChars = await streamReader.ReadAsync(charWriter.GetMemory(16));
-        }
-        while (readChars != 0);
     }
 
     public void Dispose() => Response.Dispose();

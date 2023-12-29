@@ -35,7 +35,7 @@ public struct HangmanCommand(TwitchBot twitchBot, IChatMessage chatMessage, Read
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out HangmanCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         _happyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Grinning, "happy", "good");
         _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");

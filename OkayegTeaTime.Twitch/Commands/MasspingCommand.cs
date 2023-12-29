@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Strings;
@@ -24,7 +25,8 @@ public readonly struct MasspingCommand(TwitchBot twitchBot, IChatMessage chatMes
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out MasspingCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    [SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary", Justification = "ChatMessageExtension can be disposed before the Task is awaited")]
+    public ValueTask HandleAsync()
     {
         if (GlobalSettings.Settings.OfflineChat is null)
         {

@@ -20,7 +20,7 @@ using OkayegTeaTime.Twitch.Messages;
 using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Twitch.SevenTv;
-using static OkayegTeaTime.Utils.ProcessUtils;
+using OkayegTeaTime.Utils;
 using Channel = HLE.Twitch.Models.Channel;
 using User = OkayegTeaTime.Twitch.Helix.Models.User;
 
@@ -192,13 +192,18 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     #region Bot_On
 
-    private static void Client_OnConnected(object sender, EventArgs e) => ConsoleOut("[TWITCH] CONNECTED", ConsoleColor.Red, true);
+    private static void Client_OnConnected(object sender, EventArgs e)
+    {
+        using ConsoleWriter consoleWriter = new();
+        consoleWriter.WriteConnected();
+    }
 
     private async ValueTask Client_OnJoinedChannelAsync(JoinChannelMessage e)
     {
         if (e.Username == GlobalSettings.Settings.Twitch.Username)
         {
-            ConsoleOut($"[TWITCH] JOINED: <#{e.Channel}>", ConsoleColor.Red);
+            await using ConsoleWriter consoleWriter = new();
+            consoleWriter.WriteJoinedChannel(e.Channel);
             return;
         }
 
@@ -221,8 +226,10 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     private async ValueTask Client_OnMessageReceivedAsync(IChatMessage message)
     {
-        ConsoleOut($"[TWITCH] <#{message.Channel}> {message.Username}: {message.Message}");
-        await _messageHandler.Handle(message);
+        await _messageHandler.HandleAsync(message);
+
+        await using ConsoleWriter consoleWriter = new();
+        consoleWriter.WriteChatMessage(message);
 
         if (message is IDisposable disposable)
         {
@@ -230,7 +237,11 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         }
     }
 
-    private static void Client_OnDisconnect(object sender, EventArgs e) => ConsoleOut("[TWITCH] DISCONNECTED", ConsoleColor.Red, true);
+    private static void Client_OnDisconnect(object sender, EventArgs e)
+    {
+        using ConsoleWriter consoleWriter = new();
+        consoleWriter.WriteDisconnected();
+    }
 
     #endregion Bot_On
 

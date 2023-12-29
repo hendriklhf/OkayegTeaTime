@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Strings;
 using HLE.Twitch.Models;
@@ -21,7 +22,8 @@ public readonly struct InvalidateCommand(TwitchBot twitchBot, IChatMessage chatM
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out InvalidateCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    [SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary", Justification = "ChatMessageExtension can be disposed before the Task is awaited")]
+    public ValueTask HandleAsync()
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!messageExtension.IsBotModerator)

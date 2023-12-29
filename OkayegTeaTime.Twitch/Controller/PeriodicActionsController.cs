@@ -20,7 +20,7 @@ public sealed class PeriodicActionsController(PeriodicAction[] periodicActions) 
             {
                 try
                 {
-                    PeriodicTimer timer = new(periodicAction.Interval);
+                    using PeriodicTimer timer = new(periodicAction.Interval);
                     while (!cancellationToken.IsCancellationRequested && await timer.WaitForNextTickAsync(cancellationToken))
                     {
                         await periodicAction.Action();

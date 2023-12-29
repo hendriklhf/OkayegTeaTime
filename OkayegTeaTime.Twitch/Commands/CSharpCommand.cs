@@ -25,7 +25,7 @@ public readonly struct CSharpCommand(TwitchBot twitchBot, IChatMessage chatMessa
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CSharpCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
         if (pattern.IsMatch(ChatMessage.Message))

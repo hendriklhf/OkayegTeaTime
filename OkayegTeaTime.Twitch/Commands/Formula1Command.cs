@@ -39,7 +39,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         s_races ??= await GetRacesAsync();
         if (s_races is null)

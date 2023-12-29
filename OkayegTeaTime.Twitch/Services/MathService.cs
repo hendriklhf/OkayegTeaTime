@@ -25,7 +25,7 @@ public sealed class MathService : IEquatable<MathService>
             return result;
         }
 
-        string url = $"{ApiUrl}{HttpUtility.UrlEncode(expression)}";
+        string url = ApiUrl + HttpUtility.UrlEncode(expression);
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(url);
         using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);

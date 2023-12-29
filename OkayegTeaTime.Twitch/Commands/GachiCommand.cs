@@ -31,7 +31,7 @@ public readonly struct GachiCommand(TwitchBot twitchBot, IChatMessage chatMessag
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GachiCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         GachiSong gachiSong = Random.Shared.GetItem(s_songs.AsSpan());
         Response.Append(Emoji.PointRight, " ", gachiSong.Title, " || ", gachiSong.Url, " gachiBASS");

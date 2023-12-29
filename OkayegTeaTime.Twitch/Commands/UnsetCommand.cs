@@ -26,7 +26,7 @@ public readonly struct UnsetCommand(TwitchBot twitchBot, IChatMessage chatMessag
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out UnsetCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;

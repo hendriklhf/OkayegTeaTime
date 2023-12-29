@@ -165,8 +165,9 @@ public static class DbController
     }
 
     /// <summary>
-    ///     Removes a reminder without checking for permission.
+    /// Removes a reminder without checking for permission.
     /// </summary>
+    /// <param name="reminderId">The id of the reminder.</param>
     public static void RemoveReminder(int reminderId)
     {
         using OkayegTeaTimeContext database = new();

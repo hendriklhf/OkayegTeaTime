@@ -28,7 +28,7 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SpotifyCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         if (GlobalSettings.Settings.Spotify is null)
         {
@@ -81,12 +81,9 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
         switch (item)
         {
             case null:
-            {
                 Response.Append(targetIsSender ? "you aren't listening to anything" : $"{username.Antiping()} is not listening to anything");
                 return;
-            }
             case SpotifyTrack track:
-            {
                 Response.Append(track.Name, " by ");
 
                 string[] artists = track.Artists.Select(static a => a.Name).ToArray();
@@ -95,17 +92,12 @@ public readonly struct SpotifyCommand(TwitchBot twitchBot, IChatMessage chatMess
 
                 Response.Append(" || ", track.IsLocal ? "local file" : track.Uri);
                 return;
-            }
             case SpotifyEpisode episode:
-            {
                 Response.Append(episode.Name, " by ", episode.Show.Name, " || ", episode.IsLocal ? "local file" : episode.Uri);
                 return;
-            }
             default:
-            {
                 Response.Append(Messages.ListeningToAnUnknownSpotifyItemTypeMonkaS);
                 return;
-            }
         }
     }
 

@@ -57,5 +57,5 @@ public static class ResourceController
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void ThrowResourceNotFound(string resourceName)
-        => throw new InvalidOperationException($"Resource {resourceName} not found.");
+        => throw new InvalidOperationException($"Resource \"{resourceName}\" not found.");
 }

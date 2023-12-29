@@ -12,7 +12,7 @@ public sealed class PajaAlertHandler(TwitchBot twitchBot) : PajaHandler(twitchBo
 
     protected override string Message => $"/me pajaStare {Emoji.RotatingLight} OBACHT";
 
-    public override async ValueTask Handle(IChatMessage chatMessage)
+    public override async ValueTask HandleAsync(IChatMessage chatMessage)
     {
         if (chatMessage.ChannelId != PajaChannelId || chatMessage.UserId != PajaAlertUserId || !Pattern.IsMatch(chatMessage.Message))
         {

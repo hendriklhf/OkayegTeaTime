@@ -23,7 +23,7 @@ public readonly struct GuidCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GuidCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         Response.Append(ChatMessage.Username, ", ");
         Response.Append(Guid.NewGuid(), "D");

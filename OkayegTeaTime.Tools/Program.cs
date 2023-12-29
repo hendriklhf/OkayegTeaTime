@@ -18,22 +18,16 @@ public static class Program
         switch (args[0])
         {
             case "build":
-            {
                 Builder builder = new(args);
                 builder.Build();
                 break;
-            }
             case "readme":
-            {
                 ReadMeGenerator.Generate();
                 break;
-            }
             case "clean":
-            {
                 SolutionCleaner cleaner = new();
                 cleaner.Clean();
                 break;
-            }
         }
     }
 

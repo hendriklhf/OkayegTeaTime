@@ -27,7 +27,7 @@ public readonly struct SkipCommand(TwitchBot twitchBot, IChatMessage chatMessage
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SkipCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public async ValueTask Handle()
+    public async ValueTask HandleAsync()
     {
         if (GlobalSettings.Settings.Spotify is null)
         {

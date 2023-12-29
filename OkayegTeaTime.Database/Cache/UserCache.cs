@@ -15,8 +15,10 @@ public sealed class UserCache : DbCache<User>
     }
 
     /// <summary>
-    /// This method also accepts a username to update the username in the database if the user has changed it.
+    /// Gets a user by their id. Optionally takes a username to update it in the database.
     /// </summary>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="username">The current username belonging to the id.</param>
     public User? Get(long id, string? username = null)
     {
         if (!_items.TryGetValue(id, out User? user))

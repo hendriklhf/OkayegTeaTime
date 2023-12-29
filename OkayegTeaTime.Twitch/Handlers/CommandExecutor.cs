@@ -1,7 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using HLE.Twitch.Models;
 using OkayegTeaTime.Database;
@@ -9,13 +10,14 @@ using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
+using ExecutionMethod = System.Func<OkayegTeaTime.Twitch.TwitchBot, HLE.Twitch.Models.IChatMessage, System.ReadOnlyMemory<char>, System.ReadOnlyMemory<char>, System.Threading.Tasks.ValueTask>;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
 public sealed class CommandExecutor
 {
     private readonly TwitchBot _twitchBot;
-    private readonly Func<TwitchBot, IChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>[] _executionMethods;
+    private readonly ExecutionMethod[] _executionMethods;
 
     public CommandExecutor(TwitchBot twitchBot)
     {
@@ -28,22 +30,24 @@ public sealed class CommandExecutor
             .Select(static t => t.GetCustomAttribute<HandledCommandAttribute>()!)
             .ToArray();
 
-        Dictionary<CommandType, Type> handledCommandTypes = handledCommandAttributes.ToDictionary(static a => a.CommandType, static a => a.Command);
-        int methodCount = (int)handledCommandTypes.Keys.Max() + 1;
-        _executionMethods = new Func<TwitchBot, IChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>[methodCount];
-        foreach (KeyValuePair<CommandType, Type> command in handledCommandTypes)
+        int methodCount = (int)handledCommandAttributes.MaxBy(static a => a.CommandType)!.CommandType + 1;
+        _executionMethods = new ExecutionMethod[methodCount];
+        foreach (HandledCommandAttribute attribute in handledCommandAttributes)
         {
-            Func<TwitchBot, IChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask> executionFunction = executionMethod.MakeGenericMethod(command.Value)
-                .CreateDelegate<Func<TwitchBot, IChatMessage, ReadOnlyMemory<char>, ReadOnlyMemory<char>, ValueTask>>();
-            _executionMethods[(int)command.Key] = executionFunction;
+            ExecutionMethod executionFunction = executionMethod.MakeGenericMethod(attribute.Command).CreateDelegate<ExecutionMethod>();
+            _executionMethods[(int)attribute.CommandType] = executionFunction;
         }
     }
 
     // ReSharper disable once InconsistentNaming
     public ValueTask ExecuteAsync(CommandType type, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
-        => _executionMethods[(int)type](_twitchBot, chatMessage, prefix, alias);
+    {
+        ExecutionMethod executionMethod = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(_executionMethods), (int)type);
+        return executionMethod(_twitchBot, chatMessage, prefix, alias);
+    }
 
-    private static async ValueTask ExecuteCommandAsync<T>(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias) where T : IChatCommand<T>
+    private static async ValueTask ExecuteCommandAsync<T>(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+        where T : IChatCommand<T>
     {
         T.Create(twitchBot, chatMessage, prefix, alias, out T command);
         try
@@ -53,7 +57,7 @@ public sealed class CommandExecutor
             command.Response.Append(' ');
             int responseLengthBeforeHandle = command.Response.Length;
 
-            await command.Handle();
+            await command.HandleAsync();
             if (command.Response.Length <= responseLengthBeforeHandle)
             {
                 return;

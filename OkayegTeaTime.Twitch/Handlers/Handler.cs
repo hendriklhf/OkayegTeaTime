@@ -7,5 +7,6 @@ public abstract class Handler(TwitchBot twitchBot)
 {
     private protected readonly TwitchBot _twitchBot = twitchBot;
 
-    public abstract ValueTask Handle(IChatMessage chatMessage);
+    // ReSharper disable once InconsistentNaming
+    public abstract ValueTask HandleAsync(IChatMessage chatMessage);
 }

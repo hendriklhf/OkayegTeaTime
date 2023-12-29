@@ -27,7 +27,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
-    public ValueTask Handle()
+    public ValueTask HandleAsync()
     {
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;
