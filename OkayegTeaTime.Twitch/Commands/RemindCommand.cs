@@ -213,33 +213,11 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     private long GetClockToTime()
     { 
         Match clock = new Regex(@"\b(\d{1,2}):(\d{2})\b").Match(ChatMessage.Message);
-        int hour = int.Parse(clock.Groups[1].Value);
-        int minute = int.Parse(clock.Groups[2].Value);
+        TimeSpan time = TimeOnly.Parse(clock.ToString()) - TimeOnly.FromDateTime(DateTime.UtcNow);
         DateTimeOffset currTime = DateTimeOffset.UtcNow;
-        DateTimeOffset time;
         
-        if (currTime.Minute + minute >= 60)
-        {
-            minute = currTime.Minute + minute - 60;
-            hour++;
-        }
-        
-        if (TimeOnly.Parse(clock.ToString()) <  TimeOnly.FromDateTime(DateTime.UtcNow))
-        {
-            if (currTime.AddDays(1).Date == new DateTime(currTime.Year, currTime.Month, 1).AddMonths(1))
-            {
-                time = new DateTimeOffset(currTime.Year, currTime.Month, 1, hour, minute, 0,
-                    TimeSpan.Zero).AddMonths(1);
-                return time.ToUnixTimeMilliseconds();
-            }
-
-            time = new DateTimeOffset(currTime.Year, currTime.Month, currTime.Day, hour, minute, 0,
-                TimeSpan.Zero).AddDays(1);
-            return time.ToUnixTimeMilliseconds();
-        }
-        time = new DateTimeOffset(currTime.Year, currTime.Month, currTime.Day, hour, minute, 0,
-            TimeSpan.Zero);
-        return time.ToUnixTimeMilliseconds();
+        return new DateTimeOffset(currTime.Year, currTime.Month, currTime.Day, currTime.Hour, currTime.Minute, currTime.Second,
+            TimeSpan.Zero).AddHours(time.Hours).AddMinutes(time.Minutes).AddSeconds(time.Seconds).ToUnixTimeMilliseconds();
     }
 
     [SkipLocalsInit]
