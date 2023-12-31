@@ -71,6 +71,23 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         string message;
         long toTime = 0;
 
+        Regex clockReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span,
+            $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sat\s\b(?:[01]?[0-9]|2[0-3])[:.][0-5][0-9]\b");
+        if (clockReminderPattern.IsMatch(ChatMessage.Message))
+        {
+            toTime = GetClockToTime();
+            
+            if (toTime < s_minimumTimedReminderTime + _now)
+            {
+                Response.Append(ChatMessage.Username, ", ", Messages.TheMinimumTimeForATimedReminderIs30S);
+                return;
+            }
+            
+            targets = GetTargets();
+            message = GetMessage();
+            goto PROCESS;
+        }
+
         Regex timedReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({s_timePattern})(\s{s_timePattern})*.*");
         if (timedReminderPattern.IsMatch(ChatMessage.Message))
         {
@@ -190,6 +207,39 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         }
 
         return result + _now;
+    }
+
+    [SkipLocalsInit]
+    private long GetClockToTime()
+    { 
+        Match clock = new Regex(@"\b(\d{1,2}):(\d{2})\b").Match(ChatMessage.Message);
+        int hour = int.Parse(clock.Groups[1].Value);
+        int minute = int.Parse(clock.Groups[2].Value);
+        DateTimeOffset currTime = DateTimeOffset.UtcNow;
+        DateTimeOffset time;
+        
+        if (currTime.Minute + minute >= 60)
+        {
+            minute = currTime.Minute + minute - 60;
+            hour++;
+        }
+        
+        if (hour < DateTimeOffset.UtcNow.Hour)
+        {
+            if (currTime.AddDays(1).Date == new DateTime(currTime.Year, currTime.Month, 1).AddMonths(1))
+            {
+                time = new DateTimeOffset(currTime.Year, currTime.Month, 1, hour, minute, 0,
+                    TimeSpan.Zero).AddMonths(1);
+                return time.ToUnixTimeMilliseconds();
+            }
+
+            time = new DateTimeOffset(currTime.Year, currTime.Month, currTime.Day, hour, minute, 0,
+                TimeSpan.Zero).AddDays(1);
+            return time.ToUnixTimeMilliseconds();
+        }
+        time = new DateTimeOffset(currTime.Year, currTime.Month, currTime.Day, hour, minute, 0,
+            TimeSpan.Zero);
+        return time.ToUnixTimeMilliseconds();
     }
 
     [SkipLocalsInit]
