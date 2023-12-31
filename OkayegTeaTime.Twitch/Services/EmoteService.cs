@@ -18,7 +18,8 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
 {
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ConcurrentDictionary<long, CacheEntry<StringArray>> _emoteNamesCache = new();
-    private readonly TimeSpan _emoteNamesCacheTime = TimeSpan.FromHours(1);
+
+    private static readonly TimeSpan s_emoteNamesCacheTime = TimeSpan.FromHours(1);
 
     public async ValueTask<string> GetBestEmoteAsync(long channelId, string fallback, params string[] keywords)
     {
@@ -46,7 +47,7 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
 
     public async ValueTask<StringArray> GetAllEmoteNamesAsync(long channelId)
     {
-        if (_emoteNamesCache.TryGetValue(channelId, out CacheEntry<StringArray> emoteNamesEntry) && emoteNamesEntry.IsValid(_emoteNamesCacheTime))
+        if (_emoteNamesCache.TryGetValue(channelId, out CacheEntry<StringArray> emoteNamesEntry) && emoteNamesEntry.IsValid(s_emoteNamesCacheTime))
         {
             return emoteNamesEntry.Value;
         }

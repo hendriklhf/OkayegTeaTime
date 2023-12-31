@@ -69,7 +69,7 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
     public TwitchBot(ReadOnlyMemory<string> channels)
     {
         OAuthToken token = new(GlobalSettings.Settings.Twitch.OAuthToken);
-        _twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, new()
+        TwitchClient twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, new()
         {
             UseSSL = true,
             ParsingMode = ParsingMode.MemoryEfficient
@@ -80,13 +80,14 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
             channels = Channels.Select(static c => c.Name).ToArray();
         }
 
-        _twitchClient.JoinChannelsAsync(channels).AsTask().Wait(); // TODO: 💢
+        twitchClient.JoinChannelsAsync(channels).AsTask().Wait(); // TODO: 💢
 
-        _twitchClient.OnConnected += Client_OnConnected!;
-        _twitchClient.OnJoinedChannel += async (_, e) => await Client_OnJoinedChannelAsync(e);
-        _twitchClient.OnChatMessageReceived += async (_, msg) => await Client_OnMessageReceivedAsync(msg);
-        _twitchClient.OnDisconnected += Client_OnDisconnect!;
+        twitchClient.OnConnected += Client_OnConnected!;
+        twitchClient.OnJoinedChannel += async (_, e) => await Client_OnJoinedChannelAsync(e);
+        twitchClient.OnChatMessageReceived += async (_, msg) => await Client_OnMessageReceivedAsync(msg);
+        twitchClient.OnDisconnected += Client_OnDisconnect!;
 
+        _twitchClient = twitchClient;
         _messageHandler = new(this);
         EmoteService = new(this);
         _periodicActionsController = new(GetPeriodicActions());

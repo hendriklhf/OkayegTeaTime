@@ -74,18 +74,17 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         string message;
         long toTime = 0;
 
-        Regex clockReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span,
-            $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sat\s\b(?:[01]?[0-9]|2[0-3])[:.][0-5][0-9]\b");
+        Regex clockReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sat\s(?:[01]?[0-9]|2[0-3])[:.][0-5][0-9]");
         if (clockReminderPattern.IsMatch(ChatMessage.Message))
         {
             toTime = GetClockToTime();
-            
+
             if (toTime < s_minimumTimedReminderTime + _now)
             {
                 Response.Append(ChatMessage.Username, ", ", Messages.TheMinimumTimeForATimedReminderIs30S);
                 return;
             }
-            
+
             targets = GetTargets();
             message = GetMessage();
             goto PROCESS;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using HLE.Memory;
 using HLE.Strings;
 using OkayegTeaTime.Resources;
-using OkayegTeaTime.Settings;
 using OkayegTeaTime.Twitch.Json;
 using OkayegTeaTime.Twitch.Models;
 
@@ -20,7 +19,6 @@ public static class DotNetFiddleService
     [
         new("Compiler", "NetLatest"),
         new("Language", "CSharp"),
-        new("NuGetPackageVersionIds", GlobalSettings.HleNugetVersionId),
         new("ProjectType", "Console"),
         new("UseResultCache", "false")
     ];
@@ -65,10 +63,8 @@ public static class DotNetFiddleService
     private static FormUrlEncodedContent CreateHttpContent(string codeBlock)
     {
         using PooledBufferWriter<KeyValuePair<string, string>> contentPairsWriter = new(s_defaultHttpContentPairs.Length + 1);
-        Span<KeyValuePair<string, string>> destination = contentPairsWriter.GetSpan(s_defaultHttpContentPairs.Length + 1);
-        s_defaultHttpContentPairs.CopyTo(destination);
-        destination[s_defaultHttpContentPairs.Length] = new("CodeBlock", codeBlock);
-        contentPairsWriter.Advance(s_defaultHttpContentPairs.Length + 1);
+        contentPairsWriter.WriteRange(s_defaultHttpContentPairs);
+        contentPairsWriter.Write(new("CodeBlock", codeBlock));
         return new(contentPairsWriter);
     }
 

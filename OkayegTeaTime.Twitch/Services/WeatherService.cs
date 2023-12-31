@@ -16,12 +16,13 @@ public sealed class WeatherService
 {
     private readonly ConcurrentDoubleDictionary<string, (double Latitude, double Longitude), WeatherData> _weatherCache = new();
     private readonly ConcurrentDictionary<string, ForecastData> _forecastCache = new();
-    private readonly TimeSpan _cacheTime = TimeSpan.FromMinutes(30);
-    private readonly TimeSpan _forecastCacheTime = TimeSpan.FromHours(1);
+
+    private static readonly TimeSpan s_cacheTime = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan s_forecastCacheTime = TimeSpan.FromHours(1);
 
     public async ValueTask<WeatherData?> GetWeatherAsync(string location, bool tryGetFromCache = true)
     {
-        if (tryGetFromCache && _weatherCache.TryGetByPrimaryKey(location, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _weatherCache.TryGetByPrimaryKey(location, out WeatherData? data) && data.TimeOfRequest + s_cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -51,7 +52,7 @@ public sealed class WeatherService
     public async ValueTask<WeatherData?> GetWeatherAsync(double latitude, double longitude, bool tryGetFromCache = true)
     {
         (double Latitude, double Longitude) key = (latitude, longitude);
-        if (tryGetFromCache && _weatherCache.TryGetBySecondaryKey(key, out WeatherData? data) && data.TimeOfRequest + _cacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _weatherCache.TryGetBySecondaryKey(key, out WeatherData? data) && data.TimeOfRequest + s_cacheTime > DateTime.UtcNow)
         {
             return data;
         }
@@ -76,7 +77,7 @@ public sealed class WeatherService
     // ReSharper disable once UnusedMember.Global
     public async ValueTask<ForecastData?> GetForecastAsync(string location, bool tryGetFromCache = true)
     {
-        if (tryGetFromCache && _forecastCache.TryGetValue(location, out ForecastData? data) && data.TimeOfRequest + _forecastCacheTime > DateTime.UtcNow)
+        if (tryGetFromCache && _forecastCache.TryGetValue(location, out ForecastData? data) && data.TimeOfRequest + s_forecastCacheTime > DateTime.UtcNow)
         {
             return data;
         }
