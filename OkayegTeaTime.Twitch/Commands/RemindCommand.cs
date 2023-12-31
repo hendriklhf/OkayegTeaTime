@@ -60,7 +60,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     private static readonly Regex s_targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     private static readonly short s_minimumTimedReminderTime = (short)TimeSpan.FromSeconds(30).TotalMilliseconds;
 
-    private static readonly Regex s_exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*(\sin\s({s_timePattern})(\s{s_timePattern})*)?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex s_exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*((\sin\s({s_timePattern})(\s{s_timePattern})*)|(\sat\s\b(?:[01]?[0-9]|2[0-3])[:.][0-5][0-9]))?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
@@ -224,7 +224,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
             hour++;
         }
         
-        if (hour < DateTimeOffset.UtcNow.Hour)
+        if (TimeOnly.Parse(clock.ToString()) <  TimeOnly.FromDateTime(DateTime.UtcNow))
         {
             if (currTime.AddDays(1).Date == new DateTime(currTime.Year, currTime.Month, 1).AddMonths(1))
             {
