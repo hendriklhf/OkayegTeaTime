@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -93,6 +94,9 @@ public sealed class TwitchBot : IDisposable, IEquatable<TwitchBot>
         _periodicActionsController = new(GetPeriodicActions());
         AfkMessageBuilder = new(CommandController.AfkCommands.AsSpan());
     }
+
+    [Pure]
+    public bool IsConnectedTo(ReadOnlySpan<char> channel) => _twitchClient.Channels.TryGet(channel, out _);
 
     public async ValueTask ConnectAsync()
     {

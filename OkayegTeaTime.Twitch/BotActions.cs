@@ -73,6 +73,11 @@ public static class BotActions
 
     public static async ValueTask SendTimedReminderAsync(this TwitchBot twitchBot, Reminder reminder)
     {
+        if (!twitchBot.IsConnectedTo(reminder.Channel))
+        {
+            return;
+        }
+
         string creator = reminder.Target == reminder.Creator ? Yourself : reminder.Creator;
         TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 
