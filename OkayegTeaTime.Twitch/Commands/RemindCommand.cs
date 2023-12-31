@@ -55,6 +55,9 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     [GeneratedRegex(@"^\d+([,\.]\d+)?", RegexOptions.Compiled, 1000)]
     private static partial Regex GetBeginningNumberPattern();
 
+    [GeneratedRegex(@"\b(\d{1,2}):(\d{2})\b", RegexOptions.Compiled, 1000)]
+    private static partial Regex GetClockPattern();
+
     private static readonly string s_timePattern = GetTimePattern();
     private static readonly TimeConversionMethod[] s_timeConversions = GetTimeConversionMethods();
     private static readonly Regex s_targetPattern = new($@"^\S+\s{Pattern.MultipleTargets}", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
@@ -211,11 +214,11 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
 
     [SkipLocalsInit]
     private long GetClockToTime()
-    { 
-        Match clock = new Regex(@"\b(\d{1,2}):(\d{2})\b").Match(ChatMessage.Message);
+    {
+        Match clock = GetClockPattern().Match(ChatMessage.Message);
         TimeSpan time = TimeOnly.Parse(clock.ToString()) - TimeOnly.FromDateTime(DateTime.UtcNow);
         DateTimeOffset currTime = DateTimeOffset.UtcNow;
-        
+
         return new DateTimeOffset(currTime.Year, currTime.Month, currTime.Day, currTime.Hour, currTime.Minute, currTime.Second,
             TimeSpan.Zero).AddHours(time.Hours).AddMinutes(time.Minutes).AddSeconds(time.Seconds).ToUnixTimeMilliseconds();
     }
