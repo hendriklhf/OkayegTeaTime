@@ -1,8 +1,5 @@
-﻿using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OkayegTeaTime.Settings;
-
-#nullable disable
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
 
@@ -12,21 +9,21 @@ internal sealed class OkayegTeaTimeContext : DbContext
     {
     }
 
-    public OkayegTeaTimeContext([NotNull] DbContextOptions<OkayegTeaTimeContext> options) : base(options)
+    public OkayegTeaTimeContext(DbContextOptions<OkayegTeaTimeContext> options) : base(options)
     {
     }
 
-    public DbSet<Channel> Channels { get; set; }
+    public DbSet<Channel> Channels => Set<Channel>();
 
-    public DbSet<ExceptionLog> ExceptionLogs { get; set; }
+    public DbSet<ExceptionLog> ExceptionLogs => Set<ExceptionLog>();
 
-    public DbSet<Reminder> Reminders { get; set; }
+    public DbSet<Reminder> Reminders => Set<Reminder>();
 
-    public DbSet<Spotify> Spotify { get; set; }
+    public DbSet<Spotify> Spotify => Set<Spotify>();
 
-    public DbSet<Suggestion> Suggestions { get; set; }
+    public DbSet<Suggestion> Suggestions => Set<Suggestion>();
 
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -128,6 +125,8 @@ internal sealed class OkayegTeaTimeContext : DbContext
             entity.Property(static e => e.Location).HasMaxLength(100).HasDefaultValueSql("'NULL'");
 
             entity.Property(static e => e.Username).IsRequired().HasMaxLength(25).HasDefaultValueSql("''''''");
+
+            entity.Property(static e => e.UtcOffset).HasColumnType("DOUBLE").HasDefaultValueSql("0");
         });
     }
 }

@@ -4,11 +4,11 @@ using OkayegTeaTime.Database.EntityFrameworkModels;
 
 namespace OkayegTeaTime.Database.Models;
 
-public sealed class User : CacheModel
+public sealed class User(long id, string username) : CacheModel
 {
-    public long Id { get; }
+    public long Id { get; } = id;
 
-    public string Username { internal set; get; }
+    public string Username { internal set; get; } = username;
 
     public string? AfkMessage
     {
@@ -160,28 +160,46 @@ public sealed class User : CacheModel
         }
     }
 
+    public double UtcOffset
+    {
+        get => _utcOffset;
+        set
+        {
+            _utcOffset = value;
+            OkayegTeaTimeContext db = GetContext();
+            try
+            {
+                EntityFrameworkModels.User? efUser = db.Users.FirstOrDefault(u => u.Id == Id);
+                if (efUser is null)
+                {
+                    return;
+                }
+
+                efUser.UtcOffset = value;
+                EditedProperty();
+            }
+            finally
+            {
+                ReturnContext();
+            }
+        }
+    }
+
     private string? _afkMessage;
     private AfkType _afkType;
     private long _afkTime;
     private bool _isAfk;
     private string? _location;
     private bool _isPrivateLocation;
+    private double _utcOffset;
 
-    public User(EntityFrameworkModels.User user)
+    public User(EntityFrameworkModels.User user) : this(user.Id, user.Username)
     {
-        Id = user.Id;
-        Username = user.Username;
         _afkMessage = user.AfkMessage;
         _afkType = (AfkType)user.AfkType;
         _afkTime = user.AfkTime;
         _isAfk = user.IsAfk;
         _location = user.Location;
         _isPrivateLocation = user.IsPrivateLocation;
-    }
-
-    public User(long id, string username)
-    {
-        Id = id;
-        Username = username;
     }
 }

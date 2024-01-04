@@ -56,6 +56,13 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         if (pattern.IsMatch(ChatMessage.Message))
         {
             SetLocation();
+            return ValueTask.CompletedTask;
+        }
+
+        pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\stimezone\s[\-+]?\d+([,\.]\d+)?");
+        if (pattern.IsMatch(ChatMessage.Message))
+        {
+            SetTimezone();
         }
 
         return ValueTask.CompletedTask;
@@ -180,6 +187,28 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         }
 
         Response.Append(ChatMessage.Username, ", your ", isPrivate ? "private" : "public", " location has been set");
+    }
+
+    private void SetTimezone()
+    {
+        using ChatMessageExtension messageExtension = new(ChatMessage);
+        ReadOnlySpan<char> utcOffsetText = messageExtension.Split[2].Span;
+        double utcOffsetHours = double.Parse(utcOffsetText);
+        User? user = _twitchBot.Users.Get(ChatMessage.UserId);
+        if (user is null)
+        {
+            user = new(ChatMessage.UserId, ChatMessage.Username);
+            _twitchBot.Users.Add(user);
+        }
+
+        user.UtcOffset = utcOffsetHours;
+        Response.Append(ChatMessage.Username, ", your timezone has been successfully set to UTC");
+        if (utcOffsetHours >= 0)
+        {
+            Response.Append('+');
+        }
+
+        Response.Append(utcOffsetHours);
     }
 
     [GeneratedRegex("(1|true|enabled?)", RegexOptions.Compiled | RegexOptions.IgnoreCase, 1000)]

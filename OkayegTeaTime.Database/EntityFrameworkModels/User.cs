@@ -20,15 +20,7 @@ public sealed class User
 
     public bool IsPrivateLocation { get; set; }
 
-    public User(long id, string username, string afkMessage, int afkType, long afkTime, bool isAfk)
-    {
-        Id = id;
-        Username = username;
-        AfkMessage = afkMessage;
-        AfkType = afkType;
-        AfkTime = afkTime;
-        IsAfk = isAfk;
-    }
+    public double UtcOffset { get; set; }
 
     public User(long id, string username)
     {
@@ -46,5 +38,6 @@ public sealed class User
         IsAfk = user.IsAfk;
         Location = user.Location;
         IsPrivateLocation = user.IsPrivateLocation;
+        UtcOffset = user.UtcOffset;
     }
 }
