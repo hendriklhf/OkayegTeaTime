@@ -201,5 +201,6 @@ public sealed class User(long id, string username) : CacheModel
         _isAfk = user.IsAfk;
         _location = user.Location;
         _isPrivateLocation = user.IsPrivateLocation;
+        _utcOffset = user.UtcOffset;
     }
 }
