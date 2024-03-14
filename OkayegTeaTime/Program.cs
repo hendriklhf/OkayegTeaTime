@@ -9,7 +9,7 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime;
 
-public static class Program
+internal static class Program
 {
     private static readonly SemaphoreSlim s_keepAliveSemaphore = new(0);
 

@@ -1,6 +1,7 @@
 <Project>
 
     <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>

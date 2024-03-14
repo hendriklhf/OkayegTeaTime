@@ -9,17 +9,17 @@ using OkayegTeaTime.Settings;
 
 namespace OkayegTeaTime.Tools;
 
-public sealed class Builder(string[] args)
+internal sealed class Builder(string[] args)
 {
     private readonly string[] _args = args;
 
-    private readonly FrozenDictionary<Runtime, Regex> _runtimes = new Dictionary<Runtime, Regex>(new KeyValuePair<Runtime, Regex>[]
-    {
+    private readonly FrozenDictionary<Runtime, Regex> _runtimes = new Dictionary<Runtime, Regex>(
+    [
         new(Runtime.Windows64Bit, NewRegex("^win(dows)?(-?x?64)?$")),
         new(Runtime.LinuxArm, NewRegex("^((linux-?)?arm(64)?)|((raspberry-?)?pi)$")),
         new(Runtime.Linux64Bit, NewRegex("^linux(-?x?64)?$")),
         new(Runtime.MacOs64Bit, NewRegex("^((osx)|(mac(-?os)?)(-?x64)?)$"))
-    }).ToFrozenDictionary();
+    ]).ToFrozenDictionary();
 
     private const string BotProjectPath = "./OkayegTeaTime/OkayegTeaTime.csproj";
     private const string CommitIdSourcePath = "./.git/logs/HEAD";

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace OkayegTeaTime.Tools;
 
-public static class Program
+internal static class Program
 {
     private static void Main(string[] args)
     {

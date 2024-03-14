@@ -2,7 +2,7 @@ using System;
 
 namespace OkayegTeaTime.Tools;
 
-public sealed record Runtime
+internal sealed record Runtime
 {
     public required string Name { get; init; }
 

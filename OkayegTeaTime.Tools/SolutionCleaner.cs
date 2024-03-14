@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OkayegTeaTime.Tools;
 
-public sealed class SolutionCleaner
+internal sealed class SolutionCleaner
 {
     private readonly string[] _directoriesToClean =
     [

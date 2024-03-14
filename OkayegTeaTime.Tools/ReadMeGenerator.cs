@@ -8,7 +8,7 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Tools;
 
-public static class ReadMeGenerator
+internal static class ReadMeGenerator
 {
     private static readonly string[] s_header1Text =
     [

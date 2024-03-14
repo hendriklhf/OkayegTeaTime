@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -26,12 +25,12 @@ public sealed partial class TwitchApi : IEquatable<TwitchApi>, IDisposable
             Cache = new(cacheOptions);
         }
 
-        _accessTokenRequestContent = new(new[]
-        {
-            new KeyValuePair<string, string>("client_id", _clientId),
-            new KeyValuePair<string, string>("client_secret", clientSecret),
-            new KeyValuePair<string, string>("grant_type", "client_credentials")
-        });
+        _accessTokenRequestContent = new(
+        [
+            new("client_id", _clientId),
+            new("client_secret", clientSecret),
+            new("grant_type", "client_credentials")
+        ]);
     }
 
     public void Dispose() => _accessTokenRequestContent.Dispose();

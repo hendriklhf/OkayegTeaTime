@@ -61,11 +61,7 @@ public static class SpotifyController
     {
         LoginRequest login = new(new("https://example.com/callback"), GlobalSettings.Settings.Spotify!.ClientId, LoginRequest.ResponseType.Code)
         {
-            Scope = new[]
-            {
-                Scopes.UserReadPlaybackState,
-                Scopes.UserModifyPlaybackState
-            }
+            Scope = [Scopes.UserReadPlaybackState, Scopes.UserModifyPlaybackState]
         };
 
         return HttpUtility.UrlDecode(login.ToUri().AbsoluteUri).Replace(" ", "%20");
