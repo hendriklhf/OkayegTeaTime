@@ -6,7 +6,7 @@ public readonly struct AliasHash(ReadOnlyMemory<char> alias) : IEquatable<AliasH
 {
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public bool Equals(AliasHash other) => _alias.Span.SequenceEqual(other._alias.Span);
+    public bool Equals(AliasHash other) => _alias.Span.Equals(other._alias.Span, StringComparison.OrdinalIgnoreCase);
 
     public override bool Equals(object? obj) => obj is AliasHash other && Equals(other);
 
