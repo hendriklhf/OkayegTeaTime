@@ -28,7 +28,7 @@ public struct SmartSplit : IDisposable, IEquatable<SmartSplit>
         Length = message.Span.Split(_ranges.AsSpan(), ' ');
     }
 
-    public ReadOnlySpan<ReadOnlyMemory<char>> AsSpan() => GetSplits().AsSpan(1..Length);
+    public ReadOnlySpan<ReadOnlyMemory<char>> AsSpan() => GetSplits().AsSpan(..Length);
 
     private RentedArray<ReadOnlyMemory<char>> GetSplits()
     {

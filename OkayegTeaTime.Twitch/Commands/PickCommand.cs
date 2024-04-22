@@ -37,7 +37,7 @@ public readonly struct PickCommand(TwitchBot twitchBot, IChatMessage chatMessage
         }
 
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        ReadOnlyMemory<char> randomPick = Random.Shared.GetItem(messageExtension.Split.AsSpan());
+        ReadOnlyMemory<char> randomPick = Random.Shared.GetItem(messageExtension.Split.AsSpan()[1..]);
         Response.Append(ChatMessage.Username, ", ", randomPick.Span);
         return ValueTask.CompletedTask;
     }
