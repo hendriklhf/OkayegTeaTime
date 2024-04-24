@@ -12,15 +12,15 @@
         <PackageReference Include="HLE" Version="2.1.8" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
-        <PackageReference Update="Roslynator.Analyzers" Version="4.11.0">
+        <PackageReference Update="Roslynator.Analyzers" Version="4.12.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="4.11.0">
+        <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="4.12.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Update="Roslynator.Formatting.Analyzers" Version="4.11.0">
+        <PackageReference Update="Roslynator.Formatting.Analyzers" Version="4.12.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

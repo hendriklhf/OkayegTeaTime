@@ -9,31 +9,31 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
         <PackageReference Include="MySql.Data.EntityFramework" Version="8.3.0" />
         <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.0" />
-        <PackageReference Update="Roslynator.Analyzers" Version="4.11.0">
+        <PackageReference Update="Roslynator.Analyzers" Version="4.12.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="4.11.0">
+        <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="4.12.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Update="Roslynator.Formatting.Analyzers" Version="4.11.0">
+        <PackageReference Update="Roslynator.Formatting.Analyzers" Version="4.12.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
