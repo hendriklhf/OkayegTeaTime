@@ -274,12 +274,16 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     {
         FieldInfo[] fields = typeof(RemindCommand).GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(static f => f.GetCustomAttribute<TimePatternAttribute>() is not null).ToArray();
         string[] methodNames = fields.Select(static f => f.GetCustomAttribute<TimePatternAttribute>()!.ConversionMethod).ToArray();
-        MethodInfo[] methods = typeof(TimeSpan).GetMethods(BindingFlags.Static | BindingFlags.Public).Where(f => methodNames.Contains(f.Name)).ToArray();
+        MethodInfo[] methods = typeof(TimeSpan)
+            .GetMethods(BindingFlags.Static | BindingFlags.Public)
+            .Where(mi => methodNames.Contains(mi.Name) && mi.GetParameters()[0].ParameterType == typeof(double))
+            .ToArray();
+
         return fields.Select(f =>
         {
             TimePatternAttribute attr = f.GetCustomAttribute<TimePatternAttribute>()!;
             Regex regex = (Regex)f.GetValue(null)!;
-            MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod);
+            MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod && m.GetParameters()[0].ParameterType == typeof(double));
             return new TimeConversionMethod(regex, method.CreateDelegate<Func<double, TimeSpan>>(), attr.Factor);
         }).ToArray();
     }
