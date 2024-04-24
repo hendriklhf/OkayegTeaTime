@@ -189,7 +189,11 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         int timesBufferLength = StringHelpers.Join(' ', splits[timeStartIndex..], timesBuffer);
         string times = new(timesBuffer[..timesBufferLength]);
 
-        string[] matches = s_timeConversions.Select(t => t.Regex.Matches(times).Select(static m => m.Value)).SelectMany(static m => m).ToArray();
+        string[] matches = s_timeConversions
+            .Select(t => t.Regex.Matches(times).Select(static m => m.Value))
+            .SelectMany(static m => m)
+            .ToArray();
+
         foreach (string match in matches)
         {
             foreach (TimeConversionMethod timeConversion in s_timeConversions)
@@ -283,7 +287,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         {
             TimePatternAttribute attr = f.GetCustomAttribute<TimePatternAttribute>()!;
             Regex regex = (Regex)f.GetValue(null)!;
-            MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod && m.GetParameters()[0].ParameterType == typeof(double));
+            MethodInfo method = methods.First(m => m.Name == attr.ConversionMethod);
             return new TimeConversionMethod(regex, method.CreateDelegate<Func<double, TimeSpan>>(), attr.Factor);
         }).ToArray();
     }
