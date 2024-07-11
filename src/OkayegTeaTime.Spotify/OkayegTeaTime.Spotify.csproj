@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpotifyAPI.Web"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj"/>
+    <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
+    <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
+  </ItemGroup>
+
+</Project>

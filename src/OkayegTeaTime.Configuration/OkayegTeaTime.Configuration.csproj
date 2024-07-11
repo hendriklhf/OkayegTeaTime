@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HLE"/>
+    <PackageReference Include="Microsoft.Extensions.Options"/>
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj"/>
+  </ItemGroup>
+
+</Project>

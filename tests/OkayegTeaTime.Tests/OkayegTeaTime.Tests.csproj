@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
+    <ProjectReference Include="..\..\src\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj"/>
+  </ItemGroup>
+
+</Project>

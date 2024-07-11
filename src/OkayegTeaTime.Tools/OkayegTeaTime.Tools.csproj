@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PublishAot>true</PublishAot>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HLE"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
+    <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj"/>
+  </ItemGroup>
+
+</Project>

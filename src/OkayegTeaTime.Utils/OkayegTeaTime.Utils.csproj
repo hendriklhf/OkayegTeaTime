@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
+    </ItemGroup>
+
+</Project>

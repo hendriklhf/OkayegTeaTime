@@ -3,23 +3,37 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime", "OkayegTeaTime\OkayegTeaTime.csproj", "{AE3A8884-C469-46F2-846A-AEC1B45E588C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime", "src\OkayegTeaTime\OkayegTeaTime.csproj", "{AE3A8884-C469-46F2-846A-AEC1B45E588C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime.Tests", "OkayegTeaTime.Tests\OkayegTeaTime.Tests.csproj", "{DFA47320-94AA-4704-991E-7A3590DC0458}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OkayegTeaTime.Tests", "tests\OkayegTeaTime.Tests\OkayegTeaTime.Tests.csproj", "{DFA47320-94AA-4704-991E-7A3590DC0458}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Tools", "OkayegTeaTime.Tools\OkayegTeaTime.Tools.csproj", "{7A9B97F5-1DD5-4FE6-960E-05F9D0D0CFD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Tools", "src\OkayegTeaTime.Tools\OkayegTeaTime.Tools.csproj", "{7A9B97F5-1DD5-4FE6-960E-05F9D0D0CFD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Resources", "OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj", "{24FEB921-0DF9-4BD4-AE5A-0FB562AC6161}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Resources", "src\OkayegTeaTime.Resources\OkayegTeaTime.Resources.csproj", "{24FEB921-0DF9-4BD4-AE5A-0FB562AC6161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Database", "OkayegTeaTime.Database\OkayegTeaTime.Database.csproj", "{88299CB6-016F-4F48-8871-CC2B9C179E3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Database", "src\OkayegTeaTime.Database\OkayegTeaTime.Database.csproj", "{88299CB6-016F-4F48-8871-CC2B9C179E3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Settings", "OkayegTeaTime.Settings\OkayegTeaTime.Settings.csproj", "{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Configuration", "src\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj", "{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Spotify", "OkayegTeaTime.Spotify\OkayegTeaTime.Spotify.csproj", "{044A1AD0-F11E-4064-BBBD-40375933FA8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Spotify", "src\OkayegTeaTime.Spotify\OkayegTeaTime.Spotify.csproj", "{044A1AD0-F11E-4064-BBBD-40375933FA8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Utils", "OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj", "{0209CD79-B111-4DE7-BFEE-3E2550737FAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Utils", "src\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj", "{0209CD79-B111-4DE7-BFEE-3E2550737FAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Twitch", "OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj", "{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkayegTeaTime.Twitch", "src\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj", "{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{44CAA544-CF6F-464F-A702-6B10CC52C13C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{15A7C5C6-6A31-4D3B-8868-6D0C9016FF2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B68AB993-94B9-49AD-91D2-B6904483D83D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		build.sh = build.sh
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,5 +83,16 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4FBC1BF3-27DD-4DE4-852B-586D3D48E684}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AE3A8884-C469-46F2-846A-AEC1B45E588C} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{88299CB6-016F-4F48-8871-CC2B9C179E3F} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{24FEB921-0DF9-4BD4-AE5A-0FB562AC6161} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{044A1AD0-F11E-4064-BBBD-40375933FA8B} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{42F2E102-DD55-4DF1-BDD1-EFC55BCB2BF4} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{7A9B97F5-1DD5-4FE6-960E-05F9D0D0CFD8} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{4C9340A4-4E1A-4ED6-A045-5C4059AE0F42} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{0209CD79-B111-4DE7-BFEE-3E2550737FAF} = {44CAA544-CF6F-464F-A702-6B10CC52C13C}
+		{DFA47320-94AA-4704-991E-7A3590DC0458} = {15A7C5C6-6A31-4D3B-8868-6D0C9016FF2E}
 	EndGlobalSection
 EndGlobal

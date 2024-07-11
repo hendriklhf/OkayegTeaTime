@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HLE"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="CSharpTemplate.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CSharpTemplate.cs"/>
+    <EmbeddedResource Include="GachiSongs.json"/>
+    <EmbeddedResource Include="LastCommit"/>
+    <EmbeddedResource Include="CodeFiles"/>
+    <EmbeddedResource Include="KotlinTemplate.kt"/>
+    <EmbeddedResource Include="HangmanWords"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

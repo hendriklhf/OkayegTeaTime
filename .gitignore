@@ -5,13 +5,13 @@
 Build/
 
 # Files needed for build and run
-OkayegTeaTime.Resources/Settings.json
+src/OkayegTeaTime.Resources/Settings.json
 
 # Optional Files
-OkayegTeaTime.Resources/DatabaseModels.*
-OkayegTeaTime.Resources/[Tt]odo.*
-OkayegTeaTime.Resources/LastCommit
-OkayegTeaTime.Resources/CodeFiles
+src/OkayegTeaTime.Resources/DatabaseModels.*
+src/OkayegTeaTime.Resources/[Tt]odo.*
+src/OkayegTeaTime.Resources/LastCommit
+src/OkayegTeaTime.Resources/CodeFiles
 
 ### ASPNETCore ###
 ## Ignore Visual Studio temporary files, build results, and
