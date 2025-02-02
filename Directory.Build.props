@@ -11,6 +11,7 @@
     <DebugType>embedded</DebugType>
     <NeutralLanguage>en-US</NeutralLanguage>
     <NoWin32Manifest>true</NoWin32Manifest>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
   </PropertyGroup>
 
   <!-- Reason for the following two property groups: https://github.com/dotnet/roslyn/issues/41640. -->

@@ -38,7 +38,7 @@ public sealed partial class TwitchApi
         return user;
     }
 
-    public async ValueTask<User?> GetUserAsync(string username) => await GetUserAsync(username.AsMemory());
+    public ValueTask<User?> GetUserAsync(string username) => GetUserAsync(username.AsMemory());
 
     public async ValueTask<User?> GetUserAsync(ReadOnlyMemory<char> username)
     {
@@ -61,28 +61,30 @@ public sealed partial class TwitchApi
         return user;
     }
 
-    public async ValueTask<User[]> GetUsersAsync(IEnumerable<string> usernames)
+    public ValueTask<User[]> GetUsersAsync(IEnumerable<string> usernames)
     {
         // ReSharper disable once PossibleMultipleEnumeration
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory))
         {
-            return await GetUsersAsync(usernamesMemory, ReadOnlyMemory<long>.Empty);
+            return GetUsersAsync(usernamesMemory, ReadOnlyMemory<long>.Empty);
         }
 
         // ReSharper disable once PossibleMultipleEnumeration
-        return await GetUsersAsync(usernames.ToArray(), ReadOnlyMemory<long>.Empty);
+        return GetUsersAsync(usernames.ToArray(), ReadOnlyMemory<long>.Empty);
     }
 
-    public async ValueTask<User[]> GetUsersAsync(IEnumerable<long> userIds)
+    public ValueTask<User[]> GetUsersAsync(IEnumerable<long> userIds)
     {
         // ReSharper disable once PossibleMultipleEnumeration
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (userIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> userIdsMemory))
         {
-            return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIdsMemory);
+            return GetUsersAsync(ReadOnlyMemory<string>.Empty, userIdsMemory);
         }
 
         // ReSharper disable once PossibleMultipleEnumeration
-        return await GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds.ToArray());
+        return GetUsersAsync(ReadOnlyMemory<string>.Empty, userIds.ToArray());
     }
 
     public async ValueTask<User[]> GetUsersAsync(IEnumerable<string> usernames, IEnumerable<long> userIds)

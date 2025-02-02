@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Strings;
+using HLE.Text;
 using OkayegTeaTime.Twitch.SevenTv.Models;
 using OkayegTeaTime.Twitch.SevenTv.Models.Responses;
 

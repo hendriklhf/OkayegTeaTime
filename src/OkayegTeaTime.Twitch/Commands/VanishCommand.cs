@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Vanish, typeof(VanishCommand))]
-public readonly struct VanishCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<VanishCommand>(CommandType.Vanish)]
+public readonly struct VanishCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<VanishCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out VanishCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out VanishCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()

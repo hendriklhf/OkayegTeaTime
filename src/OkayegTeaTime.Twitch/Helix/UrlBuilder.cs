@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using HLE.Strings;
+using HLE.Text;
 
 namespace OkayegTeaTime.Twitch.Helix;
 
@@ -49,15 +49,12 @@ public struct UrlBuilder : IDisposable, IEquatable<UrlBuilder>
     }
 
     [Pure]
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly string ToString() => _builder.ToString();
 
     public readonly bool Equals(UrlBuilder other) => _builder.Equals(other._builder) && ParameterCount == other.ParameterCount;
 
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly bool Equals(object? obj) => obj is UrlBuilder other && Equals(other);
 
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly int GetHashCode() => HashCode.Combine(_builder, ParameterCount);
 
     public static bool operator ==(UrlBuilder left, UrlBuilder right) => left.Equals(right);

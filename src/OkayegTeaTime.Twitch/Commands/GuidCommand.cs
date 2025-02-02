@@ -1,32 +1,31 @@
 using System;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Guid, typeof(GuidCommand))]
-public readonly struct GuidCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<GuidCommand>(CommandType.Guid)]
+public readonly struct GuidCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<GuidCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GuidCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GuidCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
     {
-        Response.Append(ChatMessage.Username, ", ");
-        Response.Append(Guid.NewGuid(), "D");
+        Response.Append($"{ChatMessage.Username}, {Guid.NewGuid():D}");
         return ValueTask.CompletedTask;
     }
 

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using HLE.Emojis;
+using HLE.Text;
 
 namespace OkayegTeaTime.Utils;
 

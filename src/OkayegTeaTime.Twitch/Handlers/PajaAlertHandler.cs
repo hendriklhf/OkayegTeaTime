@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Emojis;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 
 namespace OkayegTeaTime.Twitch.Handlers;
@@ -12,9 +12,9 @@ public sealed class PajaAlertHandler(TwitchBot twitchBot) : PajaHandler(twitchBo
 
     protected override string Message => $"/me pajaStare {Emoji.RotatingLight} OBACHT";
 
-    public override async ValueTask HandleAsync(IChatMessage chatMessage)
+    public override async ValueTask HandleAsync(ChatMessage chatMessage)
     {
-        if (chatMessage.ChannelId != PajaChannelId || chatMessage.UserId != PajaAlertUserId || !Pattern.IsMatch(chatMessage.Message))
+        if (chatMessage.ChannelId != PajaChannelId || chatMessage.UserId != PajaAlertUserId || !Pattern.IsMatch(chatMessage.Message.AsSpan()))
         {
             return;
         }

@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HLE;
-using HLE.Emojis;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Coinflip, typeof(CoinflipCommand))]
-public readonly struct CoinflipCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<CoinflipCommand>(CommandType.Coinflip)]
+public readonly struct CoinflipCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<CoinflipCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CoinflipCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CoinflipCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
     {
         bool result = Random.Shared.NextBool();
         string answer = result ? "yes/heads" : "no/tails";
-        Response.Append(ChatMessage.Username, ", ", answer, " ", Emoji.Coin);
+        Response.Append($"{ChatMessage.Username}, {answer} {Emoji.Coin}");
         return ValueTask.CompletedTask;
     }
 

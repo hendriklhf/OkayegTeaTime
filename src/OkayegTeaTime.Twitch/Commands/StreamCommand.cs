@@ -2,22 +2,23 @@
 using System.Collections.Frozen;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Helix.Models;
 using OkayegTeaTime.Twitch.Models;
+using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Stream, typeof(StreamCommand))]
-public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<StreamCommand>(CommandType.Stream)]
+public readonly struct StreamCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<StreamCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
@@ -29,16 +30,16 @@ public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessa
         35_933_008
     }.ToFrozenSet();
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out StreamCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out StreamCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
     {
         Regex channelPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append($"{ChatMessage.Username}, ");
 
         using ChatMessageExtension messageExtension = new(ChatMessage);
-        string channel = channelPattern.IsMatch(ChatMessage.Message) ? new(messageExtension.Split[1].Span) : ChatMessage.Username;
+        string channel = channelPattern.IsMatch(ChatMessage.Message.AsSpan()) ? new(messageExtension.Split[1].Span) : ChatMessage.Username.ToString();
 
         Stream? stream = await _twitchBot.TwitchApi.GetStreamAsync(channel);
         if (stream is null)
@@ -47,19 +48,24 @@ public readonly struct StreamCommand(TwitchBot twitchBot, IChatMessage chatMessa
             return;
         }
 
-        Response.Append(stream.Username, " is currently streaming ", stream.GameName);
+        Response.Append($"{stream.Username} is currently streaming \"{stream.GameName}\"");
         if (ChatMessage.ChannelId != stream.UserId || !s_noViewerCountChannelIds.Contains(stream.UserId))
         {
-            Response.Append(" with ");
+            Response.Append(" for ");
             Response.Append(stream.ViewerCount, "N0");
-            Response.Append(" viewer", stream.ViewerCount != 1 ? "s" : string.Empty);
+            Response.Append(" viewer");
+            if (stream.ViewerCount != 1)
+            {
+                Response.Append('s');
+            }
         }
 
 #pragma warning disable S6354
         TimeSpan streamTime = DateTime.UtcNow - stream.StartedAt;
 #pragma warning restore S6354
-        // TODO: remove allocation of .ToString and .Split
-        Response.Append(" for ", streamTime.ToString("g").Split('.')[0]);
+
+        Response.Append(" since ");
+        TimeSpanFormatter.Format(streamTime, Response);
     }
 
     public void Dispose() => Response.Dispose();

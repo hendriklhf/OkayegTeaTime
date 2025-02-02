@@ -1,52 +1,44 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using HLE.Collections;
-using HLE.Strings;
+using HLE.Marshalling;
+using HLE.Memory;
+using HLE.Text;
 
 namespace OkayegTeaTime.Twitch.Services;
 
-public sealed class MathService : IEquatable<MathService>
+public sealed class MathService : IDisposable, IEquatable<MathService>
 {
-    private readonly ConcurrentDictionary<string, string> _expressionResultCache = new();
+    private readonly HttpClient _httpClient = new();
 
-    private const int MaximumCacheEntries = 1000;
     private const string ApiUrl = "https://api.mathjs.org/v4/?expr=";
 
-    public async ValueTask<string> GetExpressionResultAsync(string expression)
-    {
-        expression = expression.TrimAll();
-        if (_expressionResultCache.TryGetValue(expression, out string? result))
-        {
-            return result;
-        }
+    public void Dispose() => _httpClient.Dispose();
 
-        string url = ApiUrl + HttpUtility.UrlEncode(expression);
-        using HttpClient httpClient = new();
-        using HttpResponseMessage httpResponse = await httpClient.GetAsync(url);
+    public async Task GetExpressionResultAsync(ReadOnlyMemory<char> expression, PooledStringBuilder destination)
+    {
+        string url = ApiUrl + UrlEncodeExpression(expression.Span);
+        using HttpResponseMessage httpResponse = await _httpClient.GetAsync(url);
         using HttpContentBytes httpContentBytes = await HttpContentBytes.CreateAsync(httpResponse);
         if (httpContentBytes.Length == 0)
         {
             throw new HttpResponseEmptyException();
         }
 
-        result = Encoding.UTF8.GetString(httpContentBytes.AsSpan());
-
-        ClearCacheIfThereAreTooManyEntries();
-        _expressionResultCache.AddOrSet(expression, result);
-        return result;
+        int charCount = Encoding.UTF8.GetMaxCharCount(httpContentBytes.Length);
+        destination.EnsureCapacity(destination.Length + charCount);
+        charCount = Encoding.UTF8.GetChars(httpContentBytes.AsSpan(), destination.FreeBufferSpan);
+        destination.Advance(charCount);
     }
 
-    private void ClearCacheIfThereAreTooManyEntries()
+    private static string UrlEncodeExpression(ReadOnlySpan<char> expression)
     {
-        if (_expressionResultCache.Count >= MaximumCacheEntries)
-        {
-            _expressionResultCache.Clear();
-        }
+        using RentedArray<byte> bytes = ArrayPool<byte>.Shared.RentAsRentedArray(Encoding.UTF8.GetMaxByteCount(expression.Length));
+        int byteCount = Encoding.UTF8.GetBytes(expression, bytes.AsSpan());
+        return HttpUtility.UrlEncode(RentedArrayMarshal.GetArray(bytes), 0, byteCount);
     }
 
     public bool Equals(MathService? other) => ReferenceEquals(this, other);

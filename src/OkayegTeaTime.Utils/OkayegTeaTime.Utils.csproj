@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-      <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
-    </PropertyGroup>
+  <PropertyGroup>
+    <UseDefaultAnalyzerPackages>true</UseDefaultAnalyzerPackages>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="..\..\lib\HLE.Twitch\HLE.Twitch.dll"/>
+    <Reference Include="..\..\lib\HLE.Twitch\HLE.dll"/>
+    <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj"/>
+  </ItemGroup>
 
 </Project>

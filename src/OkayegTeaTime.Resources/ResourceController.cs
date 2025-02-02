@@ -20,17 +20,20 @@ public static class ResourceController
 
     public static string HangmanWords => s_hangmanWords ??= ReadHangmanWords();
 
+#pragma warning disable IDE0032
     private static string? s_csharpTemplate;
     private static string? s_gachiSongs;
     private static string? s_lastCommit;
     private static string? s_codeFiles;
     private static string? s_hangmanWords;
+#pragma warning restore IDE0032
 
-    private const string CSharpTemplateResource = "CSharpTemplate.cs";
-    private const string GachiSongsResource = "GachiSongs.json";
-    private const string LastCommitResource = "LastCommit";
-    private const string CodeFilesResource = "CodeFiles";
-    private const string HangmanWordsResource = "HangmanWords";
+    private const string ResourceNamespace = "OkayegTeaTime.Resources.";
+    private const string CSharpTemplateResource = $"{ResourceNamespace}CSharpTemplate.cs";
+    private const string GachiSongsResource = $"{ResourceNamespace}GachiSongs.json";
+    private const string LastCommitResource = $"{ResourceNamespace}LastCommit";
+    private const string CodeFilesResource = $"{ResourceNamespace}CodeFiles";
+    private const string HangmanWordsResource = $"{ResourceNamespace}HangmanWords";
 
     private static string ReadHangmanWords()
     {

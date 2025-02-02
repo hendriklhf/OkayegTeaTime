@@ -3,9 +3,8 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HLE;
-using HLE.Emojis;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -14,13 +13,13 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Gachi, typeof(GachiCommand))]
-public readonly struct GachiCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<GachiCommand>(CommandType.Gachi)]
+public readonly struct GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<GachiCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
@@ -28,13 +27,13 @@ public readonly struct GachiCommand(TwitchBot twitchBot, IChatMessage chatMessag
 
     private static readonly ImmutableArray<GachiSong> s_songs = JsonSerializer.Deserialize(ResourceController.GachiSongs, GachiJsonSerializerContext.Default.ImmutableArrayGachiSong);
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GachiCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out GachiCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
     {
         GachiSong gachiSong = Random.Shared.GetItem(s_songs.AsSpan());
-        Response.Append(Emoji.PointRight, " ", gachiSong.Title, " || ", gachiSong.Url, " gachiBASS");
+        Response.Append($"{Emoji.PointRight} {gachiSong.Title} || {gachiSong.Url} gachiBASS");
         return ValueTask.CompletedTask;
     }
 

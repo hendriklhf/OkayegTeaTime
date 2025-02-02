@@ -23,8 +23,8 @@ public static class CommandController
         .ToFrozenSet();
 
     [Pure]
-    public static bool IsAfkCommand(string? channelPrefix, string message)
-        => MessageHelpers.TryExtractAlias(message.AsMemory(), channelPrefix, out ReadOnlyMemory<char> usedAlias, out _) &&
+    public static bool IsAfkCommand(string? channelPrefix, ReadOnlyMemory<char> message)
+        => MessageHelpers.TryExtractAlias(message, channelPrefix, out ReadOnlyMemory<char> usedAlias, out _) &&
            s_afkCommandAliasHashes.Contains(new(usedAlias));
 
     [Pure]

@@ -38,7 +38,7 @@ public struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposable
         }
 
         using RentedArray<byte> buffer = ArrayPool<byte>.Shared.RentAsRentedArray(contentLength);
-        byte[] underlyingArray = RentedArrayMarshal<byte>.GetArray(buffer);
+        byte[] underlyingArray = RentedArrayMarshal.GetArray(buffer);
         await using MemoryStream copyDestination = new(underlyingArray);
 
         await httpResponse.Content.LoadIntoBufferAsync();
@@ -48,10 +48,8 @@ public struct HttpContentBytes : IEquatable<HttpContentBytes>, IDisposable
 
     public readonly bool Equals(HttpContentBytes other) => Length == other.Length && _bytes == other._bytes;
 
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly bool Equals(object? obj) => obj is HttpContentBytes other && Equals(other);
 
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly int GetHashCode() => HashCode.Combine(_bytes, Length);
 
     public static bool operator ==(HttpContentBytes left, HttpContentBytes right) => left.Equals(right);

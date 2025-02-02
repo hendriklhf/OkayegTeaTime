@@ -2,8 +2,8 @@
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -12,19 +12,19 @@ using Channel = OkayegTeaTime.Database.Models.Channel;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Set, typeof(SetCommand))]
-public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<SetCommand>(CommandType.Set)]
+public readonly partial struct SetCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<SetCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out SetCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
@@ -32,35 +32,35 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         ReadOnlySpan<char> alias = _alias.Span;
         ReadOnlySpan<char> prefix = _prefix.Span;
         Regex pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\sprefix\s\S+");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             SetPrefix();
             return ValueTask.CompletedTask;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\semote\s\S+");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             SetEmote();
             return ValueTask.CompletedTask;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\s(sr|songrequests?)\s((1|true|enabled?)|(0|false|disabled?))");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             SetSongRequestState();
             return ValueTask.CompletedTask;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\slocation\s((private)|(public))\s\S+");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             SetLocation();
             return ValueTask.CompletedTask;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(alias, prefix, @"\stimezone\s[\-+]?\d+([,\.]\d+)?");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             SetTimezone();
         }
@@ -73,14 +73,14 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.YouArentAModeratorOrTheBroadcaster);
+            Response.Append($"{ChatMessage.Username}, {Texts.YouArentAModeratorOrTheBroadcaster}");
             return;
         }
 
         Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
         if (channel is null)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.AnErrorOccurredWhileTryingToSetThePrefix);
+            Response.Append($"{ChatMessage.Username}, {Texts.AnErrorOccurredWhileTryingToSetThePrefix}");
             return;
         }
 
@@ -92,7 +92,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
 
         string prefix = new(prefixSpan);
         channel.Prefix = prefix;
-        Response.Append(ChatMessage.Username, ", ", "prefix set to: ", prefix);
+        Response.Append($"{ChatMessage.Username}, prefix set to: {prefix}");
     }
 
     private void SetEmote()
@@ -107,7 +107,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         Channel? channel = _twitchBot.Channels[ChatMessage.ChannelId];
         if (channel is null)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.AnErrorOccurredWhileTryingToSetTheEmote);
+            Response.Append($"{ChatMessage.Username} {Texts.AnErrorOccurredWhileTryingToSetTheEmote}");
             return;
         }
 
@@ -119,12 +119,12 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
 
         string emote = new(emoteSpan);
         channel.Emote = emote;
-        Response.Append(ChatMessage.Username, ", ", "emote set to: ", emote);
+        Response.Append($"{ChatMessage.Username}, emote set to: {emote}");
     }
 
     private void SetSongRequestState()
     {
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append($"{ChatMessage.Username}, ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
@@ -132,7 +132,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
             return;
         }
 
-        bool? state = null;
+        bool? state;
         if (GetEnabledPattern().IsMatch(messageExtension.Split[2].Span))
         {
             state = true;
@@ -150,12 +150,12 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         SpotifyUser? user = _twitchBot.SpotifyUsers[ChatMessage.Channel];
         if (user is null)
         {
-            Response.Append("channel ", ChatMessage.Channel, " is not registered, they have to register first");
+            Response.Append($"channel {ChatMessage.Channel} is not registered, they have to register first");
             return;
         }
 
         user.AreSongRequestsEnabled = state.Value;
-        Response.Append("song requests ", state.Value ? "enabled" : "disabled", " ", "for channel ", ChatMessage.Channel);
+        Response.Append($"song requests {(state.Value ? "enabled" : "disabled")} for channel {ChatMessage.Channel}");
     }
 
     [SkipLocalsInit]
@@ -172,7 +172,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         User? user = _twitchBot.Users[ChatMessage.UserId];
         if (user is null)
         {
-            user = new(ChatMessage.UserId, ChatMessage.Username)
+            user = new(ChatMessage.UserId, ChatMessage.Username.ToString())
             {
                 Location = city,
                 IsPrivateLocation = isPrivate
@@ -185,7 +185,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
             user.IsPrivateLocation = isPrivate;
         }
 
-        Response.Append(ChatMessage.Username, ", your ", isPrivate ? "private" : "public", " location has been set");
+        Response.Append($"{ChatMessage.Username}, your {(isPrivate ? "private" : "public")} location has been set");
     }
 
     private void SetTimezone()
@@ -196,7 +196,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, IChatMessage chat
         User? user = _twitchBot.Users.Get(ChatMessage.UserId);
         if (user is null)
         {
-            user = new(ChatMessage.UserId, ChatMessage.Username);
+            user = new(ChatMessage.UserId, ChatMessage.Username.ToString());
             _twitchBot.Users.Add(user);
         }
 

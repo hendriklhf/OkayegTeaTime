@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HLE.Strings;
+using HLE.Text;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Utils;
@@ -12,21 +12,14 @@ public partial class TwitchBot
     private const string Yourself = "yourself";
     private const string ReminderFromSpace = "reminder from ";
 
-    // ReSharper disable once InconsistentNaming
-    public ValueTask SendComingBackAsync(long userId, string channel)
-    {
-        User? user = Users[userId];
-        return user is null ? ValueTask.CompletedTask : SendComingBackAsync(user, channel);
-    }
-
     public async ValueTask SendComingBackAsync(User user, string channel)
     {
         string emote = Channels[channel]?.Emote ?? GlobalSettings.DefaultEmote;
         using PooledStringBuilder responseBuilder = new(GlobalSettings.MaxMessageLength);
-        responseBuilder.Append(emote, " ");
+        responseBuilder.Append(emote);
+        responseBuilder.Append(' ');
 
-        int afkMessageLength = AfkMessageBuilder.BuildComingBackMessage(user, user.AfkType, responseBuilder.FreeBufferSpan);
-        responseBuilder.Advance(afkMessageLength);
+        AfkMessageBuilder.BuildComingBackMessage(user, user.AfkType, responseBuilder);
         await SendAsync(channel, responseBuilder.WrittenMemory);
     }
 
@@ -37,38 +30,43 @@ public partial class TwitchBot
             return;
         }
 
-        string creator = reminders[0].Creator == reminders[0].Target ? Yourself : reminders[0].Creator;
+        Reminder reminder = reminders[0];
+        string creator = reminder.Creator == reminder.Target ? Yourself : reminder.Creator;
+
 #pragma warning disable S6354
-        TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminders[0].Time);
+        TimeSpan timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 #pragma warning restore S6354
 
         using PooledStringBuilder builder = new(500);
-        builder.Append(reminders[0].Target, ", ", ReminderFromSpace, creator, " (");
-        builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
+        builder.Append($"{reminder.Target}, {ReminderFromSpace}{creator} (");
+        TimeSpanFormatter.Format(timeSinceReminderCreation, builder);
         builder.Append(" ago)");
 
-        Reminders.Remove(reminders[0].Id);
-        if (reminders[0].Message?.Length != 0)
+        Reminders.Remove(reminder.Id);
+
+        if (reminder.Message is { Length: not 0 })
         {
-            builder.Append(": ", reminders[0].Message);
+            builder.Append(": ");
+            builder.Append(reminder.Message);
         }
 
         for (int i = 1; i < reminders.Length; i++)
         {
-            Reminder reminder = reminders[i];
+            reminder = reminders[i];
             Reminders.Remove(reminder.Id);
             creator = reminder.Creator == reminder.Target ? Yourself : reminder.Creator;
 #pragma warning disable S6354
             timeSinceReminderCreation = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(reminder.Time);
 #pragma warning restore S6354
 
-            builder.Append(" || ", creator, " (");
-            builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
+            builder.Append($" || {creator} (");
+            TimeSpanFormatter.Format(timeSinceReminderCreation, builder);
             builder.Append(" ago)");
 
-            if (reminder.Message?.Length != 0)
+            if (reminder.Message is { Length: not 0 })
             {
-                builder.Append(": ", reminder.Message);
+                builder.Append(": ");
+                builder.Append(reminder.Message);
             }
         }
 
@@ -88,13 +86,14 @@ public partial class TwitchBot
 #pragma warning restore S6354
 
         using PooledStringBuilder builder = new(512);
-        builder.Append(reminder.Target, ", ", ReminderFromSpace, creator, " (");
-        builder.Advance(TimeSpanFormatter.Format(timeSinceReminderCreation, builder.FreeBufferSpan));
+        builder.Append($"{reminder.Target}, {ReminderFromSpace}{creator} (");
+        TimeSpanFormatter.Format(timeSinceReminderCreation, builder);
         builder.Append(" ago)");
 
-        if (!string.IsNullOrWhiteSpace(reminder.Message))
+        if (reminder.Message is { Length: not 0 })
         {
-            builder.Append(": ", reminder.Message);
+            builder.Append(": ");
+            builder.Append(reminder.Message);
         }
 
         Reminders.Remove(reminder.Id);

@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 
 namespace OkayegTeaTime.Configuration;
 
@@ -24,7 +26,18 @@ public static class GlobalSettings
     {
         Settings settings = SettingsReader.Read(SettingsFileName);
         SettingsValidator validator = new();
-        validator.Validate(nameof(Configuration.Settings), settings);
+        ValidateOptionsResult validationResult = validator.Validate(null, settings);
+        if (validationResult.Failed)
+        {
+            ThrowValidationFailed(validationResult);
+        }
+
         Settings = settings;
+
+        return;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void ThrowValidationFailed(ValidateOptionsResult validationResult)
+            => throw new OptionsValidationException(nameof(Settings), typeof(Settings), validationResult.Failures);
     }
 }

@@ -3,54 +3,55 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <EntityFrameworkVersion>9.0.1</EntityFrameworkVersion>
+    <RoslynatorVersion>4.12.11</RoslynatorVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="HLE" Version="2.1.8"/>
-    <PackageVersion Include="JetBrains.Annotations" Version="2024.2.0"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.7"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.7"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.7"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
+    <!--<PackageVersion Include="HLE" Version="2.2.1"/>-->
+    <PackageVersion Include="JetBrains.Annotations" Version="2025.1.0-eap1"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EntityFrameworkVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(EntityFrameworkVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="$(EntityFrameworkVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EntityFrameworkVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7"/>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EntityFrameworkVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EntityFrameworkVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2"/>
-    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0"/>
-    <PackageVersion Include="MySql.Data.EntityFramework" Version="9.0.0"/>
-    <PackageVersion Include="MySql.EntityFrameworkCore" Version="8.0.5"/>
-    <PackageVersion Include="SpotifyAPI.Web" Version="7.1.1"/>
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.1"/>
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.1"/>
+    <PackageVersion Include="MySql.Data.EntityFramework" Version="9.2.0"/>
+    <PackageVersion Include="MySql.EntityFrameworkCore" Version="9.0.0"/>
+    <PackageVersion Include="SpotifyAPI.Web" Version="7.2.1"/>
   </ItemGroup>
 
   <!-- Default Analyzers -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48"/>
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.4"/>
-    <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.4"/>
-    <PackageVersion Include="Roslynator.CodeFixes" Version="4.12.4"/>
-    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.12.4"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.28.0.94264"/>
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19"/>
+    <PackageVersion Include="Roslynator.Analyzers" Version="$(RoslynatorVersion)"/>
+    <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="$(RoslynatorVersion)"/>
+    <PackageVersion Include="Roslynator.CodeFixes" Version="$(RoslynatorVersion)"/>
+    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="$(RoslynatorVersion)"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.6.0.109712"/>
   </ItemGroup>
 
   <!-- Tests -->
   <ItemGroup>
-    <PackageVersion Include="coverlet.collector" Version="6.0.2"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0"/>
-    <PackageVersion Include="xunit" Version="2.9.0"/>
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2"/>
+    <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+    <PackageVersion Include="xunit" Version="2.9.3"/>
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1"/>
   </ItemGroup>
-  
-  <!-- Transitive packages -->
+
   <ItemGroup>
-    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.4.0"/>
-    <PackageVersion Include="System.Data.SqlClient" Version="4.8.6"/>
-    <PackageVersion Include="System.Drawing.Common" Version="9.0.0-preview.6.24327.6"/>
-    <PackageVersion Include="System.Text.Json" Version="9.0.0-preview.6.24327.7"/>
+    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.0"/>
+    <PackageVersion Include="System.Data.SqlClient" Version="4.9.0"/>
+    <PackageVersion Include="System.Drawing.Common" Version="9.0.1"/>
+    <PackageVersion Include="System.Text.Json" Version="9.0.1"/>
     <PackageVersion Include="System.Private.Uri" Version="4.3.2"/>
   </ItemGroup>
 

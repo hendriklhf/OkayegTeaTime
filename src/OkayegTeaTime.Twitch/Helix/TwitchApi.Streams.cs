@@ -38,7 +38,7 @@ public sealed partial class TwitchApi
         return stream;
     }
 
-    public async ValueTask<Stream?> GetStreamAsync(string username) => await GetStreamAsync(username.AsMemory());
+    public ValueTask<Stream?> GetStreamAsync(string username) => GetStreamAsync(username.AsMemory());
 
     public async ValueTask<Stream?> GetStreamAsync(ReadOnlyMemory<char> username)
     {
@@ -61,28 +61,28 @@ public sealed partial class TwitchApi
         return stream;
     }
 
-    public async ValueTask<Stream[]> GetStreamsAsync(IEnumerable<string> usernames)
+    public ValueTask<Stream[]> GetStreamsAsync(IEnumerable<string> usernames)
     {
         // ReSharper disable once PossibleMultipleEnumeration
-        if (usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory))
-        {
-            return await GetStreamsAsync(usernamesMemory, ReadOnlyMemory<long>.Empty);
-        }
+        ReadOnlyMemory<string> usernamesMemory = usernames.TryGetReadOnlyMemory(out ReadOnlyMemory<string> mem)
+            ? mem
+            // ReSharper disable once PossibleMultipleEnumeration
+            : usernames.ToArray();
 
-        // ReSharper disable once PossibleMultipleEnumeration
-        return await GetStreamsAsync(usernames.ToArray(), ReadOnlyMemory<long>.Empty);
+        return GetStreamsAsync(usernamesMemory, ReadOnlyMemory<long>.Empty);
     }
 
-    public async ValueTask<Stream[]> GetStreamsAsync(IEnumerable<long> channelIds)
+    public ValueTask<Stream[]> GetStreamsAsync(IEnumerable<long> channelIds)
     {
         // ReSharper disable once PossibleMultipleEnumeration
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (channelIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> channelIdsMemory))
         {
-            return await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIdsMemory);
+            return GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIdsMemory);
         }
 
         // ReSharper disable once PossibleMultipleEnumeration
-        return await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds.ToArray());
+        return GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds.ToArray());
     }
 
     public async ValueTask<Stream[]> GetStreamsAsync(IEnumerable<string> usernames, IEnumerable<long> channelIds)
@@ -101,29 +101,29 @@ public sealed partial class TwitchApi
         // ReSharper restore PossibleMultipleEnumeration
     }
 
-    public async ValueTask<Stream[]> GetStreamsAsync(List<string> usernames)
-        => await GetStreamsAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), ReadOnlyMemory<long>.Empty);
+    public ValueTask<Stream[]> GetStreamsAsync(List<string> usernames)
+        => GetStreamsAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), ReadOnlyMemory<long>.Empty);
 
-    public async ValueTask<Stream[]> GetStreamsAsync(List<long> channelIds)
-        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(channelIds)));
+    public ValueTask<Stream[]> GetStreamsAsync(List<long> channelIds)
+        => GetStreamsAsync(ReadOnlyMemory<string>.Empty, SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(channelIds)));
 
-    public async ValueTask<Stream[]> GetStreamsAsync(List<string> usernames, List<long> channelIds)
-        => await GetStreamsAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(channelIds)));
+    public ValueTask<Stream[]> GetStreamsAsync(List<string> usernames, List<long> channelIds)
+        => GetStreamsAsync(SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(usernames)), SpanMarshal.AsMemory(CollectionsMarshal.AsSpan(channelIds)));
 
-    public async ValueTask<Stream[]> GetStreamsAsync(params string[] usernames)
-        => await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
+    public ValueTask<Stream[]> GetStreamsAsync(params string[] usernames)
+        => GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
 
-    public async ValueTask<Stream[]> GetStreamsAsync(params long[] channelIds)
-        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
+    public ValueTask<Stream[]> GetStreamsAsync(params long[] channelIds)
+        => GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
 
-    public async ValueTask<Stream[]> GetStreamsAsync(string[] usernames, long[] channelIds)
-        => await GetStreamsAsync(usernames.AsMemory(), channelIds);
+    public ValueTask<Stream[]> GetStreamsAsync(string[] usernames, long[] channelIds)
+        => GetStreamsAsync(usernames.AsMemory(), channelIds);
 
-    public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames)
-        => await GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
+    public ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames)
+        => GetStreamsAsync(usernames, ReadOnlyMemory<long>.Empty);
 
-    public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<long> channelIds)
-        => await GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
+    public ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<long> channelIds)
+        => GetStreamsAsync(ReadOnlyMemory<string>.Empty, channelIds);
 
     public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> channelIds)
     {

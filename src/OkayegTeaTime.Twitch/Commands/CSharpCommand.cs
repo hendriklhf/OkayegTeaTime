@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -10,30 +10,30 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.CSharp, typeof(CSharpCommand))]
-public readonly struct CSharpCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<CSharpCommand>(CommandType.CSharp)]
+public readonly struct CSharpCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<CSharpCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CSharpCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CSharpCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s.+");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             ReadOnlyMemory<char> mainMethodContent = ChatMessage.Message.AsMemory();
             mainMethodContent = mainMethodContent[(messageExtension.Split[0].Length + 1)..];
-            Response.Append(ChatMessage.Username, ", ");
+            Response.Append($"{ChatMessage.Username}, ");
 
             try
             {

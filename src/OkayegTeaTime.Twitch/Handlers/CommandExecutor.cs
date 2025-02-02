@@ -5,13 +5,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using HLE.Twitch.Models;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
-using ExecutionMethod = System.Func<OkayegTeaTime.Twitch.TwitchBot, HLE.Twitch.Models.IChatMessage, System.ReadOnlyMemory<char>, System.ReadOnlyMemory<char>, System.Threading.Tasks.ValueTask>;
+using ExecutionMethod = System.Func<OkayegTeaTime.Twitch.TwitchBot, HLE.Twitch.Tmi.Models.ChatMessage, System.ReadOnlyMemory<char>, System.ReadOnlyMemory<char>, System.Threading.Tasks.ValueTask>;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 
@@ -28,8 +28,8 @@ public sealed class CommandExecutor
         MethodInfo executionMethod = typeof(CommandExecutor).GetMethod(nameof(ExecuteCommandAsync), BindingFlags.Static | BindingFlags.NonPublic)!;
         HandledCommandAttribute[] handledCommandAttributes = typeof(CommandExecutor).Assembly
             .GetTypes()
-            .Where(static t => t.GetCustomAttribute<HandledCommandAttribute>() is not null)
-            .Select(static t => t.GetCustomAttribute<HandledCommandAttribute>()!)
+            .Where(static t => t.GetCustomAttribute<HandledCommandAttribute>(true) is not null)
+            .Select(static t => t.GetCustomAttribute<HandledCommandAttribute>(true)!)
             .ToArray();
 
         int methodCount = (int)handledCommandAttributes.MaxBy(static a => a.CommandType)!.CommandType + 1;
@@ -41,14 +41,13 @@ public sealed class CommandExecutor
         }
     }
 
-    // ReSharper disable once InconsistentNaming
-    public ValueTask ExecuteAsync(CommandType type, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    public ValueTask ExecuteAsync(CommandType type, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     {
         ExecutionMethod executionMethod = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(_executionMethods), (int)type);
         return executionMethod(_twitchBot, chatMessage, prefix, alias);
     }
 
-    private static async ValueTask ExecuteCommandAsync<T>(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+    private static async ValueTask ExecuteCommandAsync<T>(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
         where T : IChatCommand<T>
     {
         T.Create(twitchBot, chatMessage, prefix, alias, out T command);

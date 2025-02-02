@@ -2,10 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using HLE;
 using HLE.Collections;
-using HLE.Strings;
 using TwitchEmote = OkayegTeaTime.Twitch.Helix.Models.Emote;
 using TwitchChannelEmote = OkayegTeaTime.Twitch.Helix.Models.ChannelEmote;
 using FfzEmote = OkayegTeaTime.Twitch.Ffz.Models.Emote;
@@ -17,41 +17,53 @@ namespace OkayegTeaTime.Twitch.Services;
 public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
 {
     private readonly TwitchBot _twitchBot = twitchBot;
-    private readonly ConcurrentDictionary<long, CacheEntry<StringArray>> _emoteNamesCache = new();
+    private readonly ConcurrentDictionary<long, CacheEntry<ImmutableArray<string>>> _emoteNamesCache = new();
 
     private static readonly TimeSpan s_emoteNamesCacheTime = TimeSpan.FromHours(1);
 
     public async ValueTask<string> GetBestEmoteAsync(long channelId, string fallback, params string[] keywords)
     {
-        StringArray emoteNames = await GetAllEmoteNamesAsync(channelId);
-        using PooledList<string> bestEmotes = new(32);
-        foreach (string keyword in keywords)
+        ImmutableArray<string> emoteNames = await GetAllEmoteNamesAsync(channelId);
+        ValueList<string> bestEmotes = new(32);
+        try
         {
-            for (int i = 0; i < emoteNames.Length; i++)
+            foreach (string keyword in keywords)
             {
-                AddEmoteIfContainsKeyword(emoteNames, i, keyword, bestEmotes);
+                for (int i = 0; i < emoteNames.Length; i++)
+                {
+                    AddEmoteIfContainsKeyword(emoteNames, i, keyword, ref bestEmotes);
+                }
             }
-        }
 
-        return bestEmotes.Count == 0 ? fallback : Random.Shared.GetItem(bestEmotes.AsSpan());
+            return bestEmotes.Count == 0 ? fallback : Random.Shared.GetItem(bestEmotes.AsSpan());
+        }
+        finally
+        {
+            bestEmotes.Dispose();
+        }
     }
 
-    private static void AddEmoteIfContainsKeyword(StringArray emoteNames, int i, string keyword, PooledList<string> bestEmotes)
+    private static void AddEmoteIfContainsKeyword(ImmutableArray<string> emoteNames, int i, string keyword, ref ValueList<string> bestEmotes)
     {
-        ReadOnlySpan<char> emoteName = emoteNames.GetChars(i);
+        ReadOnlySpan<char> emoteName = emoteNames[i];
         if (emoteName.Contains(keyword, StringComparison.OrdinalIgnoreCase))
         {
             bestEmotes.Add(emoteNames[i]);
         }
     }
 
-    public async ValueTask<StringArray> GetAllEmoteNamesAsync(long channelId)
+    public ValueTask<ImmutableArray<string>> GetAllEmoteNamesAsync(long channelId)
     {
-        if (_emoteNamesCache.TryGetValue(channelId, out CacheEntry<StringArray> emoteNamesEntry) && emoteNamesEntry.IsValid(s_emoteNamesCacheTime))
+        if (_emoteNamesCache.TryGetValue(channelId, out CacheEntry<ImmutableArray<string>> emoteNamesEntry) && emoteNamesEntry.IsValid(s_emoteNamesCacheTime))
         {
-            return emoteNamesEntry.Value;
+            return ValueTask.FromResult(emoteNamesEntry.Value);
         }
 
+        return GetAllEmoteNamesCoreAsync(channelId);
+    }
+
+    private async ValueTask<ImmutableArray<string>> GetAllEmoteNamesCoreAsync(long channelId)
+    {
         ImmutableArray<TwitchEmote> twitchGlobalEmotes = await _twitchBot.TwitchApi.GetGlobalEmotesAsync();
         ImmutableArray<TwitchChannelEmote> twitchChannelEmotes = await _twitchBot.TwitchApi.GetChannelEmotesAsync(channelId);
         ImmutableArray<FfzEmote> ffzGlobalEmotes = await _twitchBot.FfzApi.GetGlobalEmotesAsync();
@@ -64,7 +76,7 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
         int totalEmoteCount = twitchGlobalEmotes.Length + twitchChannelEmotes.Length + ffzGlobalEmotes.Length + ffzChannelEmotes.Length +
                               bttvGlobalEmotes.Length + bttvChannelEmotes.Length + sevenTvGlobalEmotes.Length + sevenTvChannelEmotes.Length;
 
-        StringArray emoteNames = new(totalEmoteCount);
+        string[] emoteNames = new string[totalEmoteCount];
         int emoteNameCount = 0;
 
         foreach (TwitchEmote emote in twitchGlobalEmotes)
@@ -107,8 +119,9 @@ public sealed class EmoteService(TwitchBot twitchBot) : IEquatable<EmoteService>
             emoteNames[emoteNameCount++] = emote.Name;
         }
 
-        _emoteNamesCache.AddOrSet(channelId, new(emoteNames));
-        return emoteNames;
+        ImmutableArray<string> immutableEmoteNames = ImmutableCollectionsMarshal.AsImmutableArray(emoteNames);
+        _emoteNamesCache.AddOrSet(channelId, new(immutableEmoteNames));
+        return immutableEmoteNames;
     }
 
     public bool Equals(EmoteService? other) => ReferenceEquals(this, other);

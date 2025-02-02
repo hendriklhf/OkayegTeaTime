@@ -1,5 +1,6 @@
 ﻿using System;
-using HLE.Strings;
+using System.Diagnostics.Contracts;
+using HLE.Text;
 
 namespace OkayegTeaTime.Utils;
 
@@ -7,9 +8,17 @@ public static class TimeSpanFormatter
 {
     private const string SpanFormatDefault = "<1s";
 
-    public static int Format(TimeSpan timeSpan, Span<char> buffer)
+    [Pure]
+    public static string Format(TimeSpan timeSpan)
     {
-        ValueStringBuilder builder = new(buffer);
+        using PooledStringBuilder builder = new(32);
+        Format(timeSpan, builder);
+        return builder.ToString();
+    }
+
+    public static void Format(TimeSpan timeSpan, PooledStringBuilder builder)
+    {
+        int startingLength = builder.Length;
         if (timeSpan.Days != 0)
         {
             builder.Append(timeSpan.Days);
@@ -18,7 +27,7 @@ public static class TimeSpanFormatter
 
         if (timeSpan.Hours != 0)
         {
-            if (builder.Length != 0)
+            if (builder.Length != startingLength)
             {
                 builder.Append(", ");
             }
@@ -29,7 +38,7 @@ public static class TimeSpanFormatter
 
         if (timeSpan.Minutes != 0)
         {
-            if (builder.Length != 0)
+            if (builder.Length != startingLength)
             {
                 builder.Append(", ");
             }
@@ -40,7 +49,7 @@ public static class TimeSpanFormatter
 
         if (timeSpan.Seconds != 0)
         {
-            if (builder.Length != 0)
+            if (builder.Length != startingLength)
             {
                 builder.Append(", ");
             }
@@ -49,18 +58,9 @@ public static class TimeSpanFormatter
             builder.Append('s');
         }
 
-        if (builder.Length == 0)
+        if (builder.Length == startingLength)
         {
             builder.Append(SpanFormatDefault);
         }
-
-        return builder.Length;
-    }
-
-    public static string Format(TimeSpan timeSpan)
-    {
-        Span<char> buffer = stackalloc char[100];
-        int length = Format(timeSpan, buffer);
-        return new(buffer[..length]);
     }
 }

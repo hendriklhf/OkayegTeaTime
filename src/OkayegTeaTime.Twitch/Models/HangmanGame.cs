@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using HLE.Memory;
-using HLE.Strings;
+using HLE.Text;
 
 namespace OkayegTeaTime.Twitch.Models;
 

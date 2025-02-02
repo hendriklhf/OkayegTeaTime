@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -9,34 +9,33 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Rafk, typeof(RafkCommand))]
-public readonly struct RafkCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<RafkCommand>(CommandType.Rafk)]
+public readonly struct RafkCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<RafkCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RafkCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RafkCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
     {
-        User? user = _twitchBot.Users.Get(ChatMessage.UserId, ChatMessage.Username);
+        User? user = _twitchBot.Users.Get(ChatMessage.UserId, ChatMessage.Username.ToString());
         if (user is null)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore);
+            Response.Append($"{ChatMessage.Username}, {Texts.CantResumeYourAfkStatusBecauseYouNeverWentAfkBefore}");
             return ValueTask.CompletedTask;
         }
 
         user.IsAfk = true;
 
-        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildResumingMessage(ChatMessage.Username, user.AfkType, Response.FreeBufferSpan);
-        Response.Advance(afkMessageLength);
+        _twitchBot.AfkMessageBuilder.BuildResumingMessage(ChatMessage.Username.AsSpan(), user.AfkType, Response);
         return ValueTask.CompletedTask;
     }
 

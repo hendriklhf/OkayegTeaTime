@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Helix.Models;
@@ -10,27 +10,27 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Id, typeof(IdCommand))]
-public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<IdCommand>(CommandType.Id)]
+public readonly struct IdCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<IdCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out IdCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out IdCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
     {
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append($"{ChatMessage.Username}, ");
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+");
         long userId;
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             ReadOnlyMemory<char> username = messageExtension.LowerSplit[1];
@@ -52,7 +52,7 @@ public readonly struct IdCommand(TwitchBot twitchBot, IChatMessage chatMessage, 
 
     private async ValueTask<long> GetUserIdAsync(ReadOnlyMemory<char> username)
     {
-        if (username.Span.SequenceEqual(ChatMessage.Username))
+        if (username.Span.SequenceEqual(ChatMessage.Username.AsSpan()))
         {
             return ChatMessage.UserId;
         }

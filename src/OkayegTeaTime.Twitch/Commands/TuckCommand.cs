@@ -1,43 +1,44 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Emojis;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Tuck, typeof(TuckCommand))]
-public readonly struct TuckCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<TuckCommand>(CommandType.Tuck)]
+public readonly struct TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<TuckCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out TuckCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out TuckCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s\w+(\s\S+)?");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             ReadOnlySpan<char> target = messageExtension.LowerSplit[1].Span;
-            Response.Append(Emoji.PointRight, " ", Emoji.Bed, " ", ChatMessage.Username);
-            Response.Append(" tucked ", target, " to bed");
+            Response.Append($"{Emoji.PointRight} {Emoji.Bed} {ChatMessage.Username}");
+
+            Response.Append($" tucked {target} to bed");
             ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2].Span : [];
             if (emote.Length != 0)
             {
-                Response.Append(" ", emote);
+                Response.Append(' ');
+                Response.Append(emote);
             }
         }
 

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Chatterino7, typeof(Chatterino7Command))]
-public readonly struct Chatterino7Command(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<Chatterino7Command>(CommandType.Chatterino7)]
+public readonly struct Chatterino7Command(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<Chatterino7Command>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
@@ -22,12 +22,12 @@ public readonly struct Chatterino7Command(TwitchBot twitchBot, IChatMessage chat
 
     private const string ResponseMessage = "Website: 7tv.app || Releases: github.com/SevenTV/chatterino7/releases";
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Chatterino7Command command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Chatterino7Command command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public ValueTask HandleAsync()
     {
-        Response.Append(ChatMessage.Username, ", ", ResponseMessage);
+        Response.Append($"{ChatMessage.Username}, {ResponseMessage}");
         return ValueTask.CompletedTask;
     }
 

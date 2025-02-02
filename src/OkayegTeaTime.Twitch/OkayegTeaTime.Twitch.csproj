@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HLE"/>
+    <Reference Include="..\..\lib\HLE.Twitch\HLE.Twitch.dll"/>
+    <Reference Include="..\..\lib\HLE.Twitch\HLE.dll"/>
     <PackageReference Include="JetBrains.Annotations"/>
   </ItemGroup>
 

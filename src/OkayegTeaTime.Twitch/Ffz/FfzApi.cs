@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using HLE.Strings;
+using HLE.Text;
 using OkayegTeaTime.Twitch.Ffz.Models;
 
 namespace OkayegTeaTime.Twitch.Ffz;
@@ -75,7 +75,7 @@ public sealed class FfzApi : IEquatable<FfzApi>
         }
 
         using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
-        urlBuilder.Append(ApiBaseUrl, "/room/", channelName.Span);
+        urlBuilder.Append($"{ApiBaseUrl}/room/{channelName.Span}");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());

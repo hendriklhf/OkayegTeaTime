@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HLE"/>
+    <Reference Include="..\..\lib\HLE.Twitch\HLE.Twitch.dll"/>
   </ItemGroup>
 
   <ItemGroup>

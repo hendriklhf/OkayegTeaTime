@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using JetBrains.Annotations;
 
 namespace OkayegTeaTime.Twitch.Commands;
@@ -10,8 +10,7 @@ public interface IChatCommand<T> : IDisposable, IEquatable<T> where T : IChatCom
 {
     PooledStringBuilder Response { get; }
 
-    static abstract void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, [MustDisposeResource] out T command);
+    static abstract void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, [MustDisposeResource] out T command);
 
-    // ReSharper disable once InconsistentNaming
     ValueTask HandleAsync();
 }

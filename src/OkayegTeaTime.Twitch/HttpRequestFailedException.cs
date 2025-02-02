@@ -10,7 +10,7 @@ public sealed class HttpRequestFailedException(int statusCode, ReadOnlySpan<byte
 {
     public HttpStatusCode HttpStatusCode { get; } = (HttpStatusCode)statusCode;
 
-    public ImmutableArray<byte> HttpResponseContent { get; } = ImmutableArray.Create(responseBytes);
+    public ImmutableArray<byte> HttpResponseContent { get; } = [.. responseBytes];
 
     public HttpRequestFailedException(HttpStatusCode statusCode, ReadOnlySpan<byte> responseBytes) : this((int)statusCode, responseBytes)
     {

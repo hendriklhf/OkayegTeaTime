@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HLE.Memory;
-using HLE.Strings;
+using HLE.Text;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Twitch.Json;
 using OkayegTeaTime.Twitch.Models;
@@ -50,21 +50,23 @@ public static class DotNetFiddleService
 
     private static string CreateCodeBlock(ReadOnlyMemory<char> mainMethodCodeBlock)
     {
-        Debug.Assert(s_templateFileParts.Length == 2, "s_templateFileParts.Length == 2");
+        Debug.Assert(s_templateFileParts.Length == 2);
 
         using RentedArray<char> charBuffer = ArrayPool<char>.Shared.RentAsRentedArray(mainMethodCodeBlock.Length);
         mainMethodCodeBlock.Span.CopyTo(charBuffer.AsSpan());
         Memory<char> escapedMainMethodCodeBlock = ReplaceSpecialChars(charBuffer.AsMemory(..mainMethodCodeBlock.Length));
         using PooledStringBuilder codeBuilder = new(s_templateFileParts[0].Length + s_templateFileParts[1].Length + escapedMainMethodCodeBlock.Length);
-        codeBuilder.Append(s_templateFileParts[0], escapedMainMethodCodeBlock.Span, s_templateFileParts[1]);
+        codeBuilder.Append(s_templateFileParts[0]);
+        codeBuilder.Append(escapedMainMethodCodeBlock.Span);
+        codeBuilder.Append(s_templateFileParts[1]);
         return codeBuilder.ToString();
     }
 
     private static FormUrlEncodedContent CreateHttpContent(string codeBlock)
     {
         using PooledBufferWriter<KeyValuePair<string, string>> contentPairsWriter = new(s_defaultHttpContentPairs.Length + 1);
-        contentPairsWriter.WriteRange(s_defaultHttpContentPairs);
-        contentPairsWriter.Write(new("CodeBlock", codeBlock));
+        contentPairsWriter.Write(s_defaultHttpContentPairs);
+        contentPairsWriter.Write(new KeyValuePair<string, string>("CodeBlock", codeBlock));
         return new(contentPairsWriter);
     }
 

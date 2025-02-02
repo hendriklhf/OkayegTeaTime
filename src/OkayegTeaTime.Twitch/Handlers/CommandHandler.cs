@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using HLE.Twitch.Models;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -22,7 +22,7 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
     private static readonly FrozenDictionary<AliasHash, CommandType> s_commandTypes = CreateCommandTypeDictionary();
     private static readonly FrozenDictionary<AliasHash, AfkType> s_afkTypes = CreateAfkTypeDictionary();
 
-    public override async ValueTask HandleAsync(IChatMessage chatMessage)
+    public override async ValueTask HandleAsync(ChatMessage chatMessage)
     {
         bool handled = await HandleCommandAsync(chatMessage);
         if (!handled)
@@ -31,7 +31,7 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
         }
     }
 
-    private async ValueTask<bool> HandleCommandAsync(IChatMessage chatMessage)
+    private async ValueTask<bool> HandleCommandAsync(ChatMessage chatMessage)
     {
         ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
         ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? GlobalSettings.Suffix.AsMemory() : prefix;
@@ -58,13 +58,12 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
         }
 
         _twitchBot.CooldownController.AddCooldown(chatMessage.UserId, commandType);
-        _twitchBot.CommandCount++;
+        _twitchBot.IncrementCommandCount();
         await _commandExecutor.ExecuteAsync(commandType, chatMessage, prefix, usedAlias);
         return true;
     }
 
-    // ReSharper disable once InconsistentNaming
-    private ValueTask HandleAfkCommandAsync(IChatMessage chatMessage)
+    private ValueTask HandleAfkCommandAsync(ChatMessage chatMessage)
     {
         ReadOnlyMemory<char> prefix = _twitchBot.Channels[chatMessage.ChannelId]?.Prefix?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
         ReadOnlyMemory<char> prefixOrSuffix = prefix.Length == 0 ? GlobalSettings.Suffix.AsMemory() : prefix;
@@ -91,7 +90,7 @@ public sealed class CommandHandler(TwitchBot twitchBot) : Handler(twitchBot)
         }
 
         _twitchBot.CooldownController.AddAfkCooldown(chatMessage.UserId);
-        _twitchBot.CommandCount++;
+        _twitchBot.IncrementCommandCount();
         return _afkCommandHandler.HandleAsync(chatMessage, afkType);
     }
 

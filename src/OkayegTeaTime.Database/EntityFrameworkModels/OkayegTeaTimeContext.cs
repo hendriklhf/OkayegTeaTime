@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using OkayegTeaTime.Configuration;
 
 namespace OkayegTeaTime.Database.EntityFrameworkModels;
@@ -30,7 +31,15 @@ internal sealed class OkayegTeaTimeContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseMySQL(GlobalSettings.Settings.Database.ConnectionString);
+            MySqlConnectionStringBuilder builder = new()
+            {
+                Server = GlobalSettings.Settings.Database.Hostname,
+                Database = GlobalSettings.Settings.Database.Database,
+                UserID = GlobalSettings.Settings.Database.Username,
+                Password = GlobalSettings.Settings.Database.Password
+            };
+
+            optionsBuilder.UseMySQL(builder.ConnectionString);
         }
     }
 

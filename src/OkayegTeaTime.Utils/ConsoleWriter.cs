@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 
 namespace OkayegTeaTime.Utils;
 
@@ -55,12 +55,11 @@ public readonly struct ConsoleWriter : IDisposable, IAsyncDisposable, IEquatable
     public void WriteJoinedChannel(string channel)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        _builder.Append("JOINED <#", channel);
-        _builder.Append('>');
+        _builder.Append($"JOINED <#{channel}>");
     }
 
-    public void WriteChatMessage(IChatMessage chatMessage)
-        => _builder.Append("<#", chatMessage.Channel, "> ", chatMessage.Username, ": ", chatMessage.Message);
+    public void WriteChatMessage(ChatMessage chatMessage)
+        => _builder.Append(chatMessage);
 
     public bool Equals(ConsoleWriter other) => _builder == other._builder;
 

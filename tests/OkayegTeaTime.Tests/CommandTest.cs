@@ -84,7 +84,7 @@ public sealed class CommandTest
         foreach (AfkCommand command in CommandController.AfkCommands)
         {
             AfkType type = Enum.Parse<AfkType>(command.Name, true);
-            Assert.NotNull(type);
+            Assert.True(Enum.IsDefined(type));
         }
     }
 

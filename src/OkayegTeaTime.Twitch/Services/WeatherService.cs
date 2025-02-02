@@ -5,8 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using HLE.Collections.Concurrent;
-using HLE.Emojis;
-using HLE.Strings;
+using HLE.Text;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Models.OpenWeatherMap;
 
@@ -109,10 +108,8 @@ public sealed class WeatherService
         return data;
     }
 
-    public static int FormatWeatherData(WeatherData weatherData, Span<char> responseBuffer, bool isPrivateLocation)
+    public static int FormatWeatherData(WeatherData weatherData, PooledStringBuilder response, bool isPrivateLocation)
     {
-        ValueStringBuilder response = new(responseBuffer);
-
         if (isPrivateLocation)
         {
             response.Append("(private location)");
@@ -120,20 +117,21 @@ public sealed class WeatherService
         else if (weatherData.Location.Country.Length == 2)
         {
             string country = new RegionInfo(weatherData.Location.Country).EnglishName;
-            response.Append(weatherData.CityName, ", ", country);
+            response.Append($"{weatherData.CityName}, {country}");
         }
         else
         {
-            response.Append(weatherData.CityName, ", ", weatherData.Location.Country);
+            response.Append($"{weatherData.CityName}, {weatherData.Location.Country}");
         }
 
-        response.Append(": ", weatherData.WeatherConditions[0].Description, " ", GetWeatherEmoji(weatherData.WeatherConditions[0].Id), ", ");
+        response.EnsureCapacity(response.Length + 256);
+        response.Append($": {weatherData.WeatherConditions[0].Description} {GetWeatherEmoji(weatherData.WeatherConditions[0].Id)}, ");
         response.Append(weatherData.Weather.Temperature);
         response.Append("°C, min. ");
         response.Append(weatherData.Weather.MinTemperature);
         response.Append("°C, max. ");
         response.Append(weatherData.Weather.MaxTemperature);
-        response.Append("°C, ", GetDirection(weatherData.Wind.Direction), " wind speed: ");
+        response.Append($"°C, {GetDirection(weatherData.Wind.Direction)} wind speed: ");
         response.Append(weatherData.Wind.Speed);
         response.Append(" m/s, cloud cover: ");
         response.Append(weatherData.Clouds.Percentage);

@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -15,13 +15,13 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Remind, typeof(RemindCommand))]
-public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<RemindCommand>(CommandType.Remind)]
+public readonly partial struct RemindCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<RemindCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
@@ -35,7 +35,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
 
 #pragma warning disable CA1823
     [TimePattern(nameof(TimeSpan.FromDays), 365)]
-    private static readonly Regex s_yearPattern = new(@"\b\d+([,\.]\d+)?\s?y(ear)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex s_yearPattern = new(@"\b\d+([,\.]\d+)?\s?y(ea)?r?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromDays), 7)]
     private static readonly Regex s_weekPattern = new(@"\b\d+([,\.]\d+)?\s?w(eek)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
@@ -44,7 +44,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     private static readonly Regex s_dayPattern = new(@"\b\d+([,\.]\d+)?\s?d(ay)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromHours))]
-    private static readonly Regex s_hourPattern = new(@"\b\d+([,\.]\d+)?\s?h(our)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex s_hourPattern = new(@"\b\d+([,\.]\d+)?\s?h(ou)?r?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     [TimePattern(nameof(TimeSpan.FromMinutes))]
     private static readonly Regex s_minutePattern = new(@"\b\d+([,\.]\d+)?\s?m(in(ute)?)?s?\b", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
@@ -66,7 +66,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
 
     private static readonly Regex s_exceptMessagePattern = new($@"^\S+\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*((\sin\s({s_timePattern})(\s{s_timePattern})*)|(\sat\s\b(?:[01]?[0-9]|2[0-3]):[0-5][0-9]))?\s?", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out RemindCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
@@ -76,13 +76,13 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         long toTime = 0;
 
         Regex clockReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sat\s(?:[01]?[0-9]|2[0-3]):[0-5][0-9]");
-        if (clockReminderPattern.IsMatch(ChatMessage.Message))
+        if (clockReminderPattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             toTime = GetClockToTime();
 
             if (toTime < s_minimumTimedReminderTime + _now.ToUnixTimeMilliseconds())
             {
-                Response.Append(ChatMessage.Username, ", ", Texts.TheMinimumTimeForATimedReminderIs30S);
+                Response.Append($"{ChatMessage.Username}, {Texts.TheMinimumTimeForATimedReminderIs30S}");
                 return;
             }
 
@@ -92,12 +92,12 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         }
 
         Regex timedReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, $@"\s((\w{{3,25}})|(me))(,\s?((\w{{3,25}})|(me)))*\sin\s({s_timePattern})(\s{s_timePattern})*.*");
-        if (timedReminderPattern.IsMatch(ChatMessage.Message))
+        if (timedReminderPattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             toTime = GetToTime();
             if (toTime < s_minimumTimedReminderTime + _now.ToUnixTimeMilliseconds())
             {
-                Response.Append(ChatMessage.Username, ", ", Texts.TheMinimumTimeForATimedReminderIs30S);
+                Response.Append($"{ChatMessage.Username}, {Texts.TheMinimumTimeForATimedReminderIs30S}");
                 return;
             }
 
@@ -107,7 +107,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         }
 
         Regex normalReminderPattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s((\w{3,25})|(me))(,\s?((\w{3,25})|(me)))*.*");
-        if (normalReminderPattern.IsMatch(ChatMessage.Message))
+        if (normalReminderPattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             targets = GetTargets();
             message = GetMessage();
@@ -117,7 +117,8 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         return;
 
     Process:
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username);
+        Response.Append(", ");
         if (targets.Length == 1)
         {
             Helix.Models.User? targetUser = await _twitchBot.TwitchApi.GetUserAsync(targets[0]);
@@ -127,7 +128,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
                 return;
             }
 
-            Reminder reminder = new(ChatMessage.Username, targets[0], message, ChatMessage.Channel, toTime);
+            Reminder reminder = new(ChatMessage.Username.ToString(), targets[0], message, ChatMessage.Channel, toTime);
             int id = _twitchBot.Reminders.Add(reminder);
             if (id == -1)
             {
@@ -135,7 +136,10 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
                 return;
             }
 
-            Response.Append("set a ", toTime == 0 ? string.Empty : "timed ", "reminder for ", targets[0] == ChatMessage.Username ? "yourself" : targets[0]);
+            Response.Append("set a ");
+            Response.Append(toTime == 0 ? string.Empty : "timed ");
+            Response.Append("reminder for ");
+            Response.Append(ChatMessage.Username.AsSpan().Equals(targets[0], StringComparison.OrdinalIgnoreCase) ? "yourself" : targets[0]);
             Response.Append(" (ID: ");
             Response.Append(id);
             Response.Append(')');
@@ -147,7 +151,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         for (int i = 0; i < targetUsers.Length; i++)
         {
             Helix.Models.User targetUser = targetUsers[i];
-            reminders[i] = new(ChatMessage.Username, targetUser.Username, message, ChatMessage.Channel, toTime);
+            reminders[i] = new(ChatMessage.Username.ToString(), targetUser.Username, message, ChatMessage.Channel, toTime);
         }
 
         if (reminders.Length == 0)
@@ -165,8 +169,8 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         }
 
         bool multi = count > 1;
-        Response.Append("set", multi ? string.Empty : " a ", toTime == 0 ? string.Empty : "timed ");
-        Response.Append("reminder", multi ? "s" : string.Empty, " for ");
+        Response.Append($"set {(multi ? string.Empty : "a ")}timed ");
+        Response.Append($"reminder{(multi ? "s" : string.Empty)} for ");
         string[] responses = ids.Select(i =>
         {
             Reminder? reminder = Array.Find(reminders, r => r.Id == i);
@@ -177,7 +181,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         Response.Advance(joinLength);
     }
 
-    private string GetMessage() => s_exceptMessagePattern.Replace(ChatMessage.Message, string.Empty);
+    private string GetMessage() => s_exceptMessagePattern.Replace(ChatMessage.Message.ToString(), string.Empty);
 
     [SkipLocalsInit]
     private unsafe long GetToTime()
@@ -226,7 +230,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
             userNow += TimeSpan.FromHours(user.UtcOffset);
         }
 
-        Match clock = GetClockPattern().Match(ChatMessage.Message);
+        Match clock = GetClockPattern().Match(ChatMessage.Message.ToString());
         TimeSpan offsetToNow = TimeOnly.Parse(clock.ValueSpan) - TimeOnly.FromDateTime(userNow.DateTime);
 
         DateTimeOffset toTime = _now + offsetToNow;
@@ -236,7 +240,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
     [SkipLocalsInit]
     private string[] GetTargets()
     {
-        ReadOnlySpan<char> match = s_targetPattern.Match(ChatMessage.Message).Value;
+        ReadOnlySpan<char> match = s_targetPattern.Match(ChatMessage.Message.ToString()).Value;
         int firstWordLength = match.IndexOf(' ');
         match = match[firstWordLength..];
 
@@ -251,7 +255,7 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
             ReadOnlySpan<char> targetSpan = match[ranges[i]].Trim();
             int targetLength = targetSpan.ToLowerInvariant(targetBuffer);
             string target = StringPool.Shared.GetOrAdd(targetBuffer[..targetLength]);
-            targets[i] = target == Yourself ? ChatMessage.Username : target;
+            targets[i] = target == Yourself ? ChatMessage.Username.ToString() : target;
         }
 
         return targets.Distinct().Take(5).ToArray();
@@ -269,7 +273,8 @@ public readonly partial struct RemindCommand(TwitchBot twitchBot, IChatMessage c
         builder.Append('(');
         for (int i = 0; i < pattern.Length - 1; i++)
         {
-            builder.Append(pattern[i], ")|(");
+            builder.Append(pattern[i]);
+            builder.Append(")|(");
         }
 
         builder.Append(pattern[^1]);

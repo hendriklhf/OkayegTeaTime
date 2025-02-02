@@ -13,10 +13,6 @@ public readonly struct DotNetFiddleResult : IEquatable<DotNetFiddleResult>
         ConsoleOutput = null!
     };
 
-    public DotNetFiddleResult()
-    {
-    }
-
     public bool Equals(DotNetFiddleResult other) => ConsoleOutput == other.ConsoleOutput;
 
     public override bool Equals(object? obj) => obj is DotNetFiddleResult other && Equals(other);

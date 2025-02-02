@@ -1,13 +1,14 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using HLE;
 using HLE.Memory;
 using HLE.Numerics;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
+using Microsoft.Win32.SafeHandles;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Configuration;
@@ -16,13 +17,13 @@ using OkayegTeaTime.Twitch.Models;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Ping, typeof(PingCommand))]
-public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<PingCommand>(CommandType.Ping)]
+public readonly struct PingCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<PingCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
@@ -30,7 +31,7 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
 
     private const string TemperatureFilePath = "/sys/class/thermal/thermal_zone0/temp";
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PingCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out PingCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
@@ -38,12 +39,16 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
 #pragma warning disable S6354
         long unixMillisecondsNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 #pragma warning restore S6354
+
         using Process currentProcess = Process.GetCurrentProcess();
 
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username);
+        Response.Append(", ");
+
 #pragma warning disable S6563, S6561, S6354
         TimeSpan uptime = DateTime.Now - currentProcess.StartTime;
 #pragma warning restore S6354, S6561, S6563
+
         Response.Append("Pingeg, I'm here! Uptime: ");
         Response.Append(uptime, "g");
 
@@ -53,9 +58,9 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
         Response.Append("ms");
 
         Response.Append(" || Total process memory: ");
-        Response.Append(GetProcessMemory(currentProcess));
+        Response.Append(GetProcessMemoryInMegaByte(currentProcess));
         Response.Append("MB || Managed memory: ");
-        Response.Append(GetManagedMemory());
+        Response.Append(GetManagedMemoryInMegaByte());
         Response.Append("MB");
 
         if (OperatingSystem.IsLinux())
@@ -72,17 +77,22 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
         Response.Append(" || Executed commands: ");
         Response.Append(_twitchBot.CommandCount, "N0");
 
-        Response.Append(" || Running on ", RuntimeInformation.FrameworkDescription, " || Commit: ", ResourceController.LastCommit);
+        Response.Append(" || Running on ");
+        Response.Append(RuntimeInformation.FrameworkDescription);
+        Response.Append(" (");
+        Response.Append(RuntimeInformation.RuntimeIdentifier);
+        Response.Append(") || Commit: ");
+        Response.Append(ResourceController.LastCommit);
     }
 
-    private static double GetProcessMemory(Process process)
+    private static double GetProcessMemoryInMegaByte(Process process)
     {
         double memory = process.PrivateMemorySize64;
         double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.None, UnitPrefix.Mega);
         return Math.Round(memoryInMegaByte, 3);
     }
 
-    private static double GetManagedMemory()
+    private static double GetManagedMemoryInMegaByte()
     {
         double memory = GC.GetTotalMemory(false);
         double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.None, UnitPrefix.Mega);
@@ -94,9 +104,10 @@ public readonly struct PingCommand(TwitchBot twitchBot, IChatMessage chatMessage
     {
         try
         {
-            BufferedFileReader fileReader = new(TemperatureFilePath);
+            using SafeFileHandle handle = File.OpenHandle(TemperatureFilePath);
             using PooledBufferWriter<byte> byteWriter = new(16);
-            await fileReader.ReadBytesAsync(byteWriter);
+            int bytesRead = await RandomAccess.ReadAsync(handle, byteWriter.GetMemory(16), 0);
+            byteWriter.Advance(bytesRead);
             return double.Parse(byteWriter.WrittenSpan) / 1000;
         }
         catch (Exception ex)

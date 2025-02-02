@@ -1,32 +1,29 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Emojis;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Configuration;
-using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Json;
-using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Models.Formula1;
 using OkayegTeaTime.Twitch.Models.OpenWeatherMap;
 using OkayegTeaTime.Twitch.Services;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Formula1, typeof(Formula1Command))]
-public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<Formula1Command>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
@@ -36,7 +33,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
     private static readonly TimeSpan s_nonRaceLength = TimeSpan.FromHours(1);
     private static readonly TimeSpan s_raceLength = TimeSpan.FromHours(2);
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out Formula1Command command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
@@ -47,23 +44,23 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
 
         if (s_races is null)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.ApiError);
+            Response.Append($"{ChatMessage.Username}, {Texts.ApiError}");
             return;
         }
 
         Race? race = GetNextOrCurrentRace(s_races);
         if (race is null)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.ThereIsNoNextRace);
+            Response.Append($"{ChatMessage.Username}, {Texts.ThereIsNoNextRace}");
             return;
         }
 
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\sweather");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             if (GlobalSettings.Settings.OpenWeatherMap is null)
             {
-                Response.Append(ChatMessage.Username, ", ", Texts.TheCommandHasNotBeenConfiguredByTheBotOwner);
+                Response.Append($"{ChatMessage.Username}, {Texts.TheCommandHasNotBeenConfiguredByTheBotOwner}");
                 return;
             }
 
@@ -81,25 +78,21 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         DateTime now = DateTime.UtcNow;
 #pragma warning restore S6354
 
-        bool raceHasStarted = race.RaceSession.Start > now;
-        Response.Append(ChatMessage.Username, ", ", raceHasStarted ? "Next" : "Current", " race: ", race.Name);
-        Response.Append(" at the ", race.Circuit.Name, " in ", race.Circuit.Location.Name, ", ", race.Circuit.Location.Country, ". ");
-        Response.Append(Emoji.RacingCar, " ");
-        if (raceHasStarted)
+        bool raceHasStarted = race.RaceSession.Start <= now;
+        Response.Append($"{ChatMessage.Username}, {(raceHasStarted ? "Next" : "Current")} race: {race.Name}");
+        Response.Append($" at the {race.Circuit.Name} in {race.Circuit.Location.Name}, {race.Circuit.Location.Country}. {Emoji.RacingCar} ");
+        if (!raceHasStarted)
         {
-            Response.Append("The ", race.RaceSession.Name, " will start ");
-            Response.Append(race.RaceSession.Start, "R");
+            Response.Append($"The {race.RaceSession.Name} will start {race.RaceSession.Start:R}");
 
             TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
             int indexOfDot = charBuffer.IndexOf('.');
-            Response.Append(" (in ", charBuffer[..Unsafe.As<int, Index>(ref indexOfDot)], "). ", Emoji.CheckeredFlag);
+            Response.Append($" (in {charBuffer[..Unsafe.As<int, Index>(ref indexOfDot)]}). {Emoji.CheckeredFlag}");
         }
         else
         {
-            Response.Append("The ", race.RaceSession.Name, " started ");
-            Response.Append(race.RaceSession.Start, "t");
-            Response.Append(" GMT. ", Emoji.CheckeredFlag);
+            Response.Append($"The {race.RaceSession.Name} started {race.RaceSession.Start:t} GMT. {Emoji.CheckeredFlag}");
         }
 
         Session session = GetNextOrCurrentSession(race);
@@ -111,17 +104,17 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
         if (session.Start > now)
         {
             session.Start.TryFormat(charBuffer, out int length, "R");
-            Response.Append("Next session: ", session.Name, ", starting ", charBuffer[..length], " (in ");
+            Response.Append($"Next session: {session.Name}, starting {charBuffer[..length]} (in ");
 
             TimeSpan timeBetweenNowAndRaceStart = session.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
             int indexOfDot = charBuffer.IndexOf('.');
-            Response.Append(charBuffer[..indexOfDot], ").");
+            Response.Append($"{charBuffer[..indexOfDot]}).");
         }
         else if (session.Start + s_nonRaceLength > now)
         {
             session.Start.TryFormat(charBuffer, out int length, "t");
-            Response.Append("Current session: ", session.Name, ", started ", charBuffer[..length], " GMT.");
+            Response.Append($"Current session: {session.Name}, started {charBuffer[..length]} GMT.");
         }
         else
         {
@@ -131,19 +124,19 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
 
     private async ValueTask SendWeatherInformationAsync(Race race)
     {
-        double latitude = double.Parse(race.Circuit.Location.Latitude);
-        double longitude = double.Parse(race.Circuit.Location.Longitude);
+        double latitude = double.Parse(race.Circuit.Location.Latitude, CultureInfo.InvariantCulture);
+        double longitude = double.Parse(race.Circuit.Location.Longitude, CultureInfo.InvariantCulture);
         WeatherData? weatherData = await _twitchBot.WeatherService.GetWeatherAsync(latitude, longitude, false);
         if (weatherData is null)
         {
-            Response.Append(ChatMessage.Username, ", ", Texts.ApiError);
+            Response.Append($"{ChatMessage.Username}, {Texts.ApiError}");
             return;
         }
 
         weatherData.CityName = race.Circuit.Location.Name;
         weatherData.Location.Country = race.Circuit.Location.Country;
-        Response.Append(ChatMessage.Username, ", ");
-        int charsWritten = WeatherService.FormatWeatherData(weatherData, Response.FreeBufferSpan, false);
+        Response.Append($"{ChatMessage.Username}, ");
+        int charsWritten = WeatherService.FormatWeatherData(weatherData, Response, false);
         Response.Advance(charsWritten);
     }
 
@@ -172,7 +165,6 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
             sessions[1] = race.QualifyingSession;
             sessions[2] = race.PracticeTwoSession;
             sessions[3] = race.SprintSession;
-            sessions[4] = race.RaceSession;
         }
         else
         {
@@ -180,8 +172,9 @@ public readonly struct Formula1Command(TwitchBot twitchBot, IChatMessage chatMes
             sessions[1] = race.PracticeTwoSession;
             sessions[2] = race.PracticeThreeSession;
             sessions[3] = race.QualifyingSession;
-            sessions[4] = race.RaceSession;
         }
+
+        sessions[4] = race.RaceSession;
 
         for (int i = 0; i < 5; i++)
         {

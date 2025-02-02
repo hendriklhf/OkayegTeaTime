@@ -53,7 +53,9 @@ public static class SpotifyController
         }
     }
 
+#pragma warning disable IDE0032
     private static List<string>? s_chatPlaylistUris;
+#pragma warning restore IDE0032
 
     /// <summary>
     /// The length of "spotify:track:".

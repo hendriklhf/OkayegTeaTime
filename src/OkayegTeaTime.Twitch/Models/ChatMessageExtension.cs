@@ -1,11 +1,11 @@
 using System;
 using HLE.Memory;
-using HLE.Twitch.Models;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
 
 namespace OkayegTeaTime.Twitch.Models;
 
-public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEquatable<ChatMessageExtension>
+public struct ChatMessageExtension(ChatMessage chatMessage) : IDisposable, IEquatable<ChatMessageExtension>
 {
     public SmartSplit Split
     {
@@ -47,7 +47,7 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
 
     public readonly bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
 
-    private readonly IChatMessage _chatMessage = chatMessage;
+    private readonly ChatMessage _chatMessage = chatMessage;
     private RentedArray<char> _lowerCaseMessage = [];
     private SmartSplit _split = SmartSplit.Empty;
     private SmartSplit _lowerSplit = SmartSplit.Empty;
@@ -61,10 +61,8 @@ public struct ChatMessageExtension(IChatMessage chatMessage) : IDisposable, IEqu
 
     public readonly bool Equals(ChatMessageExtension other) => _chatMessage.Equals(other._chatMessage);
 
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly bool Equals(object? obj) => obj is ChatMessageExtension other && Equals(other);
 
-    // ReSharper disable once ArrangeModifiersOrder
     public override readonly int GetHashCode() => _chatMessage.GetHashCode();
 
     public static bool operator ==(ChatMessageExtension left, ChatMessageExtension right) => left.Equals(right);

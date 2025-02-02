@@ -2,8 +2,8 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -12,32 +12,32 @@ using OkayegTeaTime.Utils;
 
 namespace OkayegTeaTime.Twitch.Commands;
 
-[HandledCommand(CommandType.Check, typeof(CheckCommand))]
-public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
+[HandledCommand<CheckCommand>(CommandType.Check)]
+public readonly struct CheckCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias)
     : IChatCommand<CheckCommand>
 {
     public PooledStringBuilder Response { get; } = new(GlobalSettings.MaxMessageLength);
 
-    public IChatMessage ChatMessage { get; } = chatMessage;
+    public ChatMessage ChatMessage { get; } = chatMessage;
 
     private readonly TwitchBot _twitchBot = twitchBot;
     private readonly ReadOnlyMemory<char> _prefix = prefix;
     private readonly ReadOnlyMemory<char> _alias = alias;
 
-    public static void Create(TwitchBot twitchBot, IChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CheckCommand command)
+    public static void Create(TwitchBot twitchBot, ChatMessage chatMessage, ReadOnlyMemory<char> prefix, ReadOnlyMemory<char> alias, out CheckCommand command)
         => command = new(twitchBot, chatMessage, prefix, alias);
 
     public async ValueTask HandleAsync()
     {
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\safk\s\w+");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             await CheckAfkStatusAsync();
             return;
         }
 
         pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\sreminder\s\d+");
-        if (pattern.IsMatch(ChatMessage.Message))
+        if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             CheckReminder();
         }
@@ -45,7 +45,7 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
 
     private void CheckReminder()
     {
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append($"{ChatMessage.Username}, ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         int reminderId = int.Parse(messageExtension.Split[2].Span);
         Reminder? reminder = _twitchBot.Reminders[reminderId];
@@ -83,7 +83,8 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
 
     private async ValueTask CheckAfkStatusAsync()
     {
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username);
+        Response.Append(", ");
         using ChatMessageExtension messageExtension = new(ChatMessage);
         string username = new(messageExtension.LowerSplit[2].Span);
 
@@ -103,24 +104,25 @@ public readonly struct CheckCommand(TwitchBot twitchBot, IChatMessage chatMessag
 
         if (!user.IsAfk)
         {
-            Response.Append(username, " is not afk");
+            Response.Append($"{username} is not afk");
             return;
         }
 
-        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(username, user.AfkType, Response.FreeBufferSpan);
-        Response.Advance(afkMessageLength);
+        _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(username, user.AfkType, Response);
 
         string? afkMessage = user.AfkMessage;
         if (!string.IsNullOrWhiteSpace(afkMessage))
         {
             Response.Append(": ", afkMessage);
+            Response.Append($": {afkMessage}");
         }
 
 #pragma warning disable S6354
         TimeSpan timeSinceBeingAfk = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
 #pragma warning restore S6354
+
         Response.Append(" (");
-        Response.Advance(TimeSpanFormatter.Format(timeSinceBeingAfk, Response.FreeBufferSpan));
+        TimeSpanFormatter.Format(timeSinceBeingAfk, Response);
         Response.Append(" ago)");
     }
 

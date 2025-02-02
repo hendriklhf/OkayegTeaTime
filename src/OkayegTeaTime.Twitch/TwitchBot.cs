@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
-using HLE.Emojis;
-using HLE.Strings;
-using HLE.Twitch;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
@@ -23,7 +23,7 @@ using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Twitch.SevenTv;
 using OkayegTeaTime.Utils;
-using Channel = HLE.Twitch.Models.Channel;
+using Channel = HLE.Twitch.Tmi.Models.Channel;
 using User = OkayegTeaTime.Twitch.Helix.Models.User;
 
 namespace OkayegTeaTime.Twitch;
@@ -62,20 +62,17 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     public AfkMessageBuilder AfkMessageBuilder { get; }
 
-    public uint CommandCount { get; set; }
+    public uint CommandCount => _commandCount;
 
     private readonly TwitchClient _twitchClient;
     private readonly MessageHandler _messageHandler;
     private readonly PeriodicActionsController _periodicActionsController;
+    private uint _commandCount;
 
     public TwitchBot(ReadOnlyMemory<string> channels)
     {
         OAuthToken token = new(GlobalSettings.Settings.Twitch.OAuthToken);
-        TwitchClient twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, new()
-        {
-            UseSSL = true,
-            ParsingMode = ParsingMode.MemoryEfficient
-        });
+        TwitchClient twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, ClientOptions.Default);
 
         if (channels.Length == 0)
         {
@@ -86,12 +83,10 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         twitchClient.JoinChannelsAsync(channels).AsTask().Wait(); // TODO: 💢
 #pragma warning restore VSTHRD002, S4462
 
-        twitchClient.OnConnected += Client_OnConnected!;
-#pragma warning disable VSTHRD101
-        twitchClient.OnJoinedChannel += async (_, e) => await Client_OnJoinedChannelAsync(e);
-        twitchClient.OnChatMessageReceived += async (_, msg) => await Client_OnMessageReceivedAsync(msg);
-#pragma warning restore VSTHRD101
-        twitchClient.OnDisconnected += Client_OnDisconnect!;
+        twitchClient.OnConnected += OnClientConnectedAsync;
+        twitchClient.OnJoinedChannel += OnClientJoinedChannelAsync;
+        twitchClient.OnChatMessageReceived += OnClientMessageReceivedAsync;
+        twitchClient.OnDisconnected += OnClientDisconnectAsync;
 
         _twitchClient = twitchClient;
         _messageHandler = new(this);
@@ -99,6 +94,8 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         _periodicActionsController = new(GetPeriodicActions());
         AfkMessageBuilder = new(CommandController.AfkCommands.AsSpan());
     }
+
+    public void IncrementCommandCount() => Interlocked.Increment(ref _commandCount);
 
     [Pure]
     public bool IsConnectedTo(ReadOnlySpan<char> channel) => _twitchClient.Channels.TryGet(channel, out _);
@@ -109,27 +106,18 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         _periodicActionsController.StartAll();
     }
 
-    public async ValueTask DisconnectAsync()
-    {
-        _periodicActionsController.StopAll();
-        await _twitchClient.DisconnectAsync();
-    }
-
-    // ReSharper disable once InconsistentNaming
     public ValueTask SendAsync(long channelId, ReadOnlyMemory<char> message) => _twitchClient.SendAsync(channelId, message);
 
-    // ReSharper disable once InconsistentNaming
     public ValueTask SendAsync(string channel, ReadOnlyMemory<char> message) => _twitchClient.SendAsync(channel, message);
 
-    // ReSharper disable once InconsistentNaming
     public ValueTask SendAsync(ReadOnlyMemory<char> channel, ReadOnlyMemory<char> message) => _twitchClient.SendAsync(channel, message);
 
     [SuppressMessage("Major Code Smell", "S4457:Parameter validation in \"async\"/\"await\" methods should be wrapped")]
-    public async ValueTask SendAsync(string channel, string message, bool addEmote = true, bool checkLength = true, bool checkDuplicate = true)
+    public async ValueTask SendAsync(string channel, string message, bool prependEmote = true, bool checkLength = true, bool checkDuplicate = true)
     {
         using PooledStringBuilder builder = new(message.Length << 1);
 
-        if (addEmote)
+        if (prependEmote)
         {
             string emote = Channels[channel]?.Emote ?? GlobalSettings.DefaultEmote;
             builder.Append(emote);
@@ -203,13 +191,13 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     #region Bot_On
 
-    private static void Client_OnConnected(object sender, EventArgs e)
+    private static async Task OnClientConnectedAsync(TwitchClient _)
     {
-        using ConsoleWriter consoleWriter = new();
+        await using ConsoleWriter consoleWriter = new();
         consoleWriter.WriteConnected();
     }
 
-    private async ValueTask Client_OnJoinedChannelAsync(JoinChannelMessage e)
+    private async Task OnClientJoinedChannelAsync(TwitchClient _, JoinChannelMessage e)
     {
         if (e.Username == GlobalSettings.Settings.Twitch.Username)
         {
@@ -235,22 +223,17 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         }
     }
 
-    private async ValueTask Client_OnMessageReceivedAsync(IChatMessage message)
+    private async Task OnClientMessageReceivedAsync(TwitchClient _, ChatMessage message)
     {
         await _messageHandler.HandleAsync(message);
-
         await using ConsoleWriter consoleWriter = new();
         consoleWriter.WriteChatMessage(message);
-
-        if (message is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
+        message.Dispose();
     }
 
-    private static void Client_OnDisconnect(object sender, EventArgs e)
+    private static async Task OnClientDisconnectAsync(TwitchClient _)
     {
-        using ConsoleWriter consoleWriter = new();
+        await using ConsoleWriter consoleWriter = new();
         consoleWriter.WriteDisconnected();
     }
 
@@ -266,7 +249,7 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         Reminder[] reminders = Reminders.GetExpiredReminders();
         for (int i = 0; i < reminders.Length; i++)
         {
-            await this.SendTimedReminderAsync(reminders[i]);
+            await SendTimedReminderAsync(reminders[i]);
         }
     }
 
@@ -284,6 +267,7 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
     {
         _twitchClient.Dispose();
         _periodicActionsController.Dispose();
+        MathService.Dispose();
         TwitchApi.Dispose();
     }
 }

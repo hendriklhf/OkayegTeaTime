@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using HLE;
-using HLE.Strings;
+using HLE.Text;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Twitch.Models;
@@ -24,40 +24,40 @@ public sealed class AfkMessageBuilder : IEquatable<AfkMessageBuilder>
         _resumingMessageParts = GetResumingMessageParts(afkCommands, afkTypeCount);
     }
 
-    public int BuildComingBackMessage(User user, AfkType afkType, Span<char> destination)
+    public void BuildComingBackMessage(User user, AfkType afkType, PooledStringBuilder builder)
     {
-        ValueStringBuilder builder = new(destination);
         ReadOnlySpan<string> messageParts = _comingBackMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 3);
 
 #pragma warning disable S6354
         TimeSpan afkDuration = DateTime.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(user.AfkTime);
 #pragma warning restore S6354
-        builder.Append(user.Username, messageParts[0], user.AfkMessage, messageParts[1]);
-        int durationLength = TimeSpanFormatter.Format(afkDuration, builder.FreeBuffer);
-        builder.Advance(durationLength);
-        builder.Append(" ago", messageParts[2]);
-        return builder.Length;
+
+#pragma warning disable RCS1217 // makes no sense
+        builder.Append($"{user.Username}{messageParts[0]}{user.AfkMessage}{messageParts[1]}");
+#pragma warning restore RCS1217
+
+        TimeSpanFormatter.Format(afkDuration, builder);
+        builder.Append(" ago");
+        builder.Append(messageParts[2]);
     }
 
-    public int BuildGoingAwayMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> destination)
+    public void BuildGoingAwayMessage(ReadOnlySpan<char> username, AfkType afkType, PooledStringBuilder builder)
     {
-        ValueStringBuilder builder = new(destination);
         ReadOnlySpan<string> messageParts = _goingAwayMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 1);
 
-        builder.Append(username, messageParts[0]);
-        return builder.Length;
+        builder.Append(username);
+        builder.Append(messageParts[0]);
     }
 
-    public int BuildResumingMessage(ReadOnlySpan<char> username, AfkType afkType, Span<char> destination)
+    public void BuildResumingMessage(ReadOnlySpan<char> username, AfkType afkType, PooledStringBuilder builder)
     {
-        ValueStringBuilder builder = new(destination);
         ReadOnlySpan<string> messageParts = _resumingMessageParts[(int)afkType];
         Debug.Assert(messageParts.Length == 1);
 
-        builder.Append(username, messageParts[0]);
-        return builder.Length;
+        builder.Append(username);
+        builder.Append(messageParts[0]);
     }
 
     private static string[][] GetResumingMessageParts(ReadOnlySpan<AfkCommand> afkCommands, int afkTypeCount)

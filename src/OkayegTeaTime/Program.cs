@@ -11,9 +11,6 @@ namespace OkayegTeaTime;
 
 internal static class Program
 {
-    private static readonly SemaphoreSlim s_keepAliveSemaphore = new(0);
-
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     private static async Task Main(string[] args)
     {
         Console.Title = "OkayegTeaTime";
@@ -25,6 +22,6 @@ internal static class Program
         using TwitchBot twitchBot = new(argsResolver.Channels);
         await twitchBot.ConnectAsync();
 
-        await s_keepAliveSemaphore.WaitAsync();
+        await Task.Delay(Timeout.Infinite);
     }
 }

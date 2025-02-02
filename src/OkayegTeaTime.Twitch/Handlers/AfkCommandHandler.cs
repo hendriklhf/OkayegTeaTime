@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HLE.Strings;
-using HLE.Twitch.Models;
+using HLE.Text;
+using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
@@ -13,17 +13,18 @@ public sealed class AfkCommandHandler(TwitchBot twitchBot)
 {
     private readonly TwitchBot _twitchBot = twitchBot;
 
-    public async ValueTask HandleAsync(IChatMessage chatMessage, AfkType afkType)
+    public async ValueTask HandleAsync(ChatMessage chatMessage, AfkType afkType)
     {
-        User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username);
+        User? user = _twitchBot.Users.Get(chatMessage.UserId, chatMessage.Username.ToString());
         if (user is null)
         {
-            user = new(chatMessage.UserId, chatMessage.Username);
+            user = new(chatMessage.UserId, chatMessage.Username.ToString());
             _twitchBot.Users.Add(user);
         }
 
         using ChatMessageExtension messageExtension = new(chatMessage);
-        string? message = messageExtension.Split.Length > 1 ? chatMessage.Message[(messageExtension.Split[0].Length + 1)..] : null;
+        // TODO: fix ToString call
+        string? message = messageExtension.Split.Length > 1 ? chatMessage.Message.ToString()[(messageExtension.Split[0].Length + 1)..] : null;
         user.AfkMessage = message;
         user.AfkType = afkType;
 #pragma warning disable S6354
@@ -35,8 +36,7 @@ public sealed class AfkCommandHandler(TwitchBot twitchBot)
         using PooledStringBuilder responseBuilder = new(GlobalSettings.MaxMessageLength);
         responseBuilder.Append(emote);
         responseBuilder.Append(' ');
-        int afkMessageLength = _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username, afkType, responseBuilder.FreeBufferSpan);
-        responseBuilder.Advance(afkMessageLength);
+        _twitchBot.AfkMessageBuilder.BuildGoingAwayMessage(chatMessage.Username.AsSpan(), afkType, responseBuilder);
 
         await _twitchBot.SendAsync(chatMessage.Channel, responseBuilder.WrittenMemory);
     }
