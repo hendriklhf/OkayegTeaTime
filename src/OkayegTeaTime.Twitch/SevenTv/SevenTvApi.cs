@@ -33,7 +33,7 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
         }
 
         using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
-        urlBuilder.Append(ApiBaseUrl, "/emote-sets/global");
+        urlBuilder.Append($"{ApiBaseUrl}/emote-sets/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
@@ -62,8 +62,7 @@ public sealed class SevenTvApi : IEquatable<SevenTvApi>
         }
 
         using PooledStringBuilder urlBuilder = new(ApiBaseUrl.Length + 30);
-        urlBuilder.Append(ApiBaseUrl, "/users/twitch/");
-        urlBuilder.Append(channelId);
+        urlBuilder.Append($"{ApiBaseUrl}/users/twitch/{channelId}");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());

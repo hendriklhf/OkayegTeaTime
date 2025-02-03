@@ -22,23 +22,23 @@ public sealed class Race
 
     // ReSharper disable PropertyCanBeMadeInitOnly.Global
     [JsonIgnore]
-    public Session RaceSession { get; set; } = null!;
+    public Sessionn RaceSession { get; set; } = null!;
 
     [JsonIgnore]
-    public Session PracticeOneSession { get; set; } = null!;
+    public Sessionn PracticeOneSession { get; set; } = null!;
 
     [JsonIgnore]
-    public Session PracticeTwoSession { get; set; } = null!;
+    public Sessionn PracticeTwoSession { get; set; } = null!;
 
     [JsonIgnore]
-    public Session? PracticeThreeSession { get; set; }
+    public Sessionn? PracticeThreeSession { get; set; }
 
     [JsonIgnore]
-    public Session QualifyingSession { get; set; } = null!;
+    public Sessionn QualifyingSession { get; set; } = null!;
     // ReSharper restore PropertyCanBeMadeInitOnly.Global
 
     [JsonIgnore]
-    public Session? SprintSession { get; set; }
+    public Sessionn? SprintSession { get; set; }
 
     [JsonIgnore]
     [MemberNotNullWhen(false, nameof(PracticeThreeSession))]

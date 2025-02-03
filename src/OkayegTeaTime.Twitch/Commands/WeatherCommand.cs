@@ -72,7 +72,8 @@ public readonly struct WeatherCommand(TwitchBot twitchBot, ChatMessage chatMessa
             return;
         }
 
-        Response.Append(ChatMessage.Username, ", ");
+        Response.Append(ChatMessage.Username);
+        Response.Append(", ");
         int charsWritten = WeatherService.FormatWeatherData(weatherData, Response, isPrivateLocation);
         Response.Advance(charsWritten);
     }

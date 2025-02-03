@@ -34,8 +34,7 @@ public sealed class BttvApi : IEquatable<BttvApi>
         }
 
         using PooledStringBuilder urlBuilder = new(100);
-        urlBuilder.Append(ApiBaseUrl, "/cached/users/twitch/");
-        urlBuilder.Append(channelId);
+        urlBuilder.Append($"{ApiBaseUrl}/cached/users/twitch/{channelId}");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());
@@ -78,7 +77,7 @@ public sealed class BttvApi : IEquatable<BttvApi>
         }
 
         using PooledStringBuilder urlBuilder = new(100);
-        urlBuilder.Append(ApiBaseUrl, "/cached/emotes/global");
+        urlBuilder.Append($"{ApiBaseUrl}/cached/emotes/global");
 
         using HttpClient httpClient = new();
         using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlBuilder.ToString());

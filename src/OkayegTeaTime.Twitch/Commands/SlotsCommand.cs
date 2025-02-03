@@ -76,7 +76,7 @@ public readonly struct SlotsCommand(TwitchBot twitchBot, ChatMessage chatMessage
             string secondRandomEmote = Random.Shared.GetItem(matchingEmotes);
             string thirdRandomEmote = Random.Shared.GetItem(matchingEmotes);
 
-            Response.Append($"{ChatMessage.Username}, [ {firstRandomEmote}, {secondRandomEmote}, {thirdRandomEmote} ]");
+            Response.Append($"{ChatMessage.Username}, [ {firstRandomEmote} , {secondRandomEmote} , {thirdRandomEmote} ]");
             Response.Append($" ({matchingEmotes.Length} emote{(matchingEmotes.Length > 1 ? "s" : string.Empty)})");
         }
         finally

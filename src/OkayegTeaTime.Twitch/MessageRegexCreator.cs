@@ -25,14 +25,20 @@ public sealed class MessageRegexCreator
         int escapedItemLength;
         if (prefix.Length == 0)
         {
+            patternBuilder.EnsureCapacity(patternBuilder.Length + alias.Length << 1);
             escapedItemLength = StringHelpers.RegexEscape(alias, patternBuilder.FreeBufferSpan);
             patternBuilder.Advance(escapedItemLength);
+
+            patternBuilder.EnsureCapacity(patternBuilder.Length + GlobalSettings.Suffix.Length << 1);
             escapedItemLength = StringHelpers.RegexEscape(GlobalSettings.Suffix, patternBuilder.FreeBufferSpan);
         }
         else
         {
+            patternBuilder.EnsureCapacity(patternBuilder.Length + prefix.Length << 1);
             escapedItemLength = StringHelpers.RegexEscape(prefix, patternBuilder.FreeBufferSpan);
             patternBuilder.Advance(escapedItemLength);
+
+            patternBuilder.EnsureCapacity(patternBuilder.Length + alias.Length << 1);
             escapedItemLength = StringHelpers.RegexEscape(alias, patternBuilder.FreeBufferSpan);
         }
 

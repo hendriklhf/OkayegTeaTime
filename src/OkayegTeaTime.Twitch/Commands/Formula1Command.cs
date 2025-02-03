@@ -88,14 +88,14 @@ public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMess
             TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
             int indexOfDot = charBuffer.IndexOf('.');
-            Response.Append($" (in {charBuffer[..Unsafe.As<int, Index>(ref indexOfDot)]}). {Emoji.CheckeredFlag}");
+            Response.Append($" (in {charBuffer[..Unsafe.BitCast<int, Index>(indexOfDot)]}). {Emoji.CheckeredFlag}");
         }
         else
         {
             Response.Append($"The {race.RaceSession.Name} started {race.RaceSession.Start:t} GMT. {Emoji.CheckeredFlag}");
         }
 
-        Session session = GetNextOrCurrentSession(race);
+        Sessionn session = GetNextOrCurrentSession(race);
         if (ReferenceEquals(session, race.RaceSession))
         {
             return;
@@ -156,7 +156,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMess
         return null;
     }
 
-    private static Session GetNextOrCurrentSession(Race race)
+    private static Sessionn GetNextOrCurrentSession(Race race)
     {
         Unsafe.SkipInit(out FiveSessionsBuffer sessions);
         if (race.HasSprintRace)
@@ -178,7 +178,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMess
 
         for (int i = 0; i < 5; i++)
         {
-            Session session = sessions[i];
+            Sessionn session = sessions[i];
             DateTime sessionEnd = ReferenceEquals(session, race.RaceSession) ? session.Start + s_raceLength : session.Start + s_nonRaceLength;
 #pragma warning disable S6354
             if (sessionEnd > DateTime.UtcNow)
@@ -262,7 +262,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMess
                     }
 
                     DateTime startTime = DateTime.Parse($"{date}T{time}").ToUniversalTime();
-                    Session session = new(prop.SessionName, startTime);
+                    Sessionn session = new(prop.SessionName, startTime);
                     typeof(Race).GetProperty(prop.RaceProperty)!.SetValue(races[i], session);
                 }
             }

@@ -10,7 +10,7 @@ public static class MessageHelpers
     {
         ReadOnlySpan<char> messageSpan = message.Span;
         int indexOfWhitespace = messageSpan.IndexOf(' ');
-        ReadOnlyMemory<char> firstWord = message[..Unsafe.As<int, Index>(ref indexOfWhitespace)];
+        ReadOnlyMemory<char> firstWord = message[..Unsafe.BitCast<int, Index>(indexOfWhitespace)];
         if (firstWord.Length <= (channelPrefix.Length == 0 ? GlobalSettings.Suffix.Length : channelPrefix.Length))
         {
             usedAlias = ReadOnlyMemory<char>.Empty;

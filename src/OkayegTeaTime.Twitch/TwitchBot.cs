@@ -225,10 +225,16 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     private async Task OnClientMessageReceivedAsync(TwitchClient _, ChatMessage message)
     {
-        await _messageHandler.HandleAsync(message);
-        await using ConsoleWriter consoleWriter = new();
-        consoleWriter.WriteChatMessage(message);
-        message.Dispose();
+        try
+        {
+            await _messageHandler.HandleAsync(message);
+            await using ConsoleWriter consoleWriter = new();
+            consoleWriter.WriteChatMessage(message);
+        }
+        finally
+        {
+            message.Dispose();
+        }
     }
 
     private static async Task OnClientDisconnectAsync(TwitchClient _)

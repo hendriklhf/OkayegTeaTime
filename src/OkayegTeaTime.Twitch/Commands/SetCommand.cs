@@ -100,7 +100,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, ChatMessage chatM
         using ChatMessageExtension messageExtension = new(ChatMessage);
         if (!ChatMessage.IsModerator && !messageExtension.IsBroadcaster)
         {
-            Response.Append(ChatMessage.Username, Texts.YouArentAModeratorOrTheBroadcaster);
+            Response.Append($"{ChatMessage.Username}, {Texts.YouArentAModeratorOrTheBroadcaster}");
             return;
         }
 
@@ -201,7 +201,7 @@ public readonly partial struct SetCommand(TwitchBot twitchBot, ChatMessage chatM
         }
 
         user.UtcOffset = utcOffsetHours;
-        Response.Append(ChatMessage.Username, ", your timezone has been successfully set to UTC");
+        Response.Append($"{ChatMessage.Username}, your timezone has been successfully set to UTC");
         if (utcOffsetHours >= 0)
         {
             Response.Append('+');

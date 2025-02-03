@@ -13,5 +13,5 @@ namespace OkayegTeaTime.Twitch.Models.Formula1;
 [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members")]
 public struct FiveSessionsBuffer
 {
-    private Session _session;
+    private Sessionn _session;
 }
