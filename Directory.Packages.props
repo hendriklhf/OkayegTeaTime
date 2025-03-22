@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageVersion Include="HLE" Version="2.2.1"/>-->
+    <PackageVersion Include="HLE" Version="2.2.2"/>
+    <PackageVersion Include="HLE.Twitch" Version="2.2.2"/>
     <PackageVersion Include="JetBrains.Annotations" Version="2025.1.0-eap1"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EntityFrameworkVersion)"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(EntityFrameworkVersion)"/>
@@ -22,8 +23,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.1"/>
-    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.1"/>
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.3"/>
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.3"/>
     <PackageVersion Include="MySql.Data.EntityFramework" Version="9.2.0"/>
     <PackageVersion Include="MySql.EntityFrameworkCore" Version="9.0.0"/>
     <PackageVersion Include="SpotifyAPI.Web" Version="7.2.1"/>

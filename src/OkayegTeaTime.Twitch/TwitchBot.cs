@@ -228,8 +228,7 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         try
         {
             await _messageHandler.HandleAsync(message);
-            await using ConsoleWriter consoleWriter = new();
-            consoleWriter.WriteChatMessage(message);
+            await message.FormatAsync(Console.Out);
         }
         finally
         {

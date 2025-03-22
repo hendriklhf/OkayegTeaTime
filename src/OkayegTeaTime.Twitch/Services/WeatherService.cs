@@ -108,7 +108,7 @@ public sealed class WeatherService
         return data;
     }
 
-    public static int FormatWeatherData(WeatherData weatherData, PooledStringBuilder response, bool isPrivateLocation)
+    public static void FormatWeatherData(WeatherData weatherData, PooledStringBuilder response, bool isPrivateLocation)
     {
         if (isPrivateLocation)
         {
@@ -140,7 +140,6 @@ public sealed class WeatherService
         response.Append("%, air pressure: ");
         response.Append(weatherData.Weather.Pressure);
         response.Append(" hPa");
-        return response.Length;
     }
 
     private static string GetWeatherEmoji(int weatherId) =>

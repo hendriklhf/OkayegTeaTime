@@ -52,13 +52,14 @@ public static class DotNetFiddleService
     {
         Debug.Assert(s_templateFileParts.Length == 2);
 
-        using RentedArray<char> charBuffer = ArrayPool<char>.Shared.RentAsRentedArray(mainMethodCodeBlock.Length);
+        char[] charBuffer = ArrayPool<char>.Shared.Rent(mainMethodCodeBlock.Length);
         mainMethodCodeBlock.Span.CopyTo(charBuffer.AsSpan());
         Memory<char> escapedMainMethodCodeBlock = ReplaceSpecialChars(charBuffer.AsMemory(..mainMethodCodeBlock.Length));
         using PooledStringBuilder codeBuilder = new(s_templateFileParts[0].Length + s_templateFileParts[1].Length + escapedMainMethodCodeBlock.Length);
         codeBuilder.Append(s_templateFileParts[0]);
         codeBuilder.Append(escapedMainMethodCodeBlock.Span);
         codeBuilder.Append(s_templateFileParts[1]);
+        ArrayPool<char>.Shared.Return(charBuffer);
         return codeBuilder.ToString();
     }
 

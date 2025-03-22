@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="..\..\lib\HLE.Twitch\HLE.Twitch.dll"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
     <ProjectReference Include="..\OkayegTeaTime.Twitch\OkayegTeaTime.Twitch.csproj"/>
   </ItemGroup>

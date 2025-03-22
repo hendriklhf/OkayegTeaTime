@@ -66,7 +66,7 @@ public readonly struct PingCommand(TwitchBot twitchBot, ChatMessage chatMessage,
         if (OperatingSystem.IsLinux())
         {
             double temperature = await GetTemperatureAsync();
-            if (temperature != 0)
+            if (temperature > 0)
             {
                 Response.Append(" || Temperature: ");
                 Response.Append(temperature);

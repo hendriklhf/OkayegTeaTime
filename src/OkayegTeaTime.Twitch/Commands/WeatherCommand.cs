@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Text;
@@ -74,8 +74,7 @@ public readonly struct WeatherCommand(TwitchBot twitchBot, ChatMessage chatMessa
 
         Response.Append(ChatMessage.Username);
         Response.Append(", ");
-        int charsWritten = WeatherService.FormatWeatherData(weatherData, Response, isPrivateLocation);
-        Response.Advance(charsWritten);
+        WeatherService.FormatWeatherData(weatherData, Response, isPrivateLocation);
     }
 
     public void Dispose() => Response.Dispose();

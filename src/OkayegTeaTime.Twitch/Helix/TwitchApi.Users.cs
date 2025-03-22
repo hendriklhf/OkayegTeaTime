@@ -65,7 +65,7 @@ public sealed partial class TwitchApi
     {
         // ReSharper disable once PossibleMultipleEnumeration
         // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory))
+        if (usernames.TryGetReadOnlyMemory(out ReadOnlyMemory<string> usernamesMemory))
         {
             return GetUsersAsync(usernamesMemory, ReadOnlyMemory<long>.Empty);
         }
@@ -90,7 +90,7 @@ public sealed partial class TwitchApi
     public async ValueTask<User[]> GetUsersAsync(IEnumerable<string> usernames, IEnumerable<long> userIds)
     {
         // ReSharper disable PossibleMultipleEnumeration
-        bool usernamesIsMemory = usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory);
+        bool usernamesIsMemory = usernames.TryGetReadOnlyMemory(out ReadOnlyMemory<string> usernamesMemory);
         bool userIdsIsMemory = userIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> userIdsMemory);
 
         return usernamesIsMemory switch
@@ -129,9 +129,11 @@ public sealed partial class TwitchApi
 
     public async ValueTask<User[]> GetUsersAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> userIds)
     {
-        using RentedArray<User> userBuffer = ArrayPool<User>.Shared.RentAsRentedArray(usernames.Length + userIds.Length);
+        User[] userBuffer = ArrayPool<User>.Shared.Rent(usernames.Length + userIds.Length);
         int userCount = await GetUsersAsync(usernames, userIds, userBuffer.AsMemory());
-        return userCount == 0 ? [] : userBuffer[..userCount].ToArray();
+        User[] users = userCount == 0 ? [] : userBuffer[..userCount].ToArray();
+        ArrayPool<User>.Shared.Return(userBuffer);
+        return users;
     }
 
     [SuppressMessage("Major Code Smell", "S4457:Parameter validation in \"async\"/\"await\" methods should be wrapped")]

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using HLE.Memory;
 using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Configuration;
@@ -29,9 +30,9 @@ public struct ChatMessageExtension(ChatMessage chatMessage) : IDisposable, IEqua
                 return _lowerSplit;
             }
 
-            if (_lowerCaseMessage == RentedArray<char>.Empty)
+            if (_lowerCaseMessage is null)
             {
-                _lowerCaseMessage = ArrayPool<char>.Shared.RentAsRentedArray(_chatMessage.Message.Length);
+                _lowerCaseMessage = ArrayPool<char>.Shared.Rent(_chatMessage.Message.Length);
                 _chatMessage.Message.AsSpan().ToLowerInvariant(_lowerCaseMessage.AsSpan());
             }
 
@@ -48,13 +49,18 @@ public struct ChatMessageExtension(ChatMessage chatMessage) : IDisposable, IEqua
     public readonly bool IsBroadcaster => _chatMessage.UserId == _chatMessage.ChannelId;
 
     private readonly ChatMessage _chatMessage = chatMessage;
-    private RentedArray<char> _lowerCaseMessage = [];
+    private char[]? _lowerCaseMessage;
     private SmartSplit _split = SmartSplit.Empty;
     private SmartSplit _lowerSplit = SmartSplit.Empty;
 
     public void Dispose()
     {
-        _lowerCaseMessage.Dispose();
+        char[]? lowerCaseMessage = Interlocked.Exchange(ref _lowerCaseMessage, null);
+        if (lowerCaseMessage is not null)
+        {
+            ArrayPool<char>.Shared.Return(lowerCaseMessage);
+        }
+
         _split.Dispose();
         _lowerSplit.Dispose();
     }

@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="..\..\lib\HLE.Twitch\HLE.dll"/>
     <ProjectReference Include="..\OkayegTeaTime.Configuration\OkayegTeaTime.Configuration.csproj" />
     <ProjectReference Include="..\OkayegTeaTime.Utils\OkayegTeaTime.Utils.csproj"/>
   </ItemGroup>

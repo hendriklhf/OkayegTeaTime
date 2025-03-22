@@ -136,8 +136,7 @@ public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMess
         weatherData.CityName = race.Circuit.Location.Name;
         weatherData.Location.Country = race.Circuit.Location.Country;
         Response.Append($"{ChatMessage.Username}, ");
-        int charsWritten = WeatherService.FormatWeatherData(weatherData, Response, false);
-        Response.Advance(charsWritten);
+        WeatherService.FormatWeatherData(weatherData, Response, false);
     }
 
     private static Race? GetNextOrCurrentRace(ReadOnlySpan<Race> races)

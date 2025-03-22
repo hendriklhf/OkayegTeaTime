@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="..\..\lib\HLE.Twitch\HLE.Twitch.dll"/>
-    <Reference Include="..\..\lib\HLE.Twitch\HLE.dll"/>
+    <PackageReference Include="HLE"/>
   </ItemGroup>
 
   <ItemGroup>

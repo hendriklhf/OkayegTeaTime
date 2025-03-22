@@ -88,7 +88,7 @@ public sealed partial class TwitchApi
     public async ValueTask<Stream[]> GetStreamsAsync(IEnumerable<string> usernames, IEnumerable<long> channelIds)
     {
         // ReSharper disable PossibleMultipleEnumeration
-        bool usernamesIsMemory = usernames.TryGetReadOnlyMemory<string>(out ReadOnlyMemory<string> usernamesMemory);
+        bool usernamesIsMemory = usernames.TryGetReadOnlyMemory(out ReadOnlyMemory<string> usernamesMemory);
         bool channelIdsIsMemory = channelIds.TryGetReadOnlyMemory(out ReadOnlyMemory<long> channelIdsMemory);
 
         return usernamesIsMemory switch
@@ -127,9 +127,11 @@ public sealed partial class TwitchApi
 
     public async ValueTask<Stream[]> GetStreamsAsync(ReadOnlyMemory<string> usernames, ReadOnlyMemory<long> channelIds)
     {
-        using RentedArray<Stream> streamBuffer = ArrayPool<Stream>.Shared.RentAsRentedArray(usernames.Length + channelIds.Length);
+        Stream[] streamBuffer = ArrayPool<Stream>.Shared.Rent(usernames.Length + channelIds.Length);
         int streamCount = await GetStreamsAsync(usernames, channelIds, streamBuffer.AsMemory());
-        return streamCount == 0 ? [] : streamBuffer[..streamCount].ToArray();
+        Stream[] streams = streamCount == 0 ? [] : streamBuffer[..streamCount];
+        ArrayPool<Stream>.Shared.Return(streamBuffer);
+        return streams;
     }
 
     [SuppressMessage("Major Code Smell", "S4457:Parameter validation in \"async\"/\"await\" methods should be wrapped")]

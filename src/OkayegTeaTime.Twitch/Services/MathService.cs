@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using HLE.Marshalling;
 using HLE.Memory;
 using HLE.Text;
 
@@ -36,9 +35,11 @@ public sealed class MathService : IDisposable, IEquatable<MathService>
 
     private static string UrlEncodeExpression(ReadOnlySpan<char> expression)
     {
-        using RentedArray<byte> bytes = ArrayPool<byte>.Shared.RentAsRentedArray(Encoding.UTF8.GetMaxByteCount(expression.Length));
+        byte[] bytes = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetMaxByteCount(expression.Length));
         int byteCount = Encoding.UTF8.GetBytes(expression, bytes.AsSpan());
-        return HttpUtility.UrlEncode(RentedArrayMarshal.GetArray(bytes), 0, byteCount);
+        string url = HttpUtility.UrlEncode(bytes, 0, byteCount);
+        ArrayPool<byte>.Shared.Return(bytes);
+        return url;
     }
 
     public bool Equals(MathService? other) => ReferenceEquals(this, other);
