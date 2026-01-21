@@ -2,12 +2,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace OkayegTeaTime.Tools;
 
 internal static class Program
 {
-    private static void Main(string[] args)
+    private static Task Main(string[] args)
     {
         if (args.Length == 0)
         {
@@ -19,8 +20,7 @@ internal static class Program
         {
             case "build":
                 Builder builder = new(args);
-                builder.Build();
-                break;
+                return builder.BuildAsync();
             case "readme":
                 ReadMeGenerator.Generate();
                 break;
@@ -29,6 +29,8 @@ internal static class Program
                 cleaner.Clean();
                 break;
         }
+
+        return Task.CompletedTask;
     }
 
     public static Regex NewRegex([StringSyntax(StringSyntaxAttribute.Regex)] string pattern)

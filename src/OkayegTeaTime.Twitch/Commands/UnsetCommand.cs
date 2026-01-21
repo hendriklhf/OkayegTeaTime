@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;

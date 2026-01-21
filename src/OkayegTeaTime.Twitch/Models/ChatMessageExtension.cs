@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using HLE.Memory;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Configuration;
 
 namespace OkayegTeaTime.Twitch.Models;

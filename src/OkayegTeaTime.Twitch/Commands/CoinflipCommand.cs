@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using HLE;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;

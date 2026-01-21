@@ -154,17 +154,17 @@ public sealed class WeatherService
             762 => Emoji.Volcano,
             >= 701 and <= 771 => Emoji.Fog,
             781 => Emoji.Tornado,
-            800 => Emoji.Sunny,
+            800 => Emoji.Sun,
             801 => Emoji.SunBehindSmallCloud,
             802 => Emoji.SunBehindLargeCloud,
             803 or 804 => Emoji.Cloud,
-            _ => Emoji.Question
+            _ => Emoji.RedQuestionMark
         };
 
     private static string GetDirection(double degrees) =>
         degrees switch
         {
-            < 0 => Emoji.Question,
+            < 0 => Emoji.RedQuestionMark,
             < 11.25 => "N",
             < 33.75 => "NNE",
             < 56.25 => "NE",
@@ -182,6 +182,6 @@ public sealed class WeatherService
             < 325.25 => "NW",
             < 348.75 => "NNW",
             <= 360 => "N",
-            _ => Emoji.Question
+            _ => Emoji.RedQuestionMark
         };
 }

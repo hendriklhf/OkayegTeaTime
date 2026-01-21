@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using HLE;
 using HLE.Collections;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -36,8 +36,8 @@ public struct HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadO
 
     public async ValueTask HandleAsync()
     {
-        _happyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Grinning, "happy", "good");
-        _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.Cry, "cry", "sad", "bad");
+        _happyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.GrinningFace, "happy", "good");
+        _sadEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.CryingFace, "cry", "sad", "bad");
         _partyEmote = await _twitchBot.EmoteService.GetBestEmoteAsync(ChatMessage.ChannelId, Emoji.PartyingFace, "cheer", "happy", "good");
 
         Regex pattern = _twitchBot.MessageRegexCreator.Create(_alias.Span, _prefix.Span, @"\s[a-z]");
@@ -90,7 +90,7 @@ public struct HangmanCommand(TwitchBot twitchBot, ChatMessage chatMessage, ReadO
         using ChatMessageExtension messageExtension = new(ChatMessage);
         ReadOnlyMemory<char> guess = messageExtension.LowerSplit[1];
         bool isWordCorrect = game.Guess(guess.Span);
-        Response.Append($"{ChatMessage.Username}");
+        Response.Append($"{ChatMessage.Username}, ");
         if (isWordCorrect)
         {
             Response.Append($"\"{game.Solution}\" {Texts.IsCorrectTheGameHasBeenSolved} {_partyEmote} ");

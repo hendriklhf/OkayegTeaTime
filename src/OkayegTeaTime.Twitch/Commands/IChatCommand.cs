@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using JetBrains.Annotations;
 
 namespace OkayegTeaTime.Twitch.Commands;

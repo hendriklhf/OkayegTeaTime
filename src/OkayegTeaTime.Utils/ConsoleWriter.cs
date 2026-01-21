@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 
 namespace OkayegTeaTime.Utils;
 

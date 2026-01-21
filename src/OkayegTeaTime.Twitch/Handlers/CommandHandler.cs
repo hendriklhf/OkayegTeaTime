@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;

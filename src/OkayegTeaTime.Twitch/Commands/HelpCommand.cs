@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -29,7 +29,7 @@ public readonly struct HelpCommand(TwitchBot twitchBot, ChatMessage chatMessage,
     {
         using ChatMessageExtension messageExtension = new(ChatMessage);
         ReadOnlySpan<char> username = messageExtension.Split.Length > 1 ? messageExtension.LowerSplit[1].Span : ChatMessage.Username.AsSpan();
-        Response.Append($"{Emoji.PointRight} {username}, here you can find a list of commands and the repository: {GlobalSettings.Settings.RepositoryUrl}");
+        Response.Append($"{Emoji.BackhandIndexPointingRight} {username}, here you can find a list of commands and the repository: {GlobalSettings.Settings.RepositoryUrl}");
         return ValueTask.CompletedTask;
     }
 

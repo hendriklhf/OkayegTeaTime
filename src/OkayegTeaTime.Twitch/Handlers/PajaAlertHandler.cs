@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Configuration;
 
 namespace OkayegTeaTime.Twitch.Handlers;
@@ -10,7 +10,7 @@ public sealed class PajaAlertHandler(TwitchBot twitchBot) : PajaHandler(twitchBo
 {
     protected override Regex Pattern { get; } = Utils.Pattern.PajaAlert;
 
-    protected override string Message => $"/me pajaStare {Emoji.RotatingLight} OBACHT";
+    protected override string Message => $"/me pajaStare {Emoji.PoliceCarLight} OBACHT";
 
     public override async ValueTask HandleAsync(ChatMessage chatMessage)
     {
@@ -20,6 +20,6 @@ public sealed class PajaAlertHandler(TwitchBot twitchBot) : PajaHandler(twitchBo
         }
 
         await _twitchBot.SendAsync(PajaAlertChannel, Message, false, false, false);
-        await _twitchBot.SendAsync(GlobalSettings.Settings.OfflineChat!.Channel, $"{GlobalSettings.DefaultEmote} {Emoji.RotatingLight}", false, false, false);
+        await _twitchBot.SendAsync(GlobalSettings.Settings.OfflineChat!.Channel, $"{GlobalSettings.DefaultEmote} {Emoji.PoliceCarLight}", false, false, false);
     }
 }

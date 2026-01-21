@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using HLE;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
@@ -33,7 +33,7 @@ public readonly struct GachiCommand(TwitchBot twitchBot, ChatMessage chatMessage
     public ValueTask HandleAsync()
     {
         GachiSong gachiSong = Random.Shared.GetItem(s_songs.AsSpan());
-        Response.Append($"{Emoji.PointRight} {gachiSong.Title} || {gachiSong.Url} gachiBASS");
+        Response.Append($"{Emoji.BackhandIndexPointingRight} {gachiSong.Title} || {gachiSong.Url} gachiBASS");
         return ValueTask.CompletedTask;
     }
 

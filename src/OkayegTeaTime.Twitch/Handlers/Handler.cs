@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 

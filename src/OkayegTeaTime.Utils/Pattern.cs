@@ -32,6 +32,6 @@ public static partial class Pattern
     [GeneratedRegex(@"track/\w+", RegexOptions.Compiled, 250)]
     private static partial Regex GetSpotifyTrackSlashRegex();
 
-    [GeneratedRegex($@"^\s*pajaS\s+{Emoji.RotatingLight}\s+ALERT\s*$", RegexOptions.Compiled)]
+    [GeneratedRegex($@"^\s*pajaS\s+{Emoji.PoliceCarLight}\s+ALERT\s*$", RegexOptions.Compiled)]
     private static partial Regex GetPajaAlertRegex();
 }

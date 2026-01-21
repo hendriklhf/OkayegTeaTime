@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using HLE.Memory;
 using HLE.Numerics;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using Microsoft.Win32.SafeHandles;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Resources;
@@ -57,9 +57,7 @@ public readonly struct PingCommand(TwitchBot twitchBot, ChatMessage chatMessage,
         Response.Append(latency);
         Response.Append("ms");
 
-        Response.Append(" || Total process memory: ");
-        Response.Append(GetProcessMemoryInMegaByte(currentProcess));
-        Response.Append("MB || Managed memory: ");
+        Response.Append(" || Managed memory: ");
         Response.Append(GetManagedMemoryInMegaByte());
         Response.Append("MB");
 
@@ -83,13 +81,6 @@ public readonly struct PingCommand(TwitchBot twitchBot, ChatMessage chatMessage,
         Response.Append(RuntimeInformation.RuntimeIdentifier);
         Response.Append(") || Commit: ");
         Response.Append(ResourceController.LastCommit);
-    }
-
-    private static double GetProcessMemoryInMegaByte(Process process)
-    {
-        double memory = process.PrivateMemorySize64;
-        double memoryInMegaByte = UnitPrefix.Convert(memory, UnitPrefix.None, UnitPrefix.Mega);
-        return Math.Round(memoryInMegaByte, 3);
     }
 
     private static double GetManagedMemoryInMegaByte()

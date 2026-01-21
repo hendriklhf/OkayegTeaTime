@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Json;
@@ -88,11 +88,11 @@ public readonly struct Formula1Command(TwitchBot twitchBot, ChatMessage chatMess
             TimeSpan timeBetweenNowAndRaceStart = race.RaceSession.Start - now;
             timeBetweenNowAndRaceStart.TryFormat(charBuffer, out _, "g");
             int indexOfDot = charBuffer.IndexOf('.');
-            Response.Append($" (in {charBuffer[..Unsafe.BitCast<int, Index>(indexOfDot)]}). {Emoji.CheckeredFlag}");
+            Response.Append($" (in {charBuffer[..Unsafe.BitCast<int, Index>(indexOfDot)]}). {Emoji.ChequeredFlag}");
         }
         else
         {
-            Response.Append($"The {race.RaceSession.Name} started {race.RaceSession.Start:t} GMT. {Emoji.CheckeredFlag}");
+            Response.Append($"The {race.RaceSession.Name} started {race.RaceSession.Start:t} GMT. {Emoji.ChequeredFlag}");
         }
 
         Sessionn session = GetNextOrCurrentSession(race);

@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -30,7 +30,7 @@ public readonly struct FuckCommand(TwitchBot twitchBot, ChatMessage chatMessage,
         if (pattern.IsMatch(ChatMessage.Message.AsSpan()))
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
-            Response.Append($"{Emoji.PointRight}{Emoji.OkHand}{ChatMessage.Username} fucked {messageExtension.Split[1].Span}");
+            Response.Append($"{Emoji.BackhandIndexPointingRight}{Emoji.OKHand}{ChatMessage.Username} fucked {messageExtension.Split[1].Span}");
             if (messageExtension.Split.Length > 2)
             {
                 Response.Append($" {messageExtension.Split[2].Span}");

@@ -18,7 +18,7 @@ internal static class Program
         GlobalSettings.Initialize();
 
         ArgsResolver argsResolver = new(args);
-        using TwitchBot twitchBot = new(argsResolver.Channels);
+        await using TwitchBot twitchBot = new(argsResolver.Channels);
         await twitchBot.ConnectAsync();
 
         await Task.Delay(Timeout.Infinite);

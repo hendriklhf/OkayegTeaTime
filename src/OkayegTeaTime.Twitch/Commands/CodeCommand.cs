@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Collections;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Resources;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;

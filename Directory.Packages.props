@@ -3,14 +3,15 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <EntityFrameworkVersion>9.0.1</EntityFrameworkVersion>
-    <RoslynatorVersion>4.12.11</RoslynatorVersion>
+    <DotNetSystemPackagesVersion>10.0.2</DotNetSystemPackagesVersion>
+    <EntityFrameworkVersion>10.0.2</EntityFrameworkVersion>
+    <RoslynatorVersion>4.15.0</RoslynatorVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="HLE" Version="2.2.2"/>
-    <PackageVersion Include="HLE.Twitch" Version="2.2.2"/>
-    <PackageVersion Include="JetBrains.Annotations" Version="2025.1.0-eap1"/>
+    <PackageVersion Include="HLE" Version="2.2.5"/>
+    <PackageVersion Include="HLE.Twitch" Version="2.2.5"/>
+    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.4"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EntityFrameworkVersion)"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(EntityFrameworkVersion)"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="$(EntityFrameworkVersion)"/>
@@ -23,37 +24,29 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.3"/>
-    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.3"/>
-    <PackageVersion Include="MySql.Data.EntityFramework" Version="9.2.0"/>
-    <PackageVersion Include="MySql.EntityFrameworkCore" Version="9.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="$(DotNetSystemPackagesVersion)"/>
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="$(DotNetSystemPackagesVersion)"/>
+    <PackageVersion Include="MySql.Data.EntityFramework" Version="9.6.0"/>
+    <PackageVersion Include="MySql.EntityFrameworkCore" Version="10.0.1"/>
     <PackageVersion Include="SpotifyAPI.Web" Version="7.2.1"/>
   </ItemGroup>
 
   <!-- Default Analyzers -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19"/>
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="$(RoslynatorVersion)"/>
     <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="$(RoslynatorVersion)"/>
     <PackageVersion Include="Roslynator.CodeFixes" Version="$(RoslynatorVersion)"/>
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="$(RoslynatorVersion)"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.6.0.109712"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.18.0.131500"/>
   </ItemGroup>
 
   <!-- Tests -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
     <PackageVersion Include="xunit" Version="2.9.3"/>
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.0"/>
-    <PackageVersion Include="System.Data.SqlClient" Version="4.9.0"/>
-    <PackageVersion Include="System.Drawing.Common" Version="9.0.1"/>
-    <PackageVersion Include="System.Text.Json" Version="9.0.1"/>
-    <PackageVersion Include="System.Private.Uri" Version="4.3.2"/>
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
   </ItemGroup>
 
 </Project>

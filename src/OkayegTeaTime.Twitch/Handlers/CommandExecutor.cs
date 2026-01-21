@@ -5,13 +5,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Commands;
 using OkayegTeaTime.Twitch.Models;
-using ExecutionMethod = System.Func<OkayegTeaTime.Twitch.TwitchBot, HLE.Twitch.Tmi.Models.ChatMessage, System.ReadOnlyMemory<char>, System.ReadOnlyMemory<char>, System.Threading.Tasks.ValueTask>;
+using ExecutionMethod = System.Func<OkayegTeaTime.Twitch.TwitchBot, HLE.Twitch.Tmi.ChatMessage, System.ReadOnlyMemory<char>, System.ReadOnlyMemory<char>, System.Threading.Tasks.ValueTask>;
 
 namespace OkayegTeaTime.Twitch.Handlers;
 

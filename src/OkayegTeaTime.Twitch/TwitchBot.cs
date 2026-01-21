@@ -7,8 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using HLE.Text;
+using HLE.Threading;
 using HLE.Twitch.Tmi;
-using HLE.Twitch.Tmi.Models;
 using OkayegTeaTime.Database;
 using OkayegTeaTime.Database.Cache;
 using OkayegTeaTime.Database.Models;
@@ -23,12 +23,12 @@ using OkayegTeaTime.Twitch.Models;
 using OkayegTeaTime.Twitch.Services;
 using OkayegTeaTime.Twitch.SevenTv;
 using OkayegTeaTime.Utils;
-using Channel = HLE.Twitch.Tmi.Models.Channel;
+using Channel = HLE.Twitch.Tmi.Channel;
 using User = OkayegTeaTime.Twitch.Helix.Models.User;
 
 namespace OkayegTeaTime.Twitch;
 
-public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
+public sealed partial class TwitchBot : IAsyncDisposable, IEquatable<TwitchBot>
 {
     public UserCache Users { get; } = [];
 
@@ -71,8 +71,19 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     public TwitchBot(ReadOnlyMemory<string> channels)
     {
+        ClientOptions options = new()
+        {
+            IsVerifiedBot = false,
+            UseSsl = true,
+            WebSocketProcessingThreadCount = 1,
+            ReceiveChatMessages = true,
+            ReceiveMembershipMessages = true,
+            ReceiveNoticeMessages = false,
+            ReceiveRoomstateMessages = true
+        };
+
         OAuthToken token = new(GlobalSettings.Settings.Twitch.OAuthToken);
-        TwitchClient twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, ClientOptions.Default);
+        TwitchClient twitchClient = new(GlobalSettings.Settings.Twitch.Username, token, options);
 
         if (channels.Length == 0)
         {
@@ -84,9 +95,10 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 #pragma warning restore VSTHRD002, S4462
 
         twitchClient.OnConnected += OnClientConnectedAsync;
-        twitchClient.OnJoinedChannel += OnClientJoinedChannelAsync;
-        twitchClient.OnChatMessageReceived += OnClientMessageReceivedAsync;
         twitchClient.OnDisconnected += OnClientDisconnectAsync;
+
+        ReceiveChatMessagesAsync(twitchClient).Ignore();
+        ReceiveJoinChannelMessagesAsync(twitchClient).Ignore();
 
         _twitchClient = twitchClient;
         _messageHandler = new(this);
@@ -148,7 +160,7 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
         try
         {
             await _twitchClient.JoinChannelAsync(channel);
-            await SendAsync(channel, $"{Emoji.Wave} hello");
+            await SendAsync(channel, $"{Emoji.WavingHand} hello");
             User? user = await TwitchApi.GetUserAsync(channel);
             if (user is null)
             {
@@ -169,7 +181,7 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
     {
         try
         {
-            await SendAsync(channel, $"{Emoji.Wave} bye");
+            await SendAsync(channel, $"{Emoji.WavingHand} bye");
             await _twitchClient.LeaveChannelAsync(channel);
             Channels.Remove(channel);
             return true;
@@ -191,52 +203,75 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     #region Bot_On
 
-    private static async Task OnClientConnectedAsync(TwitchClient _)
+    private static async Task OnClientConnectedAsync(TwitchClient _, CancellationToken stoppingToken)
     {
         await using ConsoleWriter consoleWriter = new();
         consoleWriter.WriteConnected();
     }
 
-    private async Task OnClientJoinedChannelAsync(TwitchClient _, JoinChannelMessage e)
+    [SuppressMessage("Blocker Bug", "S2190:Loops and recursions should not be infinite")]
+    private async Task ReceiveJoinChannelMessagesAsync(TwitchClient client)
     {
-        if (e.Username == GlobalSettings.Settings.Twitch.Username)
+        while (true)
         {
-            await using ConsoleWriter consoleWriter = new();
-            consoleWriter.WriteJoinedChannel(e.Channel);
-            return;
-        }
+            JoinChannelMessage message = await client.ReceiveJoinChannelMessageAsync();
 
-        if (e.Channel != GlobalSettings.Settings.OfflineChat!.Channel)
-        {
-            return;
-        }
+            try
+            {
+                if (message.Username == GlobalSettings.Settings.Twitch.Username)
+                {
+                    await using ConsoleWriter consoleWriter = new();
+                    consoleWriter.WriteJoinedChannel(message.Channel);
+                    continue;
+                }
 
-        User? user = await TwitchApi.GetUserAsync(e.Username);
-        if (user is null)
-        {
-            return;
-        }
+                if (message.Channel != GlobalSettings.Settings.OfflineChat!.Channel)
+                {
+                    continue;
+                }
 
-        if (!GlobalSettings.Settings.OfflineChat.Users.Contains(user.Id))
-        {
-            await SendAsync(GlobalSettings.Settings.OfflineChat.Channel, $"{e.Username} joined the chat Stare");
+                User? user = await TwitchApi.GetUserAsync(message.Username);
+                if (user is null)
+                {
+                    continue;
+                }
+
+                if (!GlobalSettings.Settings.OfflineChat.Users.Contains(user.Id))
+                {
+                    await SendAsync(GlobalSettings.Settings.OfflineChat.Channel, $"{message.Username} joined the chat Stare");
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
     }
 
-    private async Task OnClientMessageReceivedAsync(TwitchClient _, ChatMessage message)
+    [SuppressMessage("Blocker Bug", "S2190:Loops and recursions should not be infinite")]
+    private async Task ReceiveChatMessagesAsync(TwitchClient client)
     {
-        try
+        while (true)
         {
-            await _messageHandler.HandleAsync(message);
-            await message.FormatAsync(Console.Out);
-        }
-        finally
-        {
-            message.Dispose();
+            ChatMessage message = await client.ReceiveChatMessageAsync();
+
+            try
+            {
+                await _messageHandler.HandleAsync(message);
+                await message.FormatAsync(Console.Out);
+            }
+            catch
+            {
+                // ignore
+            }
+            finally
+            {
+                message.Dispose();
+            }
         }
     }
 
-    private static async Task OnClientDisconnectAsync(TwitchClient _)
+    private static async Task OnClientDisconnectAsync(TwitchClient _, CancellationToken stoppingToken)
     {
         await using ConsoleWriter consoleWriter = new();
         consoleWriter.WriteDisconnected();
@@ -268,9 +303,9 @@ public sealed partial class TwitchBot : IDisposable, IEquatable<TwitchBot>
 
     public static bool operator !=(TwitchBot? left, TwitchBot? right) => !(left == right);
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _twitchClient.Dispose();
+        await _twitchClient.DisposeAsync();
         _periodicActionsController.Dispose();
         MathService.Dispose();
         TwitchApi.Dispose();

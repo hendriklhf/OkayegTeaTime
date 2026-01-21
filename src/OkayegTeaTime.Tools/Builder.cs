@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using OkayegTeaTime.Configuration;
 
 namespace OkayegTeaTime.Tools;
@@ -22,11 +23,10 @@ internal sealed class Builder(string[] args)
     ]).ToFrozenDictionary();
 
     private const string BotProjectPath = "./src/OkayegTeaTime/OkayegTeaTime.csproj";
-    private const string CommitIdSourcePath = "./.git/logs/HEAD";
     private const string CommitIdFile = "./src/OkayegTeaTime.Resources/LastCommit";
     private const string CodeFilesFile = "./src/OkayegTeaTime.Resources/CodeFiles";
 
-    public void Build()
+    public async Task BuildAsync()
     {
         Runtime[] runtimes = GetRuntimes();
         if (runtimes.Length == 0)
@@ -40,10 +40,10 @@ internal sealed class Builder(string[] args)
         {
             string outputDirectory = $"./Build/{runtime.Identifier}/";
             DeleteDirectory(outputDirectory);
-            CreateLastCommitFile();
+            await CreateLastCommitFileAsync();
             CreateCodeFilesFile();
             Console.WriteLine($"Starting builds for {runtime.Name} runtime.");
-            BuildBot(outputDirectory, runtime);
+            await BuildBotAsync(outputDirectory, runtime);
         }
     }
 
@@ -54,10 +54,10 @@ internal sealed class Builder(string[] args)
             .Select(static kv => kv.Key).ToArray();
     }
 
-    private static void BuildBot(string outputDirectory, Runtime runtime)
-        => StartBuildProcess(outputDirectory, runtime, BotProjectPath, "OkayegTeaTime");
+    private static Task BuildBotAsync(string outputDirectory, Runtime runtime)
+        => StartBuildProcessAsync(outputDirectory, runtime, BotProjectPath, "OkayegTeaTime");
 
-    private static void StartBuildProcess(string outputDir, Runtime runtime, string projectPath, string projectName)
+    private static async Task StartBuildProcessAsync(string outputDir, Runtime runtime, string projectPath, string projectName)
     {
         using Process buildProcess = new();
         buildProcess.StartInfo = new("dotnet", $"publish -r {runtime.Identifier} -c Release -o {outputDir} --no-self-contained {projectPath}")
@@ -69,7 +69,7 @@ internal sealed class Builder(string[] args)
         Console.WriteLine($"Starting {projectName} build");
         Console.WriteLine($"Output directory: \"{outputDir}\"");
         buildProcess.Start();
-        buildProcess.WaitForExit();
+        await buildProcess.WaitForExitAsync();
         if (buildProcess.ExitCode != 0)
         {
             PrintError($"Build for {projectName} failed!");
@@ -91,15 +91,35 @@ internal sealed class Builder(string[] args)
         Directory.Delete(directory, true);
     }
 
-    private static void CreateLastCommitFile()
+    private static async Task CreateLastCommitFileAsync()
     {
-        Console.WriteLine("Retrieving last commit id");
-        string[] lines = File.ReadAllLines(CommitIdSourcePath);
-        string commitId = lines[^1].Split(' ')[1][..7];
-        Console.WriteLine($"Last commit: {commitId}");
-        File.WriteAllText(CommitIdFile, commitId);
+        Console.WriteLine("Retrieving last commit hash");
+
+        ProcessStartInfo startInfo = new("git", "log --pretty=format:'%h' -n1")
+        {
+            RedirectStandardOutput = true
+        };
+
+        Process process = new()
+        {
+            StartInfo = startInfo
+        };
+
+        process.Start();
+
+        Task<string> readTask = ReadStdOutAsync(process);
+
+        await process.WaitForExitAsync();
+
+        string commitHash = await readTask;
+        process.Dispose();
+
+        await File.WriteAllTextAsync(CommitIdFile, commitHash);
         Console.WriteLine($"Created \"LastCommit\" file{Environment.NewLine}");
     }
+
+    private static Task<string> ReadStdOutAsync(Process process)
+        => process.StandardOutput.ReadToEndAsync();
 
     private static void CreateCodeFilesFile()
     {

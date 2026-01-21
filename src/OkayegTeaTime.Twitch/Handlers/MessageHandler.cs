@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Database.Cache.Enums;
 using OkayegTeaTime.Database.Models;
 using OkayegTeaTime.Configuration;

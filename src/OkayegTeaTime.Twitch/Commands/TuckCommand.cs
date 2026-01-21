@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HLE.Text;
-using HLE.Twitch.Tmi.Models;
+using HLE.Twitch.Tmi;
 using OkayegTeaTime.Configuration;
 using OkayegTeaTime.Twitch.Attributes;
 using OkayegTeaTime.Twitch.Models;
@@ -31,7 +31,7 @@ public readonly struct TuckCommand(TwitchBot twitchBot, ChatMessage chatMessage,
         {
             using ChatMessageExtension messageExtension = new(ChatMessage);
             ReadOnlySpan<char> target = messageExtension.LowerSplit[1].Span;
-            Response.Append($"{Emoji.PointRight} {Emoji.Bed} {ChatMessage.Username}");
+            Response.Append($"{Emoji.BackhandIndexPointingRight} {Emoji.Bed} {ChatMessage.Username}");
 
             Response.Append($" tucked {target} to bed");
             ReadOnlySpan<char> emote = messageExtension.LowerSplit.Length > 2 ? messageExtension.Split[2].Span : [];
